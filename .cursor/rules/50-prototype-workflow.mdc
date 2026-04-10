@@ -9,9 +9,9 @@ alwaysApply: false
 - 页面原型阶段重点输出：页面类型、区块划分、字段展示方式、关键状态、流转路径。
 - 原型阶段不直接陷入视觉样式细节，先保证信息层级与交互逻辑完整。
 - 如果任务涉及大功能模块，先输出功能单元和开发前确认清单。
+- 该规则只负责触发与路由提醒，不在规则层重复完整原型协议。
 
 参考：
 @commands/prototype.md
 @skills/prototype-skill/SKILL.md
-@agents/Schema映射Agent.md
 @docs/前端开发闭环总流程.md
