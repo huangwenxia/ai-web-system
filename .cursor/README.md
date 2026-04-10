@@ -14,6 +14,7 @@ Cursor 会自动识别仓库中的 `.cursor/rules/*.mdc`。
 
 这些规则适合：
 - 当前仓库的前端领域工作流
+- 任务类型分流与路由
 - Markdown 文档规范
 - workbench 开发约束
 - 资产回写与治理约束
@@ -28,3 +29,4 @@ Cursor 会自动识别仓库中的 `.cursor/rules/*.mdc`。
 - User Rule 只放跨项目工程行为
 - `.cursor/rules` 只放当前仓库或当前领域稳定规则
 - 项目特化限制优先放 Project Rules，不放 User Rule
+- 复杂任务优先通过 `01-task-routing.mdc` 先做工作流分流，再进入具体执行规则
