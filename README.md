@@ -78,5 +78,6 @@ git push
 5. `docs/01-治理与规范/Git协作规范.md`
 6. `docs/01-治理与规范/文档链接与路径规范.md`
 7. `docs/01-治理与规范/任务类型判断矩阵.md`
-8. `skills/README.md`
-9. `agents/README.md`
+8. `docs/01-治理与规范/能力去重与映射矩阵.md`
+9. `skills/README.md`
+10. `agents/README.md`
