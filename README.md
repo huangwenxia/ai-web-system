@@ -41,10 +41,27 @@
 - `.vscode/settings.json`
 - `scripts/verify-encoding.mjs`
 
+## Git管理
+仓库已经接入 GitHub，并建议按轻量知识库方式管理。
+
+建议先看：
+- `docs/Git协作规范.md`
+
+日常常用命令：
+
+```powershell
+git -C E:\work\ai-web-system status
+node E:\work\ai-web-system\scripts\verify-encoding.mjs E:\work\ai-web-system
+git -C E:\work\ai-web-system add .
+git -C E:\work\ai-web-system commit -m "docs: 更新说明文档"
+git -C E:\work\ai-web-system push
+```
+
 ## 建议阅读顺序
 建议先看：
 1. `standards/README.md`
 2. `docs/体系总览.md`
 3. `docs/四层关系.md`
-4. `skills/README.md`
-5. `agents/README.md`
+4. `docs/Git协作规范.md`
+5. `skills/README.md`
+6. `agents/README.md`
