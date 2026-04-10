@@ -33,7 +33,7 @@
 - 所有文本文件默认使用 UTF-8。
 - 默认行尾使用 LF，`*.ps1` 保持 CRLF。
 - 新增或批量改写文本前，优先保留 UTF-8 无 BOM。
-- 可执行巡检命令：`node scripts/verify-encoding.mjs E:\work\ai-web-system`
+- 可执行巡检命令：`node scripts/verify-encoding.mjs .`
 
 相关文件：
 - `.editorconfig`
@@ -50,11 +50,11 @@
 日常常用命令：
 
 ```powershell
-git -C E:\work\ai-web-system status
-node E:\work\ai-web-system\scripts\verify-encoding.mjs E:\work\ai-web-system
-git -C E:\work\ai-web-system add .
-git -C E:\work\ai-web-system commit -m "docs: 更新说明文档"
-git -C E:\work\ai-web-system push
+git status
+node scripts/verify-encoding.mjs .
+git add .
+git commit -m "docs: 更新说明文档"
+git push
 ```
 
 ## 建议阅读顺序

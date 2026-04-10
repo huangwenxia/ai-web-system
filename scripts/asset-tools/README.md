@@ -19,4 +19,4 @@
 7. `sync-page-draft-to-hashrate-preview.mjs`
  - 将知识库候选页面草稿复制到 `hashrate` 的本地 `__preview__` 页面验证区
 
-这些脚本默认操作 `E:\work\ai-web-system\assets`，并以 `project-mamba/package.json`作为依赖基线之一。
+这些脚本默认操作 `assets/`，并以 `project-mamba/package.json`作为依赖基线之一。

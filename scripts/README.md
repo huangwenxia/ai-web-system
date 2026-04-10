@@ -19,10 +19,10 @@
 
 ```powershell
 # 基本同步
-powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & 'E:\work\ai-web-system\scripts\同步全局终端入口.ps1'"
+powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & '.\scripts\同步全局终端入口.ps1'"
 
 # 如果遇到 Codex ACL 权限问题，使用修复参数
-powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & 'E:\work\ai-web-system\scripts\同步全局终端入口.ps1' -RepairCodexAcl"
+powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & '.\scripts\同步全局终端入口.ps1' -RepairCodexAcl"
 ```
 
 **什么时候运行**：
@@ -48,7 +48,7 @@ powershell -Command "[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; &
 **使用方法**：
 
 ```powershell
-node E:\work\ai-web-system\scripts\verify-encoding.mjs E:\work\ai-web-system
+node scripts/verify-encoding.mjs .
 ```
 
 **建议什么时候运行**：

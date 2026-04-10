@@ -45,7 +45,7 @@ apps/ai-front-workbench/
 安装依赖后，常用命令：
 
 ```powershell
-cd E:\work\ai-web-system\apps\ai-front-workbench
+cd apps/ai-front-workbench
 pnpm install
 pnpm dev
 ```
@@ -56,7 +56,7 @@ pnpm dev
 只要这次改动涉及 `apps/ai-front-workbench`，提交前至少执行：
 
 ```powershell
-cd E:\work\ai-web-system\apps\ai-front-workbench
+cd apps/ai-front-workbench
 pnpm run check
 ```
 
@@ -77,14 +77,14 @@ pnpm run build
 workbench 相关改动推荐流程：
 
 ```powershell
-cd E:\work\ai-web-system\apps\ai-front-workbench
+cd apps/ai-front-workbench
 pnpm run check
 
-node E:\work\ai-web-system\scripts\verify-encoding.mjs E:\work\ai-web-system
+node scripts/verify-encoding.mjs .
 
-git -C E:\work\ai-web-system add apps/ai-front-workbench
-git -C E:\work\ai-web-system commit -m "feat: update workbench preview flow"
-git -C E:\work\ai-web-system push
+git add apps/ai-front-workbench
+git commit -m "feat: update workbench preview flow"
+git push
 ```
 
 ## 当前提交建议

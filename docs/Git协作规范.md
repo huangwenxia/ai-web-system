@@ -90,12 +90,12 @@
 
 ### 1. 编码是否正常
 ```powershell
-node E:\work\ai-web-system\scripts\verify-encoding.mjs E:\work\ai-web-system
+node scripts/verify-encoding.mjs .
 ```
 
 ### 2. 是否误提交不该入库的内容
 ```powershell
-git -C E:\work\ai-web-system status
+git status
 ```
 
 重点看：
@@ -108,7 +108,7 @@ git -C E:\work\ai-web-system status
 如果本次改了 `apps/ai-front-workbench`，建议执行：
 
 ```powershell
-cd E:\work\ai-web-system\apps\ai-front-workbench
+cd apps/ai-front-workbench
 pnpm build
 ```
 
@@ -116,18 +116,18 @@ pnpm build
 日常建议使用下面这套：
 
 ```powershell
-git -C E:\work\ai-web-system status
-node E:\work\ai-web-system\scripts\verify-encoding.mjs E:\work\ai-web-system
-git -C E:\work\ai-web-system add .
-git -C E:\work\ai-web-system commit -m "docs: 补充 Git 协作规范"
-git -C E:\work\ai-web-system push
+git status
+node scripts/verify-encoding.mjs .
+git add .
+git commit -m "docs: 补充 Git 协作规范"
+git push
 ```
 
 如果只想提交部分内容，优先显式指定路径：
 
 ```powershell
-git -C E:\work\ai-web-system add docs README.md
-git -C E:\work\ai-web-system commit -m "docs: 更新体系说明入口"
+git add docs README.md
+git commit -m "docs: 更新体系说明入口"
 ```
 
 ## 目录对应的提交思路
