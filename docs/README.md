@@ -19,6 +19,7 @@
 14. [workbench依赖对齐策略.md](./workbench依赖对齐策略.md)
 15. [Cursor命令与Skill适配说明.md](./Cursor命令与Skill适配说明.md)
 16. [Cursor本地Skill适配结论.md](./Cursor本地Skill适配结论.md)
+17. [文档链接与路径规范.md](./文档链接与路径规范.md)
 
 ## 与资产治理直接相关的目录
 - [assets/README.md](../assets/README.md)

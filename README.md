@@ -46,6 +46,7 @@
 
 建议先看：
 - `docs/Git协作规范.md`
+- `docs/文档链接与路径规范.md`
 
 日常常用命令：
 
@@ -63,5 +64,6 @@ git push
 2. `docs/体系总览.md`
 3. `docs/四层关系.md`
 4. `docs/Git协作规范.md`
-5. `skills/README.md`
-6. `agents/README.md`
+5. `docs/文档链接与路径规范.md`
+6. `skills/README.md`
+7. `agents/README.md`
