@@ -1,11 +1,11 @@
 # skills
 
-这里是工作流入口层，面向 Codex、Claude Code 或其他终端工具的工作流入口模板（Skills）。
+这里是工作流执行协议层，面向 Codex、Claude Code 或其他终端工具的可复用任务协议（Skills）。
 
 ## 维护原则
-- 入口模板只负责说明先读哪些标准，再执行什么任务。
+- Skill 负责说明一类任务应该如何执行，而不是只做入口提示。
 - 不在 Skill 中重复定义标准正文。
-- 主维护层在 `commands` 和 `skills`，部署层只是同步结果。
+- `commands` 负责入口，`skills` 负责协议，两者要有明确边界。
 
 ## 与 Cursor Rule 的关系
 在 Cursor 中：
@@ -17,10 +17,11 @@
 - Skill 偏任务步骤和执行协议
 
 ## 推荐维护顺序
-1. 先维护 `commands`。
-2. 再维护 `skills`。
-3. 再决定是否需要抽取到 Cursor Rule。
-4. 最后同步到真实终端安装目录。
+1. 先维护 `standards` 和 `.cursor/rules`。
+2. 再维护 `commands`。
+3. 再维护 `skills`。
+4. 再决定是否需要抽取到 Cursor Rule。
+5. 最后同步到真实终端安装目录。
 
 ## 当前主入口
 - `prototype-skill`
