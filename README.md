@@ -77,5 +77,6 @@ git push
 4. `docs/00-总览/Cursor规则分层与协同架构.md`
 5. `docs/01-治理与规范/Git协作规范.md`
 6. `docs/01-治理与规范/文档链接与路径规范.md`
-7. `skills/README.md`
-8. `agents/README.md`
+7. `docs/01-治理与规范/任务类型判断矩阵.md`
+8. `skills/README.md`
+9. `agents/README.md`
