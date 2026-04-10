@@ -63,7 +63,7 @@ project-mamba/apps/hashrate/src/__preview__/pages/*.vue
 示例：
 
 ```powershell
-node E:/work/ai-web-system/scripts/asset-tools/sync-candidate-to-hashrate-preview.mjs --source=assets/components/candidates/example-card.vue --name=ExampleCardPreview
+node scripts/asset-tools/sync-candidate-to-hashrate-preview.mjs --source=assets/components/candidates/example-card.vue --name=ExampleCardPreview
 ```
 
 当前这条链已经用于覆盖 `apps/hashrate/src/__preview__/components/ExampleCardPreview.vue`，说明知识库候选组件已能进入 hashrate 本地集成预览。
@@ -71,7 +71,7 @@ node E:/work/ai-web-system/scripts/asset-tools/sync-candidate-to-hashrate-previe
 页面级示例则可使用：
 
 ```powershell
-node E:/work/ai-web-system/scripts/asset-tools/sync-page-draft-to-hashrate-preview.mjs --source=assets/pages/drafts/example-overview-page.vue --name=PreviewOverviewDraftPage.vue
+node scripts/asset-tools/sync-page-draft-to-hashrate-preview.mjs --source=assets/pages/drafts/example-overview-page.vue --name=PreviewOverviewDraftPage.vue
 ```
 
 当前 `hashrate`侧已预留页面级 preview入口：

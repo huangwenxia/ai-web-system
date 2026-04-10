@@ -10,9 +10,9 @@ description: "从信息架构、视觉层级、交互路径和组件结构四个
 - 需要对既有页面做结构诊断。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/01-视觉标准`
-- `E:/work/ai-web-system/standards/02-布局标准`
-- 必要时读取 `E:/work/ai-web-system/standards/04-组件标准`
+- `standards/01-视觉标准`
+- `standards/02-布局标准`
+- 必要时读取 `standards/04-组件标准`
 
 ## 输出要求
 1. 页面主任务与问题摘要。

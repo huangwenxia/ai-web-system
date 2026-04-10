@@ -10,8 +10,8 @@ description: "根据接口结构、字段类型和业务说明，输出页面骨
 - 需要把字段映射成页面结构与组件建议。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/02-布局标准`
-- `E:/work/ai-web-system/standards/03-数据映射标准`
+- `standards/02-布局标准`
+- `standards/03-数据映射标准`
 
 ## 输出要求
 1. 输入信息摘要与任务前提。

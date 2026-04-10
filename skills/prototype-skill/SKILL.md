@@ -11,9 +11,9 @@ description: "从需求、接口和业务描述中推导页面骨架、信息架
 - 还不应该直接进入最终实现代码。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/02-布局标准`
-- `E:/work/ai-web-system/standards/03-数据映射标准`
-- 必要时读取 `E:/work/ai-web-system/standards/01-视觉标准`
+- `standards/02-布局标准`
+- `standards/03-数据映射标准`
+- 必要时读取 `standards/01-视觉标准`
 
 ## 输出要求
 1. 输入信息摘要与任务前提。

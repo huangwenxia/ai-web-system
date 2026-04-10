@@ -10,8 +10,8 @@ description: "把页面结构与信息层次转化为稳定的页面布局、视
 - 需要把信息节奏、卡片结构和状态表达统一下来。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/01-视觉标准`
-- `E:/work/ai-web-system/standards/02-布局标准`
+- `standards/01-视觉标准`
+- `standards/02-布局标准`
 
 ## 输出要求
 1. 设计决策说明。

@@ -11,9 +11,9 @@ description: "基于 ai-web-standards 中的组件标准、数据映射标准和
 - 为组件补齐文档。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/04-组件标准`
-- `E:/work/ai-web-system/standards/05-文档标准`
-- 必要时读取 `E:/work/ai-web-system/standards/01-视觉标准`
+- `standards/04-组件标准`
+- `standards/05-文档标准`
+- 必要时读取 `standards/01-视觉标准`
 
 ## 输出要求
 1. 使用的标准条目。

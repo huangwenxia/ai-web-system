@@ -10,8 +10,8 @@ description: "审查页面和组件的视觉层级、信息组织、卡片节奏
 - 审查状态表达、层级和卡片节奏。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/01-视觉标准`
-- `E:/work/ai-web-system/standards/02-布局标准`
+- `standards/01-视觉标准`
+- `standards/02-布局标准`
 
 ## 输出要求
 1. 核心问题列表。

@@ -11,6 +11,16 @@
 - 不重新定义标准正文。
 - 不替代具体 Agent 职责。
 - 不直接承担产品层状态管理。
+- 不替代 Cursor 项目规则层。
+
+## 与 Cursor Rule 的关系
+在 Cursor 中：
+- `.cursor/rules` 负责环境级默认约束和项目级自动附加规则
+- `commands/` 更适合继续承担“显式任务入口”
+
+也就是说：
+- Rule 偏环境
+- Command 偏触发
 
 ## 当前主入口
 - `prototype.md`

@@ -1,0 +1,17 @@
+---
+description: Workbench implementation rule for ai-front-workbench
+globs:
+  - "apps/ai-front-workbench/**"
+alwaysApply: false
+---
+
+修改 `apps/ai-front-workbench` 时，遵守以下规则：
+- 这是知识库内部的预览工作台，不是脱离真实项目约束的独立产品。
+- 优先对齐当前真实项目依赖生态，不随意引入新的 UI 或样式体系。
+- UI 与数据结构改动尽量拆分，不把 workbench 文档、脚本、页面功能混成一个提交。
+- 当前提交前的最小检查是 `pnpm run check`。
+- 如果只是改了 workbench 相关内容，优先最小提交 `apps/ai-front-workbench` 目录，不顺手混入大量 docs 或 scripts 修改。
+
+参考：
+@apps/ai-front-workbench/README.md
+@docs/workbench依赖对齐策略.md

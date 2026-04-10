@@ -10,8 +10,8 @@ description: "分析页面或流程中的 UX 问题，包括信息层级、操�
 - 分析用户任务完成路径是否顺畅。
 
 ## 执行前先读
-- `E:/work/ai-web-system/standards/02-布局标准`
-- 必要时读取 `E:/work/ai-web-system/standards/01-视觉标准`
+- `standards/02-布局标准`
+- 必要时读取 `standards/01-视觉标准`
 
 ## 输出要求
 1. 用户主任务说明。
