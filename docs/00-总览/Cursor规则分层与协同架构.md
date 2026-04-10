@@ -66,8 +66,8 @@
 
 当前落点：
 - `.cursor/rules/*.mdc`
-- `docs/文档链接与路径规范.md`
-- `docs/Git协作规范.md`
+- `docs/01-治理与规范/文档链接与路径规范.md`
+- `docs/01-治理与规范/Git协作规范.md`
 
 ## 现有目录应该如何理解
 ### `standards/`
@@ -106,14 +106,14 @@ Cursor 项目级环境规则层。
 ### 适合直接抽成 Rule 的
 - `agents/Agent协作原则.md`
 - `docs/前端开发闭环总流程.md`
-- `docs/文档链接与路径规范.md`
-- `docs/Git协作规范.md` 中与日常执行直接相关的部分
+- `docs/01-治理与规范/文档链接与路径规范.md`
+- `docs/01-治理与规范/Git协作规范.md` 中与日常执行直接相关的部分
 - `commands/*.md` 中稳定的任务路由和执行步骤
 
 ### 不适合直接变成 Rule 的
 - `standards/**`
-- `docs/体系总览.md`
-- `docs/四层关系.md`
+- `docs/00-总览/体系总览.md`
+- `docs/00-总览/四层关系.md`
 - `docs/原始准则来源/**`
 - 角色说明性很强的 `agents/*.md`
 
@@ -212,7 +212,7 @@ Cursor 项目级环境规则层。
 
 ### 新增补位的
 - `.cursor/`：补 Cursor 项目级规则层
-- `docs/Cursor规则分层与协同架构.md`：补规则分层总说明
+- `docs/00-总览/Cursor规则分层与协同架构.md`：补规则分层总说明
 
 ## 结论
 `ai-web-system` 现在应明确定位为：

@@ -48,8 +48,8 @@
 仓库已经接入 GitHub，并建议按轻量知识库方式管理。
 
 建议先看：
-- `docs/Git协作规范.md`
-- `docs/文档链接与路径规范.md`
+- `docs/01-治理与规范/Git协作规范.md`
+- `docs/01-治理与规范/文档链接与路径规范.md`
 
 日常常用命令：
 
@@ -67,15 +67,15 @@ git push
 建议先看：
 - `.cursor/README.md`
 - `.cursor/user-rule.template.md`
-- `docs/Cursor规则分层与协同架构.md`
+- `docs/00-总览/Cursor规则分层与协同架构.md`
 
 ## 建议阅读顺序
 建议先看：
 1. `standards/README.md`
-2. `docs/体系总览.md`
-3. `docs/四层关系.md`
-4. `docs/Cursor规则分层与协同架构.md`
-5. `docs/Git协作规范.md`
-6. `docs/文档链接与路径规范.md`
+2. `docs/00-总览/体系总览.md`
+3. `docs/00-总览/四层关系.md`
+4. `docs/00-总览/Cursor规则分层与协同架构.md`
+5. `docs/01-治理与规范/Git协作规范.md`
+6. `docs/01-治理与规范/文档链接与路径规范.md`
 7. `skills/README.md`
 8. `agents/README.md`
