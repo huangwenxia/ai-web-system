@@ -1,0 +1,15 @@
+field_categories:
+  - entity_identity
+  - status
+  - amount
+  - percentage
+  - metric
+  - time_point
+  - time_range
+  - text_short
+  - text_long
+  - enum_label
+  - media
+  - action
+  - relation
+  - collection

@@ -1,0 +1,45 @@
+{
+    "name": "example-component",
+    "type": "component",
+    "status": "candidate",
+    "maturityLevel": "L1",
+    "source": {
+        "task": "示例任务",
+        "createdFrom": "frontend-implementer",
+        "createdAt": "2026-04-08",
+        "notes": "记录该组件从什么任务产生"
+    },
+    "projectCompatibility": {
+        "projects": [
+            "project-mamba"
+        ],
+        "dependencies": [
+            "vue",
+            "element-plus"
+        ],
+        "forbiddenDependencies": [],
+        "packageConstraints": [
+            "必须兼容 project-mamba现有依赖生态"
+        ]
+    },
+    "sync": {
+        "allowed": false,
+        "targetProject": "project-mamba",
+        "targetPath": "",
+        "lastSyncedAt": "",
+        "syncStrategy": "manual-review"
+    },
+    "review": {
+        "reusability": "medium",
+        "apiStability": "medium",
+        "visualQuality": "medium",
+        "boundaryCompleteness": "low",
+        "summary": "补充当前评审结论"
+    },
+    "writeback": {
+        "docs": [],
+        "standards": [],
+        "examples": [],
+        "agents": []
+    }
+}

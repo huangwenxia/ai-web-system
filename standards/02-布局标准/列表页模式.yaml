@@ -1,0 +1,20 @@
+pattern: list-page
+status: draft
+applies_when:
+  - multiple_records: true
+regions:
+  - name: header
+    purpose: page_identity_and_primary_actions
+  - name: filters
+    purpose: query_controls
+  - name: summary
+    purpose: optional_aggregates
+  - name: results
+    purpose: main_record_collection
+rules:
+  - filters_should_be_scannable
+  - primary_action_should_not_compete_with_filter_controls
+  - empty_loading_error_states_must_be_defined
+anti_patterns:
+  - oversized_summary_area_above_small_result_sets
+  - mixing_record_actions_into_filter_region

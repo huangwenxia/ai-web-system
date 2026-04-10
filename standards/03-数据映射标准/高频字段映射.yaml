@@ -1,0 +1,23 @@
+selection_rules:
+  - when: status
+    use: status-badge
+    notes:
+      - require unknown fallback
+      - avoid raw inline color mapping
+  - when: amount
+    use: amount-display
+    notes:
+      - align integer and decimal rhythm
+      - define unit and currency clearly
+  - when: time_point
+    use: time-text
+    notes:
+      - define absolute or relative format
+  - when: entity_identity
+    use: entity-summary
+    notes:
+      - keep title, secondary id, and status hierarchy stable
+  - when: collection
+    use: list-block
+    notes:
+      - choose list, table, timeline, or card block by record density

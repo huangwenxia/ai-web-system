@@ -1,0 +1,42 @@
+{
+    "name": "example-page",
+    "type": "page",
+    "pageType": "detail",
+    "status": "draft",
+    "maturityLevel": "L0",
+    "source": {
+        "task": "示例页面任务",
+        "createdFrom": "schema-to-ui",
+        "createdAt": "2026-04-08",
+        "notes": "记录页面来源与约束"
+    },
+    "projectCompatibility": {
+        "projects": [
+            "project-mamba"
+        ],
+        "dependencies": [
+            "vue",
+            "element-plus"
+        ],
+        "forbiddenDependencies": []
+    },
+    "sync": {
+        "allowed": false,
+        "targetProject": "project-mamba",
+        "targetPath": "",
+        "lastSyncedAt": "",
+        "syncStrategy": "manual-review"
+    },
+    "review": {
+        "reusability": "low",
+        "structureClarity": "medium",
+        "visualQuality": "medium",
+        "boundaryCompleteness": "low",
+        "summary": "补充页面评审结论"
+    },
+    "writeback": {
+        "docs": [],
+        "standards": [],
+        "examples": []
+    }
+}

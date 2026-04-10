@@ -1,0 +1,31 @@
+# 视觉标准
+
+## 这一层解决什么问题
+这里回答的是：
+- 页面看起来是否合格
+- 视觉层级是否清晰
+- 间距、字体、颜色、卡片、状态、对齐是否稳定
+
+它负责“视觉判断标准”，不负责页面业务结构和组件 API。
+
+## 先看什么
+第一次阅读建议按顺序看：
+1. [视觉语言总则.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\视觉语言总则.md)
+2. [间距系统.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\间距系统.md)
+3. [字体层级.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\字体层级.md)
+4. [颜色与Token.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\颜色与Token.md)
+5. [交互语义与状态完整性.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\交互语义与状态完整性.md)
+
+## 关键文件
+- [信息组织与视觉节奏.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\信息组织与视觉节奏.md)
+- [文本截断与同行对齐.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\文本截断与同行对齐.md)
+- [卡片网格高度策略.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\卡片网格高度策略.md)
+- [多卡片等高实现模式.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\多卡片等高实现模式.md)
+- [样式实现质量.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\样式实现质量.md)
+
+## 什么时候看这一层
+- 审查页面好不好看
+- 审查卡片、列表、标签、状态展示是否失衡
+- 判断某个视觉问题是结构问题还是样式问题
+
+

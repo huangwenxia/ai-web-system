@@ -1,0 +1,20 @@
+pattern: detail-page
+status: draft
+applies_when:
+  - single_primary_entity: true
+regions:
+  - name: header
+    purpose: identify_entity_and_primary_actions
+  - name: summary
+    purpose: key_status_and_metrics
+  - name: details
+    purpose: structured_attributes
+  - name: related_blocks
+    purpose: associated_records_or_history
+rules:
+  - primary_status_should_be_visible_without_scroll
+  - summary_should_precede_dense_attribute_sections
+  - details_should_preserve_key_value_semantics
+anti_patterns:
+  - burying_critical_status_inside_detail_lists
+  - duplicating_same_key_info_in_multiple_blocks

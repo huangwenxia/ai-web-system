@@ -1,0 +1,20 @@
+pattern: form-page
+status: draft
+applies_when:
+  - create_or_edit_flow: true
+regions:
+  - name: header
+    purpose: task_identity
+  - name: form
+    purpose: primary_input_area
+  - name: aside
+    purpose: optional_help_or_summary
+  - name: footer_actions
+    purpose: submit_cancel_secondary_actions
+rules:
+  - required_fields_should_be_visually_clear
+  - validation_and_help_should_not_fight_for_attention
+  - action_area_should_remain_stable_across_states
+anti_patterns:
+  - scattering_submit_actions_across_multiple_sections
+  - unclear_grouping_of_related_fields

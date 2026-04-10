@@ -1,0 +1,33 @@
+# 组件标准
+
+## 这一层解决什么问题
+这里回答的是：
+- 组件应该如何设计
+- 输入输出边界是否清晰
+- 状态归属和副作用是否合理
+- 模板和样式边界是否清楚
+- 组件质量是否达标
+
+它负责“组件设计与审查标准”，不负责页面整体骨架。
+
+## 先看什么
+第一次阅读建议按顺序看：
+1. [组件API设计.md](E:\\work\\ai-web-system\\standards\\04-组件标准\组件API设计.md)
+2. [状态归属与数据流.md](E:\\work\\ai-web-system\\standards\\04-组件标准\状态归属与数据流.md)
+3. [模板结构与样式边界.md](E:\\work\\ai-web-system\\standards\\04-组件标准\模板结构与样式边界.md)
+4. [组件质量基线.md](E:\\work\\ai-web-system\\standards\\04-组件标准\组件质量基线.md)
+
+## 关键文件
+- [数据视图驱动选型.md](E:\\work\\ai-web-system\\standards\\04-组件标准\数据视图驱动选型.md)
+- [表格与列定义标准.md](E:\\work\\ai-web-system\\standards\\04-组件标准\表格与列定义标准.md)
+- [atoms](E:\\work\\ai-web-system\\standards\\04-组件标准\atoms)
+- [blocks](E:\\work\\ai-web-system\\standards\\04-组件标准\blocks)
+- [_template](E:\\work\\ai-web-system\\standards\\04-组件标准\_template)
+
+## 什么时候看这一层
+- 审查已有 Vue / TS 组件
+- 设计新组件 API
+- 判断一个组件是否职责过载
+- 准备为真实项目组件补使用文档和 `spec.yaml`
+
+
