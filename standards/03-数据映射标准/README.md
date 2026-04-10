@@ -11,13 +11,13 @@
 
 ## 先看什么
 第一次阅读建议按顺序看：
-1. [字段分类.yaml](E:\\work\\ai-web-system\\standards\\03-数据映射标准\字段分类.yaml)
-2. [高频字段映射.yaml](E:\\work\\ai-web-system\\standards\\03-数据映射标准\高频字段映射.yaml)
-3. [按数据类型展示映射.yaml](E:\\work\\ai-web-system\\standards\\03-数据映射标准\按数据类型展示映射.yaml)
+1. [字段分类.yaml](./字段分类.yaml)
+2. [高频字段映射.yaml](./高频字段映射.yaml)
+3. [按数据类型展示映射.yaml](./按数据类型展示映射.yaml)
 
 ## 关键文件
-- [字段优先级规则.md](E:\\work\\ai-web-system\\standards\\03-数据映射标准\字段优先级规则.md)
-- [枚举与常量规则.md](E:\\work\\ai-web-system\\standards\\03-数据映射标准\枚举与常量规则.md)
+- [字段优先级规则.md](./字段优先级规则.md)
+- [枚举与常量规则.md](./枚举与常量规则.md)
 
 ## 什么时候看这一层
 - 只有接口文档，没有完整产品稿

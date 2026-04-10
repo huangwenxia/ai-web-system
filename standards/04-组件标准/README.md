@@ -12,17 +12,17 @@
 
 ## 先看什么
 第一次阅读建议按顺序看：
-1. [组件API设计.md](E:\\work\\ai-web-system\\standards\\04-组件标准\组件API设计.md)
-2. [状态归属与数据流.md](E:\\work\\ai-web-system\\standards\\04-组件标准\状态归属与数据流.md)
-3. [模板结构与样式边界.md](E:\\work\\ai-web-system\\standards\\04-组件标准\模板结构与样式边界.md)
-4. [组件质量基线.md](E:\\work\\ai-web-system\\standards\\04-组件标准\组件质量基线.md)
+1. [组件API设计.md](./组件API设计.md)
+2. [状态归属与数据流.md](./状态归属与数据流.md)
+3. [模板结构与样式边界.md](./模板结构与样式边界.md)
+4. [组件质量基线.md](./组件质量基线.md)
 
 ## 关键文件
-- [数据视图驱动选型.md](E:\\work\\ai-web-system\\standards\\04-组件标准\数据视图驱动选型.md)
-- [表格与列定义标准.md](E:\\work\\ai-web-system\\standards\\04-组件标准\表格与列定义标准.md)
-- [atoms](E:\\work\\ai-web-system\\standards\\04-组件标准\atoms)
-- [blocks](E:\\work\\ai-web-system\\standards\\04-组件标准\blocks)
-- [_template](E:\\work\\ai-web-system\\standards\\04-组件标准\_template)
+- [数据视图驱动选型.md](./数据视图驱动选型.md)
+- [表格与列定义标准.md](./表格与列定义标准.md)
+- [atoms](./atoms/)
+- [blocks](./blocks/)
+- [_template](./_template/)
 
 ## 什么时候看这一层
 - 审查已有 Vue / TS 组件

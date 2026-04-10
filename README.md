@@ -37,12 +37,14 @@
 - 默认行尾使用 LF，`*.ps1` 保持 CRLF。
 - 新增或批量改写文本前，优先保留 UTF-8 无 BOM。
 - 可执行巡检命令：`node scripts/verify-encoding.mjs .`
+- 可执行路径巡检：`node scripts/check-absolute-paths.mjs .`
 
 相关文件：
 - `.editorconfig`
 - `.gitattributes`
 - `.vscode/settings.json`
 - `scripts/verify-encoding.mjs`
+- `scripts/check-absolute-paths.mjs`
 
 ## Git 管理
 仓库已经接入 GitHub，并建议按轻量知识库方式管理。
@@ -56,6 +58,7 @@
 ```powershell
 git status
 node scripts/verify-encoding.mjs .
+node scripts/check-absolute-paths.mjs .
 git add .
 git commit -m "docs: 更新说明文档"
 git push

@@ -14,7 +14,7 @@ alwaysApply: false
 
 修改文档后建议检查：
 - `node scripts/verify-encoding.mjs .`
-- `rg -n "E:\\work\\ai-web-system" . -g "*.md"`
+- `node scripts/check-absolute-paths.mjs .`
 
 参考：
 @docs/文档链接与路径规范.md

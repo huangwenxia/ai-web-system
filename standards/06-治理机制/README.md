@@ -10,9 +10,9 @@
 如果没有这一层，标准库很容易退化成“个人经验集合”。
 
 建议阅读顺序：
-1. [角色与职责.md](E:\\work\\ai-web-system\\standards\\06-治理机制\角色与职责.md)
-2. [准则维护原则.md](E:\\work\\ai-web-system\\standards\\06-治理机制\准则维护原则.md)
-3. [证据来源分级.md](E:\\work\\ai-web-system\\standards\\06-治理机制\证据来源分级.md)
-4. [准则新增流程.md](E:\\work\\ai-web-system\\standards\\06-治理机制\准则新增流程.md)
+1. [角色与职责.md](./角色与职责.md)
+2. [准则维护原则.md](./准则维护原则.md)
+3. [证据来源分级.md](./证据来源分级.md)
+4. [准则新增流程.md](./准则新增流程.md)
 
 

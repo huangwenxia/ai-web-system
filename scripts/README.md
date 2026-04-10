@@ -56,6 +56,33 @@ node scripts/verify-encoding.mjs .
 - 通过脚本生成文本资产后
 - 准备同步到其他 AI 终端前
 
+### check-absolute-paths.mjs
+
+**作用**：巡检现行 Markdown 文档中是否残留本机绝对路径。
+
+**当前会检查**：
+- `*.md`
+- `*.mdc`
+- Windows 盘符绝对路径，例如 `<drive>:\project\...`
+
+**默认忽略**：
+- `docs/原始准则来源/`
+- `docs/90-归档/`
+
+原因：
+- 这两层分别承担来源档案和历史归档，不作为现行可移植文档约束对象
+
+**使用方法**：
+
+```powershell
+node scripts/check-absolute-paths.mjs .
+```
+
+**建议什么时候运行**：
+- 改写 README、docs、examples 后
+- 提交文档类变更前
+- 批量生成 Markdown 产物后
+
 ## 维护原则
 
 - 脚本只负责同步或校验，不隐式改写源文件内容

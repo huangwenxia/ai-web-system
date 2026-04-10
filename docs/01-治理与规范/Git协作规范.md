@@ -108,7 +108,7 @@ git status
 如果本次改了 Markdown 文档，建议执行：
 
 ```powershell
-rg -n "E:\\work\\ai-web-system" . -g "*.md"
+node scripts/check-absolute-paths.mjs .
 ```
 
 同时参考：`docs/01-治理与规范/文档链接与路径规范.md`
@@ -127,6 +127,7 @@ pnpm build
 ```powershell
 git status
 node scripts/verify-encoding.mjs .
+node scripts/check-absolute-paths.mjs .
 git add .
 git commit -m "docs: 补充 Git 协作规范"
 git push

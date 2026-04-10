@@ -10,18 +10,18 @@
 
 ## 先看什么
 第一次阅读建议按顺序看：
-1. [视觉语言总则.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\视觉语言总则.md)
-2. [间距系统.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\间距系统.md)
-3. [字体层级.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\字体层级.md)
-4. [颜色与Token.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\颜色与Token.md)
-5. [交互语义与状态完整性.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\交互语义与状态完整性.md)
+1. [视觉语言总则.md](./视觉语言总则.md)
+2. [间距系统.md](./间距系统.md)
+3. [字体层级.md](./字体层级.md)
+4. [颜色与Token.md](./颜色与Token.md)
+5. [交互语义与状态完整性.md](./交互语义与状态完整性.md)
 
 ## 关键文件
-- [信息组织与视觉节奏.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\信息组织与视觉节奏.md)
-- [文本截断与同行对齐.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\文本截断与同行对齐.md)
-- [卡片网格高度策略.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\卡片网格高度策略.md)
-- [多卡片等高实现模式.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\多卡片等高实现模式.md)
-- [样式实现质量.md](E:\\work\\ai-web-system\\standards\\01-视觉标准\样式实现质量.md)
+- [信息组织与视觉节奏.md](./信息组织与视觉节奏.md)
+- [文本截断与同行对齐.md](./文本截断与同行对齐.md)
+- [卡片网格高度策略.md](./卡片网格高度策略.md)
+- [多卡片等高实现模式.md](./多卡片等高实现模式.md)
+- [样式实现质量.md](./样式实现质量.md)
 
 ## 什么时候看这一层
 - 审查页面好不好看

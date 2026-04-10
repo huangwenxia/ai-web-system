@@ -11,18 +11,18 @@
 
 ## 先看什么
 第一次阅读建议按顺序看：
-1. [页面信息层次规范.md](E:\\work\\ai-web-system\\standards\\02-布局标准\页面信息层次规范.md)
-2. [展示形式选择.md](E:\\work\\ai-web-system\\standards\\02-布局标准\展示形式选择.md)
-3. [页面类型模板.md](E:\\work\\ai-web-system\\standards\\02-布局标准\页面类型模板.md)
+1. [页面信息层次规范.md](./页面信息层次规范.md)
+2. [展示形式选择.md](./展示形式选择.md)
+3. [页面类型模板.md](./页面类型模板.md)
 
 ## 关键文件
-- [页面组合与复用规则.md](E:\\work\\ai-web-system\\standards\\02-布局标准\页面组合与复用规则.md)
-- [按数据特性统一展示方式.md](E:\\work\\ai-web-system\\standards\\02-布局标准\按数据特性统一展示方式.md)
-- [业务约束推断.md](E:\\work\\ai-web-system\\standards\\02-布局标准\业务约束推断.md)
-- [数据填充原则.md](E:\\work\\ai-web-system\\standards\\02-布局标准\数据填充原则.md)
-- [列表页模式.yaml](E:\\work\\ai-web-system\\standards\\02-布局标准\列表页模式.yaml)
-- [详情页模式.yaml](E:\\work\\ai-web-system\\standards\\02-布局标准\详情页模式.yaml)
-- [表单页模式.yaml](E:\\work\\ai-web-system\\standards\\02-布局标准\表单页模式.yaml)
+- [页面组合与复用规则.md](./页面组合与复用规则.md)
+- [按数据特性统一展示方式.md](./按数据特性统一展示方式.md)
+- [业务约束推断.md](./业务约束推断.md)
+- [数据填充原则.md](./数据填充原则.md)
+- [列表页模式.yaml](./列表页模式.yaml)
+- [详情页模式.yaml](./详情页模式.yaml)
+- [表单页模式.yaml](./表单页模式.yaml)
 
 ## 什么时候看这一层
 - 从需求或接口推页面结构
