@@ -1,0 +1,21 @@
+---
+description: Markdown documentation and path portability rules
+globs:
+  - "**/*.md"
+alwaysApply: false
+---
+
+修改 Markdown 文档时，遵守以下规则：
+- 仓库内链接一律优先使用相对路径。
+- 禁止写本机绝对路径作为仓库正文链接。
+- 命令示例优先写成 clone 后在仓库根目录可直接执行的形式。
+- 正文描述也尽量避免写机器专属路径，优先使用仓库内相对目录表达。
+- 文档应描述“仓库结构”和“工作方式”，不是“某台电脑上的目录事实”。
+
+修改文档后建议检查：
+- `node scripts/verify-encoding.mjs .`
+- `node scripts/check-absolute-paths.mjs .`
+
+参考：
+@docs/01-治理与规范/文档链接与路径规范.md
+@docs/01-治理与规范/Git协作规范.md

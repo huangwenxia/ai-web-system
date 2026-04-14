@@ -22,6 +22,11 @@
 - Rule 偏环境
 - Command 偏触发
 
+## 当前定位补充
+- `commands/*.md` 是 slash command 入口的适配层和维护源之一。
+- 这不等于所有目标工具都已经原生加载这些命令。
+- 如果某个工具还没有稳定识别本地命令目录，`commands/` 仍然可以作为统一入口协议继续维护。
+
 ## 当前主入口
 - `prototype.md`
 - `page-design.md`

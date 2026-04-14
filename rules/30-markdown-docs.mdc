@@ -17,5 +17,5 @@ alwaysApply: false
 - `node scripts/check-absolute-paths.mjs .`
 
 参考：
-@docs/文档链接与路径规范.md
-@docs/Git协作规范.md
+@docs/01-治理与规范/文档链接与路径规范.md
+@docs/01-治理与规范/Git协作规范.md

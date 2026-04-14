@@ -16,6 +16,11 @@
 - Rule 偏环境和默认行为
 - Skill 偏任务步骤和执行协议
 
+## 当前定位补充
+- `skills/*/SKILL.md` 是跨智能体复用的执行协议层。
+- 这不等于所有目标工具都会原生把它们识别成内建 Skill。
+- 如果目标工具暂不支持本地 Skill 自动加载，仍应保留 `skills/` 作为协议源，再由 `commands/` 或工具适配层投影出去。
+
 ## 推荐维护顺序
 1. 先维护 `standards` 和 `.cursor/rules`。
 2. 再维护 `commands`。
