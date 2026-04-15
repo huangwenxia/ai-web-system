@@ -7,6 +7,25 @@
 - 不在 Skill 中重复定义标准正文。
 - `commands` 负责入口，`skills` 负责协议，两者要有明确边界。
 
+## 推荐目录结构
+当前仓库中的 skill 建议统一按以下结构维护：
+
+```text
+skill-name/
+  SKILL.md
+  docs/
+  templates/
+  scripts/
+```
+
+说明：
+- `SKILL.md`：主协议文件，负责触发条件、执行协议、输出要求、handoff、guardrails
+- `docs/`：只放补充性的检查清单、细则说明、边界说明
+- `templates/`：只放输出模板、配置模板、最小样板
+- `scripts/`：仅在该 skill 确实需要可执行辅助脚本时才新增
+
+不要把所有内容都堆进 `SKILL.md`，也不要为了凑结构创建空目录。
+
 ## 与 Cursor Rule 的关系
 在 Cursor 中：
 - `.cursor/rules` 更适合承接环境级默认约束、目录级自动附加规则和项目级行为
@@ -37,3 +56,8 @@
 - `translate-terms-skill`
 - `ui-visual-review-skill`
 - `ux-analysis-skill`
+
+## 当前结构要求
+- 高复杂度 skill 默认应补 `docs/` 和 `templates/`
+- `docs/` 与 `templates/` 的内容必须在 `SKILL.md` 中被引用，否则不要新增
+- 技能协议优先复用 `docs/原始准则来源/` 中可验证、可抽象的内容，但不要把项目特例直接当通用规则搬入主正文

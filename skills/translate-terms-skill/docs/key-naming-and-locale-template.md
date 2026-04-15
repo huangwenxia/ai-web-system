@@ -1,0 +1,55 @@
+# Key 命名与 Locale 更新模板
+
+本文件补充 `translate-terms-skill` 中关于 key 命名、locale 层级确认和双语同步的规则。
+
+## key 命名原则
+手动新增 key 时，优先使用语义化 snake_case，并保持见名知义。
+
+常见命名模式：
+- 页面标题：`_page_title`
+- 页面副标题：`_page_subtitle`
+- 步骤标题：`_step_xxx`
+- 步骤说明：`_step_xxx_desc`
+- 按钮：`_btn_xxx`
+- 字段标签：`_field_name`
+- 占位符：`_field_name_placeholder`
+- 成功提示：`_xxx_success`
+- 错误提示：`_error_xxx`
+- 通用消息：`_msg_xxx`
+
+## 禁止事项
+- 不要新增 `_ap0001`、`_tmp01` 这类无语义 key
+- 不要只凭文件路径猜测 key 层级
+- 不要只补 zh-cn，不补 en
+
+## locale 层级确认
+根据输入路径推断 locale 目录可以作为起点，但不能直接当结果。
+
+标准动作：
+1. 先根据文件路径定位可能的 locale 文件
+2. 打开 locale 文件核实对象嵌套层级
+3. 确认真实 key 前缀后再写入 Vue 和 locale
+
+## 双语同步模板
+新增 key 时，zh-cn 和 en 应同步更新。
+
+可参考：
+
+```ts
+guide: {
+  _page_title: "接入管理 · 快速开始",
+  _btn_configure: "去配置",
+  _error_load_failed: "数据加载失败",
+}
+```
+
+```ts
+guide: {
+  _page_title: "Quick Start for Access Management",
+  _btn_configure: "Configure",
+  _error_load_failed: "Failed to load data",
+}
+```
+
+## 响应式提醒
+如果翻译文案位于动态步骤、卡片列表或配置项中，优先放在 `computed` 或等价响应式上下文中，避免语言切换后文案不更新。

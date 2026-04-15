@@ -28,6 +28,8 @@ description: "把页面结构与信息层次转化为稳定的页面布局、视
 - `standards/01-视觉标准`
 - `standards/02-布局标准`
 - 必要时读取 `standards/04-组件标准`
+- 布局与节奏检查清单：`docs/layout-and-rhythm-checklist.md`
+- 输出模板：`templates/page-design-output-template.md`
 
 ## 工作流
 1. 先明确页面主任务、使用场景和页面类型：列表页 / 详情页 / 配置页 / 工作台 / 弹窗。

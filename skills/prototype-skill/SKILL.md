@@ -29,6 +29,8 @@ description: "从需求、接口和业务描述中推导页面骨架、信息架
 - `standards/02-布局标准`
 - `standards/03-数据映射标准`
 - 必要时读取 `standards/01-视觉标准`
+- 骨架检查清单：`docs/structure-checklist.md`
+- 输出模板：`templates/prototype-output-template.md`
 
 ## 工作流
 1. 先明确目标用户、业务目标、页面主任务和成功标准。

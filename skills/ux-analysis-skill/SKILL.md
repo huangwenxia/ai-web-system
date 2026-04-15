@@ -29,6 +29,8 @@ description: "分析页面或流程中的 UX 问题，包括信息层级、操�
 - `standards/02-布局标准`
 - 必要时读取 `standards/01-视觉标准`
 - 必要时读取 `standards/04-组件标准`
+- 路径与反馈检查清单：`docs/path-and-feedback-checklist.md`
+- 输出模板：`templates/ux-analysis-output-template.md`
 
 ## 工作流
 1. 先明确目标用户、使用场景、主任务和成功标准。
