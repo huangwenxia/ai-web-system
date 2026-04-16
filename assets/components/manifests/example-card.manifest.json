@@ -1,47 +1,37 @@
 {
-    "name": "example-card",
-    "type": "component",
-    "status": "candidate",
-    "maturityLevel": "L1",
-    "source": {
-        "task": "示例组件治理演示",
-        "createdFrom": "frontend-implementer",
-        "createdAt": "2026-04-08",
-        "notes": "用于演示 manifest、兼容性校验与晋级流程"
-    },
-    "projectCompatibility": {
-        "projects": [
-            "project-mamba"
-        ],
-        "dependencies": [
-            "vue",
-            "element-plus"
-        ],
-        "forbiddenDependencies": [],
-        "packageConstraints": [
-            "必须兼容 project-mamba现有依赖生态"
-        ]
-    },
-    "sync": {
-        "allowed": false,
-        "targetProject": "project-mamba",
-        "targetPath": "",
-        "lastSyncedAt": "",
-        "syncStrategy": "manual-review"
-    },
-    "review": {
-        "reusability": "medium",
-        "apiStability": "medium",
-        "visualQuality": "medium",
-        "boundaryCompleteness": "low",
-        "summary": "示例组件，待进一步补边界后再晋升"
-    },
-    "writeback": {
-        "docs": [
-            "docs/知识库目录分层与Manifest设计.md"
-        ],
-        "standards": [],
-        "examples": [],
-        "agents": []
+  "name": "example-card",
+  "type": "component",
+  "status": "candidate",
+  "version": "1.0.0",
+  "source": {
+    "task": "示例组件治理演示",
+    "createdFrom": "frontend-implementer",
+    "createdAt": "2026-04-08"
+  },
+  "compatibility": {
+    "projects": ["project-mamba"],
+    "dependencies": ["vue", "element-plus"],
+    "forbidden": []
+  },
+  "sync": {
+    "allowed": false,
+    "targetProject": "project-mamba",
+    "targetPath": "",
+    "lastSyncedAt": ""
+  },
+  "review": {
+    "reusability": "medium",
+    "apiStability": "medium",
+    "visualQuality": "medium",
+    "boundaryCompleteness": "low",
+    "notes": "示例组件，待进一步补边界后再晋升"
+  },
+  "tags": ["card", "example"],
+  "promotionHistory": [
+    {
+      "from": "draft",
+      "to": "candidate",
+      "promotedAt": "2026-04-08T10:00:00.000Z"
     }
+  ]
 }

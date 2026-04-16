@@ -1,15 +1,45 @@
-# page manifests
+# pages/manifests
 
-这里存页面资产的 manifest 文件。
+页面 Manifest 存放处。
 
-页面 manifest适用于：
-- 页面草稿
-- 页面模板
-- 可复用页面范式
+## 模板文件
 
-建议记录：
-- 页面类型（列表 / 表单 /详情 / 仪表板 / 混合页）
-- 当前状态与成熟度
-- 来源任务与来源 Skill
-- 是否允许同步到真实项目
-- 页面复用价值与待确认项
+- `page.manifest.template.json` - 页面 Manifest 模板
+
+## 使用方法
+
+```bash
+# 创建新页面的 Manifest
+node scripts/asset-tools/create-manifest.mjs --type=page --name=Dashboard
+
+# 校验所有 Manifest
+node scripts/asset-tools/verify-manifests.mjs --dir=pages/manifests
+```
+
+## 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| `name` | 页面名称 |
+| `type` | 固定为 `page` |
+| `status` | `draft` → `candidate` → `official` → `synced` |
+| `version` | 版本号 |
+| `source` | 来源信息 |
+| `compatibility` | 兼容性信息 |
+| `sync` | 同步控制 |
+| `review` | 评审结论 |
+| `tags` | 标签 |
+| `promotionHistory` | 晋升历史（自动记录） |
+
+## 状态流转
+
+```
+draft → candidate → official → synced
+```
+
+| 状态 | 说明 |
+|------|------|
+| `draft` | 刚生成，尚未进入评审 |
+| `candidate` | 具备初步复用价值，等待成熟度评审 |
+| `official` | 已成为知识库正式资产 |
+| `synced` | 已同步进入真实项目 |

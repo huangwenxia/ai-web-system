@@ -24,6 +24,13 @@
 2. 再同步到 `.cursor/rules/`
 3. 只在 `.cursor/README.md` 中补充 Cursor 特有说明
 
+**同步脚本**：
+修改 `rules/` 后，运行同步脚本更新 `.cursor/rules/`：
+
+```powershell
+node scripts/sync-rules-to-cursor.mjs
+```
+
 ## 分层建议
 当前建议按两层理解：
 

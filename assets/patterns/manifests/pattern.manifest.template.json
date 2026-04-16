@@ -1,8 +1,9 @@
 {
   "name": "",
-  "type": "page",
+  "type": "pattern",
   "status": "draft",
   "version": "1.0.0",
+  "category": "visual",
   "source": {
     "task": "",
     "createdFrom": "",
@@ -21,8 +22,7 @@
   },
   "review": {
     "reusability": "",
-    "structureQuality": "",
-    "completeness": "",
+    "quality": "",
     "notes": ""
   },
   "tags": [],
