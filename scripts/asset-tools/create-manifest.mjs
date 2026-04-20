@@ -16,6 +16,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'url';
 import { getAssetsRoot, parseArgs, writeJson, logger } from './utils.mjs';
+import { createEmptyRuntimeProfile } from './runtime-profile.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,7 @@ const TEMPLATES = {
       createdFrom: '',
       createdAt: new Date().toISOString().split('T')[0],
     },
+    runtimeProfile: createEmptyRuntimeProfile(),
     compatibility: {
       projects: [],
       dependencies: [],
@@ -61,6 +63,7 @@ const TEMPLATES = {
       createdFrom: '',
       createdAt: new Date().toISOString().split('T')[0],
     },
+    runtimeProfile: createEmptyRuntimeProfile(),
     compatibility: {
       projects: [],
       dependencies: [],
@@ -91,6 +94,7 @@ const TEMPLATES = {
       createdFrom: '',
       createdAt: new Date().toISOString().split('T')[0],
     },
+    runtimeProfile: createEmptyRuntimeProfile(),
     compatibility: {
       projects: [],
       dependencies: [],

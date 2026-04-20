@@ -1,25 +1,91 @@
-<template>
- <main class="min-h-screen bg-slate-50 px-6 py-8">
- <section class="mx-auto flex max-w-6xl flex-col gap-6">
- <header class="flex flex-col gap-2">
- <h1 class="text-2xl font-bold text-slate-900">算力概览页面草稿</h1>
- <p class="text-sm text-slate-500">用于演示候选页面如何先在知识库中沉淀，再映射到 hashrate 做集成预览。</p>
- </header>
+<script setup lang="ts">
+import ExampleCard from '../../components/candidates/example-card.vue'
 
- <section class="grid gap-4 md:grid-cols-3">
- <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
- <div class="text-sm text-slate-500">在线矿机</div>
- <div class="mt-2 text-2xl font-bold text-slate-900">1,284</div>
- </article>
- <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
- <div class="text-sm text-slate-500">总算力</div>
- <div class="mt-2 text-2xl font-bold text-slate-900">128.5 TH/s</div>
- </article>
- <article class="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
- <div class="text-sm text-slate-500">昨日收益</div>
- <div class="mt-2 text-2xl font-bold text-slate-900">0.532 BTC</div>
- </article>
- </section>
- </section>
+const metricCards = [
+ {
+  title: '在线矿机',
+  value: '1,284',
+  description: '当前在线设备已完成健康筛查',
+ },
+ {
+  title: '总算力',
+  value: '128.5 TH/s',
+  description: '核心指标优先复用沉淀卡片组件呈现',
+ },
+ {
+  title: '昨日收益',
+  value: '0.532 BTC',
+  description: '当页面进入真实项目时直接替换为业务数据即可',
+ },
+]
+</script>
+
+<template>
+ <main class="overview-draft">
+  <section class="overview-draft__shell">
+   <header class="overview-draft__header">
+    <h1 class="overview-draft__title">算力概览页面草稿</h1>
+    <p class="overview-draft__description">
+     这个草稿页不再直接平铺指标卡 HTML，而是先复用已沉淀的 `example-card`，验证页面作为组件装配层是否成立。
+    </p>
+   </header>
+
+   <section class="overview-draft__metrics">
+    <ExampleCard
+     v-for="item in metricCards"
+     :key="item.title"
+     :title="item.title"
+     :value="item.value"
+     :description="item.description"
+    />
+   </section>
+  </section>
  </main>
 </template>
+
+<style scoped>
+.overview-draft {
+ min-height: 100%;
+ padding: 12px;
+}
+
+.overview-draft__shell {
+ display: flex;
+ flex-direction: column;
+ gap: 24px;
+}
+
+.overview-draft__header {
+ display: flex;
+ flex-direction: column;
+ gap: 8px;
+}
+
+.overview-draft__title {
+ margin: 0;
+ font-size: 28px;
+ line-height: 1.1;
+ font-weight: 800;
+ color: #0f172a;
+}
+
+.overview-draft__description {
+ margin: 0;
+ max-width: 720px;
+ font-size: 14px;
+ line-height: 1.6;
+ color: #64748b;
+}
+
+.overview-draft__metrics {
+ display: grid;
+ grid-template-columns: repeat(3, minmax(0, 1fr));
+ gap: 16px;
+}
+
+@media (max-width: 720px) {
+ .overview-draft__metrics {
+  grid-template-columns: 1fr;
+ }
+}
+</style>

@@ -8,6 +8,14 @@
     "createdFrom": "",
     "createdAt": "2026-04-16"
   },
+  "runtimeProfile": {
+    "sourceProject": null,
+    "tailwindSources": [],
+    "publicRoots": [],
+    "baseScss": null,
+    "iconfont": null,
+    "sharedPackages": []
+  },
   "compatibility": {
     "projects": [],
     "dependencies": [],
@@ -23,6 +31,17 @@
     "reusability": "",
     "structureQuality": "",
     "completeness": "",
+    "notes": ""
+  },
+  "implementation": {
+    "strategy": "native-fallback",
+    "realComponentRefs": false,
+    "fallbackHtmlBlocks": [],
+    "notes": ""
+  },
+  "composition": {
+    "composedOf": [],
+    "missingCapabilities": [],
     "notes": ""
   },
   "tags": [],

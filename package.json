@@ -8,6 +8,10 @@
     "dev": "pnpm --filter ai-front-workbench dev",
     "build": "pnpm --filter ai-front-workbench build",
     "check": "pnpm --filter ai-front-workbench check",
+    "scan-project-mamba-views": "node scripts/asset-tools/scan-project-mamba-views.mjs",
+    "extract-view-candidate": "node scripts/asset-tools/extract-view-candidate.mjs",
+    "build-workbench-registry": "node scripts/asset-tools/build-workbench-registry.mjs",
+    "prepare-workbench-data": "node scripts/asset-tools/scan-project-mamba-views.mjs --projects=hashrate,wanmore && node scripts/asset-tools/build-workbench-registry.mjs",
     "verify-encoding": "node scripts/verify-encoding.mjs .",
     "check-paths": "node scripts/check-absolute-paths.mjs .",
     "sync-rules": "node scripts/sync-rules-to-cursor.mjs"

@@ -1,0 +1,3522 @@
+{
+  "generatedAt": "2026-04-20T02:14:33.263Z",
+  "sourceRoot": "E:/work/project-mamba/apps",
+  "totalProjects": 9,
+  "totalVueFiles": 2211,
+  "likelyCandidates": 1458,
+  "projects": [
+    {
+      "name": "cbdp",
+      "totalVueFiles": 496,
+      "likelyCandidates": 311,
+      "sourceTypes": {
+        "page-shell": 173,
+        "page-block-component": 231,
+        "shared-view-component": 91,
+        "not-eligible": 1
+      }
+    },
+    {
+      "name": "common",
+      "totalVueFiles": 118,
+      "likelyCandidates": 87,
+      "sourceTypes": {
+        "page-shell": 18,
+        "page-block-component": 20,
+        "shared-view-component": 78,
+        "not-eligible": 2
+      }
+    },
+    {
+      "name": "financial",
+      "totalVueFiles": 3,
+      "likelyCandidates": 0,
+      "sourceTypes": {
+        "page-shell": 2,
+        "page-block-component": 0,
+        "shared-view-component": 0,
+        "not-eligible": 1
+      }
+    },
+    {
+      "name": "general",
+      "totalVueFiles": 106,
+      "likelyCandidates": 55,
+      "sourceTypes": {
+        "page-shell": 45,
+        "page-block-component": 32,
+        "shared-view-component": 25,
+        "not-eligible": 4
+      }
+    },
+    {
+      "name": "gnosis",
+      "totalVueFiles": 458,
+      "likelyCandidates": 289,
+      "sourceTypes": {
+        "page-shell": 130,
+        "page-block-component": 281,
+        "shared-view-component": 46,
+        "not-eligible": 1
+      }
+    },
+    {
+      "name": "hashrate",
+      "totalVueFiles": 167,
+      "likelyCandidates": 100,
+      "sourceTypes": {
+        "page-shell": 54,
+        "page-block-component": 79,
+        "shared-view-component": 28,
+        "not-eligible": 6
+      }
+    },
+    {
+      "name": "metis",
+      "totalVueFiles": 204,
+      "likelyCandidates": 172,
+      "sourceTypes": {
+        "page-shell": 17,
+        "page-block-component": 50,
+        "shared-view-component": 136,
+        "not-eligible": 1
+      }
+    },
+    {
+      "name": "wanmore",
+      "totalVueFiles": 392,
+      "likelyCandidates": 259,
+      "sourceTypes": {
+        "page-shell": 114,
+        "page-block-component": 246,
+        "shared-view-component": 31,
+        "not-eligible": 1
+      }
+    },
+    {
+      "name": "zguan",
+      "totalVueFiles": 267,
+      "likelyCandidates": 185,
+      "sourceTypes": {
+        "page-shell": 66,
+        "page-block-component": 161,
+        "shared-view-component": 35,
+        "not-eligible": 5
+      }
+    }
+  ],
+  "sampleCandidates": [
+    {
+      "id": "zguan:src/components/Address/src/Address.vue",
+      "project": "zguan",
+      "relativePath": "src/components/Address/src/Address.vue",
+      "fileName": "Address.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/ApplyAuth/src/index.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/ApplyAuth/src/index.vue",
+      "fileName": "index.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 3,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/BackGroundImag/src/BackGroundColor.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/BackGroundImag/src/BackGroundColor.vue",
+      "fileName": "BackGroundColor.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 1,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/BackGroundImag/src/BackGroundImag.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/BackGroundImag/src/BackGroundImag.vue",
+      "fileName": "BackGroundImag.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 4,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/BillPage/src/BillPage.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/BillPage/src/BillPage.vue",
+      "fileName": "BillPage.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 3,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/BoxView/src/BoxView.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/BoxView/src/BoxView.vue",
+      "fileName": "BoxView.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/BrowserWarning/src/BrowserWarning.vue",
+      "project": "common",
+      "relativePath": "src/components/BrowserWarning/src/BrowserWarning.vue",
+      "fileName": "BrowserWarning.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/BtnMore/src/BtnMore.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/BtnMore/src/BtnMore.vue",
+      "fileName": "BtnMore.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/CardBox/src/CardBox.vue",
+      "project": "common",
+      "relativePath": "src/components/CardBox/src/CardBox.vue",
+      "fileName": "CardBox.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 6,
+      "localDependencyCount": 2,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "gnosis:src/components/CardBox/src/CardBox.vue",
+      "project": "gnosis",
+      "relativePath": "src/components/CardBox/src/CardBox.vue",
+      "fileName": "CardBox.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/CardBox/src/CardBox.vue",
+      "project": "zguan",
+      "relativePath": "src/components/CardBox/src/CardBox.vue",
+      "fileName": "CardBox.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/CardBox/src/CardBoxBody.vue",
+      "project": "common",
+      "relativePath": "src/components/CardBox/src/CardBoxBody.vue",
+      "fileName": "CardBoxBody.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/CardBox/src/CardBoxHead.vue",
+      "project": "common",
+      "relativePath": "src/components/CardBox/src/CardBoxHead.vue",
+      "fileName": "CardBoxHead.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/ChinaMap/src/ChinaMap.vue",
+      "project": "zguan",
+      "relativePath": "src/components/ChinaMap/src/ChinaMap.vue",
+      "fileName": "ChinaMap.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "general:src/components/CloudPlatform/src/CloudPlatform.vue",
+      "project": "general",
+      "relativePath": "src/components/CloudPlatform/src/CloudPlatform.vue",
+      "fileName": "CloudPlatform.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "hashrate:src/components/CloudPlatform/src/CloudPlatform.vue",
+      "project": "hashrate",
+      "relativePath": "src/components/CloudPlatform/src/CloudPlatform.vue",
+      "fileName": "CloudPlatform.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 4,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/ColorPicker/src/ColorPanel.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/ColorPicker/src/ColorPanel.vue",
+      "fileName": "ColorPanel.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/ColorPicker/src/ColorSelect.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/ColorPicker/src/ColorSelect.vue",
+      "fileName": "ColorSelect.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 3,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/ColorPicker/src/ColorSelect.vue",
+      "project": "common",
+      "relativePath": "src/components/ColorPicker/src/ColorSelect.vue",
+      "fileName": "ColorSelect.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/ColorPicker/src/ColorSketch.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/ColorPicker/src/ColorSketch.vue",
+      "fileName": "ColorSketch.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/ColorPicker/src/ColorSketch.vue",
+      "project": "common",
+      "relativePath": "src/components/ColorPicker/src/ColorSketch.vue",
+      "fileName": "ColorSketch.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 1,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/ContextMenu/src/ContextMenu.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/ContextMenu/src/ContextMenu.vue",
+      "fileName": "ContextMenu.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/ContextMenu/src/ContextMenu.vue",
+      "project": "common",
+      "relativePath": "src/components/ContextMenu/src/ContextMenu.vue",
+      "fileName": "ContextMenu.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 3,
+      "localDependencyCount": 2,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "cbdp:src/components/ContextMenu/src/ContextMenuItem.vue",
+      "project": "cbdp",
+      "relativePath": "src/components/ContextMenu/src/ContextMenuItem.vue",
+      "fileName": "ContextMenuItem.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/ContextMenu/src/ContextMenuItems.vue",
+      "project": "common",
+      "relativePath": "src/components/ContextMenu/src/ContextMenuItems.vue",
+      "fileName": "ContextMenuItems.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/Countup.vue",
+      "project": "zguan",
+      "relativePath": "src/components/Countup.vue",
+      "fileName": "Countup.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 1,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/CreateSteps/src/CreateSteps.vue",
+      "project": "common",
+      "relativePath": "src/components/CreateSteps/src/CreateSteps.vue",
+      "fileName": "CreateSteps.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/DashboardMap/src/DashboardMap.vue",
+      "project": "zguan",
+      "relativePath": "src/components/DashboardMap/src/DashboardMap.vue",
+      "fileName": "DashboardMap.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 2,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/DashboardMap/src/MapLayout.vue",
+      "project": "zguan",
+      "relativePath": "src/components/DashboardMap/src/MapLayout.vue",
+      "fileName": "MapLayout.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 1,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/DashboardMap/src/MapMarker.vue",
+      "project": "zguan",
+      "relativePath": "src/components/DashboardMap/src/MapMarker.vue",
+      "fileName": "MapMarker.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 1,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "general:src/components/DeployLog/src/DeployLog.vue",
+      "project": "general",
+      "relativePath": "src/components/DeployLog/src/DeployLog.vue",
+      "fileName": "DeployLog.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 8,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/DropDownMenuButtonList/src/DropDownMenuButtonList.vue",
+      "project": "common",
+      "relativePath": "src/components/DropDownMenuButtonList/src/DropDownMenuButtonList.vue",
+      "fileName": "DropDownMenuButtonList.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/EditContainer/src/CreateSteps.vue",
+      "project": "common",
+      "relativePath": "src/components/EditContainer/src/CreateSteps.vue",
+      "fileName": "CreateSteps.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 3,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/EditContainer/src/EditContainer.vue",
+      "project": "common",
+      "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+      "fileName": "EditContainer.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 4,
+      "localDependencyCount": 3,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "general:src/components/EditContainer/src/EditContainer.vue",
+      "project": "general",
+      "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+      "fileName": "EditContainer.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 4,
+      "localDependencyCount": 2,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/EditContainer/src/EditContainer.vue",
+      "project": "zguan",
+      "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+      "fileName": "EditContainer.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 4,
+      "localDependencyCount": 2,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/EditContainer/src/EditItem.vue",
+      "project": "common",
+      "relativePath": "src/components/EditContainer/src/EditItem.vue",
+      "fileName": "EditItem.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "general:src/components/EditContainer/src/EditItem.vue",
+      "project": "general",
+      "relativePath": "src/components/EditContainer/src/EditItem.vue",
+      "fileName": "EditItem.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "zguan:src/components/EditContainer/src/EditItem.vue",
+      "project": "zguan",
+      "relativePath": "src/components/EditContainer/src/EditItem.vue",
+      "fileName": "EditItem.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 0,
+      "localDependencyCount": 0,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    },
+    {
+      "id": "common:src/components/EsChart/src/EsChart.vue",
+      "project": "common",
+      "relativePath": "src/components/EsChart/src/EsChart.vue",
+      "fileName": "EsChart.vue",
+      "sourceType": "shared-view-component",
+      "importCount": 2,
+      "localDependencyCount": 1,
+      "usesRouter": false,
+      "usesStore": false,
+      "usesRequest": false,
+      "usesI18n": false,
+      "usesPermission": false,
+      "candidateScore": 5
+    }
+  ],
+  "duplicateComponentFamilyCount": 111,
+  "duplicateComponentFamilies": [
+    {
+      "familyName": "CardBox",
+      "normalizedName": "cardbox",
+      "score": 284,
+      "projectCount": 5,
+      "projects": [
+        "cbdp",
+        "common",
+        "general",
+        "gnosis",
+        "zguan"
+      ],
+      "entryCount": 8,
+      "sharedViewCount": 3,
+      "pageBlockCount": 5,
+      "averageCandidateScore": 4.4,
+      "averageImportCount": 0.8,
+      "averageLocalDependencyCount": 0.3,
+      "cleanEntryCount": 8,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 5
+      },
+      "representativeEntryId": "common:src/components/CardBox/src/CardBox.vue",
+      "representativePath": "common: src/components/CardBox/src/CardBox.vue",
+      "sampleEntries": [
+        {
+          "id": "gnosis:src/components/CardBox/src/CardBox.vue",
+          "project": "gnosis",
+          "relativePath": "src/components/CardBox/src/CardBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/CardBox/src/CardBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/CardBox/src/CardBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/CardBox/src/CardBox.vue",
+          "project": "common",
+          "relativePath": "src/components/CardBox/src/CardBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 6,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "general:src/views/index/bill/overview/components/CardBox.vue",
+          "project": "general",
+          "relativePath": "src/views/index/bill/overview/components/CardBox.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 5 projects: cbdp, common, general, gnosis, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "UserAvatar",
+      "normalizedName": "useravatar",
+      "score": 231,
+      "projectCount": 4,
+      "projects": [
+        "common",
+        "general",
+        "hashrate",
+        "wanmore"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 4,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 0.8,
+      "cleanEntryCount": 4,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 4,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/UserAvatar/src/UserAvatar.vue",
+      "representativePath": "common: src/components/UserAvatar/src/UserAvatar.vue",
+      "sampleEntries": [
+        {
+          "id": "wanmore:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "common",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "general",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "hashrate",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 4 projects: common, general, hashrate, wanmore",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "4 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "HeaderBox",
+      "normalizedName": "headerbox",
+      "score": 222,
+      "projectCount": 5,
+      "projects": [
+        "common",
+        "general",
+        "gnosis",
+        "hashrate",
+        "zguan"
+      ],
+      "entryCount": 7,
+      "sharedViewCount": 4,
+      "pageBlockCount": 3,
+      "averageCandidateScore": 3.4,
+      "averageImportCount": 4.7,
+      "averageLocalDependencyCount": 0.4,
+      "cleanEntryCount": 1,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 5,
+        "store": 0,
+        "request": 0,
+        "i18n": 2,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 4,
+        "page-block-component": 3
+      },
+      "representativeEntryId": "common:src/components/HeaderBox/src/HeaderBox.vue",
+      "representativePath": "common: src/components/HeaderBox/src/HeaderBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "common",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 4,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "general:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "general",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "hashrate:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "hashrate",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "zguan:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 5 projects: common, general, gnosis, hashrate, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "4 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: router x5, i18n x2",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "FileUpload",
+      "normalizedName": "fileupload",
+      "score": 216,
+      "projectCount": 4,
+      "projects": [
+        "common",
+        "general",
+        "metis",
+        "wanmore"
+      ],
+      "entryCount": 5,
+      "sharedViewCount": 5,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 4.2,
+      "averageImportCount": 5.2,
+      "averageLocalDependencyCount": 1.2,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 1,
+        "i18n": 1,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 5,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/FileUpload/src/index.vue",
+      "representativePath": "common: src/components/FileUpload/src/index.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/components/FileUpload/src/FileUpload.vue",
+          "project": "general",
+          "relativePath": "src/components/FileUpload/src/FileUpload.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/components/FileUpload/src/IndexView.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/FileUpload/src/IndexView.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/FileUpload/src/FileUpload.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/FileUpload/src/FileUpload.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 5,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/components/FileUpload/src/components/FileUpload.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/FileUpload/src/components/FileUpload.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 8,
+          "localDependencyCount": 1,
+          "adapters": [
+            "i18n"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 4 projects: common, general, metis, wanmore",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "5 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: request x1, i18n x1",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "AsideSubMenus",
+      "normalizedName": "asidesubmenus",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "hashrate"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 2,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/layout/components/AsideSubMenus.vue",
+      "representativePath": "common: src/layout/components/AsideSubMenus.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/layout/components/AsideSubMenus.vue",
+          "project": "common",
+          "relativePath": "src/layout/components/AsideSubMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "general:src/layout/components/AsideSubMenus.vue",
+          "project": "general",
+          "relativePath": "src/layout/components/AsideSubMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/layout/components/AsideSubMenus.vue",
+          "project": "hashrate",
+          "relativePath": "src/layout/components/AsideSubMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 2,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, hashrate",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependencies average 2, so split carefully."
+      ]
+    },
+    {
+      "familyName": "ColorSelect",
+      "normalizedName": "colorselect",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "common",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2.7,
+      "averageLocalDependencyCount": 1.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ColorPicker/src/ColorSelect.vue",
+      "representativePath": "common: src/components/ColorPicker/src/ColorSelect.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/ColorPicker/src/ColorSelect.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/ColorPicker/src/ColorSelect.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/ColorPicker/src/ColorSelect.vue",
+          "project": "common",
+          "relativePath": "src/components/ColorPicker/src/ColorSelect.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSelect.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSelect.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 2,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, common, metis",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "ColorSketch",
+      "normalizedName": "colorsketch",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "common",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 0.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ColorPicker/src/ColorSketch.vue",
+      "representativePath": "common: src/components/ColorPicker/src/ColorSketch.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/ColorPicker/src/ColorSketch.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/ColorPicker/src/ColorSketch.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/ColorPicker/src/ColorSketch.vue",
+          "project": "common",
+          "relativePath": "src/components/ColorPicker/src/ColorSketch.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSketch.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSketch.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 1,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, common, metis",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "ContextMenu",
+      "normalizedName": "contextmenu",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "common",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2.3,
+      "averageLocalDependencyCount": 1.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ContextMenu/src/ContextMenu.vue",
+      "representativePath": "common: src/components/ContextMenu/src/ContextMenu.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/ContextMenu/src/ContextMenu.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/ContextMenu/src/ContextMenu.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/ContextMenu/src/ContextMenu.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/ContextMenu/src/ContextMenu.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/ContextMenu/src/ContextMenu.vue",
+          "project": "common",
+          "relativePath": "src/components/ContextMenu/src/ContextMenu.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 2,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, common, metis",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "EditItem",
+      "normalizedName": "edititem",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 0,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/EditContainer/src/EditItem.vue",
+      "representativePath": "common: src/components/EditContainer/src/EditItem.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/EditContainer/src/EditItem.vue",
+          "project": "common",
+          "relativePath": "src/components/EditContainer/src/EditItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/EditContainer/src/EditItem.vue",
+          "project": "general",
+          "relativePath": "src/components/EditContainer/src/EditItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/EditContainer/src/EditItem.vue",
+          "project": "zguan",
+          "relativePath": "src/components/EditContainer/src/EditItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "MainBox",
+      "normalizedName": "mainbox",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 0,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/MainBox/src/MainBox.vue",
+      "representativePath": "common: src/components/MainBox/src/MainBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/MainBox/src/MainBox.vue",
+          "project": "common",
+          "relativePath": "src/components/MainBox/src/MainBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/MainBox/src/MainBox.vue",
+          "project": "general",
+          "relativePath": "src/components/MainBox/src/MainBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/MainBox/src/MainBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/MainBox/src/MainBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "ScrollBox",
+      "normalizedName": "scrollbox",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 1.3,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ScrollBox/src/ScrollBox.vue",
+      "representativePath": "common: src/components/ScrollBox/src/ScrollBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/ScrollBox/src/ScrollBox.vue",
+          "project": "common",
+          "relativePath": "src/components/ScrollBox/src/ScrollBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/ScrollBox/src/ScrollBox.vue",
+          "project": "general",
+          "relativePath": "src/components/ScrollBox/src/ScrollBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/ScrollBox/src/ScrollBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/ScrollBox/src/ScrollBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "EditContainer",
+      "normalizedName": "editcontainer",
+      "score": 190,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 4,
+      "averageLocalDependencyCount": 2.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/EditContainer/src/EditContainer.vue",
+      "representativePath": "common: src/components/EditContainer/src/EditContainer.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/components/EditContainer/src/EditContainer.vue",
+          "project": "general",
+          "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/EditContainer/src/EditContainer.vue",
+          "project": "zguan",
+          "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/EditContainer/src/EditContainer.vue",
+          "project": "common",
+          "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 3,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependencies average 2.3, so split carefully."
+      ]
+    },
+    {
+      "familyName": "OverflowTag",
+      "normalizedName": "overflowtag",
+      "score": 183,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "hashrate",
+        "wanmore"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 1,
+      "pageBlockCount": 3,
+      "averageCandidateScore": 4.3,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 4,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 1,
+        "page-block-component": 3
+      },
+      "representativeEntryId": "common:src/components/OverflowTag/src/OverflowTag.vue",
+      "representativePath": "common: src/components/OverflowTag/src/OverflowTag.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/OverflowTag/src/OverflowTag.vue",
+          "project": "common",
+          "relativePath": "src/components/OverflowTag/src/OverflowTag.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/views/components/OverflowTag.vue",
+          "project": "hashrate",
+          "relativePath": "src/views/components/OverflowTag.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/views/manager/index/repository/model/components/OverflowTag.vue",
+          "project": "wanmore",
+          "relativePath": "src/views/manager/index/repository/model/components/OverflowTag.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/views/user/index/app-dev/my-apps/components/OverflowTag.vue",
+          "project": "wanmore",
+          "relativePath": "src/views/user/index/app-dev/my-apps/components/OverflowTag.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, hashrate, wanmore",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "1 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "Countup",
+      "normalizedName": "countup",
+      "score": 169,
+      "projectCount": 3,
+      "projects": [
+        "gnosis",
+        "hashrate",
+        "zguan"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 1,
+      "pageBlockCount": 3,
+      "averageCandidateScore": 4.3,
+      "averageImportCount": 1.5,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 4,
+      "inCommon": false,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 1,
+        "page-block-component": 3
+      },
+      "representativeEntryId": "zguan:src/components/Countup.vue",
+      "representativePath": "zguan: src/components/Countup.vue",
+      "sampleEntries": [
+        {
+          "id": "zguan:src/components/Countup.vue",
+          "project": "zguan",
+          "relativePath": "src/components/Countup.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "gnosis:src/views/index/monitoring/calls/overview/components/Countup.vue",
+          "project": "gnosis",
+          "relativePath": "src/views/index/monitoring/calls/overview/components/Countup.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/views/index/overview/components/common/Countup.vue",
+          "project": "zguan",
+          "relativePath": "src/views/index/overview/components/common/Countup.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/views/index/user/model/deployment/detail/[id]/monitor/components/Countup.vue",
+          "project": "hashrate",
+          "relativePath": "src/views/index/user/model/deployment/detail/[id]/monitor/components/Countup.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Split the reusable visual unit out of page-level blocks, then wrap it as a shared component.",
+      "reasons": [
+        "Repeated in 3 projects: gnosis, hashrate, zguan",
+        "1 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "WebView",
+      "normalizedName": "webview",
+      "score": 163,
+      "projectCount": 4,
+      "projects": [
+        "common",
+        "general",
+        "gnosis",
+        "zguan"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 0,
+      "pageBlockCount": 4,
+      "averageCandidateScore": 4,
+      "averageImportCount": 1,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 4,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 0,
+        "page-block-component": 4
+      },
+      "representativeEntryId": "common:src/views/components/WebView.vue",
+      "representativePath": "common: src/views/components/WebView.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/views/components/WebView.vue",
+          "project": "common",
+          "relativePath": "src/views/components/WebView.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/views/components/WebView.vue",
+          "project": "general",
+          "relativePath": "src/views/components/WebView.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "gnosis:src/views/components/WebView.vue",
+          "project": "gnosis",
+          "relativePath": "src/views/components/WebView.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/views/components/WebView.vue",
+          "project": "zguan",
+          "relativePath": "src/views/components/WebView.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 4 projects: common, general, gnosis, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "Only page-block implementations were found, so this should follow after first-tier shared components.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "AsideSubMenuItem",
+      "normalizedName": "asidesubmenuitem",
+      "score": 155,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "hashrate"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 4,
+      "averageImportCount": 4.7,
+      "averageLocalDependencyCount": 1.3,
+      "cleanEntryCount": 0,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 3,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/layout/components/AsideSubMenuItem.vue",
+      "representativePath": "common: src/layout/components/AsideSubMenuItem.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/layout/components/AsideSubMenuItem.vue",
+          "project": "common",
+          "relativePath": "src/layout/components/AsideSubMenuItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "general:src/layout/components/AsideSubMenuItem.vue",
+          "project": "general",
+          "relativePath": "src/layout/components/AsideSubMenuItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 5,
+          "localDependencyCount": 2,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "hashrate:src/layout/components/AsideSubMenuItem.vue",
+          "project": "hashrate",
+          "relativePath": "src/layout/components/AsideSubMenuItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 6,
+          "localDependencyCount": 2,
+          "adapters": [
+            "router"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, hashrate",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: router x3",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "AsideTabMenus",
+      "normalizedName": "asidetabmenus",
+      "score": 155,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "hashrate"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 4,
+      "averageImportCount": 3,
+      "averageLocalDependencyCount": 1.7,
+      "cleanEntryCount": 0,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 3,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/layout/components/AsideTabMenus.vue",
+      "representativePath": "common: src/layout/components/AsideTabMenus.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/layout/components/AsideTabMenus.vue",
+          "project": "common",
+          "relativePath": "src/layout/components/AsideTabMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 1,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "general:src/layout/components/AsideTabMenus.vue",
+          "project": "general",
+          "relativePath": "src/layout/components/AsideTabMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 2,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "hashrate:src/layout/components/AsideTabMenus.vue",
+          "project": "hashrate",
+          "relativePath": "src/layout/components/AsideTabMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 2,
+          "adapters": [
+            "router"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, hashrate",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: router x3",
+        "Local dependencies average 1.7, so split carefully."
+      ]
+    },
+    {
+      "familyName": "EditHeaderBox",
+      "normalizedName": "editheaderbox",
+      "score": 153,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 3.7,
+      "averageImportCount": 4,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 0,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 3,
+        "store": 0,
+        "request": 0,
+        "i18n": 1,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/EditContainer/src/EditHeaderBox.vue",
+      "representativePath": "common: src/components/EditContainer/src/EditHeaderBox.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/components/EditContainer/src/EditHeaderBox.vue",
+          "project": "general",
+          "relativePath": "src/components/EditContainer/src/EditHeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "zguan:src/components/EditContainer/src/EditHeaderBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/EditContainer/src/EditHeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 4,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "common:src/components/EditContainer/src/EditHeaderBox.vue",
+          "project": "common",
+          "relativePath": "src/components/EditContainer/src/EditHeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 3,
+          "importCount": 5,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router",
+            "i18n"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: router x3, i18n x1",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "FontSize",
+      "normalizedName": "fontsize",
+      "score": 153,
+      "projectCount": 2,
+      "projects": [
+        "cbdp",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 1,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": false,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "cbdp:src/components/StyleSetting/src/comps/FontSize.vue",
+      "representativePath": "cbdp: src/components/StyleSetting/src/comps/FontSize.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/StyleSetting/src/comps/FontSize.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/StyleSetting/src/comps/FontSize.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/SettingBox/components/FontSize.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/SettingBox/components/FontSize.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/StyleSetting/src/comps/FontSize.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/StyleSetting/src/comps/FontSize.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Extract this as a reusable visual component before assembling more pages around it.",
+      "reasons": [
+        "Repeated in 2 projects: cbdp, metis",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "ItemColor",
+      "normalizedName": "itemcolor",
+      "score": 153,
+      "projectCount": 2,
+      "projects": [
+        "cbdp",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 0,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": false,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "cbdp:src/components/StyleSetting/src/components/ItemColor.vue",
+      "representativePath": "cbdp: src/components/StyleSetting/src/components/ItemColor.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/StyleSetting/src/components/ItemColor.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/StyleSetting/src/components/ItemColor.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/SettingBox/FocusTextSetting/components/ItemColor.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/SettingBox/FocusTextSetting/components/ItemColor.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/SettingBox/TextSetting/components/ItemColor.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/SettingBox/TextSetting/components/ItemColor.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Extract this as a reusable visual component before assembling more pages around it.",
+      "reasons": [
+        "Repeated in 2 projects: cbdp, metis",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "FormConfig",
+      "normalizedName": "formconfig",
+      "score": 151,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "general",
+        "gnosis"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 1,
+      "pageBlockCount": 3,
+      "averageCandidateScore": 3.5,
+      "averageImportCount": 2.3,
+      "averageLocalDependencyCount": 1.5,
+      "cleanEntryCount": 2,
+      "inCommon": false,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 2,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 1,
+        "page-block-component": 3
+      },
+      "representativeEntryId": "cbdp:src/components/FormConfig/index.vue",
+      "representativePath": "cbdp: src/components/FormConfig/index.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/views/index/resource/components/FormConfig.vue",
+          "project": "general",
+          "relativePath": "src/views/index/resource/components/FormConfig.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "cbdp:src/components/FormConfig/index.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/FormConfig/index.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 5,
+          "localDependencyCount": 5,
+          "adapters": []
+        },
+        {
+          "id": "gnosis:src/views/index/model/create/components/FormConfig.vue",
+          "project": "gnosis",
+          "relativePath": "src/views/index/model/create/components/FormConfig.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 3,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": [
+            "i18n"
+          ]
+        },
+        {
+          "id": "gnosis:src/views/index/settings/provider/components/FormConfig.vue",
+          "project": "gnosis",
+          "relativePath": "src/views/index/settings/provider/components/FormConfig.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 3,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": [
+            "i18n"
+          ]
+        }
+      ],
+      "recommendation": "Split the reusable visual unit out of page-level blocks, then wrap it as a shared component.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, general, gnosis",
+        "1 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: i18n x2",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "ListLoadingBox",
+      "normalizedName": "listloadingbox",
+      "score": 149,
+      "projectCount": 2,
+      "projects": [
+        "common",
+        "wanmore"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 1,
+      "pageBlockCount": 2,
+      "averageCandidateScore": 4.3,
+      "averageImportCount": 0,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 1,
+        "page-block-component": 2
+      },
+      "representativeEntryId": "common:src/components/ListCardBox/src/ListLoadingBox.vue",
+      "representativePath": "common: src/components/ListCardBox/src/ListLoadingBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/ListCardBox/src/ListLoadingBox.vue",
+          "project": "common",
+          "relativePath": "src/components/ListCardBox/src/ListLoadingBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/views/manager/index/repository/creation/components/ListLoadingBox.vue",
+          "project": "wanmore",
+          "relativePath": "src/views/manager/index/repository/creation/components/ListLoadingBox.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/views/user/index/expand-service/image-service/custom/components/ListLoadingBox.vue",
+          "project": "wanmore",
+          "relativePath": "src/views/user/index/expand-service/image-service/custom/components/ListLoadingBox.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Start from the common implementation and align other project variants against it.",
+      "reasons": [
+        "Repeated in 2 projects: common, wanmore",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "1 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "FormTags",
+      "normalizedName": "formtags",
+      "score": 145,
+      "projectCount": 3,
+      "projects": [
+        "gnosis",
+        "hashrate",
+        "wanmore"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 1,
+      "pageBlockCount": 3,
+      "averageCandidateScore": 3.5,
+      "averageImportCount": 6,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 1,
+      "inCommon": false,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 3,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 1,
+        "page-block-component": 3
+      },
+      "representativeEntryId": "wanmore:src/components/TagsManage/src/FormTags.vue",
+      "representativePath": "wanmore: src/components/TagsManage/src/FormTags.vue",
+      "sampleEntries": [
+        {
+          "id": "wanmore:src/components/TagsManage/src/FormTags.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/TagsManage/src/FormTags.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 5,
+          "localDependencyCount": 0,
+          "adapters": [
+            "i18n"
+          ]
+        },
+        {
+          "id": "gnosis:src/views/index/model/create/components/FormTags.vue",
+          "project": "gnosis",
+          "relativePath": "src/views/index/model/create/components/FormTags.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/views/index/op/model/model/create/components/FormTags.vue",
+          "project": "hashrate",
+          "relativePath": "src/views/index/op/model/model/create/components/FormTags.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 3,
+          "importCount": 8,
+          "localDependencyCount": 0,
+          "adapters": [
+            "i18n"
+          ]
+        },
+        {
+          "id": "wanmore:src/views/user/index/app-dev/my-apps/create/components/FormTags.vue",
+          "project": "wanmore",
+          "relativePath": "src/views/user/index/app-dev/my-apps/create/components/FormTags.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 3,
+          "importCount": 8,
+          "localDependencyCount": 0,
+          "adapters": [
+            "i18n"
+          ]
+        }
+      ],
+      "recommendation": "Split the reusable visual unit out of page-level blocks, then wrap it as a shared component.",
+      "reasons": [
+        "Repeated in 3 projects: gnosis, hashrate, wanmore",
+        "1 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: i18n x3",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "familyName": "LeftBar",
+      "normalizedName": "leftbar",
+      "score": 143,
+      "projectCount": 4,
+      "projects": [
+        "common",
+        "general",
+        "gnosis",
+        "hashrate"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 0,
+      "pageBlockCount": 4,
+      "averageCandidateScore": 3,
+      "averageImportCount": 5.5,
+      "averageLocalDependencyCount": 1,
+      "cleanEntryCount": 1,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 1,
+        "store": 0,
+        "request": 0,
+        "i18n": 3,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 0,
+        "page-block-component": 4
+      },
+      "representativeEntryId": "common:src/views/index/dict/components/LeftBar.vue",
+      "representativePath": "common: src/views/index/dict/components/LeftBar.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/views/index/access/region/components/LeftBar.vue",
+          "project": "general",
+          "relativePath": "src/views/index/access/region/components/LeftBar.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/views/index/op/access/region/components/LeftBar.vue",
+          "project": "hashrate",
+          "relativePath": "src/views/index/op/access/region/components/LeftBar.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 3,
+          "importCount": 6,
+          "localDependencyCount": 0,
+          "adapters": [
+            "i18n"
+          ]
+        },
+        {
+          "id": "common:src/views/index/dict/components/LeftBar.vue",
+          "project": "common",
+          "relativePath": "src/views/index/dict/components/LeftBar.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 3,
+          "importCount": 5,
+          "localDependencyCount": 1,
+          "adapters": [
+            "i18n"
+          ]
+        },
+        {
+          "id": "gnosis:src/views/index/settings/provider/components/LeftBar.vue",
+          "project": "gnosis",
+          "relativePath": "src/views/index/settings/provider/components/LeftBar.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 2,
+          "importCount": 8,
+          "localDependencyCount": 3,
+          "adapters": [
+            "router",
+            "i18n"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 4 projects: common, general, gnosis, hashrate",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "Only page-block implementations were found, so this should follow after first-tier shared components.",
+        "Coupling to clean during extraction: router x1, i18n x3",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    }
+  ],
+  "priorityBacklog": [
+    {
+      "rank": 1,
+      "familyName": "CardBox",
+      "normalizedName": "cardbox",
+      "score": 284,
+      "projectCount": 5,
+      "projects": [
+        "cbdp",
+        "common",
+        "general",
+        "gnosis",
+        "zguan"
+      ],
+      "entryCount": 8,
+      "sharedViewCount": 3,
+      "pageBlockCount": 5,
+      "averageCandidateScore": 4.4,
+      "averageImportCount": 0.8,
+      "averageLocalDependencyCount": 0.3,
+      "cleanEntryCount": 8,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 5
+      },
+      "representativeEntryId": "common:src/components/CardBox/src/CardBox.vue",
+      "representativePath": "common: src/components/CardBox/src/CardBox.vue",
+      "sampleEntries": [
+        {
+          "id": "gnosis:src/components/CardBox/src/CardBox.vue",
+          "project": "gnosis",
+          "relativePath": "src/components/CardBox/src/CardBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/CardBox/src/CardBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/CardBox/src/CardBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/CardBox/src/CardBox.vue",
+          "project": "common",
+          "relativePath": "src/components/CardBox/src/CardBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 6,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "general:src/views/index/bill/overview/components/CardBox.vue",
+          "project": "general",
+          "relativePath": "src/views/index/bill/overview/components/CardBox.vue",
+          "sourceType": "page-block-component",
+          "candidateScore": 4,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 5 projects: cbdp, common, general, gnosis, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 2,
+      "familyName": "UserAvatar",
+      "normalizedName": "useravatar",
+      "score": 231,
+      "projectCount": 4,
+      "projects": [
+        "common",
+        "general",
+        "hashrate",
+        "wanmore"
+      ],
+      "entryCount": 4,
+      "sharedViewCount": 4,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 0.8,
+      "cleanEntryCount": 4,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 4,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/UserAvatar/src/UserAvatar.vue",
+      "representativePath": "common: src/components/UserAvatar/src/UserAvatar.vue",
+      "sampleEntries": [
+        {
+          "id": "wanmore:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "common",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "general",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/components/UserAvatar/src/UserAvatar.vue",
+          "project": "hashrate",
+          "relativePath": "src/components/UserAvatar/src/UserAvatar.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 4 projects: common, general, hashrate, wanmore",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "4 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 3,
+      "familyName": "HeaderBox",
+      "normalizedName": "headerbox",
+      "score": 222,
+      "projectCount": 5,
+      "projects": [
+        "common",
+        "general",
+        "gnosis",
+        "hashrate",
+        "zguan"
+      ],
+      "entryCount": 7,
+      "sharedViewCount": 4,
+      "pageBlockCount": 3,
+      "averageCandidateScore": 3.4,
+      "averageImportCount": 4.7,
+      "averageLocalDependencyCount": 0.4,
+      "cleanEntryCount": 1,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 5,
+        "store": 0,
+        "request": 0,
+        "i18n": 2,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 4,
+        "page-block-component": 3
+      },
+      "representativeEntryId": "common:src/components/HeaderBox/src/HeaderBox.vue",
+      "representativePath": "common: src/components/HeaderBox/src/HeaderBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "common",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 4,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "general:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "general",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "hashrate:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "hashrate",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        },
+        {
+          "id": "zguan:src/components/HeaderBox/src/HeaderBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/HeaderBox/src/HeaderBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 3,
+          "localDependencyCount": 0,
+          "adapters": [
+            "router"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 5 projects: common, general, gnosis, hashrate, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "4 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: router x5, i18n x2",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 4,
+      "familyName": "FileUpload",
+      "normalizedName": "fileupload",
+      "score": 216,
+      "projectCount": 4,
+      "projects": [
+        "common",
+        "general",
+        "metis",
+        "wanmore"
+      ],
+      "entryCount": 5,
+      "sharedViewCount": 5,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 4.2,
+      "averageImportCount": 5.2,
+      "averageLocalDependencyCount": 1.2,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 1,
+        "i18n": 1,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 5,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/FileUpload/src/index.vue",
+      "representativePath": "common: src/components/FileUpload/src/index.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/components/FileUpload/src/FileUpload.vue",
+          "project": "general",
+          "relativePath": "src/components/FileUpload/src/FileUpload.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/components/FileUpload/src/IndexView.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/FileUpload/src/IndexView.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/FileUpload/src/FileUpload.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/FileUpload/src/FileUpload.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 5,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "wanmore:src/components/FileUpload/src/components/FileUpload.vue",
+          "project": "wanmore",
+          "relativePath": "src/components/FileUpload/src/components/FileUpload.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 4,
+          "importCount": 8,
+          "localDependencyCount": 1,
+          "adapters": [
+            "i18n"
+          ]
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 4 projects: common, general, metis, wanmore",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "5 shared-view implementations reduce extraction risk.",
+        "Coupling to clean during extraction: request x1, i18n x1",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 5,
+      "familyName": "AsideSubMenus",
+      "normalizedName": "asidesubmenus",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "hashrate"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 2,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/layout/components/AsideSubMenus.vue",
+      "representativePath": "common: src/layout/components/AsideSubMenus.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/layout/components/AsideSubMenus.vue",
+          "project": "common",
+          "relativePath": "src/layout/components/AsideSubMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "general:src/layout/components/AsideSubMenus.vue",
+          "project": "general",
+          "relativePath": "src/layout/components/AsideSubMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "hashrate:src/layout/components/AsideSubMenus.vue",
+          "project": "hashrate",
+          "relativePath": "src/layout/components/AsideSubMenus.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 2,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, hashrate",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependencies average 2, so split carefully."
+      ]
+    },
+    {
+      "rank": 6,
+      "familyName": "ColorSelect",
+      "normalizedName": "colorselect",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "common",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2.7,
+      "averageLocalDependencyCount": 1.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ColorPicker/src/ColorSelect.vue",
+      "representativePath": "common: src/components/ColorPicker/src/ColorSelect.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/ColorPicker/src/ColorSelect.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/ColorPicker/src/ColorSelect.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/ColorPicker/src/ColorSelect.vue",
+          "project": "common",
+          "relativePath": "src/components/ColorPicker/src/ColorSelect.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSelect.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSelect.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 2,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, common, metis",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 7,
+      "familyName": "ColorSketch",
+      "normalizedName": "colorsketch",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "common",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2,
+      "averageLocalDependencyCount": 0.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ColorPicker/src/ColorSketch.vue",
+      "representativePath": "common: src/components/ColorPicker/src/ColorSketch.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/ColorPicker/src/ColorSketch.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/ColorPicker/src/ColorSketch.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/ColorPicker/src/ColorSketch.vue",
+          "project": "common",
+          "relativePath": "src/components/ColorPicker/src/ColorSketch.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSketch.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/ColorPicker/src/ColorSketch.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 1,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, common, metis",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 8,
+      "familyName": "ContextMenu",
+      "normalizedName": "contextmenu",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "cbdp",
+        "common",
+        "metis"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 2.3,
+      "averageLocalDependencyCount": 1.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ContextMenu/src/ContextMenu.vue",
+      "representativePath": "common: src/components/ContextMenu/src/ContextMenu.vue",
+      "sampleEntries": [
+        {
+          "id": "cbdp:src/components/ContextMenu/src/ContextMenu.vue",
+          "project": "cbdp",
+          "relativePath": "src/components/ContextMenu/src/ContextMenu.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "metis:src/components/WebsiteDesign/src/components/ContextMenu/src/ContextMenu.vue",
+          "project": "metis",
+          "relativePath": "src/components/WebsiteDesign/src/components/ContextMenu/src/ContextMenu.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 1,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/ContextMenu/src/ContextMenu.vue",
+          "project": "common",
+          "relativePath": "src/components/ContextMenu/src/ContextMenu.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 3,
+          "localDependencyCount": 2,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: cbdp, common, metis",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 9,
+      "familyName": "EditItem",
+      "normalizedName": "edititem",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 0,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/EditContainer/src/EditItem.vue",
+      "representativePath": "common: src/components/EditContainer/src/EditItem.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/EditContainer/src/EditItem.vue",
+          "project": "common",
+          "relativePath": "src/components/EditContainer/src/EditItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/EditContainer/src/EditItem.vue",
+          "project": "general",
+          "relativePath": "src/components/EditContainer/src/EditItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/EditContainer/src/EditItem.vue",
+          "project": "zguan",
+          "relativePath": "src/components/EditContainer/src/EditItem.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 10,
+      "familyName": "MainBox",
+      "normalizedName": "mainbox",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 0,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/MainBox/src/MainBox.vue",
+      "representativePath": "common: src/components/MainBox/src/MainBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/MainBox/src/MainBox.vue",
+          "project": "common",
+          "relativePath": "src/components/MainBox/src/MainBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/MainBox/src/MainBox.vue",
+          "project": "general",
+          "relativePath": "src/components/MainBox/src/MainBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/MainBox/src/MainBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/MainBox/src/MainBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 0,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 11,
+      "familyName": "ScrollBox",
+      "normalizedName": "scrollbox",
+      "score": 191,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 1.3,
+      "averageLocalDependencyCount": 0,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/ScrollBox/src/ScrollBox.vue",
+      "representativePath": "common: src/components/ScrollBox/src/ScrollBox.vue",
+      "sampleEntries": [
+        {
+          "id": "common:src/components/ScrollBox/src/ScrollBox.vue",
+          "project": "common",
+          "relativePath": "src/components/ScrollBox/src/ScrollBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 2,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "general:src/components/ScrollBox/src/ScrollBox.vue",
+          "project": "general",
+          "relativePath": "src/components/ScrollBox/src/ScrollBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/ScrollBox/src/ScrollBox.vue",
+          "project": "zguan",
+          "relativePath": "src/components/ScrollBox/src/ScrollBox.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 1,
+          "localDependencyCount": 0,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependency count is low enough for a relatively cheap first extraction."
+      ]
+    },
+    {
+      "rank": 12,
+      "familyName": "EditContainer",
+      "normalizedName": "editcontainer",
+      "score": 190,
+      "projectCount": 3,
+      "projects": [
+        "common",
+        "general",
+        "zguan"
+      ],
+      "entryCount": 3,
+      "sharedViewCount": 3,
+      "pageBlockCount": 0,
+      "averageCandidateScore": 5,
+      "averageImportCount": 4,
+      "averageLocalDependencyCount": 2.3,
+      "cleanEntryCount": 3,
+      "inCommon": true,
+      "adapterCounts": {
+        "router": 0,
+        "store": 0,
+        "request": 0,
+        "i18n": 0,
+        "permission": 0
+      },
+      "sourceTypes": {
+        "shared-view-component": 3,
+        "page-block-component": 0
+      },
+      "representativeEntryId": "common:src/components/EditContainer/src/EditContainer.vue",
+      "representativePath": "common: src/components/EditContainer/src/EditContainer.vue",
+      "sampleEntries": [
+        {
+          "id": "general:src/components/EditContainer/src/EditContainer.vue",
+          "project": "general",
+          "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "zguan:src/components/EditContainer/src/EditContainer.vue",
+          "project": "zguan",
+          "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 2,
+          "adapters": []
+        },
+        {
+          "id": "common:src/components/EditContainer/src/EditContainer.vue",
+          "project": "common",
+          "relativePath": "src/components/EditContainer/src/EditContainer.vue",
+          "sourceType": "shared-view-component",
+          "candidateScore": 5,
+          "importCount": 4,
+          "localDependencyCount": 3,
+          "adapters": []
+        }
+      ],
+      "recommendation": "Use the common version as the baseline and merge cross-project variants.",
+      "reasons": [
+        "Repeated in 3 projects: common, general, zguan",
+        "Already exists in common, which gives a better baseline for convergence.",
+        "3 shared-view implementations reduce extraction risk.",
+        "No router/store/request/permission coupling detected in the repeated implementations.",
+        "Local dependencies average 2.3, so split carefully."
+      ]
+    }
+  ],
+  "ignoredFamilies": []
+}

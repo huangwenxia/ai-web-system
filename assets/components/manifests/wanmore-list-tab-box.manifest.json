@@ -1,0 +1,89 @@
+{
+  "name": "wanmore-list-tab-box",
+  "type": "component",
+  "status": "raw-candidate",
+  "version": "1.0.0",
+  "source": {
+    "task": "Phase 1 wanmore shared component extraction",
+    "createdFrom": "extract-view-candidate",
+    "createdAt": "2026-04-17"
+  },
+  "runtimeProfile": {
+    "sourceProject": "wanmore",
+    "tailwindSources": [
+      "apps/common/src",
+      "packages/mamba-ui/src",
+      "packages/ui/dist",
+      "apps/wanmore/src"
+    ],
+    "publicRoots": [
+      "apps/common/public",
+      "apps/wanmore/public"
+    ],
+    "baseScss": "apps/hashrate/src/assets/scss/main.scss",
+    "iconfont": "apps/wanmore/public/static/fonts/iconfont.css",
+    "sharedPackages": [
+      "@common"
+    ]
+  },
+  "sourceAppPath": "apps/wanmore/src/components/ListTabBox/src/ListTabBox.vue",
+  "sourceKind": "shared-view-component",
+  "compatibility": {
+    "projects": [
+      "project-mamba",
+      "wanmore"
+    ],
+    "dependencies": [
+      "vue",
+      "@element-plus/icons-vue"
+    ],
+    "forbidden": []
+  },
+  "cleaning": {
+    "adapterRequired": [],
+    "mockRequired": false,
+    "removedCouplings": [],
+    "portabilityLevel": "high"
+  },
+  "sync": {
+    "allowed": false,
+    "targetProject": "project-mamba",
+    "targetPath": "",
+    "lastSyncedAt": ""
+  },
+  "review": {
+    "reusability": "high",
+    "apiStability": "low",
+    "visualQuality": "",
+    "boundaryCompleteness": "low",
+    "notes": "初始抽取产物，尚未完成解耦清洗与独立预览接入。"
+  },
+  "implementation": {
+    "notes": "真实抽取组件，保留 Element Plus 与 iconfont 引用，作为 project-mamba 兼容组件候选。"
+  },
+  "composition": {
+    "notes": "当前重点是清洗 API 与补边界，不是重写成静态 demo。"
+  },
+  "tags": [
+    "wanmore",
+    "component",
+    "shared-view-component",
+    "list-tab-box"
+  ],
+  "preview": {
+    "workbenchEntry": true,
+    "integrationPreview": false
+  },
+  "analysis": {
+    "sourceFile": "wanmore/src/components/ListTabBox/src/ListTabBox.vue",
+    "importCount": 1,
+    "localDependencyCount": 0,
+    "candidateScore": 5,
+    "usesRouter": false,
+    "usesStore": false,
+    "usesRequest": false,
+    "usesI18n": false,
+    "usesPermission": false
+  },
+  "promotionHistory": []
+}

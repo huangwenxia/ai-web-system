@@ -2,13 +2,13 @@
 /**
  * promote-asset.mjs
  *
- * 作用：晋升资产状态（draft -> candidate -> official -> synced）
+ * 作用：晋升资产状态（draft/raw-candidate -> cleaned-candidate -> official -> synced）
  *
  * 使用方法：
  *   node promote-asset.mjs --manifest=path/to/manifest.json --status=official
  *
  * 状态流转：
- *   draft -> candidate -> official -> synced
+ *   draft -> raw-candidate -> cleaned-candidate -> official -> integration-approved -> synced
  *
  * 终端支持：
  *   本地脚本，无需终端适配
@@ -22,15 +22,17 @@ import { resolvePath, parseArgs, logger } from './utils.mjs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 有效的状态列表
-const VALID_STATUSES = ['draft', 'candidate', 'official', 'synced'];
+const VALID_STATUSES = ['draft', 'raw-candidate', 'candidate', 'cleaned-candidate', 'official', 'integration-approved', 'synced'];
 
-// 状态流转规则
+// Legacy "candidate" remains supported for already-seeded assets.
 const STATUS_FLOW = {
-  draft: ['candidate'],
+  draft: ['raw-candidate', 'candidate'],
+  'raw-candidate': ['draft', 'cleaned-candidate'],
   candidate: ['draft', 'official'],
-  official: ['candidate', 'synced'],
-  synced: ['official'],
+  'cleaned-candidate': ['raw-candidate', 'official'],
+  official: ['cleaned-candidate', 'candidate', 'integration-approved'],
+  'integration-approved': ['official', 'synced'],
+  synced: ['integration-approved'],
 };
 
 async function main() {
@@ -39,7 +41,7 @@ async function main() {
   const newStatus = args.status;
 
   if (!manifestPath || !newStatus) {
-    logger.error('Usage: node promote-asset.mjs --manifest=path --status=draft|candidate|official|synced');
+    logger.error('Usage: node promote-asset.mjs --manifest=path --status=draft|raw-candidate|candidate|cleaned-candidate|official|integration-approved|synced');
     logger.info('Example: node promote-asset.mjs --manifest=example-card.manifest.json --status=official');
     console.log(`\nValid statuses: ${VALID_STATUSES.join(', ')}`);
     process.exit(1);

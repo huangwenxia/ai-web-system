@@ -16,6 +16,8 @@
 | `collect-writeback-items.mjs` | 汇总回写记录 |
 | `sync-candidate-to-hashrate-preview.mjs` | 同步到预览区（hashrate） |
 | `sync-page-draft-to-hashrate-preview.mjs` | 同步页面草稿到预览区 |
+| `scan-project-mamba-views.mjs` | 扫描 `project-mamba` 多项目 Vue 视图来源，生成 workbench 来源摘要 |
+| `build-workbench-registry.mjs` | 从 `assets` manifest 生成 workbench 可直接消费的本地 registry |
 
 ---
 
@@ -131,8 +133,53 @@ node collect-writeback-items.mjs --format=json
 
 ---
 
+## Phase 1 新增脚本
+
+### scan-project-mamba-views.mjs
+
+扫描 `project-mamba` 指定 app 下的 `*.vue` 文件，输出供 workbench 使用的来源摘要。
+
+```bash
+node scripts/asset-tools/scan-project-mamba-views.mjs
+
+node scripts/asset-tools/scan-project-mamba-views.mjs --projects=hashrate,wanmore
+```
+
+默认会扫描 `project-mamba/apps` 下的全部 app；只有在需要聚焦某几个项目时才显式传 `--projects=...`。
+
+默认输出：
+
+```text
+apps/ai-front-workbench/src/registry/generated/source-inventory.generated.json
+```
+
+### build-workbench-registry.mjs
+
+读取 `assets/components/manifests`、`assets/pages/manifests`、`assets/patterns/manifests`，生成 workbench 本地 registry。
+
+除 Manifest 显式元数据外，脚本还会自动分析资产源码，回填：
+
+- 页面 / 组件实际引用了哪些已沉淀资产
+- 是否存在真实组件引用
+- 哪些结构仍是原生 fallback 区块
+- 页面更像组件装配层还是原生 fallback 草稿
+
+```bash
+node scripts/asset-tools/build-workbench-registry.mjs
+```
+
+默认输出：
+
+```text
+apps/ai-front-workbench/src/registry/generated/asset-registry.generated.ts
+apps/ai-front-workbench/src/registry/generated/asset-registry.generated.json
+```
+
+---
+
 ## 维护原则
 
 - 脚本只负责同步或校验，不隐式改写源文件内容
 - 涉及文本写入时，优先明确指定 UTF-8
 - 使用 `utils.mjs` 提供的公共工具确保代码一致性
+- 可从源码自动推导的字段，优先由脚本分析产生；Manifest 更适合补充说明、缺失能力和评审结论

@@ -1,0 +1,272 @@
+import type { WorkbenchAssetEntry } from '../types'
+
+export const generatedAssetRegistry: WorkbenchAssetEntry[] = [
+  {
+    "id": "component:example-card",
+    "name": "example-card",
+    "type": "component",
+    "status": "candidate",
+    "version": "1.0.0",
+    "sourceCreatedAt": "2026-04-08",
+    "sourceCreatedFrom": "frontend-implementer",
+    "sourceTask": "示例组件治理演示",
+    "tags": [
+      "card",
+      "example"
+    ],
+    "compatibility": {
+      "projects": [
+        "project-mamba"
+      ],
+      "dependencies": [
+        "vue",
+        "element-plus"
+      ],
+      "forbidden": []
+    },
+    "runtimeProfile": {
+      "sourceProject": "hashrate",
+      "tailwindSources": [
+        "apps/common/src",
+        "packages/mamba-ui/src",
+        "packages/ui/dist",
+        "apps/hashrate/src"
+      ],
+      "publicRoots": [
+        "apps/common/public",
+        "apps/hashrate/public"
+      ],
+      "baseScss": "apps/hashrate/src/assets/scss/main.scss",
+      "iconfont": null,
+      "sharedPackages": []
+    },
+    "sync": {
+      "allowed": false,
+      "targetProject": "project-mamba",
+      "targetPath": null,
+      "lastSyncedAt": null
+    },
+    "review": {
+      "reusability": "medium",
+      "apiStability": "medium",
+      "visualQuality": "medium",
+      "boundaryCompleteness": "low",
+      "notes": "示例组件，待进一步补齐边界后再晋升。"
+    },
+    "implementation": {
+      "strategy": "native-fallback",
+      "realComponentRefs": false,
+      "fallbackHtmlBlocks": [
+        "card-shell",
+        "component-header"
+      ],
+      "notes": "组件本体直接作为页面装配单元，避免在页面里重复平铺统计卡结构。"
+    },
+    "composition": {
+      "composedOf": [],
+      "missingCapabilities": [],
+      "notes": "当前作为最小可复用视觉单元使用。"
+    },
+    "preview": {
+      "catalogRoute": "/assets/component/example-card",
+      "demoRoute": "/components/example-card",
+      "integrationHost": "hashrate",
+      "integrationRoute": "/__preview__/components/example-card"
+    },
+    "sourceTrace": {
+      "sourceProject": "hashrate",
+      "sourcePath": "assets/components/candidates/example-card.vue",
+      "sourceKind": "shared-view-component",
+      "extractedFromPage": null,
+      "contextType": null,
+      "portabilityLevel": "medium",
+      "adapterRequired": [],
+      "removedCouplings": [],
+      "mockRequired": false
+    }
+  },
+  {
+    "id": "component:wanmore-list-tab-box",
+    "name": "wanmore-list-tab-box",
+    "type": "component",
+    "status": "raw-candidate",
+    "version": "1.0.0",
+    "sourceCreatedAt": "2026-04-17",
+    "sourceCreatedFrom": "extract-view-candidate",
+    "sourceTask": "Phase 1 wanmore shared component extraction",
+    "tags": [
+      "wanmore",
+      "component",
+      "shared-view-component",
+      "list-tab-box"
+    ],
+    "compatibility": {
+      "projects": [
+        "project-mamba",
+        "wanmore"
+      ],
+      "dependencies": [
+        "vue",
+        "@element-plus/icons-vue"
+      ],
+      "forbidden": []
+    },
+    "runtimeProfile": {
+      "sourceProject": "wanmore",
+      "tailwindSources": [
+        "apps/common/src",
+        "packages/mamba-ui/src",
+        "packages/ui/dist",
+        "apps/wanmore/src"
+      ],
+      "publicRoots": [
+        "apps/common/public",
+        "apps/wanmore/public"
+      ],
+      "baseScss": "apps/hashrate/src/assets/scss/main.scss",
+      "iconfont": "apps/wanmore/public/static/fonts/iconfont.css",
+      "sharedPackages": [
+        "@common"
+      ]
+    },
+    "sync": {
+      "allowed": false,
+      "targetProject": "project-mamba",
+      "targetPath": null,
+      "lastSyncedAt": null
+    },
+    "review": {
+      "reusability": "high",
+      "apiStability": "low",
+      "visualQuality": "",
+      "boundaryCompleteness": "low",
+      "notes": "初始抽取产物，尚未完成解耦清洗与独立预览接入。"
+    },
+    "implementation": {
+      "strategy": "project-component",
+      "realComponentRefs": true,
+      "fallbackHtmlBlocks": [],
+      "notes": "真实抽取组件，保留 Element Plus 与 iconfont 引用，作为 project-mamba 兼容组件候选。"
+    },
+    "composition": {
+      "composedOf": [],
+      "missingCapabilities": [],
+      "notes": "当前重点是清洗 API 与补边界，不是重写成静态 demo。"
+    },
+    "preview": {
+      "catalogRoute": "/assets/component/wanmore-list-tab-box",
+      "demoRoute": "/components/wanmore-list-tab-box",
+      "integrationHost": null,
+      "integrationRoute": null
+    },
+    "sourceTrace": {
+      "sourceProject": "wanmore",
+      "sourcePath": "assets/components/candidates/wanmore-list-tab-box.vue",
+      "sourceKind": "shared-view-component",
+      "extractedFromPage": null,
+      "contextType": null,
+      "portabilityLevel": "high",
+      "adapterRequired": [],
+      "removedCouplings": [],
+      "mockRequired": false
+    }
+  },
+  {
+    "id": "page:example-overview-page",
+    "name": "example-overview-page",
+    "type": "page",
+    "status": "draft",
+    "version": "1.0.0",
+    "sourceCreatedAt": "2026-04-16",
+    "sourceCreatedFrom": "prototype",
+    "sourceTask": "页面草稿示例",
+    "tags": [
+      "overview",
+      "draft",
+      "hashrate"
+    ],
+    "compatibility": {
+      "projects": [
+        "project-mamba",
+        "hashrate"
+      ],
+      "dependencies": [
+        "vue"
+      ],
+      "forbidden": []
+    },
+    "runtimeProfile": {
+      "sourceProject": "hashrate",
+      "tailwindSources": [
+        "apps/common/src",
+        "packages/mamba-ui/src",
+        "packages/ui/dist",
+        "apps/hashrate/src"
+      ],
+      "publicRoots": [
+        "apps/common/public",
+        "apps/hashrate/public"
+      ],
+      "baseScss": "apps/hashrate/src/assets/scss/main.scss",
+      "iconfont": null,
+      "sharedPackages": []
+    },
+    "sync": {
+      "allowed": false,
+      "targetProject": "project-mamba",
+      "targetPath": "apps/hashrate/src/__preview__/pages/PreviewOverviewDraftPage.vue",
+      "lastSyncedAt": null
+    },
+    "review": {
+      "reusability": "medium",
+      "structureQuality": "medium",
+      "completeness": "low",
+      "notes": "页面草稿已可用于 workbench 预览，仍需补边界态与来源清洗信息。"
+    },
+    "implementation": {
+      "strategy": "mixed",
+      "realComponentRefs": true,
+      "fallbackHtmlBlocks": [
+        "page-shell",
+        "page-header",
+        "metrics-section"
+      ],
+      "notes": "页面已经开始引用沉淀组件，但整体仍处于组件装配过渡阶段。"
+    },
+    "composition": {
+      "composedOf": [
+        {
+          "assetId": "component:example-card",
+          "role": "example-card",
+          "required": true
+        }
+      ],
+      "missingCapabilities": [
+        "overview-page-hero",
+        "overview-toolbar"
+      ],
+      "notes": "指标区已交给沉淀组件，剩余原生区块应继续抽成可复用视觉单元。"
+    },
+    "preview": {
+      "catalogRoute": "/assets/page/example-overview-page",
+      "demoRoute": "/pages/example-overview",
+      "integrationHost": "hashrate",
+      "integrationRoute": "/__preview__/pages/overview-draft"
+    },
+    "sourceTrace": {
+      "sourceProject": "hashrate",
+      "sourcePath": "assets/pages/drafts/example-overview-page.vue",
+      "sourceKind": "page-shell",
+      "extractedFromPage": "apps/hashrate/src/views/index/user/model/deployment/index.vue",
+      "contextType": "overview-page",
+      "portabilityLevel": "medium",
+      "adapterRequired": [
+        "i18n"
+      ],
+      "removedCouplings": [
+        "request"
+      ],
+      "mockRequired": true
+    }
+  }
+]
