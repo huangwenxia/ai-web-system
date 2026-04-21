@@ -4,8 +4,8 @@
  *
  * 作用：同步 Commands 和 Skills 到各 AI 终端
  *
- * 终端支持检测（基于各终端最新官方文档）：
- * - Claude Code: ✅ Commands | ❌ Skills | ❌ Rules
+ *终端支持检测（基于各终端最新官方文档）：
+ * - Claude Code: ✅ Commands | ✅ Skills（Agent Skills） | ❌ Rules
  * - Codex: ❌ Commands | ✅ Skills | ❌ Rules
  * - Cursor: ✅ Commands | ✅ Skills | ✅ Rules
  * - Roo Code: ✅ Commands | ❌ Skills | ❌ Rules
@@ -27,23 +27,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = join(__dirname, '..');
 
-const userHome = process.env.HOME || process.env.USERPROFILE;
-
 // ============================================
-// 终端支持检测 - 基于各终端最新官方文档
+//终端支持检测 - 基于各终端最新官方文档
 // ============================================
 
 const TERMINAL_SUPPORT = {
-  // Claude Code - https://docs.anthropic.com/en/docs/claude-code
-  'claude-code': {
-    commands: true,
-    skills: false,    // Claude Code 不支持本地 skills
-    rules: false,
-    paths: {
-      commands: join(userHome, '.claude', 'commands'),
-      skills: null,
-      rules: null
-    },
+ // Claude Code - https://code.claude.com/docs/en/skills
+ 'claude-code': {
+ commands: true,
+ skills: true,
+ rules: false,
+ paths: {
+ commands: join(userHome, '.claude', 'commands'),
+ skills: join(userHome, '.claude', 'skills'),
+ rules: null
+ },
+ docs: 'https://code.claude.com/docs/en/skills'
+ },
     docs: 'https://docs.anthropic.com/en/docs/claude-code'
   },
 
@@ -110,7 +110,7 @@ const TERMINAL_SUPPORT = {
       rules: null
     },
     docs: 'https://github.com/cline/cline'
-  }
+ }
 };
 
 // ============================================

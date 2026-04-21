@@ -10,23 +10,24 @@
 
 ### 各终端格式要求
 
-| 终端 | Commands | Skills | Rules | 官方文档 |
-|------|----------|--------|-------|----------|
-| Claude Code | ✅ `.md` | ❌ | ❌ | [docs](https://docs.anthropic.com/en/docs/claude-code) |
-| Codex | ❌ | ✅ `.md` | ❌ | [docs](https://docs.codex.org) |
-| Cursor | ✅ `.md` | ✅ `.md` | ✅ `.mdc` | [docs](https://cursor.com/docs/rules) |
-| Roo Code | ✅ `.md` | ❌ | ❌ | [docs](https://roocode.com/docs) |
-| Trae-CN | ✅ `.md` | ✅ `.md` | ✅ `.mdc` | [docs](https://trae.ai) |
-| Cline | ✅ | ❌ | ❌ | [docs](https://github.com/cline/cline) |
+| 终端        | Commands | Skills        | Rules     | 官方文档                                       |
+| ----------- | -------- | ------------- | --------- | ---------------------------------------------- |
+| Claude Code | ✅ `.md` | ✅ `SKILL.md` | ❌        | [docs](https://code.claude.com/docs/en/skills) |
+| Codex       | ❌       | ✅ `.md`      | ❌        | [docs](https://docs.codex.org)                 |
+| Cursor      | ✅ `.md` | ✅ `.md`      | ✅ `.mdc` | [docs](https://cursor.com/docs/rules)          |
+| Roo Code    | ✅ `.md` | ❌            | ❌        | [docs](https://roocode.com/docs)               |
+| Trae-CN     | ✅ `.md` | ✅ `.md`      | ✅ `.mdc` | [docs](https://trae.ai)                        |
+| Cline       | ✅       | ❌            | ❌        | [docs](https://github.com/cline/cline)         |
 
 ### 同步策略
 
 ```
-commands/  --> ~/.claude/commands/   (Claude Code)
+commands/ --> ~/.claude/commands/ (Claude Code)
             --> ~/.cursor/commands/   (Cursor)
             --> ~/.roo/commands/     (Roo Code)
 
-skills/    --> ~/.codex/skills/     (Codex)
+skills/ --> ~/.claude/skills/ (Claude Code)
+ --> ~/.codex/skills/ (Codex)
             --> ~/.cursor/skills/     (Cursor)
 
 rules/     --> .cursor/rules/       (Cursor)
@@ -37,13 +38,13 @@ rules/     --> .cursor/rules/       (Cursor)
 
 ## 同步脚本
 
-| 脚本 | 同步内容 | 目标终端 |
-|------|----------|----------|
-| `sync-all.mjs` | Commands + Skills + Rules | 全部可用终端 |
-| `sync-commands-and-skills.mjs` | Commands + Skills | Claude Code, Codex, Cursor, Roo Code |
-| `sync-project-rules.mjs` | Rules (.mdc) | Cursor, Trae-CN |
-| `verify-encoding.mjs` | 编码检查 | - |
-| `check-absolute-paths.mjs` | 绝对路径检查 | - |
+| 脚本                           | 同步内容                  | 目标终端                             |
+| ------------------------------ | ------------------------- | ------------------------------------ |
+| `sync-all.mjs`                 | Commands + Skills + Rules | 全部可用终端                         |
+| `sync-commands-and-skills.mjs` | Commands + Skills         | Claude Code, Codex, Cursor, Roo Code |
+| `sync-project-rules.mjs`       | Rules (.mdc)              | Cursor, Trae-CN                      |
+| `verify-encoding.mjs`          | 编码检查                  | -                                    |
+| `check-absolute-paths.mjs`     | 绝对路径检查              | -                                    |
 
 ### 使用方法
 
@@ -74,14 +75,14 @@ node scripts/check-absolute-paths.mjs .
 
 **终端支持情况**：
 
-| 终端 | Commands | Skills | Rules |
-|------|----------|--------|-------|
-| Claude Code | ✅ | ❌ | ❌ |
-| Codex | ❌ | ✅ | ❌ |
-| Cursor | ✅ | ✅ | ✅ |
-| Roo Code | ✅ | ❌ | ❌ |
-| Trae-CN | ✅ | ✅ | ✅ |
-| Cline | ✅ | ❌ | ❌ |
+| 终端        | Commands | Skills | Rules |
+| ----------- | -------- | ------ | ----- |
+| Claude Code | ✅       | ✅     | ❌    |
+| Codex       | ❌       | ✅     | ❌    |
+| Cursor      | ✅       | ✅     | ✅    |
+| Roo Code    | ✅       | ❌     | ❌    |
+| Trae-CN     | ✅       | ✅     | ✅    |
+| Cline       | ✅       | ❌     | ❌    |
 
 ---
 
@@ -91,14 +92,14 @@ node scripts/check-absolute-paths.mjs .
 
 **终端支持情况**：
 
-| 终端 | Commands | Skills |
-|------|----------|--------|
-| Claude Code | ✅ | ❌ |
-| Codex | ❌ | ✅ |
-| Cursor | ✅ | ✅ |
-| Roo Code | ✅ | ❌ |
-| Trae-CN | ✅ | ✅ |
-| Cline | ✅ | ❌ |
+| 终端        | Commands | Skills |
+| ----------- | -------- | ------ |
+| Claude Code | ✅       | ✅     |
+| Codex       | ❌       | ✅     |
+| Cursor      | ✅       | ✅     |
+| Roo Code    | ✅       | ❌     |
+| Trae-CN     | ✅       | ✅     |
+| Cline       | ✅       | ❌     |
 
 ---
 
@@ -108,14 +109,14 @@ node scripts/check-absolute-paths.mjs .
 
 **终端支持情况**：
 
-| 终端 | Rules | 说明 |
-|------|-------|------|
-| Cursor | ✅ | https://cursor.com/docs/rules |
-| Trae-CN | ✅ | https://trae.ai (兼容 Cursor 格式) |
-| Claude Code | ❌ | 不支持 Project Rules |
-| Codex | ❌ | 不支持 Project Rules |
-| Roo Code | ❌ | 不支持 Project Rules |
-| Cline | ❌ | 不支持 Project Rules |
+| 终端        | Rules | 说明                               |
+| ----------- | ----- | ---------------------------------- |
+| Cursor      | ✅    | https://cursor.com/docs/rules      |
+| Trae-CN     | ✅    | https://trae.ai (兼容 Cursor 格式) |
+| Claude Code | ❌    | 不支持 Project Rules               |
+| Codex       | ❌    | 不支持 Project Rules               |
+| Roo Code    | ❌    | 不支持 Project Rules               |
+| Cline       | ❌    | 不支持 Project Rules               |
 
 ---
 
@@ -128,6 +129,7 @@ node scripts/verify-encoding.mjs .
 ```
 
 **检查内容**：
+
 - UTF-8 BOM
 - 已知乱码特征字符
 
@@ -140,10 +142,12 @@ node scripts/check-absolute-paths.mjs .
 ```
 
 **检查内容**：
+
 - `*.md`, `*.mdc` 文件
 - Windows 盘符绝对路径
 
 **默认忽略**：
+
 - `docs/原始准则来源/`
 - `docs/90-归档/`
 

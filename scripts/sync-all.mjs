@@ -26,7 +26,8 @@
  *              --> ~/.cursor/commands/   (Cursor)
  *              --> ~/.roo/commands/     (Roo Code)
  *
- *   skills/    --> ~/.codex/skills/     (Codex)
+ * skills/ --> ~/.claude/skills/ (Claude Code)
+ * --> ~/.codex/skills/ (Codex)
  *              --> ~/.cursor/skills/     (Cursor)
  *
  *   rules/     --> .cursor/rules/       (Cursor)
@@ -47,22 +48,22 @@ import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const ROOT = join(__dirname, '..');
-
-const userHome = process.env.HOME || process.env.USERPROFILE;
-
 // ============================================
-// 终端支持检测 - 基于各终端最新官方文档
+//终端支持检测 - 基于各终端最新官方文档
 // ============================================
 
 const TERMINAL_SUPPORT = {
-  // Claude Code - https://docs.anthropic.com/en/docs/claude-code
-  'claude-code': {
-    commands: true,
-    skills: false,   // Claude Code 不支持本地 skills
-    rules: false,     // Claude Code 不支持 .mdc rules
-    paths: {
-      commands: join(userHome, '.claude', 'commands'),
+ // Claude Code - https://code.claude.com/docs/en/skills
+ 'claude-code': {
+ commands: true,
+ skills: true,
+ rules: false, // Claude Code 不支持 .mdc rules
+ paths: {
+ commands: join(userHome, '.claude', 'commands'),
+ skills: join(userHome, '.claude', 'skills'),
+ rules: null
+ }
+ },
       skills: null,
       rules: null
     }
