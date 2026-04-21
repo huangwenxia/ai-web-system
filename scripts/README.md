@@ -1,169 +1,120 @@
 # Scripts
 
-这里存放用于自动化部署和同步的脚本。
+这里放的是仓库内的同步和校验脚本。
 
----
+## 官方文档要求
 
-## 终端适配核心规则
+- 修改终端支持矩阵前，必须先查对应终端的最新官方文档。
+- 修改 commands / skills / rules 的目标路径前，必须先查对应终端的最新官方文档。
+- 不要只凭历史脚本或本地目录习惯推断终端支持情况。
 
-**在通过脚本同步到不同终端之前，必须先查阅各终端的最新官方文档。**
+## 当前同步脚本
 
-### 各终端格式要求
+| Script | Default assets | Notes |
+| --- | --- | --- |
+| `sync-all.mjs` | `commands + skills + rules` | 全量同步入口，可再用参数缩小范围 |
+| `sync-commands-and-skills.mjs` | `commands + skills` | 适合同步 slash command 和 skill |
+| `sync-project-rules.mjs` | `rules` | 只同步项目规则 |
+| `sync-rules-to-cursor.mjs` | legacy | 旧脚本，保留兼容 |
 
-| 终端        | Commands | Skills        | Rules     | 官方文档                                       |
-| ----------- | -------- | ------------- | --------- | ---------------------------------------------- |
-| Claude Code | ✅ `.md` | ✅ `SKILL.md` | ❌        | [docs](https://code.claude.com/docs/en/skills) |
-| Codex       | ❌       | ✅ `.md`      | ❌        | [docs](https://docs.codex.org)                 |
-| Cursor      | ✅ `.md` | ✅ `.md`      | ✅ `.mdc` | [docs](https://cursor.com/docs/rules)          |
-| Roo Code    | ✅ `.md` | ❌            | ❌        | [docs](https://roocode.com/docs)               |
-| Trae-CN     | ✅ `.md` | ✅ `.md`      | ✅ `.mdc` | [docs](https://trae.ai)                        |
-| Cline       | ✅       | ❌            | ❌        | [docs](https://github.com/cline/cline)         |
+## 支持的终端与资产
 
-### 同步策略
+| Terminal | commands | skills | rules |
+| --- | --- | --- | --- |
+| `claude-code` | yes | yes | no |
+| `codex` | no | yes | no |
+| `cursor` | yes | yes | yes |
+| `roo-code` | yes | no | no |
+| `trae-cn` | yes | yes | yes |
+| `cline` | yes | no | no |
 
-```
-commands/ --> ~/.claude/commands/ (Claude Code)
-            --> ~/.cursor/commands/   (Cursor)
-            --> ~/.roo/commands/     (Roo Code)
+## 通用参数
 
-skills/ --> ~/.claude/skills/ (Claude Code)
- --> ~/.codex/skills/ (Codex)
-            --> ~/.cursor/skills/     (Cursor)
-
-rules/     --> .cursor/rules/       (Cursor)
-            --> .trae/rules/        (Trae-CN)
-```
-
----
-
-## 同步脚本
-
-| 脚本                           | 同步内容                  | 目标终端                             |
-| ------------------------------ | ------------------------- | ------------------------------------ |
-| `sync-all.mjs`                 | Commands + Skills + Rules | 全部可用终端                         |
-| `sync-commands-and-skills.mjs` | Commands + Skills         | Claude Code, Codex, Cursor, Roo Code |
-| `sync-project-rules.mjs`       | Rules (.mdc)              | Cursor, Trae-CN                      |
-| `verify-encoding.mjs`          | 编码检查                  | -                                    |
-| `check-absolute-paths.mjs`     | 绝对路径检查              | -                                    |
-
-### 使用方法
+所有新的同步脚本都支持同一组过滤参数：
 
 ```powershell
-# 统一同步（推荐）
-node scripts/sync-all.mjs
-
-# 单独同步 Commands 和 Skills
-node scripts/sync-commands-and-skills.mjs
-
-# 单独同步 Project Rules
-node scripts/sync-project-rules.mjs
-
-# 编码检查
-node scripts/verify-encoding.mjs .
-
-# 绝对路径检查
-node scripts/check-absolute-paths.mjs .
+--terminal=claude-code,cursor
+--asset=commands,skills
+--plugin=skill
+--name=frontend-implementer,agione-ui-skill
+--target-project=E:\work\project-mamba
+--dry-run
+--list
+--help
 ```
 
----
+说明：
 
-## 各脚本详细说明
+- `--terminal` 用来限制同步到哪些终端。
+- `--asset` 或 `--plugin` 用来限制同步哪类资产。
+- `commands` 也支持别名 `command`、`slash-command`、`slash-commands`。
+- `skills` 也支持别名 `skill`。
+- `rules` 也支持别名 `rule`、`project-rule`。
+- `--name` 可以限制具体条目。
+- `--target-project` 会把目标从用户目录切到指定项目根目录下的终端目录。
+- `--dry-run` 只打印计划，不写文件。
 
-### sync-all.mjs
+## 目标路径规则
 
-统一同步入口，一键同步所有资源到各终端。
+### 不传 `--target-project`
 
-**终端支持情况**：
+- `commands` / `skills` 默认同步到用户 home 下的终端目录。
+- `rules` 默认同步到当前仓库自己的项目目录。
 
-| 终端        | Commands | Skills | Rules |
-| ----------- | -------- | ------ | ----- |
-| Claude Code | ✅       | ✅     | ❌    |
-| Codex       | ❌       | ✅     | ❌    |
-| Cursor      | ✅       | ✅     | ✅    |
-| Roo Code    | ✅       | ❌     | ❌    |
-| Trae-CN     | ✅       | ✅     | ✅    |
-| Cline       | ✅       | ❌     | ❌    |
+示例：
 
----
+- Claude Code commands -> `~/.claude/commands`
+- Claude Code skills -> `~/.claude/skills`
+- Codex skills -> `~/.codex/skills`
+- Cursor rules -> `<repo>/.cursor/rules`
+- Trae rules -> `<repo>/.trae/rules`
 
-### sync-commands-and-skills.mjs
+### 传 `--target-project=E:\work\project-mamba`
 
-单独同步 Commands 和 Skills 到各终端。
+会同步到目标项目根目录下的终端目录，例如：
 
-**终端支持情况**：
+- Claude Code commands -> `E:\work\project-mamba\.claude\commands`
+- Claude Code skills -> `E:\work\project-mamba\.claude\skills`
+- Cursor commands -> `E:\work\project-mamba\.cursor\commands`
+- Cursor skills -> `E:\work\project-mamba\.cursor\skills`
+- Cursor rules -> `E:\work\project-mamba\.cursor\rules`
+- Trae rules -> `E:\work\project-mamba\.trae\rules`
 
-| 终端        | Commands | Skills |
-| ----------- | -------- | ------ |
-| Claude Code | ✅       | ✅     |
-| Codex       | ❌       | ✅     |
-| Cursor      | ✅       | ✅     |
-| Roo Code    | ✅       | ❌     |
-| Trae-CN     | ✅       | ✅     |
-| Cline       | ✅       | ❌     |
+## 常用示例
 
----
-
-### sync-project-rules.mjs
-
-同步 Project Rules (.mdc) 到支持该功能的终端。
-
-**终端支持情况**：
-
-| 终端        | Rules | 说明                               |
-| ----------- | ----- | ---------------------------------- |
-| Cursor      | ✅    | https://cursor.com/docs/rules      |
-| Trae-CN     | ✅    | https://trae.ai (兼容 Cursor 格式) |
-| Claude Code | ❌    | 不支持 Project Rules               |
-| Codex       | ❌    | 不支持 Project Rules               |
-| Roo Code    | ❌    | 不支持 Project Rules               |
-| Cline       | ❌    | 不支持 Project Rules               |
-
----
-
-### verify-encoding.mjs
-
-巡检仓库中的文本文件是否出现编码风险。
+### 只同步 Claude Code 的 skill 到 project-mamba
 
 ```powershell
-node scripts/verify-encoding.mjs .
+node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --target-project=E:\work\project-mamba
 ```
 
-**检查内容**：
-
-- UTF-8 BOM
-- 已知乱码特征字符
-
-### check-absolute-paths.mjs
-
-巡检 Markdown 文档中是否残留本机绝对路径。
+### 只同步 Claude Code 的 slash command 到 project-mamba
 
 ```powershell
-node scripts/check-absolute-paths.mjs .
+node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=slash-command --target-project=E:\work\project-mamba
 ```
 
-**检查内容**：
+### 只同步一个 skill 到 project-mamba
 
-- `*.md`, `*.mdc` 文件
-- Windows 盘符绝对路径
+```powershell
+node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --name=agione-ui-skill --target-project=E:\work\project-mamba
+```
 
-**默认忽略**：
+### 只同步 Cursor 和 Trae 的项目规则到 project-mamba
 
-- `docs/原始准则来源/`
-- `docs/90-归档/`
+```powershell
+node scripts/sync-project-rules.mjs --terminal=cursor,trae-cn --target-project=E:\work\project-mamba
+```
 
----
+### 先看计划，不实际写入
+
+```powershell
+node scripts/sync-all.mjs --terminal=claude-code --asset=skills --target-project=E:\work\project-mamba --dry-run
+```
 
 ## 维护原则
 
-- 脚本只负责同步或校验，不隐式改写源文件内容
-- 源文件始终在 ai-web-system 目录中维护
-- 不允许只改全局目录、不回写 ai-web-system
-- 涉及文本写入时，优先明确指定 UTF-8
-- 新增同步目标前，必须先查阅该终端的最新官方文档
-- 每个脚本开头都标注了终端支持情况
-
----
-
-## 相关文档
-
-- `docs/02-资产与同步/终端适配矩阵.md` - 各终端支持情况详细对比
+- 源文件只维护在 `commands/`、`skills/`、`rules/`。
+- 同步脚本只做复制和过滤，不反向改源。
+- 默认不会删除目标目录里未选中的旧文件。
+- 如果目标文件内容完全一致，会自动跳过。
