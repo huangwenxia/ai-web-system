@@ -36,7 +36,6 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ## 执行前先读
 - `standards/04-组件标准`
-- `standards/05-文档标准`
 - 必要时读取 `standards/01-视觉标准`
 - 实现检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
@@ -78,6 +77,13 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 模板是否只负责结构表达，复杂判断是否已转移到具名逻辑。
 - 是否完整覆盖 loading、empty、error、permission、disabled 状态。
 - 是否遵守项目既有目录、命名、样式 token 和组件复用方式。
+- 命名是否表达业务语义，公共逻辑是否应抽到 composable，同类展示是否已优先复用。
+
+## 回写与同步协议
+- 只有当本次修改形成稳定实现规律时，才进入回写。
+- 回写建议必须同时说明：目标标准目录、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
+- 任何标准回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、`docs/` 检查清单、`templates/` 输出模板、`handoff`、`guardrails`。
+- 如果只是单次项目特例，只修改当前交付，不回写标准，也不升级 skill。
 
 ## 代表性实例
 ### 实例 1：已有页面新增一个区块
@@ -99,7 +105,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 3. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
 4. 风险、边界说明与最小验证建议。
 5. 是否需要叠加审查流。
-6. 是否需要回写；如果需要，写到哪里。
+6. 如果要回写，明确目标目录、解决问题、适用边界、证据来源等级。
+7. 是否需要同步更新当前 skill；如果需要，指出要改的 `docs/`、`templates/`、`handoff` 或 `guardrails`。
 
 ## handoff
 - 如果发现页面结构尚未明确，转交 `prototype` 或 `schema-to-ui`。
@@ -107,10 +114,11 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ## writeback_targets
 只有在形成稳定规律时才考虑回写：
-- `standards/`：稳定实现规范
-- `docs/`：流程说明与治理结论
-- `examples/`：可模仿样板
-- `assets/`：可复用组件或页面产物
+- `standards/04-组件标准`：组件职责、状态归属、模板边界、表格列模式
+- `standards/01-视觉标准`：稳定视觉实现约束
+- `standards/02-布局标准`：稳定页面骨架实现约束
+- `standards/03-数据映射标准`：稳定字段展示实现约束
+- `skills/frontend-implementer-skill/`：检查清单、输出模板、handoff、guardrails 需要同步升级时
 - `.cursor/rules/`：环境级默认执行约束
 
 ## guardrails

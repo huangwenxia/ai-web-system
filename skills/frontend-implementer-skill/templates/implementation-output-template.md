@@ -29,5 +29,16 @@
 ## 是否需要后续审查
 - page-analysis / ui-visual-review / ux-analysis：
 
-## 是否需要后续审查或回写
+## 回写候选
+- 是否回写标准：
+- 目标目录：
+- 解决问题：
+- 适用场景：
+- 不适用场景 / 边界：
+- 证据来源等级：
+
+## Skill 同步升级
+- 是否需要更新当前 skill：
+- 需更新文件：
+- 需更新内容：执行前先读 / docs / templates / handoff / guardrails
 ```

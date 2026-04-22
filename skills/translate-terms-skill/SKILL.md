@@ -29,11 +29,9 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 如果不知道某个概念的业务含义，就不要直接翻译成看似自然但错误的词，必须标记待确认项。
 
 ## 执行前先读
-- `standards/05-文档标准`
 - `standards/03-数据映射标准`
 - `standards/04-组件标准`
 - 必要时读取 `standards/01-视觉标准`
-- 原始来源参考：`docs/原始准则来源/project-mamba-claude-commands/translate.md`
 - 目录扫描和 key 复用细则：`docs/scan-and-key-reuse.md`
 - i18n key 命名与 locale 更新模板：`docs/key-naming-and-locale-template.md`
 
@@ -58,6 +56,12 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 8. 标记高风险歧义项，注明需要产品或业务确认的点。
 9. 输出统一后的推荐术语、文案替换建议或 i18n 修改建议。
 10. 判断是否形成稳定术语规则或国际化规范，决定是否回写。
+
+## 回写与同步协议
+- 只有当本次术语统一或 i18n 处理形成稳定规则时，才进入回写。
+- 回写建议必须同时说明：目标标准目录、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
+- 任何标准回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、`docs/` 检查清单、`templates/` 输出模板、`handoff`、`guardrails`。
+- 如果只是当前模块的单次改写，不回写标准，也不升级 skill。
 
 ## i18n 子协议
 当任务属于“Vue 文件 i18n 改造”或“locale key 校验”时，必须补做以下步骤：
@@ -139,7 +143,8 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
    - 修改的 Vue 文件
 5. 歧义项、冲突项、风险项与待确认项。
 6. 需要同步给设计、前端或产品的约束。
-7. 是否需要回写；如果需要，写到哪里。
+7. 可抽取规则与回写候选。
+8. 是否需要同步更新当前 skill。
 
 ## handoff
 - 如果问题根源在结构或交互，而不只在文案，转交 `ux-analysis` 或 `page-design`。
@@ -149,9 +154,9 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 
 ## writeback_targets
 只有在形成稳定术语规则或国际化处理规范时再考虑：
-- `standards/05-文档标准`
-- `docs/`
-- `examples/`
+- `standards/03-数据映射标准`
+- `standards/04-组件标准`
+- `skills/translate-terms-skill/`
 - 必要时补充到 `commands/translate-terms.md`
 
 ## guardrails

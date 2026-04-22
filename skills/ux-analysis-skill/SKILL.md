@@ -52,6 +52,12 @@ description: "分析页面或流程中的 UX 问题，包括信息层级、操�
 - 风险动作是否有确认与后果提示
 - 异常状态是否告诉用户发生了什么、该怎么办
 
+## 回写与同步协议
+- 只有当本次 UX 分析形成稳定判断口径时，才进入回写。
+- 回写建议必须同时说明：目标标准目录、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
+- 任何标准回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、`docs/` 检查清单、`templates/` 输出模板、`handoff`、`guardrails`。
+- 如果只是当前页面的单次体验问题，不回写标准，也不升级 skill。
+
 ## 输出要求
 1. 目标用户、主任务和分析前提。
 2. 用户主路径与关键阻塞点。
@@ -61,7 +67,8 @@ description: "分析页面或流程中的 UX 问题，包括信息层级、操�
 6. 问题优先级排序。
 7. 对应优化建议与建议责任归属。
 8. 哪些应转给 `frontend-implementer`、`page-design` 或 `translate-terms`。
-9. 是否需要回写；如果需要，写到哪里。
+9. 可抽取规则与回写候选。
+10. 是否需要同步更新当前 skill。
 
 ## handoff
 - 需要直接改代码时，转交 `frontend-implementer`。
@@ -71,9 +78,8 @@ description: "分析页面或流程中的 UX 问题，包括信息层级、操�
 
 ## writeback_targets
 只有在形成稳定 UX 判断口径时再考虑：
-- `docs/`
 - `standards/02-布局标准`
-- `examples/`
+- `skills/ux-analysis-skill/`
 - `.cursor/rules/`
 
 ## guardrails
