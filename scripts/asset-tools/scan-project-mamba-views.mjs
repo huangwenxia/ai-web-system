@@ -14,7 +14,7 @@ import path from 'node:path'
 import { analyzeVueSource, inferAdapterRequired, toPosix } from './source-analysis.mjs'
 import { logger, parseArgs, resolvePath, writeJson } from './utils.mjs'
 
-const DEFAULT_SOURCE_ROOT = 'E:/work/project-mamba/apps'
+const DEFAULT_SOURCE_ROOT = '../project-mamba/apps'
 const DEFAULT_OUTPUT = 'apps/ai-front-workbench/src/registry/generated/source-inventory.generated.json'
 const DEFAULT_SAMPLE_LIMIT = 40
 const DEFAULT_FAMILY_LIMIT = 24

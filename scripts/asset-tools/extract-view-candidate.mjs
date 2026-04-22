@@ -17,7 +17,7 @@ import { writeWorkbenchRegistry } from './build-workbench-registry.mjs'
 import { createRuntimeProfile } from './runtime-profile.mjs'
 import { getAssetsRoot, logger, parseArgs, resolvePath, writeJson } from './utils.mjs'
 
-const DEFAULT_SOURCE_ROOT = 'E:/work/project-mamba/apps'
+const DEFAULT_SOURCE_ROOT = '../project-mamba/apps'
 const VALID_TYPES = ['component', 'page']
 const VALID_STATUSES = ['draft', 'raw-candidate', 'candidate', 'cleaned-candidate']
 

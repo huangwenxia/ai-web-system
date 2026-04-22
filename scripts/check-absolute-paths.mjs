@@ -9,11 +9,11 @@ const ignoredDirs = new Set([
   'build',
   '.turbo',
   '.vite',
-  'coverage'
+  'coverage',
 ]);
 const ignoredRelativePrefixes = [
-  'docs/原始准则来源/',
-  'docs/90-归档/'
+  ['docs', '原始准则来源'].join('/') + '/',
+  ['docs', '90-归档'].join('/') + '/',
 ];
 const targetExtensions = new Set(['.md', '.mdc']);
 const windowsAbsolutePathPattern = /(?:^|[\s`("'<>])([A-Za-z]:[\\/][^\s`)"'<>]+)/g;
@@ -43,9 +43,9 @@ function shouldIgnore(filePath) {
 
 function collectLineStarts(content) {
   const starts = [0];
-  for (let i = 0; i < content.length; i += 1) {
-    if (content[i] === '\n') {
-      starts.push(i + 1);
+  for (let index = 0; index < content.length; index += 1) {
+    if (content[index] === '\n') {
+      starts.push(index + 1);
     }
   }
   return starts;
@@ -76,7 +76,7 @@ function findIssues(filePath) {
   while ((match = windowsAbsolutePathPattern.exec(content)) !== null) {
     hits.push({
       line: getLineNumber(match.index, lineStarts),
-      absolutePath: match[1]
+      absolutePath: match[1],
     });
   }
 
@@ -91,7 +91,7 @@ for (const file of files) {
   if (hits.length > 0) {
     issues.push({
       file,
-      hits
+      hits,
     });
   }
 }

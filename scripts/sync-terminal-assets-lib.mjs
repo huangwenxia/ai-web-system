@@ -4,10 +4,12 @@ import { basename, dirname, extname, join, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 /**
- * 维护约束：
- * - 新增或修改终端适配前，必须先核对该终端的最新官方文档。
- * - 新增或修改 commands / skills / rules 目标路径前，必须先核对该终端的最新官方文档。
- * - 不要只凭旧脚本、旧目录或本地习惯推断终端支持矩阵。
+ * Maintenance guardrails:
+ * - Check the latest official terminal docs before changing terminal support mappings.
+ * - Check the latest official terminal docs before changing commands / skills / rules target paths.
+ * - Do not infer support from legacy scripts, folder leftovers, or local habits alone.
+ * - Keep repo-internal references repo-relative or derived from the repo root.
+ * - For external target projects, prefer CLI args or sibling-repo defaults instead of terminal-private config.
  */
 
 const __filename = fileURLToPath(import.meta.url);
@@ -277,7 +279,7 @@ export function printUsage(options = {}) {
   console.log('  --asset=commands,skills         Filter asset types');
   console.log('  --plugin=skill                  Alias of --asset');
   console.log('  --name=frontend-implementer     Filter individual command/skill/rule names');
-  console.log('  --target-project=E:\\work\\project-mamba');
+  console.log('  --target-project=<target-project-root>');
   console.log('                                  Sync into a project root instead of user home');
   console.log('  --dry-run                       Show planned writes without touching files');
   console.log('  --list                          Print supported terminals and asset types');

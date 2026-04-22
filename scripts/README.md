@@ -37,7 +37,7 @@
 --asset=commands,skills
 --plugin=skill
 --name=frontend-implementer,agione-ui-skill
---target-project=E:\work\project-mamba
+--target-project=<target-project-root>
 --dry-run
 --list
 --help
@@ -69,47 +69,47 @@
 - Cursor rules -> `<repo>/.cursor/rules`
 - Trae rules -> `<repo>/.trae/rules`
 
-### 传 `--target-project=E:\work\project-mamba`
+### 传 `--target-project=<target-project-root>`
 
 会同步到目标项目根目录下的终端目录，例如：
 
-- Claude Code commands -> `E:\work\project-mamba\.claude\commands`
-- Claude Code skills -> `E:\work\project-mamba\.claude\skills`
-- Cursor commands -> `E:\work\project-mamba\.cursor\commands`
-- Cursor skills -> `E:\work\project-mamba\.cursor\skills`
-- Cursor rules -> `E:\work\project-mamba\.cursor\rules`
-- Trae rules -> `E:\work\project-mamba\.trae\rules`
+- Claude Code commands -> `<target-project-root>\.claude\commands`
+- Claude Code skills -> `<target-project-root>\.claude\skills`
+- Cursor commands -> `<target-project-root>\.cursor\commands`
+- Cursor skills -> `<target-project-root>\.cursor\skills`
+- Cursor rules -> `<target-project-root>\.cursor\rules`
+- Trae rules -> `<target-project-root>\.trae\rules`
 
 ## 常用示例
 
 ### 只同步 Claude Code 的 skill 到 project-mamba
 
 ```powershell
-node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --target-project=E:\work\project-mamba
+node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --target-project=<target-project-root>
 ```
 
 ### 只同步 Claude Code 的 slash command 到 project-mamba
 
 ```powershell
-node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=slash-command --target-project=E:\work\project-mamba
+node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=slash-command --target-project=<target-project-root>
 ```
 
 ### 只同步一个 skill 到 project-mamba
 
 ```powershell
-node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --name=agione-ui-skill --target-project=E:\work\project-mamba
+node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --name=agione-ui-skill --target-project=<target-project-root>
 ```
 
 ### 只同步 Cursor 和 Trae 的项目规则到 project-mamba
 
 ```powershell
-node scripts/sync-project-rules.mjs --terminal=cursor,trae-cn --target-project=E:\work\project-mamba
+node scripts/sync-project-rules.mjs --terminal=cursor,trae-cn --target-project=<target-project-root>
 ```
 
 ### 先看计划，不实际写入
 
 ```powershell
-node scripts/sync-all.mjs --terminal=claude-code --asset=skills --target-project=E:\work\project-mamba --dry-run
+node scripts/sync-all.mjs --terminal=claude-code --asset=skills --target-project=<target-project-root> --dry-run
 ```
 
 ## 维护原则

@@ -2,7 +2,7 @@
 
 ## 目标
 
-把 `E:\work\project-mamba\apps` 下的单个 Vue 视图文件，正式沉淀到 `ai-web-system/assets`，并进入 `ai-front-workbench` 的资产目录与审评链路。
+把 `<source-project-root>/apps` 下的单个 Vue 视图文件，正式沉淀到 `ai-web-system/assets`，并进入 `ai-front-workbench` 的资产目录与审评链路。
 
 这一步解决的问题不是“直接预览”，而是先把来源明确、状态明确、清洗责任明确。
 
@@ -20,6 +20,8 @@ pnpm extract-view-candidate --source=wanmore/src/components/ListTabBox/src/ListT
 node scripts/asset-tools/extract-view-candidate.mjs \
   --source=wanmore/src/components/ListTabBox/src/ListTabBox.vue
 ```
+
+默认会从仓库根目录解析 `--sourceRoot`；未显式传入时，使用相邻 sibling 项目 `../project-mamba/apps`。
 
 ---
 

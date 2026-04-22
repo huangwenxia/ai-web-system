@@ -22,8 +22,8 @@ async function main() {
       description: 'Sync commands, skills, and rules to selected terminals.',
       examples: [
         'node scripts/sync-all.mjs',
-        'node scripts/sync-all.mjs --terminal=cursor,trae-cn --asset=rules --target-project=E:\\work\\project-mamba',
-        'node scripts/sync-all.mjs --terminal=claude-code --asset=skills --target-project=E:\\work\\project-mamba',
+        'node scripts/sync-all.mjs --terminal=cursor,trae-cn --asset=rules --target-project=<target-project-root>',
+        'node scripts/sync-all.mjs --terminal=claude-code --asset=skills --target-project=<target-project-root>',
       ],
     });
     return;

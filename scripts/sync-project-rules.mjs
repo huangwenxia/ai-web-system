@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * 维护约束：
- * - 修改项目规则支持终端前，必须先查对应终端最新官方文档。
- * - 修改 rules 的目标路径前，必须先查对应终端最新官方文档。
+ * Maintenance guardrails:
+ * - Check the latest official terminal docs before changing project rule support.
+ * - Check the latest official terminal docs before changing rules target paths.
+ * - Keep repository portability based on repo-relative paths or explicit CLI args,
+ *   not terminal-private config such as `.claude/config.yaml`.
  */
 
 import { parseCliArgs, printSupportedMatrix, printUsage, syncTerminalAssets } from './sync-terminal-assets-lib.mjs';
@@ -22,8 +24,8 @@ async function main() {
       description: 'Sync project rules to selected terminals.',
       examples: [
         'node scripts/sync-project-rules.mjs',
-        'node scripts/sync-project-rules.mjs --terminal=cursor --target-project=E:\\work\\project-mamba',
-        'node scripts/sync-project-rules.mjs --terminal=trae-cn --name=00-project-mamba-kb-binding --target-project=E:\\work\\project-mamba',
+        'node scripts/sync-project-rules.mjs --terminal=cursor --target-project=<target-project-root>',
+        'node scripts/sync-project-rules.mjs --terminal=trae-cn --name=00-project-mamba-kb-binding --target-project=<target-project-root>',
       ],
     });
     return;

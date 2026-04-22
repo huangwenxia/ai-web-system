@@ -22,9 +22,9 @@ async function main() {
       description: 'Sync slash commands and skills to selected terminals.',
       examples: [
         'node scripts/sync-commands-and-skills.mjs',
-        'node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --target-project=E:\\work\\project-mamba',
-        'node scripts/sync-commands-and-skills.mjs --terminal=claude --asset=slash-command --target-project=E:\\work\\project-mamba',
-        'node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --name=agione-ui-skill --target-project=E:\\work\\project-mamba',
+        'node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --target-project=<target-project-root>',
+        'node scripts/sync-commands-and-skills.mjs --terminal=claude --asset=slash-command --target-project=<target-project-root>',
+        'node scripts/sync-commands-and-skills.mjs --terminal=claude-code --asset=skills --name=agione-ui-skill --target-project=<target-project-root>',
       ],
     });
     return;
