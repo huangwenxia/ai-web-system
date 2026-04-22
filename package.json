@@ -1,17 +1,10 @@
 {
   "name": "ai-web-system",
   "version": "0.1.0",
-  "description": "AI Web 协作体系工作区 - 标准本体、任务入口、执行协议、角色边界与多 Agent 协作协议",
+  "description": "AI Web 协作体系工作区",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --filter ai-front-workbench dev",
-    "build": "pnpm --filter ai-front-workbench build",
-    "check": "pnpm --filter ai-front-workbench check",
-    "scan-project-mamba-views": "node scripts/asset-tools/scan-project-mamba-views.mjs",
-    "extract-view-candidate": "node scripts/asset-tools/extract-view-candidate.mjs",
-    "build-workbench-registry": "node scripts/asset-tools/build-workbench-registry.mjs",
-    "prepare-workbench-data": "node scripts/asset-tools/scan-project-mamba-views.mjs --projects=hashrate,wanmore && node scripts/asset-tools/build-workbench-registry.mjs",
     "verify-encoding": "node scripts/verify-encoding.mjs .",
     "check-paths": "node scripts/check-absolute-paths.mjs .",
     "sync-rules": "node scripts/sync-rules-to-cursor.mjs"
