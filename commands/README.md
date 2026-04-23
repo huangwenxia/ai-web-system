@@ -28,6 +28,12 @@
 - 如果某个工具还没有稳定识别本地命令目录，`commands/` 仍然可以作为统一入口协议继续维护。
 
 ## 当前主入口
+- `existing-project-feature.md`
+- `existing-project-fix.md`
+- `product-review.md`
+- `translate-terms.md`
+
+## 当前保留的专业型子入口
 - `prototype.md`
 - `page-design.md`
 - `page-analysis.md`
@@ -35,4 +41,3 @@
 - `frontend-implementer.md`
 - `ui-visual-review.md`
 - `ux-analysis.md`
-- `translate-terms.md`

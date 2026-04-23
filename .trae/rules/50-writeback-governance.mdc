@@ -1,22 +1,27 @@
-# 40 Writeback Governance
+---
+description: Decide when findings should be written back to standards, docs, examples, or the real project
+alwaysApply: false
+---
 
 当任务执行过程中出现稳定结论时，先判断它应该回写到哪里：
+
 - 长期规则 -> `standards/`
 - 体系解释与流程说明 -> `docs/`
 - 典型案例与可模仿样板 -> `examples/`
-- 可运行复用产物 -> `assets/`
-- 项目级预览或实现 -> `apps/ai-front-workbench/` 或真实项目
+- 项目级实现或最终落地 -> 真实项目
 
 不要把以下内容直接写成标准：
+
 - 一次任务的临时判断
 - 强依赖某个项目上下文的特例
-- 还未验证复用性的实现细节
+- 尚未验证可复用性的实现细节
 
 如果不确定是否值得回写，至少在输出中明确标记：
-- 哪些是长期规律
+
+- 哪些是长期规则
 - 哪些只是当前任务结论
 
 参考：
-- `docs/前端开发闭环总流程.md`
-- `docs/知识库目录分层与Manifest设计.md`
-- `docs/原始准则来源/README.md`
+
+@docs/00-总览/前端开发闭环总流程.md
+@docs/原始准则来源/README.md
