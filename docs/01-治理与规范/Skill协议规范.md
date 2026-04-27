@@ -186,15 +186,15 @@ skill-name/
 
 Skill 应该更像“任务协议”，不是“长篇提示词”。
 
-## Skill 与 commands 的关系
-- `commands/` 更像用户触发入口
-- `skills/` 更像模型执行协议
+## Skill 与显式调用约定的关系
+- 仓库不再维护独立 `commands/` 层
+- `skills/` 既承担执行协议，也承担稳定的显式调用约定
 
 推荐做法：
-- command 负责接收任务、组织上下文、触发 Skill
-- Skill 负责规定执行步骤与输出质量
+- 直接用 skill 名称指向目标任务
+- 由 `SKILL.md` 负责约束上下文、执行步骤与输出质量
 
-也就是说，command 偏入口，Skill 偏执行。
+也就是说，Skill 现在同时承担入口约定和执行协议。
 
 ## Skill 与标准库的关系
 Skill 不应直接替代标准库。

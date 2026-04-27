@@ -1,15 +1,16 @@
 import { promises as fs } from 'fs';
 import { homedir } from 'os';
-import { basename, dirname, extname, join, relative, resolve } from 'path';
+import { basename, dirname, extname, isAbsolute, join, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 
 /**
  * Maintenance guardrails:
  * - Check the latest official terminal docs before changing terminal support mappings.
- * - Check the latest official terminal docs before changing commands / skills / rules target paths.
+ * - Check the latest official terminal docs before changing skills / rules target paths.
  * - Do not infer support from legacy scripts, folder leftovers, or local habits alone.
  * - Keep repo-internal references repo-relative or derived from the repo root.
- * - For external target projects, prefer CLI args or sibling-repo defaults instead of terminal-private config.
+ * - Do not sync terminal assets into external project roots; project-level terminal files
+ *   should come from the target repository itself via clone / pull.
  */
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,7 +19,8 @@ const __dirname = dirname(__filename);
 export const REPO_ROOT = join(__dirname, '..');
 
 const USER_HOME = homedir();
-const VALID_ASSET_TYPES = ['commands', 'skills', 'rules'];
+const VALID_ASSET_TYPES = ['skills', 'rules'];
+const FRONTMATTER_PATTERN = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/;
 
 const TERMINAL_ALIASES = new Map([
   ['claude', 'claude-code'],
@@ -33,10 +35,6 @@ const TERMINAL_ALIASES = new Map([
 ]);
 
 const ASSET_ALIASES = new Map([
-  ['command', 'commands'],
-  ['commands', 'commands'],
-  ['slash-command', 'commands'],
-  ['slash-commands', 'commands'],
   ['skill', 'skills'],
   ['skills', 'skills'],
   ['rule', 'rules'],
@@ -48,16 +46,11 @@ const ASSET_ALIASES = new Map([
 export const TERMINAL_DEFINITIONS = {
   'claude-code': {
     label: 'Claude Code',
+    legacyCommandTarget: join(USER_HOME, '.claude', 'commands'),
     assets: {
-      commands: {
-        sourceDir: join(REPO_ROOT, 'commands'),
-        userTarget: join(USER_HOME, '.claude', 'commands'),
-        projectSubdir: ['.claude', 'commands'],
-      },
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
         userTarget: join(USER_HOME, '.claude', 'skills'),
-        projectSubdir: ['.claude', 'skills'],
       },
     },
   },
@@ -67,22 +60,16 @@ export const TERMINAL_DEFINITIONS = {
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
         userTarget: join(USER_HOME, '.codex', 'skills'),
-        projectSubdir: ['.codex', 'skills'],
       },
     },
   },
   cursor: {
     label: 'Cursor',
+    legacyCommandTarget: join(USER_HOME, '.cursor', 'commands'),
     assets: {
-      commands: {
-        sourceDir: join(REPO_ROOT, 'commands'),
-        userTarget: join(USER_HOME, '.cursor', 'commands'),
-        projectSubdir: ['.cursor', 'commands'],
-      },
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
         userTarget: join(USER_HOME, '.cursor', 'skills'),
-        projectSubdir: ['.cursor', 'skills'],
       },
       rules: {
         sourceDir: join(REPO_ROOT, 'rules'),
@@ -93,26 +80,16 @@ export const TERMINAL_DEFINITIONS = {
   },
   'roo-code': {
     label: 'Roo Code',
-    assets: {
-      commands: {
-        sourceDir: join(REPO_ROOT, 'commands'),
-        userTarget: join(USER_HOME, '.roo', 'commands'),
-        projectSubdir: ['.roo', 'commands'],
-      },
-    },
+    legacyCommandTarget: join(USER_HOME, '.roo', 'commands'),
+    assets: {},
   },
   'trae-cn': {
     label: 'Trae-CN',
+    legacyCommandTarget: join(USER_HOME, '.trae', 'commands'),
     assets: {
-      commands: {
-        sourceDir: join(REPO_ROOT, 'commands'),
-        userTarget: join(USER_HOME, '.trae', 'commands'),
-        projectSubdir: ['.trae', 'commands'],
-      },
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
         userTarget: join(USER_HOME, '.trae', 'skills'),
-        projectSubdir: ['.trae', 'skills'],
       },
       rules: {
         sourceDir: join(REPO_ROOT, 'rules'),
@@ -123,13 +100,8 @@ export const TERMINAL_DEFINITIONS = {
   },
   cline: {
     label: 'Cline',
-    assets: {
-      commands: {
-        sourceDir: join(REPO_ROOT, 'commands'),
-        userTarget: join(USER_HOME, '.cline', 'commands'),
-        projectSubdir: ['.cline', 'commands'],
-      },
-    },
+    legacyCommandTarget: join(USER_HOME, '.cline', 'commands'),
+    assets: {},
   },
 };
 
@@ -192,13 +164,12 @@ function parseArgValue(rawArgs, index) {
 }
 
 export function parseCliArgs(rawArgs, defaults = {}) {
-  const defaultAssets = defaults.defaultAssets || ['commands', 'skills'];
+  const defaultAssets = defaults.defaultAssets || ['skills'];
   const scriptName = defaults.scriptName || 'sync-script.mjs';
   const terminalArgs = [];
   const assetArgs = [];
   const nameArgs = [];
 
-  let targetProject = null;
   let dryRun = false;
   let help = false;
   let list = false;
@@ -243,10 +214,9 @@ export function parseCliArgs(rawArgs, defaults = {}) {
     }
 
     if (token.startsWith('--target-project') || token.startsWith('--target')) {
-      const parsed = parseArgValue(rawArgs, index);
-      targetProject = resolve(parsed.value);
-      index = parsed.nextIndex;
-      continue;
+      throw new Error(
+        'External project sync is retired. Sync project-level terminal files from the target repository via clone/pull instead.',
+      );
     }
 
     throw new Error(`Unknown argument: ${token}`);
@@ -258,7 +228,6 @@ export function parseCliArgs(rawArgs, defaults = {}) {
     help,
     list,
     dryRun,
-    targetProject,
     terminals: normalizeTerminalList(terminalArgs),
     assetTypes: normalizeAssetList(assetArgs, defaultAssets),
     itemNames: normalizeItemNameList(nameArgs),
@@ -276,23 +245,20 @@ export function printUsage(options = {}) {
   console.log('');
   console.log('Options:');
   console.log('  --terminal=claude-code,cursor   Filter target terminals');
-  console.log('  --asset=commands,skills         Filter asset types');
+  console.log('  --asset=skills,rules            Filter asset types');
   console.log('  --plugin=skill                  Alias of --asset');
-  console.log('  --name=frontend-implementer     Filter individual command/skill/rule names');
-  console.log('  --target-project=<target-project-root>');
-  console.log('                                  Sync into a project root instead of user home');
+  console.log('  --name=existing-project-feature-skill Filter individual skill/rule names');
   console.log('  --dry-run                       Show planned writes without touching files');
   console.log('  --list                          Print supported terminals and asset types');
   console.log('  --help                          Show this help');
   console.log('');
   console.log('Asset aliases:');
-  console.log('  commands = command, slash-command, slash-commands');
   console.log('  skills   = skill');
   console.log('  rules    = rule, project-rule');
   console.log('');
   console.log('Default target behavior:');
-  console.log('  commands/skills without --target-project -> sync to user terminal directories');
-  console.log('  rules without --target-project           -> sync to this repository project dirs');
+  console.log('  skills -> sync to user terminal directories');
+  console.log('  rules  -> sync to this repository project dirs');
   console.log('');
 
   if (examples.length) {
@@ -343,24 +309,20 @@ async function readDirRecursive(dir) {
   return files;
 }
 
-async function collectCommandItems(sourceDir) {
-  if (!(await pathExists(sourceDir))) {
-    return [];
+async function readSubdirsRecursive(dir) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const dirs = [];
+
+  for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+    if (!entry.isDirectory()) {
+      continue;
+    }
+    const fullPath = join(dir, entry.name);
+    dirs.push(...(await readSubdirsRecursive(fullPath)));
+    dirs.push(fullPath);
   }
 
-  const files = await readDirRecursive(sourceDir);
-  return files
-    .filter((file) => file.endsWith('.md') && basename(file).toLowerCase() !== 'readme.md')
-    .map((file) => {
-      const relativePath = relative(sourceDir, file);
-      return {
-        type: 'file',
-        name: basename(file, extname(file)),
-        sourcePath: file,
-        relativeTargetPath: relativePath,
-        matchingKeys: [basename(file, extname(file)), relativePath, relativePath.slice(0, -extname(relativePath).length)],
-      };
-    });
+  return dirs;
 }
 
 async function collectSkillItems(sourceDir) {
@@ -413,9 +375,6 @@ async function collectRuleItems(sourceDir) {
 }
 
 async function collectItemsForAsset(assetType) {
-  if (assetType === 'commands') {
-    return collectCommandItems(join(REPO_ROOT, 'commands'));
-  }
   if (assetType === 'skills') {
     return collectSkillItems(join(REPO_ROOT, 'skills'));
   }
@@ -434,22 +393,216 @@ function filterItems(items, itemNames) {
   return items.filter((item) => item.matchingKeys.some((key) => accepted.has(key)));
 }
 
-function resolveTargetBase(terminalKey, assetType, options) {
+function resolveTargetBase(terminalKey, assetType) {
   const assetConfig = TERMINAL_DEFINITIONS[terminalKey]?.assets?.[assetType];
   if (!assetConfig) {
     return null;
   }
 
-  if (options.targetProject || assetConfig.projectOnly) {
-    const projectRoot = resolve(options.targetProject || REPO_ROOT);
-    return join(projectRoot, ...assetConfig.projectSubdir);
+  if (assetConfig.projectOnly) {
+    return join(REPO_ROOT, ...assetConfig.projectSubdir);
   }
 
   return assetConfig.userTarget;
 }
 
-async function copyFileIfChanged(sourcePath, targetPath, dryRun) {
+function isPathInside(rootPath, candidatePath) {
+  const relativePath = relative(resolve(rootPath), resolve(candidatePath));
+  return relativePath === '' || (!relativePath.startsWith('..') && !isAbsolute(relativePath));
+}
+
+function isMarkdownLikeFile(filePath) {
+  const extension = extname(filePath).toLowerCase();
+  return extension === '.md' || extension === '.mdc';
+}
+
+function detectNewline(content) {
+  return content.includes('\r\n') ? '\r\n' : '\n';
+}
+
+function isHiddenName(name) {
+  return String(name || '').startsWith('.');
+}
+
+function buildSourceMetadataBlock(sourcePath, newline) {
+  const repoRoot = resolve(REPO_ROOT);
+  return [
+    '<!-- ai-web-system-sync-metadata',
+    `AI_WEB_SYSTEM_REPO_ROOT=${repoRoot}`,
+    'Repo-internal refs like standards/, docs/, examples/, rules/, skills/, and agents/ resolve from AI_WEB_SYSTEM_REPO_ROOT.',
+    '-->',
+    '',
+  ].join(newline);
+}
+
+function injectSourceMetadata(content, sourcePath) {
+  const newline = detectNewline(content);
+  const metadataBlock = buildSourceMetadataBlock(sourcePath, newline);
+  const frontmatterMatch = content.match(FRONTMATTER_PATTERN);
+  if (!frontmatterMatch) {
+    return `${metadataBlock}${content}`;
+  }
+  return `${frontmatterMatch[0]}${metadataBlock}${content.slice(frontmatterMatch[0].length)}`;
+}
+
+async function buildTargetBuffer(sourcePath, targetPath) {
   const sourceBuffer = await fs.readFile(sourcePath);
+  if (!isMarkdownLikeFile(sourcePath)) {
+    return sourceBuffer;
+  }
+
+  // Source assets stay repo-relative and portable. Only external sync targets
+  // receive machine-local source metadata, otherwise repo projections such as
+  // `.cursor/rules` would start containing absolute paths and fail portability checks.
+  if (isPathInside(REPO_ROOT, targetPath)) {
+    return sourceBuffer;
+  }
+
+  const transformedContent = injectSourceMetadata(sourceBuffer.toString('utf8'), sourcePath);
+  return Buffer.from(transformedContent, 'utf8');
+}
+
+async function collectExpectedTargetFiles(selectedItems, targetBase) {
+  const expectedFiles = new Set();
+
+  for (const item of selectedItems) {
+    if (item.type === 'file') {
+      expectedFiles.add(resolve(join(targetBase, item.relativeTargetPath)));
+      continue;
+    }
+
+    const sourceFiles = await readDirRecursive(item.sourcePath);
+    for (const sourceFile of sourceFiles) {
+      const relPath = relative(item.sourcePath, sourceFile);
+      expectedFiles.add(resolve(join(targetBase, item.relativeTargetPath, relPath)));
+    }
+  }
+
+  return expectedFiles;
+}
+
+async function collectStaleTargetFiles(targetBase, selectedItems, isFilteredSync) {
+  if (!(await pathExists(targetBase))) {
+    return [];
+  }
+
+  const staleFiles = new Set();
+  const expectedFiles = await collectExpectedTargetFiles(selectedItems, targetBase);
+
+  if (!isFilteredSync) {
+    const entries = await fs.readdir(targetBase, { withFileTypes: true });
+
+    for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
+      if (isHiddenName(entry.name)) {
+        continue;
+      }
+
+      const entryPath = join(targetBase, entry.name);
+      if (entry.isDirectory()) {
+        const files = await readDirRecursive(entryPath);
+        for (const filePath of files) {
+          const resolvedFilePath = resolve(filePath);
+          if (!expectedFiles.has(resolvedFilePath)) {
+            staleFiles.add(resolvedFilePath);
+          }
+        }
+        continue;
+      }
+
+      if (entry.isFile()) {
+        const resolvedFilePath = resolve(entryPath);
+        if (!expectedFiles.has(resolvedFilePath)) {
+          staleFiles.add(resolvedFilePath);
+        }
+      }
+    }
+
+    return Array.from(staleFiles).sort((left, right) => left.localeCompare(right));
+  }
+
+  for (const item of selectedItems) {
+    if (item.type !== 'directory') {
+      continue;
+    }
+
+    const targetItemPath = join(targetBase, item.relativeTargetPath);
+    if (!(await pathExists(targetItemPath))) {
+      continue;
+    }
+
+    const files = await readDirRecursive(targetItemPath);
+    for (const filePath of files) {
+      const resolvedFilePath = resolve(filePath);
+      if (!expectedFiles.has(resolvedFilePath)) {
+        staleFiles.add(resolvedFilePath);
+      }
+    }
+  }
+
+  return Array.from(staleFiles).sort((left, right) => left.localeCompare(right));
+}
+
+async function removeEmptyDirectories(rootDir, dryRun) {
+  if (!(await pathExists(rootDir))) {
+    return [];
+  }
+
+  const deletedDirs = [];
+  const directories = await readSubdirsRecursive(rootDir);
+
+  for (const dirPath of directories) {
+    if (dirname(dirPath) === rootDir && isHiddenName(basename(dirPath))) {
+      continue;
+    }
+
+    const entries = await fs.readdir(dirPath);
+    if (entries.length > 0) {
+      continue;
+    }
+
+    if (dryRun) {
+      deletedDirs.push(resolve(dirPath));
+      continue;
+    }
+
+    await fs.rmdir(dirPath);
+    deletedDirs.push(resolve(dirPath));
+  }
+
+  return deletedDirs;
+}
+
+async function pruneTargetBase(targetBase, selectedItems, dryRun, isFilteredSync) {
+  const staleFiles = await collectStaleTargetFiles(targetBase, selectedItems, isFilteredSync);
+  const deletedFiles = [];
+
+  for (const filePath of staleFiles) {
+    if (!isPathInside(targetBase, filePath)) {
+      throw new Error(`Refusing to delete outside target base: ${filePath}`);
+    }
+
+    if (dryRun) {
+      deletedFiles.push(filePath);
+      continue;
+    }
+
+    await fs.rm(filePath, { force: true });
+    deletedFiles.push(filePath);
+  }
+
+  const deletedDirs = await removeEmptyDirectories(targetBase, dryRun);
+  return { deletedFiles, deletedDirs };
+}
+
+async function pruneLegacyCommandTarget(terminal, dryRun) {
+  if (!terminal.legacyCommandTarget) {
+    return { deletedFiles: [], deletedDirs: [] };
+  }
+  return pruneTargetBase(terminal.legacyCommandTarget, [], dryRun, false);
+}
+
+async function copyFileIfChanged(sourcePath, targetPath, dryRun) {
+  const sourceBuffer = await buildTargetBuffer(sourcePath, targetPath);
   const targetExists = await pathExists(targetPath);
 
   if (targetExists) {
@@ -496,7 +649,7 @@ function printHeader(options) {
   console.log(`Script: ${options.scriptName}`);
   console.log(`Terminals: ${options.terminals.join(', ')}`);
   console.log(`Assets: ${options.assetTypes.join(', ')}`);
-  console.log(`Target project: ${options.targetProject || '(user-home defaults / repo rules defaults)'}`);
+  console.log('Target mode: user-home skills + repo-local rules');
   console.log(`Dry run: ${options.dryRun ? 'yes' : 'no'}`);
   if (options.itemNames.length) {
     console.log(`Name filter: ${options.itemNames.join(', ')}`);
@@ -505,18 +658,15 @@ function printHeader(options) {
 }
 
 export async function syncTerminalAssets(options) {
-  const targetProject = options.targetProject ? resolve(options.targetProject) : null;
-  if (targetProject && !(await pathExists(targetProject))) {
-    throw new Error(`Target project does not exist: ${targetProject}`);
-  }
-
-  printHeader({ ...options, targetProject });
+  printHeader(options);
 
   const itemCache = new Map();
   const summary = {
     synced: 0,
     skipped: 0,
     planned: 0,
+    deletedFiles: 0,
+    deletedDirs: 0,
     unsupported: 0,
     terminals: 0,
     assets: 0,
@@ -526,6 +676,22 @@ export async function syncTerminalAssets(options) {
     const terminal = TERMINAL_DEFINITIONS[terminalKey];
     console.log(`[terminal] ${terminalKey} (${terminal.label})`);
     summary.terminals += 1;
+
+    const legacyPruneResult = await pruneLegacyCommandTarget(terminal, options.dryRun);
+    if (legacyPruneResult.deletedFiles.length || legacyPruneResult.deletedDirs.length) {
+      const action = options.dryRun ? 'PLAN-DEL' : 'DEL';
+      console.log(
+        `  [${action}] legacy commands -> files: ${legacyPruneResult.deletedFiles.length}, dirs: ${legacyPruneResult.deletedDirs.length}`,
+      );
+    }
+    summary.deletedFiles += legacyPruneResult.deletedFiles.length;
+    summary.deletedDirs += legacyPruneResult.deletedDirs.length;
+
+    if (!VALID_ASSET_TYPES.some((assetType) => terminal.assets[assetType])) {
+      console.log('  [skip] no maintained assets');
+      console.log('');
+      continue;
+    }
 
     for (const assetType of options.assetTypes) {
       const assetConfig = terminal.assets[assetType];
@@ -540,7 +706,7 @@ export async function syncTerminalAssets(options) {
       }
 
       const selectedItems = filterItems(itemCache.get(assetType), options.itemNames);
-      const targetBase = resolveTargetBase(terminalKey, assetType, { targetProject });
+      const targetBase = resolveTargetBase(terminalKey, assetType);
 
       console.log(`  [asset] ${assetType} -> ${targetBase}`);
       summary.assets += 1;
@@ -549,6 +715,16 @@ export async function syncTerminalAssets(options) {
         console.log(`    [warn] no source items selected for ${assetType}`);
         continue;
       }
+
+      const pruneResult = await pruneTargetBase(targetBase, selectedItems, options.dryRun, options.itemNames.length > 0);
+      if (pruneResult.deletedFiles.length || pruneResult.deletedDirs.length) {
+        const action = options.dryRun ? 'PLAN-DEL' : 'DEL';
+        console.log(
+          `    [${action}] stale files: ${pruneResult.deletedFiles.length}, stale dirs: ${pruneResult.deletedDirs.length}`,
+        );
+      }
+      summary.deletedFiles += pruneResult.deletedFiles.length;
+      summary.deletedDirs += pruneResult.deletedDirs.length;
 
       if (!options.dryRun) {
         await ensureDir(targetBase);
@@ -576,6 +752,8 @@ export async function syncTerminalAssets(options) {
   console.log(`  synced: ${summary.synced}`);
   console.log(`  skipped: ${summary.skipped}`);
   console.log(`  planned: ${summary.planned}`);
+  console.log(`  deleted files: ${summary.deletedFiles}`);
+  console.log(`  deleted dirs: ${summary.deletedDirs}`);
   console.log(`  unsupported selections: ${summary.unsupported}`);
 
   return summary;

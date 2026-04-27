@@ -1,6 +1,6 @@
 ---
 name: agione-ui
-version: 3.1
+version: 3.2
 description: >
   AGIOne Console UI prototype generator. Produces single-file HTML prototypes that feel
   like the real product — consistent, professional, bilingual (中/EN), Light/Dark.
@@ -9,7 +9,7 @@ description: >
   or anything referencing the AGIOne design language.
 ---
 
-# AGIOne Console UI Skill — v3.1
+# AGIOne Console UI Skill — v3.2
 
 > **设计哲学**
 > 本 skill 分两个层级：
@@ -28,11 +28,11 @@ description: >
 ## 0.1 安装步骤
 
 ```bash
-# 1. 把整个 AGIOne-ui 文件夹复制到 ~/.claude/skills/
-cp -r /path/to/AGIOne-ui ~/.claude/skills/
+# 1. 把整个 agione-ui 文件夹复制到 ~/.claude/skills/
+cp -r /path/to/agione-ui ~/.claude/skills/
 
 # 安装后目录结构应为：
-# ~/.claude/skills/AGIOne-ui/
+# ~/.claude/skills/agione-ui/
 # ├── SKILL.md                           ← 设计规范（本文件）
 # └── agione-console-shell-sample-v1.html  ← Chrome 模板（必须存在）
 ```
@@ -44,13 +44,13 @@ cp -r /path/to/AGIOne-ui ~/.claude/skills/
 安装后，在任意 Claude Code 会话中输入：
 
 ```
-/AGIOne-ui  [需求描述]
+/agione-ui  [需求描述]
 ```
 
 **示例**：
-- `/AGIOne-ui 生成模型广场列表页，支持按类型筛选`
-- `/AGIOne-ui 创建 API Key 管理页，含新建和撤销功能`
-- `/AGIOne-ui 做一个充值页面，预设金额 ¥500/1000/2000/5000`
+- `/agione-ui 生成模型广场列表页，支持按类型筛选`
+- `/agione-ui 创建 API Key 管理页，含新建和撤销功能`
+- `/agione-ui 做一个充值页面，预设金额 ¥500/1000/2000/5000`
 
 ## 0.3 团队规范
 
@@ -58,7 +58,7 @@ cp -r /path/to/AGIOne-ui ~/.claude/skills/
 - 如发现 TopBar / Sidebar 与模板有差异，立即报告并用 `agione-console-shell-sample-v1.html` 对比
 - 更新 SKILL.md 或模板文件后，用以下命令同步给团队成员：
   ```bash
-  cp -r ~/.claude/skills/AGIOne-ui /path/to/shared/location
+  cp -r ~/.claude/skills/agione-ui /path/to/shared/location
   ```
 
 ---
@@ -96,7 +96,7 @@ cp -r /path/to/AGIOne-ui ~/.claude/skills/
 
 1. **读取模板文件**：
    ```
-   Read: ~/.claude/skills/AGIOne-ui/agione-console-shell-sample-v1.html
+   Read: ~/.claude/skills/agione-ui/agione-console-shell-sample-v1.html
    ```
 2. 从模板中**逐字复制**上表所列区域，粘贴到新文件对应位置
 3. 只在 `<main>` 区域及允许修改的范围内写业务内容
@@ -131,9 +131,48 @@ cp -r /path/to/AGIOne-ui ~/.claude/skills/
 
 1. **显式闭合**：所有 `el-*` 和图标组件必须有闭合标签，禁止自闭合
 2. **无 mustache 属性**：禁止 `placeholder="{{x}}"`，必须用 `:placeholder="x"`
-3. **无硬编码颜色**：所有颜色走 CSS 变量，禁止直接写 hex
+3. **设计 token 优先（⚠️ 重要）**：所有有对应 CSS 变量的属性，必须使用变量，禁止硬编码
 4. **Lucide 初始化**：Vue mount 后立即调用 `lucide.createIcons()`
 5. **app 引用分步**：禁止链式 `Vue.createApp({}).use(...).mount()`，必须保存 app 引用
+6. **TailwindCSS 布局优先（⚠️ 重要）**：Expression 层的布局/间距/尺寸必须优先使用 Tailwind utility class，禁止为这些属性新建自定义 CSS class
+
+### 规则 6 展开：Tailwind 使用边界
+
+| 场景 | 做法 |
+|------|------|
+| **布局**（flex、grid、overflow、position） | ✅ Tailwind：`flex items-center gap-2`、`grid grid-cols-3` |
+| **间距**（padding、margin） | ✅ Tailwind：`px-4 py-2`、`mt-6` |
+| **尺寸**（width、height、min/max） | ✅ Tailwind：`w-full h-10`、`max-w-xs` |
+| **圆角 / 阴影**（有对应 Tailwind class） | ✅ Tailwind：`rounded-lg`、`shadow-md` |
+| **颜色**（需要用 CSS 变量） | Tailwind 任意值语法：`bg-[var(--surface)]`、`text-[var(--accent)]` |
+| **Chrome 层已有 class**（TopNav / Sidebar） | ❌ 不改动，保持原样 |
+| **El Plus 组件 class 覆盖**（`.el-xxx`） | ❌ 必须写自定义 CSS，Tailwind 无法精准覆盖 |
+| **复杂伪元素 / 动画** | ❌ 写自定义 CSS，Tailwind 无法完整表达 |
+
+### 规则 3 展开：哪些属性必须用 CSS 变量
+
+> Mock 数据可以是假的，但 UI 的每一个视觉属性都必须来自设计系统。
+
+| 属性类型 | ❌ 禁止写法 | ✅ 正确写法 |
+|---------|-----------|-----------|
+| **颜色**（背景/文字/边框） | `color: #09090b` | `color: var(--foreground)` |
+| **主色** | `background: #5f4ecf` | `background: var(--color-primary)` |
+| **状态色** | `color: #22c55e` | `color: var(--color-success)` |
+| **边框** | `border: 1px solid #e4e4e7` | `border: 1px solid var(--border)` |
+| **阴影** | `box-shadow: 0 2px 8px rgba(0,0,0,.08)` | `box-shadow: var(--shadow-md)` |
+| **圆角** | `border-radius: 8px` | `border-radius: var(--radius-lg)` |
+| **间距** | `padding: 16px` / `gap: 8px` | `padding: var(--space-base)` / `gap: var(--space-sm)` |
+| **动效时长** | `transition: .15s` | `transition: var(--duration-fast)` |
+| **字族** | `font-family: 'Inter', sans-serif` | `font-family: var(--font-base)` |
+| **图标尺寸** | `width: 18px; height: 18px` | `width: var(--icon-lg); height: var(--icon-lg)` |
+| **z-index** | `z-index: 100` | `z-index: var(--z-dropdown)` |
+
+**可以硬编码的例外**（这些没有对应 token）：
+
+- 组件特定的固定宽度：`width: 240px`（搜索框）、`width: 256px`（侧边栏）
+- `flex: 1`、`min-width: 0`、`overflow: hidden` 等纯布局值
+- `line-height` 精确值（按 §2.2 字型表中的值写，如 `line-height: 1.6`）
+- `font-size` 精确值（按 §2.2 字型表中的值写，如 `font-size: 14px`）
 
 ```js
 // 正确姿势
@@ -156,6 +195,75 @@ lucide.createIcons();
 | Lucide 图标不渲染 | `<script type="module" src="...lucide...">` | 去掉 `type="module"` |
 | Unicode 乱码 | `\u00a5` | 直接写 `¥` |
 
+## 1.6 Vue 3 模板语法强制规则
+
+> 本文件使用 Vue 3 CDN（Global Build）+ `setup()` 选项式写法，**严禁混入任何 React/JSX 语法**。
+
+### ✅ 唯一允许的写法
+
+| 用途 | 正确 | 禁止 |
+|------|------|------|
+| 模板插值 | `{{ expression }}` | `${...}` / `${{...}}` |
+| 属性绑定 | `:prop="expression"` | `prop={expression}` |
+| 事件绑定 | `@click="handler"` | `onClick={handler}` |
+| 类名 | `class="..."` / `:class="..."` | `className="..."` |
+| 内联样式 | `:style="{ color: x }"` | `style={{ color: x }}` |
+
+### 禁止清单（每次生成前心智扫描）
+
+- ❌ 模板正文中出现 `${...}` — JS 模板字符串语法，不属于 Vue 模板
+- ❌ 出现 `${{...}}` — 非法混合语法，会导致解析错误
+- ❌ 出现 `className` — React 属性名，Vue 中无效
+- ❌ `:style="{{ ... }}"` 双括号写法 — 语法错误
+- ❌ 长 `:style` 字符串未拆开 — 必须逐属性拆成对象 `{ fontSize: '14px', color: x }`
+- ❌ 展示逻辑写在模板 `{{ }}` 里超过 1 个三元表达式 — 提取到 `setup()` 的 computed 或函数
+- ❌ 动态拼接 Tailwind class（如 `'text-' + color`、`` `bg-${token}` ``）— Tailwind CDN 运行时扫描静态字符串，动态拼接的 class 不会被注入，必须写完整 class 名
+
+### i18n 对象闭合规则（⚠️ 高频 Bug）
+
+每次在 `i18n` 对象中添加新语言块（`en:`）之前，**必须确认上一个语言块（`zh:`）已用 `},` 正确闭合**。
+
+```js
+// ✅ 正确 — zh 已闭合，en 作为独立兄弟对象
+const i18n = {
+  zh: { title: '模型广场', add: '新建' },
+  en: { title: 'Models',   add: 'Add'  }
+};
+
+// ❌ 错误 — zh 末尾只有逗号没有闭合 }
+const i18n = {
+  zh: { title: '模型广场', add: '新建',   // ← 缺少 }
+  en: { title: 'Models',   add: 'Add'  }
+  // 浏览器将 en 解析为 zh 的属性，报 Unexpected token ':'
+};
+```
+
+**检查技巧**：在 `en: {` 所在行上方，如果上一行以 `,` 结尾而非 `},`，则缺少闭合括号。  
+凡是 i18n 对象有改动，必须从头到尾扫一遍每个语言块的 `},` 收尾。
+
+### 数据规范
+
+- 默认使用**静态 mock 数据**（`ref([...])` 硬编码数组），不用 `Math.random()` 作为主展示值
+- 复杂格式化逻辑（日期、金额、百分比）提取为 `setup()` 内的纯函数，不内联在模板里
+
+## 1.7 输出前自检清单（7 项，缺一不可）
+
+> 在输出 HTML 文件前，逐条过：
+
+- [ ] **1. 语法纯净**：只有 Vue 模板语法，无 React/JSX 残留
+- [ ] **2. 无 `${...}`**：全文搜索，模板内不存在 JS 模板字符串
+- [ ] **3. 字符串闭合**：所有 JS 字符串（特别是 `:style` 对象内）正确闭合，无悬空引号
+- [ ] **4. `:style` 合法**：每个 `:style` 绑定的值是合法 JS 对象字面量，key 用 camelCase
+- [ ] **5. Token 覆盖**：颜色、间距、圆角、阴影、动效、字族、图标尺寸、z-index 均用 `var(--*)` 变量，无遗漏的硬编码值
+- [ ] **6. i18n 闭合**：`i18n` 对象每个语言块都以 `},` 结尾，特别是 `zh:` 块在 `en:` 之前已闭合
+- [ ] **7. JS 语法验证**：若环境允许，提取 `<script>` 块内容用 `node --check` 验证无语法错误
+- [ ] **8. Tailwind class 完整**：全文检查无动态拼接 Tailwind class；新增布局/间距/尺寸属性已优先使用 Tailwind utility，未无故新建自定义 CSS class
+
+```bash
+# 快速验证命令（在终端运行）
+sed -n '/<script>/,/<\/script>/p' file.html | sed '1d;$d' | node --check
+```
+
 ---
 
 # PART 2 · Design DNA（锁定）
@@ -166,11 +274,11 @@ lucide.createIcons();
 
 ```css
 :root {
-  /* ── TopBar（永不随主题变化） ── */
-  --topnav-bg:          #1a1025;
-  --topnav-accent:      #2d2240;
+  /* ── TopBar（始终保持深色系；bg / accent / muted 随主题微调，见 darkVars / lightVars） ── */
+  --topnav-bg:          #1a1025;   /* Light 默认值 */
+  --topnav-accent:      #2d2240;   /* Light 默认值 */
   --topnav-fg:          #f0edf5;
-  --topnav-muted:       #8b7fa0;
+  --topnav-muted:       #8b7fa0;   /* Light 默认值 */
   --topnav-active-bg:   #312870;
   --topnav-active-fg:   #c4bdff;
   --topnav-height:      56px;
@@ -621,6 +729,10 @@ html, body {
 
 ```js
 const darkVars = {
+  // TopBar — Dark
+  '--topnav-bg':           '#2d2241',
+  '--topnav-accent':       '#574aa0',
+  '--topnav-muted':        '#e1daed',
   // Sidebar & Body
   '--sidebar-bg':          '#18181b',
   '--sidebar-border':      '#27272a',
@@ -668,6 +780,10 @@ const darkVars = {
   '--color-destructive-subtle': '#2a0a0a',
 };
 const lightVars = {
+  // TopBar — Light
+  '--topnav-bg':           '#1a1025',
+  '--topnav-accent':       '#2d2240',
+  '--topnav-muted':        '#8b7fa0',
   // Sidebar & Body
   '--sidebar-bg':          '#fafafa',
   '--sidebar-border':      '#e4e4e7',
@@ -894,8 +1010,8 @@ themeBtn.addEventListener('click', () => {
 
 **气质**：信息密集但不压迫，层次靠字重和颜色区分。
 
-- 表头：11px / 600 / UPPERCASE / letter-spacing 0.5px / muted 背景色
-- 行高约 52px，奇偶行轻微交替，hover 整行背景变色
+- 表头：11px / 600 / UPPERCASE / letter-spacing 0.5px / `var(--accent)` 背景色
+- 行高约 52px；奇偶行交替：偶数行 `var(--accent)` 轻底色；hover 整行 `var(--accent)` 背景（禁止硬编码 `#f5f5f5` 等）
 - 主列（名称）用 500 字重，辅助列用 400，数字列用 IBM Plex Mono
 - 操作列图标小（14px），默认 muted 色，hover 变 primary 或 destructive
 - 超过 3 个操作收进 "More" Dropdown，危险操作优先折叠
@@ -1198,7 +1314,7 @@ a:hover, .link:hover {
 
 四层结构，从上到下：
 
-1. **Hero Band**：问候语 + 用户名 + 右侧集群状态 Badge（深紫背景，约 80px 高）
+1. **Hero Band**：问候语 + 用户名 + 右侧集群状态 Badge（背景用 `var(--topnav-bg)`（`#1a1025`），文字用 `var(--topnav-fg)`，约 80px 高，圆角 `--radius-xl`）
 2. **Quick Actions**：4 个卡片，图标 + 标题 + 副文本，横向排布
 3. **Resource Snapshot**：左侧 GPU 资源（环形 / 进度条），右侧 CPU / 内存 / 存储
 4. **Activity**：左侧折线图 / 柱状图，右侧最近活动列表
@@ -1247,6 +1363,9 @@ a:hover, .link:hover {
 - [ ] 无硬编码间距数字（走 `--space-*` token 或有依据的例外）
 - [ ] `lucide.createIcons()` 在 mount 后调用
 - [ ] 控制台无报错
+- [ ] **Vue 语法纯净**：无 `${...}`、无 `className`、无 `style={{ }}`、无 React/JSX 残留
+- [ ] **i18n 闭合**：`zh:` 块在 `en:` 之前已用 `},` 闭合，逐块扫描收尾
+- [ ] **JS 语法验证**：`sed -n '/<script>/,/<\/script>/p' file.html | sed '1d;$d' | node --check`
 
 ### 设计一致性
 - [ ] 所有颜色走 CSS 变量

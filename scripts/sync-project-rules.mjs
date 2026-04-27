@@ -1,10 +1,9 @@
 #!/usr/bin/env node
 /**
  * Maintenance guardrails:
- * - Check the latest official terminal docs before changing project rule support.
+ * - Check the latest official terminal docs before changing repository rule support.
  * - Check the latest official terminal docs before changing rules target paths.
- * - Keep repository portability based on repo-relative paths or explicit CLI args,
- *   not terminal-private config such as `.claude/config.yaml`.
+ * - Keep repository portability based on repo-relative paths, not terminal-private config.
  */
 
 import { parseCliArgs, printSupportedMatrix, printUsage, syncTerminalAssets } from './sync-terminal-assets-lib.mjs';
@@ -21,11 +20,11 @@ async function main() {
   if (options.help) {
     printUsage({
       scriptName: SCRIPT_NAME,
-      description: 'Sync project rules to selected terminals.',
+      description: 'Sync this repository\'s rule projections to selected terminals.',
       examples: [
         'node scripts/sync-project-rules.mjs',
-        'node scripts/sync-project-rules.mjs --terminal=cursor --target-project=<target-project-root>',
-        'node scripts/sync-project-rules.mjs --terminal=trae-cn --name=00-project-mamba-kb-binding --target-project=<target-project-root>',
+        'node scripts/sync-project-rules.mjs --terminal=cursor',
+        'node scripts/sync-project-rules.mjs --terminal=trae-cn --name=10-existing-frontend-dev',
       ],
     });
     return;

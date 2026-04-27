@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /**
  * Maintenance guardrails:
- * - Check the latest official terminal docs before changing terminal support mappings.
- * - Check the latest official terminal docs before changing skills / rules target paths.
+ * - Check the latest official terminal docs before changing skill support mappings.
+ * - Check the latest official terminal docs before changing skills target paths.
  */
 
 import { parseCliArgs, printSupportedMatrix, printUsage, syncTerminalAssets } from './sync-terminal-assets-lib.mjs';
 
-const SCRIPT_NAME = 'sync-all.mjs';
-const DEFAULT_ASSETS = ['skills', 'rules'];
+const SCRIPT_NAME = 'sync-skills.mjs';
+const DEFAULT_ASSETS = ['skills'];
 
 async function main() {
   const options = parseCliArgs(process.argv.slice(2), {
@@ -19,11 +19,11 @@ async function main() {
   if (options.help) {
     printUsage({
       scriptName: SCRIPT_NAME,
-      description: 'Sync skills and rules to selected terminals.',
+      description: 'Sync skills to selected terminals.',
       examples: [
-        'node scripts/sync-all.mjs',
-        'node scripts/sync-all.mjs --terminal=claude-code,codex --asset=skills',
-        'node scripts/sync-all.mjs --terminal=cursor,trae-cn --asset=rules',
+        'node scripts/sync-skills.mjs',
+        'node scripts/sync-skills.mjs --terminal=claude-code,codex',
+        'node scripts/sync-skills.mjs --terminal=cursor --name=existing-project-feature-skill',
       ],
     });
     return;

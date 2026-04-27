@@ -179,7 +179,7 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 - `standards/03-数据映射标准`
 - `standards/04-组件标准`
 - `skills/translate-terms-skill/`
-- 必要时补充到 `commands/translate-terms.md`
+- 必要时补充到 `skills/translate-terms-skill/` 的协议或附属清单
 
 ## guardrails
 - 不把接口命名直接暴露给终端用户。

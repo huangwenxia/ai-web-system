@@ -5,8 +5,8 @@
 ## 作用
 
 - 维护仓库内稳定、可复用的项目级约束
-- 作为 `.cursor/rules/` 的上游来源
-- 与 `standards/`、`commands/`、`skills/`、`agents/` 保持职责分离
+- 作为 `.cursor/rules/` 和 `.trae/rules/` 的上游来源
+- 与 `standards/`、`skills/`、`agents/` 保持职责分离
 
 ## 当前内容
 
@@ -18,8 +18,8 @@
 
 ## 维护方式
 
-先改 `rules/`，再同步到 `.cursor/rules/`：
+先改 `rules/`，再同步到仓库内规则投影：
 
 ```powershell
-node scripts/sync-rules-to-cursor.mjs
+node scripts/sync-project-rules.mjs
 ```
