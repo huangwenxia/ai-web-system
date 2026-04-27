@@ -37,25 +37,94 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 如果任务是已有项目开发，默认遵循 ai-web-system 的标准与反馈机制：先识别上下文，再做最小充分修改，再明确风险和验证口径。
 
 ## 执行前先读
-- 实现检查清单：`docs/implementation-review-checklist.md`
-- 输出模板：`templates/implementation-output-template.md`
+- `rules/10-existing-frontend-dev.mdc`
+- 新功能但原型未确认时回退 `skills/existing-project-feature-skill/SKILL.md`
+- 涉及翻译、术语统一或 i18n 改造时读取 `skills/translate-terms-skill/SKILL.md`
+- 需要独立结构、视觉或交互审查时读取 `skills/page-review-skill/SKILL.md`
 
 ## 工作流
 1. 先判断任务属于：实现 / bug 修复 / 重构 / 文档补全。
 2. 明确当前输入前提、约束条件和依赖标准。
 3. 判断修改范围：单组件 / 页面局部 / 页面级模块。
-4. 优先复用现有组件、模式和目录结构，不重新发明一套实现。
-5. 输出实现或修改结果，并明确边界态与风险。
-6. 判断是否需要叠加独立 `page-review`。
-7. 判断本次是否值得回写到标准、案例、资产或规则。
+4. 如果目标是 `project-mamba` 或同构仓库，先输出一份极短的“复用校验表”：页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
+5. 优先复用现有组件、模式和目录结构，不重新发明一套实现。
+6. 输出实现或修改结果，并明确边界态与风险。
+7. 判断是否需要叠加独立 `page-review`。
+8. 判断本次是否值得回写到标准、案例、资产或规则。
 
 ## 标准执行协议
 ### 1. 先做上下文定位
 - 找出目标页面、组件、组合式函数、常量、类型定义、接口调用和被引用位置。
 - bug 修复或优化任务，必须先判断影响范围和调用来源，不允许只盯当前文件。
 - 遇到公共组件或公共方法时，先确认它是否被多处复用，再决定改法。
+- 先确定“当前目标项目”：
+  - 如果 `target` 或当前文件路径位于 `apps/<name>/src/...`，则 `<name>` 就是当前目标项目
+  - 如果用户直接给的是某个项目目录，就以该目录所属的 `apps/<name>` 为准
+  - 如果同一次任务跨多个项目路径，默认按当前正在修改的那个文件所属项目分别判断，不把一个项目的组件默认挪给另一个项目
+  - 如果路径不足以识别项目归属，先继续查目标文件、相邻模块和 import 来源；仍无法判断时，再明确提示用户当前项目不清晰
 
-### 2. 按场景切执行策略
+### 2. `project-mamba` 框架级复用基准（命中 `project-mamba` 或同构仓库时强制执行）
+- 不允许只看设计稿直接落代码；先把页面类型、容器组合、字段类型、常量来源和工具来源对齐到已有实现，再决定是否新增。
+- 组件选型不是按来源写成一条死顺序，而是先判断组件职责层级：
+  - 页面壳 / 布局容器
+  - 当前业务页面的语义区块
+  - 当前项目的业务复用组件
+  - 通用业务控件
+  - 基础交互控件
+- 在正式选型前，先检查当前页面、同路由相邻页面和相邻模块有没有同语义实现；有则优先复用现成业务块，不重复发明。
+- 但页面壳、滚动区、卡片壳、详情导航这类布局组件不跟着页面局部特例走，默认先查 `apps/common/src/components`。
+- 页面壳优先按真实组件路径选型：
+  - 页面主容器：`apps/common/src/components/MainBox/src/MainBox.vue`
+  - 页面头部与主操作区：`HeaderBox`，通常与 `MainBox + ScrollBox` 组合出现
+  - 独立内容区块：`apps/common/src/components/CardBox/src/CardBox.vue`
+  - 详情页导航：`apps/common/src/components/DetailTabs/src/DetailTabs.vue`
+  - 单页详情头：`apps/common/src/components/DetailHeader/src/DetailHeader.vue`
+  - 卡片列表容器：`apps/common/src/components/ListCardBox/src/ListCardBox.vue`
+  - 列表单项：`apps/common/src/components/ListCardItem/src/ListCardItem.vue`
+  - Schema 表单容器：`apps/common/src/components/InstanceForm/src/InstanceForm.vue`
+- 页面类型先套现成组合，不自己拼壳：
+  - 列表页：优先 `MainBox + HeaderBox + ScrollBox + FilterBox + CurdTable`
+  - 卡片列表页：优先 `MainBox + HeaderBox + ScrollBox + FilterBox + ListCardBox`
+  - 详情页：优先 `MainBox + HeaderBox + DetailTabs + router-view`，结构化字段优先 `DetailInfo`
+  - 创建 / 编辑页：优先 `InstanceForm`，多步骤再查 `InstanceStepPage` / 同目录现有 schema 写法
+- 组件来源的合理使用判断顺序如下：
+  - 当前页面 / 相邻模块已有同语义业务块：直接优先复用
+  - 当前目标项目页面语义组件：优先看 `apps/<current-project>/src/views/components`
+  - 当前目标项目业务通用组件：再看 `apps/<current-project>/src/components`
+  - 页面壳 / 布局容器：这类默认先查 `apps/common/src/components`
+  - 通用业务控件：优先 `easybill-ui`
+  - 基础控件和交互原件：最后才落到 Element Plus，参考 `https://element-plus.org/zh-CN/component/overview`
+  - 以上都不满足时，才允许退到原生 HTML，而且必须先明确提示用户为什么现有组件体系不够
+- 字段类型先映射再实现：
+  - 状态 / 枚举：先写入最近的 `constant.ts`，展示优先 `ConstantStatus`、表格优先 `ColumnFactory.Dict()`、纯文本回显优先 `getConstantLabel()`
+  - 时间：优先 `@repo/utils` 的 `dateFormatter()` 或 `ColumnFactory.Date()`；不要在页面里手写 `dayjs(...).format(...)`
+  - 结构化详情：优先 `DetailInfo`，字段数组里统一放 `label`、`value`、`span`、`options`、`slot`
+  - 表单字段：优先 `SchemaItemFactory` 产出 `Input`、`Select`、`RadioButton`、`InfiniteSelect`、`Component` 等，而不是散写底层表单项对象
+  - 文件 / 对象存储路径：优先先查当前目标项目 `apps/<current-project>/src/components` 下是否已有表单集成组件；已有就复用，没有再评估是否需要新增项目级组件
+  - 关系标签 / 多标签集合：优先 `OverflowTag` 或现有卡片组件的 tags 槽位；长文本默认补齐省略和 tooltip
+  - 容量 / 金额 / 数值：优先复用 `packages/utils/src/common/format.ts` 里的 `volumeFormat()`、`amount()`、`countFormat()` 等统一 formatter
+- 表格规则必须对齐列工厂：
+  - 列定义优先 `packages/utils/src/CurdTable/ColumnFactory.ts`
+  - 普通文本列优先 `ColumnFactory.Column(...).TooltipMinWidth(...)`
+  - 枚举列优先 `ColumnFactory.Dict(...)`
+  - 日期列优先 `ColumnFactory.Date(...)` 或链式 `Formatter(() => dateFormatter(...))`
+  - 只有列工厂和统一配置表达不了时，才退到自定义 slot / formatter
+- 常量与 i18n 规则必须成套：
+  - 当前模块已有 `constant.ts` 时优先就近复用；没有时再用应用级 `src/utils/constant.ts`
+  - 新增或修改枚举时，同时检查 `src/locales/zh-cn/constant.ts` 和 `src/locales/en/constant.ts`
+  - 状态类枚举按当前目标项目 `apps/<current-project>/src/utils/constant.ts` 的现有惯例补齐 `type`、`effect`、`border`、`icon: markRaw(...)`；如果当前项目没有现成惯例，再参考 `project-mamba` 其他项目已有写法
+  - 筛选项、表单选项、详情回显、表格列展示必须共用同一份 options，不允许一处 `constant` 一处硬编码
+- 加载态规则必须按已有容器判断：
+  - `ListCardBox` 已内建 `ListLoadingBox`，卡片列表优先复用，不重复造骨架
+  - `CurdTable` 自带 loading 遮罩与表头占位，表格场景默认不用额外 skeleton
+  - 表单回填和分页器通常不需要额外 skeleton
+  - 自定义 KPI 区、详情大块空白区若会塌高，再补同目录 `XxxLoadingBox.vue`，结构必须和真实内容对齐
+- 原生 HTML 兜底规则：
+  - 只有在当前页面实现、`apps/<current-project>/src/views/components`、`apps/<current-project>/src/components`、`apps/common/src/components`、`easybill-ui` 和 Element Plus 都确认不满足时，才允许写原生 HTML
+  - 不允许静默退回原生 HTML；必须先明确提示用户缺的是什么组件能力、为什么现有组件体系不够、原生 HTML 只负责哪一小段结构
+- 如果上面任一项无法直接回答，就继续查相邻模块或同业务页面，不允许凭感觉补一套新的展示协议。
+
+### 3. 按场景切执行策略
 #### 新功能实现
 - 先确认页面原型是否已经明确；不明确则回退到 `existing-project-feature-skill`，必要时先转到 `agione-ui-skill`。
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
@@ -71,7 +140,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 不为了“看起来更高级”而大规模重写无关代码。
 - 先保证行为不变，再提升可维护性。
 
-### 3. 关键实现检查
+### 4. 关键实现检查
 - 组件职责是否单一，输入输出是否清晰。
 - 派生状态是否应改为 `computed`，而不是 `watch` 同步副本。
 - 模板是否只负责结构表达，复杂判断是否已转移到具名逻辑。
@@ -79,31 +148,31 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 是否遵守项目既有目录、命名、样式 token 和组件复用方式。
 - 命名是否表达业务语义，公共逻辑是否应抽到 composable，同类展示是否已优先复用。
 
-### 4. 组件 API 与边界
+### 5. 组件 API 与边界
 - `props` 类型完整、默认值明确，只暴露必要输入；事件命名表达用户意图或状态变化，不用实现导向命名。
 - 双向绑定优先走标准 `modelValue / update:modelValue` 或具名 `v-model`；`slots` 用于结构扩展，不用于绕过组件边界。
 - `defineExpose` 只暴露必要实例能力；页面层负责容器与整体编排，子组件负责内容区和局部交互。
 
-### 5. 状态归属与副作用
+### 6. 状态归属与副作用
 - 同一份状态只保留一个真实来源；能用 `computed` 推导的状态，不额外维护 `ref` 副本。
 - 子组件不直接修改 `props`；展示组件默认不承担接口 orchestration；Store 只在确有跨页面或跨模块共享需求时接入。
 - `watch` 只做副作用，不用来维护业务主状态；初始化请求优先 `onMounted` 或显式 `init()`。
 - 异步并发必须显式处理竞态和最后一次请求生效；定时器、事件和订阅必须成对清理。
 
-### 6. 模板与样式边界
+### 7. 模板与样式边界
 - 模板负责声明结构，复杂判断应移到 `computed` 或方法；稳定列表禁止使用数组索引作为长期 `key`。
 - 点击区域必须使用语义化可交互元素；可交互反馈不能错误地出现在纯展示区域。
 - 样式只描述当前组件，不污染外层；通用组件不写页面级样式分支。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度；如果项目已使用 Tailwind，优先复用现有工具类和 token。
 - 必须写额外样式时，先说明为什么现有工具类不足，并把样式范围收敛在当前组件。
 
-### 7. 数据、枚举与表格展示
+### 8. 数据、枚举与表格展示
 - 列表页偏精简，详情页偏完整，创建 / 编辑页围绕完成操作组织字段；同一业务字段的命名、单位、格式和含义必须一致。
 - 状态 / 枚举字段优先走统一字典组件、集中常量或统一映射方法，必须具备未知值兜底。
 - 普通文本列、日期列、状态列优先走项目已有列工厂或统一配置；只有在现有列能力无法表达时，才使用自定义渲染。
 - 长文本列应具备省略和 tooltip；宽度、固定列、排序、隐藏等能力优先通过统一配置表达。
 
-### 8. 质量底线
+### 9. 质量底线
 - 默认审查 loading、empty、error、permission、disabled、focus 等必要状态，不只覆盖正常态。
 - 表单应具备 label、校验、错误提示和键盘可达性；交互反馈不能只靠颜色表达。
 - 重计算逻辑优先 `computed`；高频变化区域与稳定区域应拆分；性能优化必须说明收益。
@@ -111,7 +180,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 ## 回写与同步协议
 - 只有当本次修改形成稳定实现规律时，才进入回写。
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
-- 任何协议回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、`docs/` 检查清单、`templates/` 输出模板、`handoff`、`guardrails`。
+- 任何协议回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、框架级复用基准、`handoff`、`guardrails`、相关子 skill 衔接约束。
 - 如果只是单次项目特例，只修改当前交付，不回写协议，也不升级 skill。
 
 ## 代表性实例
@@ -135,7 +204,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 4. 风险、边界说明与最小验证建议。
 5. 是否需要叠加独立审查流。
 6. 如果要回写，明确目标路径、解决问题、适用边界、证据来源等级。
-7. 是否需要同步更新当前 skill；如果需要，指出要改的 `docs/`、`templates/`、`handoff` 或 `guardrails`。
+7. 是否需要同步更新当前 skill；如果需要，指出要改的具体段落、相关 rules 或被编排的其他 skill。
 
 ## handoff
 - 如果当前是新功能开发且没有已确认原型，转交 `existing-project-feature-skill` 或 `agione-ui-skill`。
