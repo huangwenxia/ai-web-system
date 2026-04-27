@@ -30,14 +30,12 @@
 ## 当前主入口
 - `existing-project-feature.md`
 - `existing-project-fix.md`
-- `product-review.md`
+- `page-review.md`
 - `translate-terms.md`
 
-## 当前保留的专业型子入口
-- `prototype.md`
-- `page-design.md`
-- `page-analysis.md`
-- `schema-to-ui.md`
+## 当前保留的执行型入口
 - `frontend-implementer.md`
-- `ui-visual-review.md`
-- `ux-analysis.md`
+
+## 当前约束
+- UI 原型生成统一由 `agione-ui-skill` 承担，不再在本仓库维护 `prototype`、`schema-to-ui`、`page-design` 这类旧入口。
+- 独立页面审查统一由 `page-review` 承担，不再拆成 `page-analysis`、`ui-visual-review`、`ux-analysis`。

@@ -26,8 +26,8 @@
 
 ## 最小验证建议
 
-## 是否需要后续审查
-- page-analysis / ui-visual-review / ux-analysis：
+## 是否需要后续独立审查
+- page-review：
 
 ## 回写候选
 - 是否回写标准：

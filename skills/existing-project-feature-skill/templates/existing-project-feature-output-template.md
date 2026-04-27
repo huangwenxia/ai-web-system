@@ -3,7 +3,8 @@
 ```md
 ## 所属工作流
 - 主类型：A-1 既有项目新功能开发
-- 主模式：api_to_page / design_to_code
+- 原型来源：external_design / agione_ui_generated
+- 原型确认状态：已确认 / 待先生成并确认
 
 ## 输入前提
 
@@ -16,13 +17,12 @@
 - 是否需要翻译 / i18n：
 
 ## 调用的子 Skill 链路
-- prototype：
-- schema-to-ui：
-- page-design：
+- agione-ui-skill：
 - frontend-implementer：
 - translate-terms：
+- page-review：
 
-## 关键结构 / 设计 / 实现决策
+## 关键原型 / 实施决策
 
 ## 当前交付结果
 
@@ -39,7 +39,7 @@
 ## 最小验证建议
 
 ## 是否需要叠加独立审查流
-- page-analysis / ui-visual-review / ux-analysis：
+- page-review：
 
 ## 回写候选
 - 是否回写标准：

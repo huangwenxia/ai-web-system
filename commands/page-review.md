@@ -1,4 +1,4 @@
-# product-review
+# page-review
 
 用于直接触发 A-0“产品级审查与持续优化”主工作流。
 
@@ -31,4 +31,4 @@
 - 用户要求直接落代码修正 -> 转 `frontend-implementer`
 
 不要在这个 command 文件里重写完整主 workflow 协议。
-更完整的执行细则由 `product-review-skill` 承担。
+更完整的执行细则由 `page-review-skill` 承担。

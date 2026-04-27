@@ -10,7 +10,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - 代码优化
 - 局部体验修正
 
-它不替代实现、结构审查、视觉审查、UX 审查这些专业型子 skill，而是负责先定位上下文、判定根因、控制修改范围，并决定何时叠加对应专业能力。
+它不替代实现或独立审查，而是负责先定位上下文、判定根因、控制修改范围，并决定何时叠加对应专业能力。
 
 ## 适用场景
 - 已有项目中的功能异常、状态异常、显示异常、交互异常。
@@ -20,8 +20,8 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 
 ## 不适用场景
 - 任务主要是新增页面、模块或组件。
-- 任务主要是先做业务梳理、原型推导或页面结构生成。
-- 任务主要是独立页面审查、视觉审查或 UX 诊断。
+- 任务主要是先做业务梳理、原型生成或页面结构确认。
+- 任务主要是独立页面审查。
 - 任务主要是纯翻译、术语统一或 i18n 改造。
 
 ## 必需输入
@@ -53,9 +53,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - 必要时读取 `standards/01-视觉标准`
 - 必要时读取 `standards/02-布局标准`
 - `skills/frontend-implementer-skill/SKILL.md`
-- 必要时读取 `skills/page-analysis-skill/SKILL.md`
-- 必要时读取 `skills/ui-visual-review-skill/SKILL.md`
-- 必要时读取 `skills/ux-analysis-skill/SKILL.md`
+- 必要时读取 `skills/page-review-skill/SKILL.md`
 - 检查清单：`docs/fix-workflow-checklist.md`
 - 输出模板：`templates/existing-project-fix-output-template.md`
 
@@ -69,7 +67,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 4. 还原触发路径、状态来源、边界条件和副作用链。
 5. 判断修复策略：
    - 如果是根因明确的局部实现问题，进入 `frontend-implementer` 做最小充分修改。
-   - 如果暴露出明显结构问题、视觉问题或 UX 问题，先完成当前修复，再决定是否叠加对应审查型子 skill。
+   - 如果暴露出明显结构、视觉或体验风险，先完成当前修复，再决定是否升级为独立 `page-review`。
 6. 执行修复或优化，优先修真正的状态源、条件判断、依赖关系或职责边界。
 7. 修复后默认顺手检查同链路的细节一致性、交互顺滑度、边界状态和明显 1px 级可见问题，但不把每次修复都扩成独立大审查。
 8. 明确影响范围、回归风险和最小验证建议。
@@ -94,7 +92,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 ### 4. 默认质量标尺
 - 所有 A-3 任务修完后，都按产品级标准顺手检查相关链路的对齐、节奏、状态、顺滑度和可见细节问题。
 - 这属于修复后的质量复查，不等于默认升级为完整审查任务。
-- 只有存在明显结构 / 视觉 / UX 风险时，才转入独立审查流。
+- 只有存在明显结构 / 视觉 / UX 风险时，才转入独立 `page-review`。
 
 ### 5. 治理候选的边界
 - 如果问题暴露出组件边界、状态归属、字段映射、公共函数设计或审查口径缺陷，可以提出治理候选。
@@ -122,7 +120,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 
 ### 实例 3：局部样式 bug 其实暴露出对齐和节奏问题
 - 先完成当前 bug 修复。
-- 修复后如果发现同链路还有明显视觉失衡，再决定是否叠加 `ui-visual-review`，而不是一开始就把任务扩成重设计。
+- 修复后如果发现同链路还有明显结构、视觉或体验问题，再决定是否升级为独立 `page-review`。
 
 ## 输出要求
 1. 所属工作流与问题类型判断。
@@ -137,7 +135,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 
 ## handoff
 - 如果任务其实是新增功能开发，转交 `existing-project-feature-skill`。
-- 如果任务已经变成独立审查，转交 `product-review-skill`。
+- 如果任务已经变成独立审查，转交 `page-review-skill`。
 - 如果问题主要是术语或 i18n，转交 `translate-terms`。
 
 ## writeback_targets
@@ -148,9 +146,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - `standards/03-数据映射标准`
 - `skills/existing-project-fix-skill/`
 - `skills/frontend-implementer-skill/`
-- `skills/page-analysis-skill/`
-- `skills/ui-visual-review-skill/`
-- `skills/ux-analysis-skill/`
+- `skills/page-review-skill/`
 - `.cursor/rules/`
 
 ## guardrails

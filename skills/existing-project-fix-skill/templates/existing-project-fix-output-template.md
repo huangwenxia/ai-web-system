@@ -23,9 +23,7 @@
 
 ## 调用的子 Skill 链路
 - frontend-implementer：
-- page-analysis：
-- ui-visual-review：
-- ux-analysis：
+- page-review：
 
 ## 修复策略
 
@@ -44,7 +42,7 @@
 ## 最小验证建议
 
 ## 是否需要叠加独立审查流
-- page-analysis / ui-visual-review / ux-analysis：
+- page-review：
 
 ## 回写候选
 - 是否回写标准：

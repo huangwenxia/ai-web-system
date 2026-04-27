@@ -83,11 +83,11 @@ Skill 不是系统本体，它是“执行协议层”的一部分。
 ## 推荐目录结构
 ```text
 skills/
-  prototype-skill/
-    SKILL.md
-  schema-to-ui-skill/
+  agione-ui-skill/
     SKILL.md
   frontend-implementer-skill/
+    SKILL.md
+  page-review-skill/
     SKILL.md
 ```
 
@@ -218,25 +218,21 @@ Skill 不应直接替代标准库。
 
 ## 当前仓库中的建议 Skill 集
 
-### 当前保留的专业型子 Skill
+### 当前保留的专业型 / 执行型 Skill
 
-- `prototype-skill`
-- `schema-to-ui-skill`
+- `agione-ui-skill`
 - `frontend-implementer-skill`
-- `page-analysis-skill`
-- `page-design-skill`
-- `ui-visual-review-skill`
-- `ux-analysis-skill`
+- `mamba-dark-mode-override`
 - `translate-terms-skill`
 
 ### 已落地的任务型主 Skill
 
 - `existing-project-feature-skill`
 - `existing-project-fix-skill`
-- `product-review-skill`
+- `page-review-skill`
 - `translate-terms-skill`
 
-这意味着当前仓库的升级方向不是“删掉专业 Skill”，而是先落地最核心的任务入口，再逐步让更多主入口贴近真实工作流，同时保留专业处理层。
+这意味着当前仓库的升级方向不是继续拆更多旧专业 Skill，而是把真实工具流收敛为更少、更稳定的入口，并保留必要的专业处理层。
 
 ## 结论
 Skill 要解决的是“如何稳定执行一类任务”。
