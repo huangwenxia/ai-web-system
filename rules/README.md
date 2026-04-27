@@ -6,7 +6,7 @@
 
 - 维护仓库内稳定、可复用的项目级约束
 - 作为 `.cursor/rules/` 和 `.trae/rules/` 的上游来源
-- 与 `standards/`、`skills/`、`agents/` 保持职责分离
+- 与 `skills/`、`agents/` 保持职责分离；如保留 `docs/`，只把它当来源档案，不当现行维护层
 
 ## 当前内容
 

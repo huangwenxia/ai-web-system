@@ -5,7 +5,7 @@ alwaysApply: true
 
 当任务属于“既有项目的前端开发”时，遵守以下约束：
 
-- 必须优先遵循 `ai-web-system` 的标准体系、项目级规则和反馈机制；需要判断实现、审查、沉淀或回写时，优先参考 `standards/`、`docs/`、`rules/` 中的现行定义。
+- 必须优先遵循 `ai-web-system` 的项目级规则、现行 skill 协议和反馈机制；需要判断实现、审查、沉淀或回写时，优先参考 `skills/` 与 `rules/` 中的现行定义。
 - 必须优先复用项目现有组件、样式体系、布局模式、数据展示模式和目录结构，不重新发明一套实现。
 - 如果没有原型、只有后端接口，先补齐业务目标、字段语义、页面结构、状态边界和展示分组，再进入实现；但 rule 只要求先补齐，不展开具体产出步骤。
 - 如果已有设计稿、页面稿或已确认方案，默认按既有视觉组件库和项目规范直接实现，不擅自改动已确认的信息层级和视觉主方向。
@@ -13,10 +13,11 @@ alwaysApply: true
 - 页面或组件实现必须覆盖加载态、空态、错误态、权限态、禁用态等必要边界，不只覆盖正常态。
 - 页面容器职责、区块职责、子组件职责要清晰，避免把页面壳逻辑下沉到通用组件里。
 - 数据展示、业务逻辑完整性和状态处理必须同时成立，不能只追求“页面先跑起来”。
-- 只有形成稳定复用模式时，才考虑沉淀为资产、标准或规则；单次页面实现默认不回写规则。
+- 只有形成稳定复用模式时，才考虑回写到对应 skill 协议；只有明确属于跨任务的环境级默认约束时，才升级到 `rules/`。
+- 单次页面实现、单次原型补洞或单页样式偏好默认不回写。
 
 参考：
-@standards/01-视觉标准/README.md
-@standards/02-布局标准/README.md
-@standards/03-数据映射标准/README.md
-@standards/04-组件标准/README.md
+@skills/existing-project-feature-skill/SKILL.md
+@skills/frontend-implementer-skill/SKILL.md
+@skills/page-review-skill/SKILL.md
+@skills/translate-terms-skill/SKILL.md

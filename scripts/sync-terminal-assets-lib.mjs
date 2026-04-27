@@ -429,7 +429,7 @@ function buildSourceMetadataBlock(sourcePath, newline) {
   return [
     '<!-- ai-web-system-sync-metadata',
     `AI_WEB_SYSTEM_REPO_ROOT=${repoRoot}`,
-    'Repo-internal refs like standards/, docs/, examples/, rules/, skills/, and agents/ resolve from AI_WEB_SYSTEM_REPO_ROOT.',
+    'Repo-internal refs like rules/, skills/, and agents/ resolve from AI_WEB_SYSTEM_REPO_ROOT.',
     '-->',
     '',
   ].join(newline);
