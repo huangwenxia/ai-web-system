@@ -141,10 +141,11 @@ description: "面向既有页面的全方位结构、视觉、体验综合审查
 ## writeback_targets
 只有在形成稳定审查口径时再考虑：
 - `skills/page-review-skill/`
-- `.cursor/rules/`
+- `rules/`
 
 ## guardrails
 - 不把个人审美偏好包装成通用审查规则。
 - 先看主任务和结构，再看视觉和体验细节。
 - 审查结论必须能支持后续修改，不输出空泛评价。
 - 不把单次页面偏好误写成通用产品规则。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。

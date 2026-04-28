@@ -38,6 +38,9 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ## 执行前先读
 - `rules/10-existing-frontend-dev.mdc`
+- 检查清单：`docs/implementation-review-checklist.md`
+- 输出模板：`templates/implementation-output-template.md`
+- 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
 - 新功能但原型未确认时回退 `skills/existing-project-feature-skill/SKILL.md`
 - 涉及翻译、术语统一或 i18n 改造时读取 `skills/translate-terms-skill/SKILL.md`
 - 需要独立结构、视觉或交互审查时读取 `skills/page-review-skill/SKILL.md`
@@ -63,66 +66,11 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
   - 如果同一次任务跨多个项目路径，默认按当前正在修改的那个文件所属项目分别判断，不把一个项目的组件默认挪给另一个项目
   - 如果路径不足以识别项目归属，先继续查目标文件、相邻模块和 import 来源；仍无法判断时，再明确提示用户当前项目不清晰
 
-### 2. `project-mamba` 框架级复用基准（命中 `project-mamba` 或同构仓库时强制执行）
-- 不允许只看设计稿直接落代码；先把页面类型、容器组合、字段类型、常量来源和工具来源对齐到已有实现，再决定是否新增。
-- 组件选型不是按来源写成一条死顺序，而是先判断组件职责层级：
-  - 页面壳 / 布局容器
-  - 当前业务页面的语义区块
-  - 当前项目的业务复用组件
-  - 通用业务控件
-  - 基础交互控件
-- 在正式选型前，先检查当前页面、同路由相邻页面和相邻模块有没有同语义实现；有则优先复用现成业务块，不重复发明。
-- 但页面壳、滚动区、卡片壳、详情导航这类布局组件不跟着页面局部特例走，默认先查 `apps/common/src/components`。
-- 页面壳优先按真实组件路径选型：
-  - 页面主容器：`apps/common/src/components/MainBox/src/MainBox.vue`
-  - 页面头部与主操作区：`HeaderBox`，通常与 `MainBox + ScrollBox` 组合出现
-  - 独立内容区块：`apps/common/src/components/CardBox/src/CardBox.vue`
-  - 详情页导航：`apps/common/src/components/DetailTabs/src/DetailTabs.vue`
-  - 单页详情头：`apps/common/src/components/DetailHeader/src/DetailHeader.vue`
-  - 卡片列表容器：`apps/common/src/components/ListCardBox/src/ListCardBox.vue`
-  - 列表单项：`apps/common/src/components/ListCardItem/src/ListCardItem.vue`
-  - Schema 表单容器：`apps/common/src/components/InstanceForm/src/InstanceForm.vue`
-- 页面类型先套现成组合，不自己拼壳：
-  - 列表页：优先 `MainBox + HeaderBox + ScrollBox + FilterBox + CurdTable`
-  - 卡片列表页：优先 `MainBox + HeaderBox + ScrollBox + FilterBox + ListCardBox`
-  - 详情页：优先 `MainBox + HeaderBox + DetailTabs + router-view`，结构化字段优先 `DetailInfo`
-  - 创建 / 编辑页：优先 `InstanceForm`，多步骤再查 `InstanceStepPage` / 同目录现有 schema 写法
-- 组件来源的合理使用判断顺序如下：
-  - 当前页面 / 相邻模块已有同语义业务块：直接优先复用
-  - 当前目标项目页面语义组件：优先看 `apps/<current-project>/src/views/components`
-  - 当前目标项目业务通用组件：再看 `apps/<current-project>/src/components`
-  - 页面壳 / 布局容器：这类默认先查 `apps/common/src/components`
-  - 通用业务控件：优先 `easybill-ui`
-  - 基础控件和交互原件：最后才落到 Element Plus，参考 `https://element-plus.org/zh-CN/component/overview`
-  - 以上都不满足时，才允许退到原生 HTML，而且必须先明确提示用户为什么现有组件体系不够
-- 字段类型先映射再实现：
-  - 状态 / 枚举：先写入最近的 `constant.ts`，展示优先 `ConstantStatus`、表格优先 `ColumnFactory.Dict()`、纯文本回显优先 `getConstantLabel()`
-  - 时间：优先 `@repo/utils` 的 `dateFormatter()` 或 `ColumnFactory.Date()`；不要在页面里手写 `dayjs(...).format(...)`
-  - 结构化详情：优先 `DetailInfo`，字段数组里统一放 `label`、`value`、`span`、`options`、`slot`
-  - 表单字段：优先 `SchemaItemFactory` 产出 `Input`、`Select`、`RadioButton`、`InfiniteSelect`、`Component` 等，而不是散写底层表单项对象
-  - 文件 / 对象存储路径：优先先查当前目标项目 `apps/<current-project>/src/components` 下是否已有表单集成组件；已有就复用，没有再评估是否需要新增项目级组件
-  - 关系标签 / 多标签集合：优先 `OverflowTag` 或现有卡片组件的 tags 槽位；长文本默认补齐省略和 tooltip
-  - 容量 / 金额 / 数值：优先复用 `packages/utils/src/common/format.ts` 里的 `volumeFormat()`、`amount()`、`countFormat()` 等统一 formatter
-- 表格规则必须对齐列工厂：
-  - 列定义优先 `packages/utils/src/CurdTable/ColumnFactory.ts`
-  - 普通文本列优先 `ColumnFactory.Column(...).TooltipMinWidth(...)`
-  - 枚举列优先 `ColumnFactory.Dict(...)`
-  - 日期列优先 `ColumnFactory.Date(...)` 或链式 `Formatter(() => dateFormatter(...))`
-  - 只有列工厂和统一配置表达不了时，才退到自定义 slot / formatter
-- 常量与 i18n 规则必须成套：
-  - 当前模块已有 `constant.ts` 时优先就近复用；没有时再用应用级 `src/utils/constant.ts`
-  - 新增或修改枚举时，同时检查 `src/locales/zh-cn/constant.ts` 和 `src/locales/en/constant.ts`
-  - 状态类枚举按当前目标项目 `apps/<current-project>/src/utils/constant.ts` 的现有惯例补齐 `type`、`effect`、`border`、`icon: markRaw(...)`；如果当前项目没有现成惯例，再参考 `project-mamba` 其他项目已有写法
-  - 筛选项、表单选项、详情回显、表格列展示必须共用同一份 options，不允许一处 `constant` 一处硬编码
-- 加载态规则必须按已有容器判断：
-  - `ListCardBox` 已内建 `ListLoadingBox`，卡片列表优先复用，不重复造骨架
-  - `CurdTable` 自带 loading 遮罩与表头占位，表格场景默认不用额外 skeleton
-  - 表单回填和分页器通常不需要额外 skeleton
-  - 自定义 KPI 区、详情大块空白区若会塌高，再补同目录 `XxxLoadingBox.vue`，结构必须和真实内容对齐
-- 原生 HTML 兜底规则：
-  - 只有在当前页面实现、`apps/<current-project>/src/views/components`、`apps/<current-project>/src/components`、`apps/common/src/components`、`easybill-ui` 和 Element Plus 都确认不满足时，才允许写原生 HTML
-  - 不允许静默退回原生 HTML；必须先明确提示用户缺的是什么组件能力、为什么现有组件体系不够、原生 HTML 只负责哪一小段结构
-- 如果上面任一项无法直接回答，就继续查相邻模块或同业务页面，不允许凭感觉补一套新的展示协议。
+### 2. `project-mamba` 或同构仓库实施约束
+- 命中 `project-mamba` 或同构仓库时，必须读取 `docs/project-mamba-implementation-profile.md`。
+- 进入实现前先输出一份极短的“复用校验表”：页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
+- 页面壳、业务区块、项目业务复用、通用业务控件和基础控件要分层判断，不允许直接凭感觉拼一套新结构。
+- 如果 profile 中任一关键项答不上来，就继续查当前页面、相邻模块和已有实现，不直接进入落码。
 
 ### 3. 按场景切执行策略
 #### 新功能实现
@@ -180,8 +128,9 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 ## 回写与同步协议
 - 只有当本次修改形成稳定实现规律时，才进入回写。
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
-- 任何协议回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、框架级复用基准、`handoff`、`guardrails`、相关子 skill 衔接约束。
+- 任何协议回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、相关 `docs/` / `templates/`、`handoff`、`guardrails`、相关子 skill 衔接约束。
 - 如果只是单次项目特例，只修改当前交付，不回写协议，也不升级 skill。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
 
 ## 代表性实例
 ### 实例 1：已有页面新增一个区块
@@ -214,7 +163,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 只有在形成稳定规律时才考虑回写：
 - `skills/frontend-implementer-skill/`：检查清单、输出模板、handoff、guardrails 需要同步升级时
 - `skills/agione-ui-skill/`：原型与实施衔接约束需要同步升级时
-- `.cursor/rules/`：环境级默认执行约束
+- `rules/`：环境级默认执行约束
 
 ## guardrails
 - 不把一次性项目特例写成通用规则。

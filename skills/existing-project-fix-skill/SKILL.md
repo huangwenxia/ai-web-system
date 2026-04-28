@@ -123,6 +123,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
   - `handoff`
   - `guardrails`
 - 如果只是单点 bug、局部样式修正或一次性兼容处理，不回写协议，也不升级 skill。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
 
 ## 代表性实例
 ### 实例 1：列表页筛选切换后数据不刷新
@@ -158,7 +159,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - `skills/existing-project-fix-skill/`
 - `skills/frontend-implementer-skill/`
 - `skills/page-review-skill/`
-- `.cursor/rules/`
+- `rules/`
 
 ## guardrails
 - 不把任务型主 skill 写成 `frontend-implementer` 的重复拷贝。

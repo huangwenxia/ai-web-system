@@ -49,6 +49,8 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - `rules/10-existing-frontend-dev.mdc`
 - `skills/agione-ui-skill/SKILL.md`
 - `skills/frontend-implementer-skill/SKILL.md`
+- 检查清单：`docs/feature-delivery-checklist.md`
+- 输出模板：`templates/existing-project-feature-output-template.md`
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 
@@ -144,6 +146,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
   - `handoff`
   - `guardrails`
 - 如果只是单个项目的个例实现，不回写协议，也不升级 skill。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
 
 ## 代表性实例
 ### 实例 1：已有设计稿，需要快速实现列表页
@@ -185,7 +188,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - `skills/frontend-implementer-skill/`
 - `skills/translate-terms-skill/`
 - `skills/page-review-skill/`
-- `.cursor/rules/`
+- `rules/`
 
 ## guardrails
 - 不把任务型主 skill 写成对子 skill 的重复拷贝。

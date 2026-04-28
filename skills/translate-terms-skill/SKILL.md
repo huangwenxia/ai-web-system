@@ -42,6 +42,10 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 
 ## 执行前先读
 - 当前 skill 本体
+- 补充细则：`docs/scan-and-key-reuse.md`
+- 命名与 locale 模板：`docs/key-naming-and-locale-template.md`
+- 输出模板：`templates/translate-terms-output-template.md`
+- locale 最小模板：`templates/locale-entry-template.md`
 - 涉及新功能开发时读取 `skills/existing-project-feature-skill/SKILL.md`
 - 涉及页面实现落地时读取 `skills/frontend-implementer-skill/SKILL.md`
 
@@ -95,6 +99,7 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
 - 任何协议回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、i18n 子协议、`handoff`、`guardrails`。
 - 如果只是当前模块的单次改写，不回写协议，也不升级 skill。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
 
 ## i18n 子协议
 当任务属于“Vue 文件 i18n 改造”或“locale key 校验”时，必须补做以下步骤：
