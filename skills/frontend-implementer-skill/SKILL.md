@@ -52,7 +52,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 4. 如果目标是 `project-mamba` 或同构仓库，先输出一份极短的“复用校验表”：页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
 5. 优先复用现有组件、模式和目录结构，不重新发明一套实现。
 6. 输出实现或修改结果，并明确边界态与风险。
-7. 判断是否需要叠加独立 `page-review`。
+7. 判断是否需要叠加独立 `page-review-skill`。
 8. 判断本次是否值得回写到标准、案例、资产或规则。
 
 ## 标准执行协议
@@ -128,9 +128,41 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 ## 回写与同步协议
 - 只有当本次修改形成稳定实现规律时，才进入回写。
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
-- 任何协议回写都要同时检查当前 skill 是否需要同步升级：`执行前先读`、相关 `docs/` / `templates/`、`handoff`、`guardrails`、相关子 skill 衔接约束。
+- 任何协议回写都要同时检查当前 skill 是否需要同步升级：
+  - `执行前先读`
+  - `docs/` / `templates/`
+  - `handoff`
+  - `guardrails`
+  - 相关子 skill 衔接约束
 - 如果只是单次项目特例，只修改当前交付，不回写协议，也不升级 skill。
 - 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
+- 如果不确定该写回哪一层，至少明确区分：当前任务结论 / Claude memory / `skills/` / `rules/`。
+
+## writeback_targets
+只有在形成稳定规律时才考虑回写：
+- `skills/frontend-implementer-skill/`
+- `skills/agione-ui-skill/`
+- `skills/translate-terms-skill/`
+- `skills/page-review-skill/`
+- `rules/`
+
+## 输出要求
+1. 主任务类型与输入前提。
+2. 使用的约束条目。
+3. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
+4. 风险、边界说明与最小验证建议。
+5. 是否需要叠加独立审查流。
+6. 回写候选与 skill 同步升级建议。
+7. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
+
+## handoff
+- 如果当前是新功能开发且没有已确认原型，转交 `existing-project-feature-skill` 或 `agione-ui-skill`。
+- 如果实现完成后需要做独立结构、视觉或交互诊断，转交 `page-review-skill`。
+
+## guardrails
+- 不把一次性项目特例写成通用规则。
+- 不把单次实现偶然成功的写法误沉淀成长期约束。
+- 没有形成稳定规律时，不强行回写。
 
 ## 代表性实例
 ### 实例 1：已有页面新增一个区块
@@ -146,26 +178,3 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 如果公共 util 被多个模块使用，先检索调用点。
 - 优先做兼容性修复或局部收敛，不直接用单场景逻辑污染公共层。
 
-## 输出要求
-1. 主任务类型与输入前提。
-2. 使用的约束条目。
-3. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
-4. 风险、边界说明与最小验证建议。
-5. 是否需要叠加独立审查流。
-6. 如果要回写，明确目标路径、解决问题、适用边界、证据来源等级。
-7. 是否需要同步更新当前 skill；如果需要，指出要改的具体段落、相关 rules 或被编排的其他 skill。
-
-## handoff
-- 如果当前是新功能开发且没有已确认原型，转交 `existing-project-feature-skill` 或 `agione-ui-skill`。
-- 如果实现完成后需要做独立结构、视觉或交互诊断，转交 `page-review-skill`。
-
-## writeback_targets
-只有在形成稳定规律时才考虑回写：
-- `skills/frontend-implementer-skill/`：检查清单、输出模板、handoff、guardrails 需要同步升级时
-- `skills/agione-ui-skill/`：原型与实施衔接约束需要同步升级时
-- `rules/`：环境级默认执行约束
-
-## guardrails
-- 不把一次性项目特例写成通用规则。
-- 不把单次实现偶然成功的写法误沉淀成长期约束。
-- 没有形成稳定规律时，不强行回写。

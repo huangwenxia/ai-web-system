@@ -53,7 +53,7 @@ description: "面向既有页面的全方位结构、视觉、体验综合审查
    - 体验问题
    - 实现问题
 5. 输出可执行修正方向，明确哪些值得立即改、哪些应排入后续优化、哪些只是观察项。
-6. 如果用户允许直接修正代码，才转交 `frontend-implementer`；否则先停留在审查结论层。
+6. 如果用户允许直接修正代码，才转交 `frontend-implementer-skill`；否则先停留在审查结论层。
 
 ## 审查口径
 
@@ -122,6 +122,19 @@ description: "面向既有页面的全方位结构、视觉、体验综合审查
 - 术语是否存在歧义。
 - 状态是否透明可理解。
 
+## 回写与同步协议
+- 只有当本次审查沉淀出稳定审查口径时，才进入回写。
+- 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
+- 任何协议回写都要同时检查当前 skill 是否需要同步升级：
+  - `执行前先读`
+  - `docs/` / `templates/`
+  - `handoff`
+  - `guardrails`
+  - 审查优先级与输出模板
+- 如果只是单次页面偏好、局部观察或无法确认可复用性的审查结论，不回写协议，也不升级 skill。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
+- 如果不确定该写回哪一层，至少明确区分：当前任务结论 / Claude memory / `skills/` / `rules/`。
+
 ## 输出要求
 1. 审查对象与审查模式判断。
 2. 结构问题（信息架构 + 组件结构）。
@@ -132,15 +145,17 @@ description: "面向既有页面的全方位结构、视觉、体验综合审查
 7. 哪些建议立即修，哪些建议后续排期。
 8. 是否需要进入实现修正流。
 9. 回写候选与 skill 同步升级建议。
+10. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
 - 更偏新增开发时，转交 `existing-project-feature-skill`。
 - 更偏 bug 修复或代码优化时，转交 `existing-project-fix-skill`。
-- 如果用户允许直接改代码，转交 `frontend-implementer`。
+- 如果用户允许直接改代码，转交 `frontend-implementer-skill`。
 
 ## writeback_targets
 只有在形成稳定审查口径时再考虑：
 - `skills/page-review-skill/`
+- `skills/frontend-implementer-skill/`
 - `rules/`
 
 ## guardrails

@@ -29,5 +29,6 @@
 - 是否存在同义词混用、状态命名漂移或按钮语气不一致
 
 ## 输出提醒
-- 如果问题集中在实现细节而不是审查结论，明确标记可转 `frontend-implementer`
+- 如果问题集中在实现细节而不是审查结论，明确标记可转 `frontend-implementer-skill`
 - 如果问题本质是新增方案未定，不要假装是审查结论，应转回 feature / prototype 链路
+- 如果结论值得沉淀，明确区分应该回到 `skills/`、`rules/`、Claude memory，还是只保留为当前任务结论

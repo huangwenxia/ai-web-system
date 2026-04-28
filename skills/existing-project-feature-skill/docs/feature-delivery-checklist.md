@@ -37,11 +37,12 @@
 - 对齐、间距、层级、节奏、顺滑度和明显 1px 级细节问题
 
 ## 叠加能力检查
-- 是否需要叠加 `translate-terms`
-- 是否真的需要升级为独立 `page-review`
+- 是否需要叠加 `translate-terms-skill`
+- 是否真的需要升级为独立 `page-review-skill`
 
 ## 输出前检查
 - 是否说明了原型来源、原型确认状态和子 skill 链路
 - 是否给出了最小验证建议
 - 是否判断了是否值得回写
+- 是否明确区分回写层级：`skills/` / `rules/` / Claude memory / 当前任务结论
 - 是否检查了主 skill 或子 skill 是否需要同步升级

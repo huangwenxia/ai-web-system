@@ -39,7 +39,7 @@
 ## 最小验证建议
 
 ## 是否需要后续独立审查
-- page-review：
+- page-review-skill：
 
 ## 回写候选
 - 是否回写标准：
@@ -48,9 +48,10 @@
 - 适用场景：
 - 不适用场景 / 边界：
 - 证据来源等级：
+- 回写层级：`skills/` / `rules/` / Claude memory / 仅当前任务结论
 
 ## Skill 同步升级
 - 是否需要更新当前 skill：
 - 需更新文件：
-- 需更新内容：执行前先读 / docs / templates / handoff / guardrails
+- 需更新内容：执行前先读 / docs / templates / handoff / guardrails / 相关子 skill 衔接约束
 ```

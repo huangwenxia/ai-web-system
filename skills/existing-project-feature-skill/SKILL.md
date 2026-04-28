@@ -59,13 +59,13 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 2. 归一化输入，确认当前是否已有可实施的原型，并判断其来源属于 `external_design` 还是 `agione_ui_generated`。
 3. 如果尚无已确认原型，先转到 `agione-ui-skill` 生成并确认原型；未确认前不进入实施。
 4. 定位项目上下文：现有页面结构、路由入口、复用组件、相邻模块、目录规范、`project-mamba` 复用机会。
-5. 在进入 `frontend-implementer` 之前，先输出一份极短的“实施前复用校验表”：页面类型、页面壳、关键字段映射、常量来源、工具来源、加载策略。
+5. 在进入 `frontend-implementer-skill` 之前，先输出一份极短的“实施前复用校验表”：页面类型、页面壳、关键字段映射、常量来源、工具来源、加载策略。
 6. 校验当前原型是否足以直接实施：
    - 页面骨架和区块职责是否清晰
    - 关键状态是否覆盖 loading / empty / error / permission / disabled
    - 主任务、主操作和信息层级是否已确认
-7. 进入 `frontend-implementer` 完成代码落地，优先复用现有模式和 `project-mamba`。
-8. 如果存在英文翻译、术语统一或 i18n 需求，叠加 `translate-terms`。
+7. 进入 `frontend-implementer-skill` 完成代码落地，优先复用现有模式和 `project-mamba`。
+8. 如果存在英文翻译、术语统一或 i18n 需求，叠加 `translate-terms-skill`。
 9. 默认做一轮产品级细节复查：对齐、间距、信息节奏、交互顺滑度、1px 级别可见问题和边界状态完整性。
 10. 只有当任务已经变成独立审查时，才转交 `page-review-skill`；不要把每次实施都默认扩成独立审查。
 11. 判断本次是否形成稳定模式，决定是否回写到标准或同步升级相关 skill。
@@ -88,80 +88,60 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 
 ### 4. 默认质量标尺
 - 所有 A-1 任务都按产品级标准交付。
-- 这意味着不仅要让页面能跑，还要检查层级、节奏、对齐、状态、禁用、空态、错误态、权限态和顺滑度。
-- 但只有出现明确问题时，才升级成独立 `page-review` 审查流。
+- 这意味着不仅要让页面能跑，还要补齐实施所需的边界状态，并在交付前检查明显的层级、节奏、对齐和顺滑度问题。
+- 但只有出现明确结构 / 视觉 / UX 风险时，才升级成独立 `page-review-skill` 审查流。
 
 ### 5. 复用优先
 - 优先复用项目现有布局模式、组件模式、表格模式、表单模式、状态模式和目录结构。
 - 优先复用 `project-mamba` 中已有视觉组件和组合模式，不重新发明一套。
-- 如果必须新增组合模式，要说明新增原因和复用边界。
+- 具体的组件选型、字段映射、常量来源、工具来源和加载策略判断，统一下沉到 `frontend-implementer-skill` 及其相关 `docs/`。
 
 ### 6. 实施前复用校验表
-- 进入 `frontend-implementer` 之前，必须先交代清楚下面 8 项；说不清就继续查相邻模块，不进入实施：
-  - 当前目标项目：根据目标路径识别 `apps/<name>/src/...` 中的 `<name>`；如果同一任务跨多个项目，按实际修改文件分别归属，不默认套用上一个项目
-  - 页面类型：列表 / 卡片列表 / 详情 / 创建编辑 / 多步骤 / 组合容器
-  - 页面壳：准备复用的 `MainBox`、`HeaderBox`、`ScrollBox`、`CardBox`、`DetailTabs`、`InstanceForm` 等真实组件
-  - 组件层级判断：这次要做的是页面壳、业务区块、项目业务复用、通用业务控件，还是基础控件；不要把来源列表误当成固定使用顺序
-  - 字段映射：核心字段分别落到 `ConstantStatus`、`DetailInfo`、`CurdTable + ColumnFactory`、`SchemaItemFactory`、当前目标项目已有表单集成组件或其他现有组件中的哪一层
-  - 常量来源：最近的 `constant.ts` 在哪里，是否需要同步 `src/locales/zh-cn/constant.ts` 和 `src/locales/en/constant.ts`
-  - 工具来源：是否要用 `dateFormatter()`、`getOptions()`、`getConstantLabel()`、`amount()`、`volumeFormat()` 等已有 formatter / helper
-  - 加载策略：使用 `ListCardBox` 内建骨架、`CurdTable` loading、还是补同目录 `XxxLoadingBox.vue`
-- 业务组件来源判断顺序默认遵循：
-  - 同页面 / 相邻模块现成业务块
-  - `apps/<current-project>/src/views/components`
-  - `apps/<current-project>/src/components`
-  - `easybill-ui`
-  - Element Plus
-  - 最后才是原生 HTML，并先提示用户
-- 页面壳 / 布局容器是例外，优先 `apps/common/src/components`，不沿用上面的业务组件顺序。
+- 进入 `frontend-implementer-skill` 之前，必须先输出一份极短的“实施前复用校验表”。
+- 至少说明：当前目标项目、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
+- 如果这些关键项说不清，就继续查相邻模块，不进入实施。
 - 这张表是实施入口检查，不是额外文档；保持极短，直接写在任务分析或实现前确认里。
-- 字段、容器、常量的具体判定标准，以 `skills/frontend-implementer-skill/SKILL.md` 中的 `project-mamba` 框架级复用基准为准，不在当前主 skill 重复展开。
 
-### 7. 页面结构与信息层次
+### 7. 原型约束与实施边界
 - 一个页面只能服务一个主任务，不把“管理、分析、创建、总览”同时做成首屏中心。
-- 先确认顶部身份与主操作、次顶部上下文、核心内容区和底部补充区，再进入具体实现。
-- 主要状态、主要操作和高决策价值信息尽量首屏可见，避免低价值说明占据第一扫描路径。
+- 实施前先确认顶部身份、主操作、核心内容区和关键状态是否已经清楚。
 - 同一页面中的区块职责必须明确，不重复表达同一份信息。
-- 页面级容器只在页面层决策，子组件默认不自带页面壳。
+- 具体的页面结构、字段展示、交互细节和代码层边界，由 `frontend-implementer-skill` 负责落地，不在当前主 skill 重复展开。
 
-### 8. 展示形式与字段映射
-- 列表页偏精简，只放快速筛选、比较和批量决策所需字段；详情页补足结构化信息和上下文；创建 / 编辑页围绕用户完成操作组织必填和核心字段。
-- 同一业务字段在列表、详情、编辑中的命名、单位、格式和含义必须一致，不允许语义漂移。
-- 列表字段应尽量是详情字段的子集；创建 / 编辑字段应尽量与详情字段保持一致，仅允许数据来源、回填方式和交互状态差异。
-- 状态、枚举、金额、时间、关系和集合类字段应使用项目已有的统一展示方式；无法复用时，也必须补齐未知值兜底和一致的语义格式。
-- 枚举与状态映射优先集中到常量模块或统一字典方法，不在页面组件里硬编码文案、颜色和顺序。
+### 8. 边界状态与产品级细节
+- Loading、Empty、Error、Permission、Disabled 等边界状态必须完整。
+- 不因为已有设计稿就跳过实现层必需的状态补齐和反馈机制。
+- 如果发现问题已经超出实施前提，变成结构、视觉或 UX 审查，应转入 `page-review-skill`。
 
-### 9. 视觉与交互底线
-- 页面必须存在唯一明确的视觉中心，标签、Badge、角标和辅助文案只能做注释，不能压过对象名称、主数据和主操作。
-- Key 和 Value 应视觉分离；同类字段的对齐方式、间距节奏和层级关系必须稳定。
-- Hover、Focus、Active 只属于可交互元素；禁用态必须同时具备视觉弱化和交互禁止。
-- Loading、Empty、Error、Permission、Disabled 等边界状态必须完整，且不能只靠颜色表达状态，还要告诉用户下一步怎么做。
+### 9. 翻译与一致性
+- 如果开发过程中暴露出术语、按钮文案、状态文案或 locale key 不一致，交由 `translate-terms-skill` 统一处理。
+- 不在当前主 skill 中重复展开 i18n 细节协议。
+
+### 10. 代码落地协议引用
+- 组件选型、字段映射、状态归属、模板边界、样式边界、表格与枚举展示等代码层规则，以 `skills/frontend-implementer-skill/SKILL.md` 为准。
+- 命中 `project-mamba` 或同构仓库时，进一步以 `skills/frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 为准。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
-- 任何协议回写都要同时检查当前主 skill 和被编排的子 skill 是否需要同步升级：
+- 任何协议回写都要同时检查当前主 skill 和被编排子 skill 是否需要同步升级：
   - `执行前先读`
-  - 实施前复用校验表
+  - `docs/` / `templates/`
   - `handoff`
   - `guardrails`
+  - 相关输出模板或检查清单
 - 如果只是单个项目的个例实现，不回写协议，也不升级 skill。
 - 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
+- 如果不确定该写回哪一层，至少明确区分：当前任务结论 / Claude memory / `skills/` / `rules/`。
 
-## 代表性实例
-### 实例 1：已有设计稿，需要快速实现列表页
-- 原型来源判为 `external_design`。
-- 先校验筛选区、表格区、批量操作区、空态和错误态是否已明确。
-- 对未定义的状态只做必要补齐，然后进入实施。
-
-### 实例 2：只有业务说明和接口结构，需要先做原型再实施
-- 当前不直接进入代码实现。
-- 先转到 `agione-ui-skill` 生成并确认原型。
-- 原型确认后，再进入 `frontend-implementer` 落地。
-
-### 实例 3：开发过程中发现按钮文案和中英翻译不一致
-- 不单独打断主链路。
-- 在实现落地阶段叠加 `translate-terms`，统一术语、locale key 和 i18n 改造。
+## writeback_targets
+只有在形成稳定模式时才考虑回写：
+- `skills/existing-project-feature-skill/`
+- `skills/agione-ui-skill/`
+- `skills/frontend-implementer-skill/`
+- `skills/translate-terms-skill/`
+- `skills/page-review-skill/`
+- `rules/`
 
 ## 输出要求
 1. 所属工作流判断。
@@ -174,21 +154,13 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 8. 风险、影响范围与最小验证建议。
 9. 是否需要叠加独立审查流。
 10. 回写候选与 skill 同步升级建议。
+11. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
 - 如果当前还没有已确认原型，转交 `agione-ui-skill`。
 - 如果任务其实是 bug 修复 / 代码优化，转交 `existing-project-fix-skill`。
 - 如果任务已经变成独立审查，转交 `page-review-skill`。
-- 如果任务主要是翻译或 i18n，转交 `translate-terms`。
-
-## writeback_targets
-只有在形成稳定模式时才考虑：
-- `skills/existing-project-feature-skill/`
-- `skills/agione-ui-skill/`
-- `skills/frontend-implementer-skill/`
-- `skills/translate-terms-skill/`
-- `skills/page-review-skill/`
-- `rules/`
+- 如果任务主要是翻译或 i18n，转交 `translate-terms-skill`。
 
 ## guardrails
 - 不把任务型主 skill 写成对子 skill 的重复拷贝。
@@ -196,3 +168,19 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 不因为已有设计稿就忽略边界状态和产品级细节。
 - 不把单个项目的实现习惯误写成通用交付模式。
 - 不把接口字段名、临时显示格式或局部页面偏好直接固化成通用展示规则。
+
+## 代表性实例
+### 实例 1：已有设计稿，需要快速实现列表页
+- 原型来源判为 `external_design`。
+- 先校验筛选区、表格区、批量操作区、空态和错误态是否已明确。
+- 对未定义的状态只做必要补齐，然后进入实施。
+
+### 实例 2：只有业务说明和接口结构，需要先做原型再实施
+- 当前不直接进入代码实现。
+- 先转到 `agione-ui-skill` 生成并确认原型。
+- 原型确认后，再进入 `frontend-implementer-skill` 落地。
+
+### 实例 3：开发过程中发现按钮文案和中英翻译不一致
+- 不单独打断主链路。
+- 在实现落地阶段叠加 `translate-terms-skill`，统一术语、locale key 和 i18n 改造。
+

@@ -44,7 +44,7 @@
 - 观察项：
 
 ## 是否进入实现修正流
-- frontend-implementer：是 / 否
+- frontend-implementer-skill：是 / 否
 - 原因：
 
 ## 回写候选
@@ -54,9 +54,10 @@
 - 适用场景：
 - 不适用场景 / 边界：
 - 证据来源等级：
+- 回写层级：`skills/` / `rules/` / Claude memory / 仅当前任务结论
 
 ## Skill 同步升级
 - 是否需要更新当前 skill：
 - 需更新文件：
-- 需更新内容：执行前先读 / docs / templates / handoff / guardrails
+- 需更新内容：执行前先读 / docs / templates / handoff / guardrails / 审查优先级与输出模板
 ```

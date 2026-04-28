@@ -41,7 +41,7 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 - `constraints`：沿用的术语、不可改动的历史 key、必须复用的 locale 文件、是否允许补齐 en。
 
 ## 执行前先读
-- 当前 skill 本体
+- 当前 `SKILL.md` 本体
 - 补充细则：`docs/scan-and-key-reuse.md`
 - 命名与 locale 模板：`docs/key-naming-and-locale-template.md`
 - 输出模板：`templates/translate-terms-output-template.md`
@@ -206,6 +206,19 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 - locale key 是否重复、是否语义不清、是否与对象层级错位
 - zh-cn / en 是否同步，Vue 文件是否真的消除了硬编码中文
 
+## 回写与同步协议
+- 只有当本次术语统一或国际化处理沉淀出稳定规则时，才进入回写。
+- 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
+- 任何协议回写都要同时检查当前 skill 是否需要同步升级：
+  - `执行前先读`
+  - `docs/` / `templates/`
+  - `handoff`
+  - `guardrails`
+  - 相关扫描规则、命名模板和输出模板
+- 如果只是当前模块的单次文案改写、局部 key 调整或一次性翻译争议，不回写协议，也不升级 skill。
+- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
+- 如果不确定该写回哪一层，至少明确区分：当前任务结论 / Claude memory / `skills/` / `rules/`。
+
 ## 输出要求
 1. 当前任务场景与主任务类型。
 2. 输入前提、术语对象或目标文件范围。
@@ -221,17 +234,19 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 7. 可抽取规则与回写候选。
 8. 是否需要同步更新当前 skill。
 9. 如果输入是目录，补充扫描摘要、处理文件数量和剩余未处理文件。
+10. 如需回写，明确区分：`skills/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
 - 如果任务其实属于新增功能开发，只是顺带包含翻译需求，转交 `existing-project-feature-skill`。
 - 如果任务其实属于 bug 修复或代码优化，只是顺带包含术语 / i18n 问题，转交 `existing-project-fix-skill`。
 - 如果问题根源是更广义的结构、视觉或体验审查，转交 `page-review-skill`。
-- 如果需要把统一后的文案真正落进页面代码，转交 `frontend-implementer`。
+- 如果需要把统一后的文案真正落进页面代码，转交 `frontend-implementer-skill`。
 - 如果任务其实是原型阶段的字段展示方案确认，转交 `agione-ui-skill`。
 
 ## writeback_targets
 只有在形成稳定术语规则或国际化处理规范时再考虑：
 - `skills/translate-terms-skill/`
+- `skills/frontend-implementer-skill/`
 - 必要时补充到 `skills/translate-terms-skill/` 的协议或附属清单
 
 ## guardrails
