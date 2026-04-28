@@ -41,6 +41,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
+- 需要确认具体 app 特性时再读：`docs/project-mamba-app-topology-matrix.md`
 - 新功能但原型未确认时回退 `skills/existing-project-feature-skill/SKILL.md`
 - 涉及翻译、术语统一或 i18n 改造时读取 `skills/translate-terms-skill/SKILL.md`
 - 需要独立结构、视觉或交互审查时读取 `skills/page-review-skill/SKILL.md`

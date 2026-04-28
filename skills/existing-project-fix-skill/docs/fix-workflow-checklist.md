@@ -10,6 +10,9 @@
 ## 上下文追踪检查
 - 是否找到目标页面、组件、函数、composable、状态源和接口调用
 - 是否确认关键调用方、被复用方和路由入口
+- 如果命中 `project-mamba`，是否已先读取当前 app 的 `vite.config.ts` 与 `src/main.ts`
+- 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
+- 如果命中 `project-mamba`，是否已明确 bootstrap 来源是本地 / `@common` / 跨 app 复用
 - 如果触达公共层，是否评估了兼容性影响
 
 ## 根因定位检查

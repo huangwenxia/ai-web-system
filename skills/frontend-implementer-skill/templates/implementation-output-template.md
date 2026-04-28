@@ -17,6 +17,8 @@
 
 ## 实现前复用校验表（命中 project-mamba 时）
 - 当前目标项目：
+- app 拓扑：T1 common-shell source / T2 common-view mixed / T3 multi-source route / T4 standalone route
+- route ownership：本地 `src/views` / `~common` / `~cbdp` / 其他
 - 页面类型：
 - 页面壳：
 - 组件层级判断：
@@ -24,6 +26,7 @@
 - 常量来源：
 - 工具来源：
 - 加载策略：
+- bootstrap 来源：本地 / `@common` / 跨 app 复用
 
 ## 实现 / 修复 / 重构结果
 

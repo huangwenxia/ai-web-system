@@ -18,9 +18,21 @@
 
 ## 调用的子 Skill 链路
 - agione-ui-skill：
-- frontend-implementer：
-- translate-terms：
-- page-review：
+- frontend-implementer-skill：
+- translate-terms-skill：
+- page-review-skill：
+
+## 实施前复用校验表（命中 project-mamba 时）
+- 当前目标项目：
+- app 拓扑：T1 common-shell source / T2 common-view mixed / T3 multi-source route / T4 standalone route
+- route ownership：本地 `src/views` / `~common` / `~cbdp` / 其他
+- 页面类型：
+- 页面壳：
+- 字段映射：
+- 常量来源：
+- 工具来源：
+- 加载策略：
+- bootstrap 来源：本地 / `@common` / 跨 app 复用
 
 ## 关键原型 / 实施决策
 
@@ -39,7 +51,7 @@
 ## 最小验证建议
 
 ## 是否需要叠加独立审查流
-- page-review：
+- page-review-skill：
 
 ## 回写候选
 - 是否回写标准：

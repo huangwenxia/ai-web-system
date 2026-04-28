@@ -59,7 +59,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 2. 归一化输入，确认当前是否已有可实施的原型，并判断其来源属于 `external_design` 还是 `agione_ui_generated`。
 3. 如果尚无已确认原型，先转到 `agione-ui-skill` 生成并确认原型；未确认前不进入实施。
 4. 定位项目上下文：现有页面结构、路由入口、复用组件、相邻模块、目录规范、`project-mamba` 复用机会。
-5. 在进入 `frontend-implementer-skill` 之前，先输出一份极短的“实施前复用校验表”：页面类型、页面壳、关键字段映射、常量来源、工具来源、加载策略。
+5. 在进入 `frontend-implementer-skill` 之前，先输出一份极短的“实施前复用校验表”：当前目标 app、app 拓扑、route ownership、页面类型、页面壳、关键字段映射、常量来源、工具来源、加载策略、bootstrap 来源。
 6. 校验当前原型是否足以直接实施：
    - 页面骨架和区块职责是否清晰
    - 关键状态是否覆盖 loading / empty / error / permission / disabled
@@ -98,8 +98,9 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 
 ### 6. 实施前复用校验表
 - 进入 `frontend-implementer-skill` 之前，必须先输出一份极短的“实施前复用校验表”。
-- 至少说明：当前目标项目、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
-- 如果这些关键项说不清，就继续查相邻模块，不进入实施。
+- 命中 `project-mamba` 或同构仓库时，至少说明：当前目标 app、app 拓扑、route ownership、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略、bootstrap 来源。
+- 非 `project-mamba` 仓库时，至少说明：当前目标项目、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
+- 如果这些关键项说不清，就继续查相邻模块；命中 `project-mamba` 时，还要继续查当前 app 的 `vite.config.ts`、`src/main.ts` 与已挂载视图来源，不进入实施。
 - 这张表是实施入口检查，不是额外文档；保持极短，直接写在任务分析或实现前确认里。
 
 ### 7. 原型约束与实施边界
@@ -120,6 +121,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 ### 10. 代码落地协议引用
 - 组件选型、字段映射、状态归属、模板边界、样式边界、表格与枚举展示等代码层规则，以 `skills/frontend-implementer-skill/SKILL.md` 为准。
 - 命中 `project-mamba` 或同构仓库时，进一步以 `skills/frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 为准。
+- 如果当前 app 的复用路径或 bootstrap 来源不明确，再读取 `skills/frontend-implementer-skill/docs/project-mamba-app-topology-matrix.md`。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。

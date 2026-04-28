@@ -16,6 +16,8 @@
 ## 上下文定位检查
 - 是否已查到目标组件 / 页面 / composable / util / constant / type 的来源
 - 是否已查到关键调用方、被引用方或路由入口
+- 如果命中 `project-mamba`，是否已先读取当前 app 的 `vite.config.ts` 与 `src/main.ts`
+- 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
 - 如果修改公共层，是否已判断兼容性影响
 
 ## 实现检查
