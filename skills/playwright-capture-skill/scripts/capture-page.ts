@@ -1,4 +1,3 @@
-import fs from "node:fs/promises"
 import path from "node:path"
 import {
   defaultTimeoutMs,
@@ -10,7 +9,9 @@ import {
   loadPlaywright,
   numberOption,
   parseCliArgs,
-  resolveOutputDir,
+  printCapturePreflight,
+  resolveArtifactOutputDir,
+  resolvePlaywrightRuntime,
   writeJson,
   writeText,
 } from "./shared.ts"
@@ -21,15 +22,18 @@ export async function capturePage(options = {}) {
     throw new Error("Missing required --url")
   }
 
-  const outputDir = resolveOutputDir(url, options.outputDir)
+  const outputDir = resolveArtifactOutputDir("capture", url, options)
+  const runtime = resolvePlaywrightRuntime("capture", options)
   await ensureDirectory(outputDir)
+
+  printCapturePreflight("capture", runtime, outputDir, url)
 
   const timeout = numberOption(options.timeoutMs, defaultTimeoutMs)
   const waitMs = numberOption(options.waitMs, defaultWaitMs)
   const viewportWidth = numberOption(options.viewportWidth, defaultViewportWidth)
   const viewportHeight = numberOption(options.viewportHeight, defaultViewportHeight)
 
-  const playwright = await loadPlaywright(options.workspaceDir ? String(options.workspaceDir) : undefined)
+  const { playwright } = await loadPlaywright(runtime)
   const browser = await playwright.chromium.launch({ headless: true })
   const page = await browser.newPage({ viewport: { width: viewportWidth, height: viewportHeight }, deviceScaleFactor: 1 })
 
@@ -118,7 +122,6 @@ export async function capturePage(options = {}) {
       return {
         title: document.title,
         url: location.href,
-        html: document.documentElement.outerHTML,
         visibleText,
         images,
         svgs,
@@ -131,20 +134,25 @@ export async function capturePage(options = {}) {
       }
     })
 
-    await writeJson(path.join(outputDir, "capture.json"), capture)
-    await writeText(path.join(outputDir, "page.html"), capture.html)
+    const html = await page.content()
+    const htmlPath = path.join(outputDir, "page.html")
+    const jsonPath = path.join(outputDir, "capture.json")
+
+    // Keep the full DOM snapshot in page.html so capture.json stays much smaller.
+    await writeJson(jsonPath, capture)
+    await writeText(htmlPath, html)
 
     console.log(`Captured URL: ${url}`)
     console.log(`Output directory: ${outputDir}`)
     console.log(`Screenshot: ${screenshotPath}`)
-    console.log(`HTML: ${path.join(outputDir, "page.html")}`)
-    console.log(`JSON: ${path.join(outputDir, "capture.json")}`)
+    console.log(`HTML: ${htmlPath}`)
+    console.log(`JSON: ${jsonPath}`)
 
     return {
       outputDir,
       screenshotPath,
-      htmlPath: path.join(outputDir, "page.html"),
-      jsonPath: path.join(outputDir, "capture.json"),
+      htmlPath,
+      jsonPath,
       capture,
     }
   } finally {

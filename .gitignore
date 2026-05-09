@@ -33,3 +33,4 @@ Thumbs.db
 # Local cache
 .cache/
 docs/
+.playwright-capture/

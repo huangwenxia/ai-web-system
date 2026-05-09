@@ -1,6 +1,6 @@
 ---
 name: playwright-capture
-description: Capture JS-rendered webpages with Playwright through reusable TypeScript scripts and a persistent local workspace under ~/.tmp/playwright-capture. Use when a provided URL needs real rendered DOM, screenshots, asset URLs, visible text, or CSS for high-fidelity recreation and normal fetch returns blank or incomplete content.
+description: Capture JS-rendered webpages with Playwright through reusable TypeScript scripts. Use when a provided URL needs real rendered DOM, screenshots, asset URLs, visible text, or CSS for high-fidelity recreation and normal fetch returns blank or incomplete content.
 ---
 
 # Playwright Capture Skill
@@ -19,29 +19,35 @@ Trigger this skill when:
 
 - Only use URLs explicitly provided by the user or found in local project files.
 - Do not invent URLs.
-- Keep the local Playwright workspace and browser binaries after successful setup unless the user explicitly asks to remove them.
 - Prefer a stable rendered state first. If animation is hard to preserve, capture the static visual state before attempting anything dynamic.
 - For authenticated/private pages, do not assume access. Ask before any interactive login flow.
+- Before running `ensure`, `capture`, `download-assets`, or `compare-local`, Claude must first know either the target `--projectDir` or the explicit output/runtime directories.
+- If the task has no clear project directory and the user has not provided explicit directories, stop and ask. Do not fall back to a user-profile cache directory.
+- If Claude will rely on project-derived defaults, say which directories will be used before running the command.
+- Each command should print a standard `Preflight summary (...)` block before touching the filesystem so the operator can confirm the managed paths at a glance.
 
-## Persistent Runtime Workspace
+## Runtime Directory Policy
 
-### Workspace
+This skill must not silently write artifacts or browser caches into the user profile.
 
-Windows default:
+### Project-scoped defaults
 
-```text
-C:\Users\<user>\.tmp\playwright-capture
-```
-
-### Browser cache
-
-Windows default Playwright cache:
+When `--projectDir` is available, the scripts derive these locations automatically:
 
 ```text
-C:\Users\<user>\AppData\Local\ms-playwright
+<projectDir>/capture/playwright/<timestamp>-<slug>/
+<projectDir>/.playwright-capture/runtime/
+<projectDir>/.playwright-capture/ms-playwright/
 ```
 
-This skill is designed so later calls reuse that environment instead of rebuilding it.
+### Explicit overrides
+
+If the caller needs a different location, they may pass:
+- `--outputDir`
+- `--workspaceDir`
+- `--browserCacheDir`
+
+These directories must be chosen deliberately. The scripts do not fall back to `~/.tmp/playwright-capture` or `%LOCALAPPDATA%/ms-playwright` anymore.
 
 ## Executable Scripts
 
@@ -53,6 +59,8 @@ scripts/
   capture-page.ts
   download-assets.ts
   compare-local.ts
+  clean-managed.ts
+  prune-managed.ts
   run-skill.ts
   shared.ts
 ```
@@ -60,7 +68,7 @@ scripts/
 ### Script responsibilities
 
 - `ensure-playwright.ts`
-  - checks the persistent workspace
+  - resolves the managed runtime directories
   - installs Playwright if missing
   - installs Chromium if missing
 - `capture-page.ts`
@@ -69,8 +77,13 @@ scripts/
   - saves screenshot + rendered HTML + structured capture JSON
 - `download-assets.ts`
   - downloads entry js/css/image assets referenced by the page shell or captured HTML
+  - reuses the existing capture directory when `--html` points at a captured `page.html`
 - `compare-local.ts`
   - opens a rebuilt local page and saves a local comparison screenshot
+- `clean-managed.ts`
+  - clears managed project-local artifacts and/or runtime caches after explicit confirmation
+- `prune-managed.ts`
+  - keeps only the newest N managed capture directories after explicit confirmation
 - `run-skill.ts`
   - optional command router for the scripts above
 
@@ -79,22 +92,14 @@ scripts/
 Do **not** write runtime artifacts into the skill's `docs/` directory.
 
 - `docs/` is for protocol, usage, and reference files only
-- runtime outputs go to the persistent capture workspace by default
-- if the task already has a target project directory, prefer a task-local `capture/` folder there
+- runtime outputs belong in a task-local project directory
+- if no target project directory is known, Claude must ask for one or ask for explicit output/runtime directories before running anything
 
 See:
 - `docs/output-layout.md`
 - `docs/usage.md`
 
-## Default Output Layout
-
-Without `--outputDir`, the scripts write to:
-
-```text
-C:\Users\<user>\.tmp\playwright-capture\captures\<timestamp>-<slug>\
-```
-
-Recommended artifact set:
+## Recommended Artifact Layout
 
 ```text
 <output-dir>/
@@ -113,20 +118,22 @@ Recommended artifact set:
 
 ### 1. Ensure the environment
 
-Run once or whenever uncertain:
+Run once per project or whenever uncertain:
 
 ```powershell
-node scripts/run-skill.ts ensure
+node scripts/run-skill.ts ensure --projectDir "E:\work\target-project"
 ```
 
 ### 2. Capture the rendered page
 
 ```powershell
-node scripts/run-skill.ts capture --url "https://example.com/page"
+node scripts/run-skill.ts capture --url "https://example.com/page" --projectDir "E:\work\target-project"
 ```
 
-Optional:
+Optional explicit directories:
 - `--outputDir`
+- `--workspaceDir`
+- `--browserCacheDir`
 - `--waitMs`
 - `--timeoutMs`
 - `--viewportWidth`
@@ -135,8 +142,10 @@ Optional:
 ### 3. Download entry assets if the recreation depends on shipped bundles
 
 ```powershell
-node scripts/run-skill.ts download-assets --url "https://example.com/page" --html "<capture-dir>\page.html" --outputDir "<capture-dir>\assets"
+node scripts/run-skill.ts download-assets --url "https://example.com/page" --html "E:\work\target-project\capture\playwright\2026-05-08-example\page.html"
 ```
+
+If `--outputDir` is omitted here, assets default to the sibling `assets/` directory beside that `page.html`.
 
 ### 4. Rebuild strategy for implementation tasks
 
@@ -151,18 +160,32 @@ When the goal is page recreation in Vue/TS:
 ### 5. Compare the rebuilt local page
 
 ```powershell
-node scripts/run-skill.ts compare-local --url "http://127.0.0.1:8091/path" --outputDir "<capture-dir>"
+node scripts/run-skill.ts compare-local --url "http://127.0.0.1:8091/path" --projectDir "E:\work\target-project"
 ```
+
+### 6. Prune old capture directories
+
+```powershell
+node scripts/run-skill.ts prune --projectDir "E:\work\target-project" --confirm true --keep 3
+```
+
+### 7. Clean managed artifacts or runtime caches
+
+```powershell
+node scripts/run-skill.ts clean --projectDir "E:\work\target-project" --confirm true --scope all
+```
+
+Use `--scope captures` to remove only capture directories, or `--scope runtime` to remove only the managed Playwright runtime/cache tree.
 
 ## Runtime Data To Prefer
 
-From `capture-page.ts`, the important capture JSON fields are:
-- `html`: full rendered DOM snapshot
-- `visibleText`: unique visible text
-- `images`: image URLs and dimensions
-- `svgs`: inline SVG markup
-- `backgrounds`: nodes using background images
-- `blocks`: visible nodes with rects + selected computed styles
+From `capture-page.ts`, the important capture files/fields are:
+- `page.html`: full rendered DOM snapshot
+- `capture.json.visibleText`: unique visible text
+- `capture.json.images`: image URLs and dimensions
+- `capture.json.svgs`: inline SVG markup
+- `capture.json.backgrounds`: nodes using background images
+- `capture.json.blocks`: visible nodes with rects + selected computed styles
 
 This is the preferred base for high-fidelity reconstruction.
 
@@ -172,13 +195,15 @@ This is the preferred base for high-fidelity reconstruction.
 - If `capture.json` is too large, inspect targeted fields with small Node/PowerShell helpers instead of printing the full file.
 - If a recreated page collapses into a long column, verify that the captured CSS is actually injected and that runtime CSS links were replaced properly.
 - If the page is demo-only, iframe/srcdoc mirroring is an acceptable intermediate solution before hand-converting every block.
+- If the managed directories are wrong, stop and fix the path inputs instead of allowing the command to write into a fallback cache.
 
 ## Minimal Reporting Checklist
 
 When this skill is used, Claude should report:
 1. which URL was captured
 2. where artifacts were saved
-3. whether runtime DOM capture succeeded
-4. whether entry assets were downloaded
-5. whether the final result is a static mirror or a hand-rebuilt page
-6. any remaining gap, especially animation, auth, or remote-only asset issues
+3. which runtime workspace and browser cache directories were used
+4. whether runtime DOM capture succeeded
+5. whether entry assets were downloaded
+6. whether the final result is a static mirror or a hand-rebuilt page
+7. any remaining gap, especially animation, auth, or remote-only asset issues

@@ -6,7 +6,8 @@ import {
   ensureDirectory,
   normalizeUrl,
   parseCliArgs,
-  resolveOutputDir,
+  printDownloadPreflight,
+  resolveAssetOutputDir,
 } from "./shared.ts"
 
 const assetPattern = /(?:src|href)=["']([^"']+)["']/gi
@@ -17,6 +18,13 @@ export async function downloadAssets(options = {}) {
 
   let html = ""
   let baseUrl = url
+
+  if (!baseUrl) {
+    throw new Error("When using --html, also provide --url so relative assets can be resolved")
+  }
+
+  const outputDir = resolveAssetOutputDir("download-assets", baseUrl, htmlPath, options)
+  printDownloadPreflight("download-assets", outputDir, baseUrl, htmlPath, options)
 
   if (htmlPath) {
     html = await fs.readFile(htmlPath, "utf8")
@@ -29,14 +37,6 @@ export async function downloadAssets(options = {}) {
   } else {
     throw new Error("Provide either --url or --html")
   }
-
-  if (!baseUrl) {
-    throw new Error("When using --html, also provide --url so relative assets can be resolved")
-  }
-
-  const outputDir = options.outputDir
-    ? path.resolve(String(options.outputDir))
-    : path.join(resolveOutputDir(baseUrl, undefined), "assets")
 
   await ensureDirectory(outputDir)
 
@@ -60,7 +60,6 @@ export async function downloadAssets(options = {}) {
   }
 
   console.log(`Asset count: ${downloads.length}`)
-  console.log(`Asset directory: ${outputDir}`)
   for (const filePath of downloads) {
     console.log(filePath)
   }

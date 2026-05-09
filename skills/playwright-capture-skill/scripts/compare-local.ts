@@ -9,7 +9,9 @@ import {
   loadPlaywright,
   numberOption,
   parseCliArgs,
-  resolveOutputDir,
+  printComparePreflight,
+  resolveArtifactOutputDir,
+  resolvePlaywrightRuntime,
 } from "./shared.ts"
 
 export async function compareLocal(options = {}) {
@@ -18,15 +20,18 @@ export async function compareLocal(options = {}) {
     throw new Error("Missing required --url")
   }
 
-  const outputDir = resolveOutputDir(url, options.outputDir)
+  const outputDir = resolveArtifactOutputDir("compare-local", url, options)
+  const runtime = resolvePlaywrightRuntime("compare-local", options)
   await ensureDirectory(outputDir)
+
+  printComparePreflight("compare-local", runtime, outputDir, url)
 
   const timeout = numberOption(options.timeoutMs, defaultTimeoutMs)
   const waitMs = numberOption(options.waitMs, defaultWaitMs)
   const viewportWidth = numberOption(options.viewportWidth, defaultViewportWidth)
   const viewportHeight = numberOption(options.viewportHeight, defaultViewportHeight)
 
-  const playwright = await loadPlaywright(options.workspaceDir ? String(options.workspaceDir) : undefined)
+  const { playwright } = await loadPlaywright(runtime)
   const browser = await playwright.chromium.launch({ headless: true })
   const page = await browser.newPage({ viewport: { width: viewportWidth, height: viewportHeight }, deviceScaleFactor: 1 })
 

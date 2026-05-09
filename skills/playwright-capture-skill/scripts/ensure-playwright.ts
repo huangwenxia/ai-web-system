@@ -1,8 +1,9 @@
-import { directRun, ensurePlaywright, parseCliArgs } from "./shared.ts"
+import { directRun, ensurePlaywright, parseCliArgs, printEnsurePreflight, resolvePlaywrightRuntime } from "./shared.ts"
 
 export async function runEnsure(options = {}) {
-  const baseDir = options.workspaceDir ? String(options.workspaceDir) : undefined
-  const result = await ensurePlaywright(baseDir)
+  const runtime = resolvePlaywrightRuntime("ensure", options)
+  printEnsurePreflight("ensure", runtime)
+  const result = await ensurePlaywright(runtime)
   console.log(`Workspace ready: ${result.workspaceDir}`)
   console.log(`Browser cache: ${result.browserCacheDir}`)
   console.log(`CLI: ${result.playwrightCliPath}`)
