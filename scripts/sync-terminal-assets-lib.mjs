@@ -59,7 +59,7 @@ export const TERMINAL_DEFINITIONS = {
     assets: {
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
-        userTarget: join(USER_HOME, '.codex', 'skills'),
+        userTarget: join(USER_HOME, '.agents', 'skills'),
       },
     },
   },

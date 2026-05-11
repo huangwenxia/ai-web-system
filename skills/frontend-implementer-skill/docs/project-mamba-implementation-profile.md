@@ -138,6 +138,14 @@
 - i18n、auth、install、directives、globals、store 以当前 app `src/main.ts` 的真实 wiring 为准
 - 对 `zguan`、`hashrate`、`wanmore` 这类 bootstrap 明显更本地化或跨 app 引用的项目，不要把 `common` 的初始化链直接套过去
 
+## Font token and prototype adaptation
+- Before copying typography from an AGIOne prototype into `project-mamba`, inspect the target app's actual font variables and local font assets. Do not assume prototype font names are available in the target app.
+- For `hashrate` and apps using `apps/common/src/assets/scss/vars.scss`, treat `--el-font-family` / `--ui-font-body` as the default UI font for prose, labels, buttons, filters, alerts, tags, and normal business text.
+- Use `--ui-font-mono` only for technical identifiers and machine-readable values: image names, registry paths, IDs, code-like strings, numeric capacity values, timestamps, and similar table cells where scan alignment matters. Pair numeric mono text with `font-variant-numeric: tabular-nums` when alignment is required.
+- Use `--ui-font-heading` only for heading semantics. If the configured heading family, such as Manrope, has no local font asset or app-level import, expect fallback to `--el-font-family` and do not force prototype-only font names locally.
+- When a prototype uses `Inter Variable`, `Manrope Variable`, `IBM Plex Mono`, `PingFang SC`, or `Microsoft YaHei`, copy only size, weight, line-height, color, spacing, and smoothing details unless the target app already provides or explicitly imports the same font resources.
+- For public components such as `PageAlert`, prefer project font tokens (`var(--el-font-family)`, `var(--ui-font-body)`, `var(--ui-font-mono)`) over hard-coded prototype font stacks. Preserve the prototype's visual rhythm while staying inside the target project's font source of truth.
+
 ## 加载态规则
 - `ListCardBox` 已内建 `ListLoadingBox`，卡片列表优先复用
 - `CurdTable` 自带 loading 遮罩与表头占位，表格场景默认不用额外 skeleton
