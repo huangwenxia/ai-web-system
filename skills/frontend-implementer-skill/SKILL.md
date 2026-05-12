@@ -124,6 +124,15 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - token 选择必须先分层：项目语义、自定义壳层、页面结构和业务容器优先使用 `--ui-*`；Element Plus 原生组件的内部 anatomy、fill、placeholder、disabled、overlay、border 和原生状态优先使用 `--el-*`。不要因为文件位于项目目录里，就把所有样式都强行写成 `--ui-*`。
 - 如果自定义组件只是组合 `el-button`、`el-dropdown`、`el-select`、`el-dialog` 等 Element Plus 原生组件，则外壳关系、分组节奏、页面级容器语义走 `--ui-*`，组件内部状态与浮层细节优先复用 `--el-*` 与既有 bridge。
 
+
+#### AGIOne 规范在已有项目改造中的铁律
+- 如果用户明确要求“整体扫一遍 / 优化整个项目 / 做 AGIOne 规范治理”，才执行全项目扫描治理流程：先确认或补齐基础设施，再按硬编码颜色、字体层级、表单、Radio、动效等问题分组批量治理。
+- 如果任务只是改某个已有页面、某个功能或某个 bug，不默认全项目治理；仅在当前改动范围和直接依赖组件内遵循 AGIOne 规范，改到哪里带到哪里。
+- 已有项目页面实施时，必须先查当前项目和 `common` 是否已有对应 token、组件、utility 或全局样式。若 `common` 已有对应内容，必须优先转换为 `common` 标准，例如 `--ui-*` / `--el-*` token、已有表单样式、已有 Radio 样式、已有 typography 工具类。
+- 若 `common` 不存在对应能力，且需求只服务当前 app，则优先使用当前 app 的 soft override 或 app-local 组件，不为单项目效果直接污染 `common`。
+- 只有当同一语义展示模式或样式能力已经明确跨项目复用，且命名、状态、主题适配边界稳定时，才考虑把 app-local soft override 上提到 `common`。
+- 页面实现中默认遵循 AGIOne 视觉底线：颜色走语义 token；字体层级走已有 typography / type utility；表单接入 `.form-modern` 或项目既有现代表单样式；Radio 按 segmented / circle / pill / card 选择既有样式；hover 动效控制在 150ms 左右，避免无业务意义的 translate / scale / 过强阴影。
+- AGIOne 规范不得覆盖既有实施 skill 的职责边界：新增功能、bug 修复、翻译、暗黑模式、页面审查仍按对应 skill 执行；AGIOne 只作为当前改动范围内的视觉和交互合规约束。
 #### 允许例外
 - 只有在纯结构 / 布局语义容器场景，或 Element Plus 与当前项目组件体系没有对应能力时，才允许使用原生标签。
 - 只有在 Tailwind 无法准确表达的复杂选择器、第三方组件深层覆盖、伪元素 / 伪类组合或非布局类视觉语义场景，才允许补充局部样式。
