@@ -11,7 +11,7 @@
 ## 任务分类检查
 - 当前任务是实现、bug 修复、重构，还是文档补全
 - 输入前提是否足够支撑直接落代码
-- 如果是新功能开发，是否已经有已确认原型；没有则是否回退到 `existing-project-feature-skill` 或 `agione-ui-skill`
+- 如果是新功能开发，是否已经有已确认原型；没有则是否回退到 `existing-project-feature-skill` 或 `agione-ui`
 
 ## 上下文定位检查
 - 是否已查到目标组件 / 页面 / composable / util / constant / type 的来源

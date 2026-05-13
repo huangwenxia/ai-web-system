@@ -1,7 +1,0 @@
-interface:
-  display_name: "Mamba Dark Overrides"
-  short_description: "Trace page styles and add removable dark-mode overrides."
-  default_prompt: "Use $mamba-dark-mode-override to trace the page style chain, add removable override files, and audit remaining dark-mode gaps."
-
-policy:
-  allow_implicit_invocation: true

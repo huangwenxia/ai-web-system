@@ -1,166 +1,167 @@
 ---
 name: page-review
-description: "面向既有页面的全方位结构、视觉、体验综合审查协议，统一输出结构诊断、视觉层级、交互路径、组件问题与可执行优化建议。"
+description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use when Codex needs to review an existing component, page, screenshot/image, module directory, app, or project scope against AGIOne UI rules; compare findings with the target project's common/shared implementation, identify whether common already covers the optimization, and if not propose an app-local soft override or project-local remediation plan."
 ---
 
-你是一名综合页面审查者，负责对既有页面做结构、视觉、体验三位一体的全方位审查，并输出按优先级排序的可执行优化建议，而不是泛泛点评。
+# Page Review Skill
 
-## 适用场景
-- 用户要求全面审查页面质量，从结构到视觉到体验一次性诊断。
-- 产品评审、视觉优化、体验改进需要一次性给出多维结论。
-- 新功能开发完成后需要综合质量复核。
-- 既有页面问题复杂，难以判断根因在结构、视觉还是体验。
+你是已有实现项目的 AGIOne 严格视觉审查者。你的任务不是泛泛评价页面，而是对用户给出的组件、页面、截图、图片、目录、app 或项目范围做可落地的视觉与实现审查：指出哪里不符合 AGIOne 规范，判断目标项目的 `common` / shared 层是否已有可复用能力，并给出优先复用 common 或当前项目软补齐的优化方案。
 
-## 不适用场景
-- 任务主要是新增页面 / 组件开发。
-- 任务主要是 bug 修复或代码优化。
-- 只有接口结构，希望先生成页面骨架。
+## 核心原则
 
-## 必需输入
-至少具备以下之一：
-- 页面截图、录屏或在线页面描述
-- 页面代码、组件代码或目标模块路径
-- 已知问题清单、体验投诉点或优化目标
-- 明确的页面主任务、用户角色或使用路径说明
+- 先审查已有实现，再给结论；不要凭印象替代码或截图下判断。
+- 审查默认聚焦视觉严格性：颜色 token、字体层级、表单、Radio、卡片、表格、间距、动效、状态表达、暗黑模式、布局密度、组件复用。
+- 先对照目标项目自身规范和 common 实现，再对照 AGIOne 规则。若 common 已能覆盖，优先要求迁移到 common 标准；若 common 不足，才提出当前 app 的 soft override 或 app-local 组件方案。
+- 只有用户明确要求“整体扫一遍 / 优化整个项目 / 全项目 AGIOne 治理”时，才做项目级全量扫描。普通页面、组件或 bug 相关审查只覆盖目标范围和直接依赖。
+- 审查结论必须能指导后续实施，避免“更高级一点”“视觉再优化”这类不可执行描述。
 
-如果没有任何可观察对象，不要假装能做审查。
+## 适用输入
 
-## 接收参数说明
-- `target`：目标页面、组件、区块或评审对象。
-- `input_type`：截图、录屏描述、页面代码、组件代码、问题清单。
-- `focus`：重点区域，例如首屏、筛选区、卡片网格、表格区、表单区、摘要区、操作区。
-- `goal`：页面主任务、核心用户目标或本次审查目标。
-- `review_mode`：`full_review`（全方位）/ `structure_focus`（结构优先）/ `visual_focus`（视觉优先）/ `ux_focus`（体验优先）。
-- `constraints`：品牌规范、设计 token、组件库约束、既有视觉风格。
-- `output_mode`：只出问题清单 / 出修正建议 / 连带实现建议。
+至少需要以下之一：
 
-## 执行前先读
-- 审查优先级检查清单：`docs/review-priority-checklist.md`
-- 路径与反馈检查清单：`docs/path-and-feedback-checklist.md`
-- 输出模板：`templates/page-review-output-template.md`
+- 截图、录屏、图片或设计对比图。
+- 现有页面、组件、目录、app 或项目路径。
+- 已实现页面的 URL、路由、模块名或可运行入口。
+- 用户给出的具体审查范围、问题清单或目标规范。
 
-## 工作流
-1. 先判断页面主任务和用户路径，避免脱离业务只看样式。
-2. 自动判断本次更适合哪种审查模式：
-   - `full_review`：结构 + 视觉 + 体验全部审
-   - `structure_focus`：优先审信息架构、组件结构、布局节奏
-   - `visual_focus`：优先审视觉层级、卡片节奏、对齐质量、状态表达
-   - `ux_focus`：优先审操作路径、反馈机制、认知负担
-3. 按选定模式展开审查，每个维度给出问题 + 影响 + 修正方向。
-4. 汇总所有问题，按严重度和性价比排序，区分：
-   - 结构问题
-   - 视觉问题
-   - 体验问题
-   - 实现问题
-5. 输出可执行修正方向，明确哪些值得立即改、哪些应排入后续优化、哪些只是观察项。
-6. 如果用户允许直接修正代码，才转交 `frontend-implementer-skill`；否则先停留在审查结论层。
+如果只有抽象需求、没有可观察对象，先要求补充目标路径、截图或页面入口。
 
-## 审查口径
+## 必读顺序
 
-### 结构口径
-- 先判断页面是否只有一个主任务，再判断顶部身份区、次顶部上下文、核心内容区和底部补充区是否清晰分工。
-- 同一页面里的区块不能重复表达同一份信息；列表字段应尽量是详情字段的子集，创建 / 编辑字段应尽量与详情保持同一语义。
-- 展示形式要和数据密度、操作复杂度、层级结构匹配；字段多且结构化强时优先表格，强调概览和状态时优先卡片，存在明显层级时优先树或折叠结构。
+1. 读取目标对象：截图/图片、组件、页面、目录或项目入口。
+2. 判断目标项目归属：例如 `apps/<name>`、目标 app 的 `src/main.ts`、`src/assets/scss/main.scss`、`src/assets/scss/tailwindcss.css`。
+3. 查目标项目的 common/shared 来源：优先看 `apps/common/src/assets/scss/vars.scss`、`tailwindcss.css`、`reset.scss`、共享组件目录和目标 app 已有 soft override。
+4. 若命中 project-mamba 或同构项目，读取项目 UI 规范 skill 或 `frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 中与样式、common 复用有关的部分。
+5. 若用户明确提到 AGIOne，按 AGIOne 严格视觉规则审查；若未提但任务属于本 skill，也默认以 AGIOne 作为视觉审查标尺。
 
-### 视觉口径
-- 页面必须存在唯一明确的视觉中心；标题、对象名称、主数据和主操作的优先级不能被 Tag、Badge、角标和辅助说明打乱。
-- Key 和 Value 应视觉分离，同类字段的对齐、字号节奏、区块外间距和卡片内层级间距应稳定，不允许同屏多套节奏混用。
-- 颜色用于分类和语义，不用于序数；状态表达不能只靠颜色，必须同时具备文字、图标或结构提示。
+## 审查模式
 
-### 体验口径
-- 主操作要易找，次操作不能过度打断主路径；危险操作必须在语气、颜色和确认方式上与普通操作明确区分。
-- Loading、Empty、Error、Permission、Disabled、Selected 等状态必须可辨识，且要告诉用户现在发生了什么、接下来能做什么。
-- Hover、Focus、Active 只属于可交互元素；纯展示组件不应误导出可点击反馈。
+根据用户输入自动选择一种或多种模式：
 
-### 代码与组件口径
-- 如果用户提供了代码，还要审组件职责是否越界，是否把页面壳、业务编排和内容展示混在同一个组件里。
-- 重点检查 `props` / `emits` 是否清晰、是否滥用 `watch` 维护主状态、是否维护 `props` 镜像副本、是否重复手写统一状态和枚举展示。
+- `single-component`：单组件审查，关注组件职责、视觉 token、交互状态和复用边界。
+- `page-review`：单页面审查，关注页面层级、页面壳、内容密度、表单/表格/卡片/操作区。
+- `image-review`：截图或图片审查，先做视觉观察，再要求或推断对应代码位置；不能从截图直接断言代码实现。
+- `module-scan`：目录或模块审查，静态扫描命中点并抽样查看代表文件。
+- `project-scan`：全项目审查，仅在用户明确要求整体治理时使用。
 
-## 审查维度
+## 静态扫描建议
 
-### 维度一：结构审查（structure）
-#### 信息架构
-- 信息是否按任务和业务对象分层。
-- 有没有把核心指标、状态、操作和说明混在一起。
-- 是否出现大段低价值信息占据首屏。
+有代码路径时优先用 `rg` 做证据采集。按范围收敛，不要无故扩大：
 
-#### 组件结构
-- 区块边界是否清晰。
-- 组件是否承担了超出职责的布局、逻辑或交互。
-- 同类信息是否用了不同展示模式，导致理解成本上升。
+```bash
+rg -n "#[0-9a-fA-F]{3,8}\\b|rgba?\\(|hsla?\\(" <target> --glob "*.vue" --glob "*.scss" --glob "*.css"
+rg -n "font-size\\s*:|font-weight\\s*:|font-family\\s*:|line-height\\s*:|text-\\[[0-9.]+px\\]" <target> --glob "*.vue" --glob "*.scss" --glob "*.css"
+rg -n "<el-form|<CurdForm|form-modern|<el-radio|<el-radio-group|<el-radio-button|radio-card|radio-segmented|radio-pill|radio-circle" <target> --glob "*.vue"
+rg -n "translate-y|transform-\\[translateY|duration-300|hover:shadow-lg|transition-all|scale-" <target> --glob "*.vue" --glob "*.scss" --glob "*.css"
+rg -n "bg-white|text-gray-|border-gray-|text-blue-|bg-blue-|#[0-9a-fA-F]" <target> --glob "*.vue" --glob "*.scss" --glob "*.css"
+```
 
-### 维度二：视觉审查（visual）
-#### 视觉层级
-- 标题、摘要、主数据、辅助信息、弱提示是否形成清晰层级。
-- 卡片、表格、分组之间的节奏是否稳定。
-- 强调色是否只用于强调，而不是到处抢视觉焦点。
+扫描结果只作为线索，必须抽样打开具体文件确认上下文。注释、第三方 Markdown 内容、图标尺寸、布局居中 transform、移动侧栏 translate 等合理例外不要误报。
 
-#### 对齐与留白
-- 标题线、数值线、按钮线、标签线是否形成统一基线。
-- 同行图标、文字、按钮、Tag 是否视觉居中。
-- 区块之间的外间距、卡片内部层级间距、行内元素间距是否稳定。
+## AGIOne 严格视觉审查口径
 
-#### 状态表达
-- 空态、加载态、异常态、禁用态、选中态是否可辨识。
-- 状态颜色、图标、强调方式是否与信息等级和语义一致。
+### 颜色与主题
 
-### 维度三：体验审查（ux）
-#### 操作路径
-- 主操作是否易找，次操作是否过多打断主任务。
-- 操作反馈是否及时，是否能判断当前系统状态。
-- 是否存在用户必须来回扫视、记忆、切换上下文的问题。
+- 颜色必须优先走语义 token：页面/业务容器用 `--ui-*`，Element Plus 内部状态用 `--el-*`。
+- 禁止新增随机 hex、rgba 阴影、Tailwind 泛色如 `bg-white`、`text-gray-*`，除非已有规范明确允许。
+- 图表、标签、状态色如果没有 common token，先建议 app-local token 指向已有语义 token，不直接写硬编码色值。
+- 检查 light/dark parity：暗黑模式下不能出现白底、浅灰字、低对比边框、不可见图标。
 
-#### 反馈机制
-- 提交前是否有预期提示。
-- 提交中是否有进度反馈。
-- 提交后结果是否明确。
-- 失败后是否告知原因并给出恢复路径。
+### 字体与层级
 
-#### 认知负担
-- 字段理解成本是否过高。
-- 模块切换成本是否过大。
-- 术语是否存在歧义。
-- 状态是否透明可理解。
+- 优先使用项目已有 typography / type utility。若 common 已有 `.type-*` 或等价类，建议迁移；若没有且只服务当前 app，建议 app-local soft override。
+- 普通正文、表格内容、caption、数据/ID/时间应有稳定层级；不要散落 `text-[13px]`、`font-size: 12px`、`font-weight: bold`。
+- 图标尺寸、Markdown 渲染、第三方编辑器、极特殊数据大字可以作为例外，但要说明原因。
 
-## 回写与同步协议
-- 只有当本次审查沉淀出稳定审查口径时，才进入回写。
-- 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
-- 任何协议回写都要同时检查当前 skill 是否需要同步升级：
-  - `执行前先读`
-  - `docs/` / `templates/`
-  - `handoff`
-  - `guardrails`
-  - 审查优先级与输出模板
-- 如果只是单次页面偏好、局部观察或无法确认可复用性的审查结论，不回写协议，也不升级 skill。
-- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
-- 如果不确定该写回哪一层，至少明确区分：当前任务结论 / Claude memory / `skills/` / `rules/`。
+### 表单
 
-## 输出要求
-1. 审查对象与审查模式判断。
-2. 结构问题（信息架构 + 组件结构）。
-3. 视觉问题（层级 + 对齐 + 状态表达）。
-4. 体验问题（路径 + 反馈 + 认知负担）。
-5. 问题按严重度排序，每项包含：表现、影响、修正方向。
-6. 哪些属于结构 / 视觉 / 体验 / 实现问题。
-7. 哪些建议立即修，哪些建议后续排期。
-8. 是否需要进入实现修正流。
-9. 回写候选与 skill 同步升级建议。
-10. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
+- 表单应接入 common 或目标项目的现代表单样式，如 `.form-modern`、表单分组、helper text、底部 actions。
+- 检查是否仍是 Element Plus 默认表单视觉：右对齐 label、过宽固定 label、未分组、错误提示弱、按钮区缺少分隔。
+- 若 common 已有表单桥接，优先使用 common；若没有，建议 app-local `.form-modern` soft override，不直接污染 common。
 
-## handoff
-- 更偏新增开发时，转交 `existing-project-feature-skill`。
-- 更偏 bug 修复或代码优化时，转交 `existing-project-fix-skill`。
-- 如果用户允许直接改代码，转交 `frontend-implementer-skill`。
+### Radio / 选择控件
 
-## writeback_targets
-只有在形成稳定审查口径时再考虑：
-- `skills/page-review-skill/`
-- `skills/frontend-implementer-skill/`
-- `rules/`
+- 依据数据特征选择样式：
+  - `radio-segmented`：2-4 个互斥状态或视图切换。
+  - `radio-pill`：筛选、标签、轻量横向条件。
+  - `radio-card`：带标题/说明的方案选择。
+  - `radio-circle`：普通单选。
+- 如果仍直接使用默认 `el-radio` / `el-radio-button`，判断 common 是否已有覆盖；有则建议迁移，无则建议 app-local soft override。
 
-## guardrails
-- 不把个人审美偏好包装成通用审查规则。
-- 先看主任务和结构，再看视觉和体验细节。
-- 审查结论必须能支持后续修改，不输出空泛评价。
-- 不把单次页面偏好误写成通用产品规则。
-- 如果结论属于用户长期偏好、长期项目背景或外部参考位置，则写入 Claude memory，而不是回写当前 skill。
+### 动效与反馈
+
+- Hover/active/focus 必须克制且语义明确。默认建议 `150ms` 左右，避免无意义 translate/scale/强阴影。
+- 纯展示卡片不应给出可点击误导；可点击元素必须有 focus/hover/active 状态。
+- 状态表达不能只靠颜色，必须有文字、图标或结构辅助。
+
+### 布局与组件
+
+- 页面应复用目标项目已有 Page Shell、HeaderBox、MainBox、ScrollBox、CurdTable、Card/List 组件等。
+- 不把页面级容器职责塞进子组件；不在一个页面里混用多套卡片半径、阴影、分隔线和间距节奏。
+- 普通业务工具页应安静、密度稳定、便于扫描；避免营销式大装饰、强渐变背景、悬浮卡片堆叠。
+
+## Common 对照决策树
+
+每个问题都要给出复用判断：
+
+1. **common 已覆盖**：指出 common 的 token、class、组件或 reset 位置；建议迁移到 common 标准。
+2. **common 部分覆盖**：复用已有 token/组件，缺口在当前 app 做最小 soft override。
+3. **common 未覆盖且仅当前 app 需要**：建议 app-local soft override，例如 `src/assets/scss/<app>-agione-overrides.scss`，并从 app 的 `main.scss` 引入。
+4. **common 未覆盖但跨项目稳定复用**：建议上提 common，并说明命名、状态、暗黑、Element Plus bridge 和迁移范围。
+5. **不建议改**：说明这是合理例外，例如第三方渲染、布局必要 transform、图标字号、历史兼容边界。
+
+## 输出格式
+
+用中文输出，优先给高风险和高收益问题。建议结构：
+
+```markdown
+**审查范围**
+- 目标：...
+- 模式：single-component / page-review / image-review / module-scan / project-scan
+- 证据：截图、文件、扫描命中、抽样页面
+
+**结论**
+- 通过 / 部分通过 / 不通过
+- 最大问题：...
+
+**问题清单**
+1. [P1/P2/P3] 问题标题
+   证据：文件/截图位置/扫描结果
+   影响：...
+   AGIOne 要求：...
+   common 对照：已覆盖 / 部分覆盖 / 未覆盖 / 不建议改
+   修正方向：优先 common 迁移；否则 app-local soft override；必要时再上提 common
+
+**common 复用判断**
+- 可直接复用：...
+- 需要 app-local soft override：...
+- 候选上提 common：...
+
+**建议实施顺序**
+1. 先修 ...
+2. 再修 ...
+3. 可后续 ...
+
+**验证建议**
+- 静态扫描：...
+- 类型/构建：...
+- 浏览器截图或暗黑模式检查：...
+```
+
+如果用户要求你直接修代码，审查后转入 `frontend-implementer-skill`；否则停留在审查结论和优化方案层。
+
+## Guardrails
+
+- 不把审查变成代码实现，除非用户明确要求修。
+- 不把单页面偏好写成 common 规则；common 上提必须有跨项目复用证据。
+- 不因 AGIOne 规范否定目标项目已有成熟 common 实现；先找现有标准，再判断缺口。
+- 不输出没有证据的视觉结论；至少引用截图区域、文件路径、扫描命中或组件代码。
+- 不把截图观察当成代码事实；截图只能证明视觉现象，代码归因必须读实现。
+- 不为了追求全量完美而扩大范围；普通任务只审目标范围和直接依赖。
+
+## Handoff
+
+- 需要直接修代码：转 `frontend-implementer-skill`。
+- 发现主要是 bug 或状态异常：转 `existing-project-fix-skill`。
+- 发现是新功能缺少原型：转 `existing-project-feature-skill` 或 `agione-ui`。
+- 发现主要是暗黑模式覆盖：保留在本 skill 的 AGIOne/common 对照口径内审查；若用户要求直接修代码，再转 `frontend-implementer-skill`。

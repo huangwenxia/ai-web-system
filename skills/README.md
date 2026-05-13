@@ -25,7 +25,6 @@
 
 - `agione-ui`：唯一 UI 原型生成入口
 - `frontend-implementer-skill`：页面与组件实施、修复、重构落地
-- `mamba-dark-mode-override`：深色模式专项排查与修正
 - `translate-terms-skill`：同时承担 A-2 主入口与专业能力
 
 ## 当前工作流约束
