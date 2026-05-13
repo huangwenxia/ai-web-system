@@ -7,7 +7,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 
 这个 skill 是任务型主入口，服务于用户真实工作流 A-1：
 - 已有外部原型、设计稿或已确认页面
-- 尚无原型，但先通过 `agione-ui-skill` 生成并确认原型
+- 尚无原型，但先通过 `agione-ui` 生成并确认原型
 
 它不替代原型生成、实施落地、翻译和独立审查这些专业能力，而是负责选主链路、补齐闭环、决定何时叠加对应专业能力。
 
@@ -15,7 +15,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 既有项目里新增一个模块页面、业务页面、详情页、列表页、表单页或复合容器页。
 - 既有项目里新增一个有明确业务职责的页面级组件或区块级组件。
 - 用户已有设计稿、页面稿、HTML 原型或已确认方案，希望基于项目规范和 `project-mamba` 快速生成高质量代码。
-- 用户当前还没有原型，但明确要先用 `agione-ui-skill` 生成原型，再进入实施。
+- 用户当前还没有原型，但明确要先用 `agione-ui` 生成原型，再进入实施。
 
 ## 不适用场景
 - 任务主要是 bug 修复、代码优化或回归修补。
@@ -27,18 +27,18 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 至少具备以下之一：
 - 已确认的原型、设计稿、页面稿、截图或 HTML 原型
 - 现有项目中的目标目录、页面、模块、路由或相邻参考实现
-- 足以先进入 `agione-ui-skill` 的业务说明、接口结构和页面目标
+- 足以先进入 `agione-ui` 的业务说明、接口结构和页面目标
 
 最好同时具备：
 - 业务目标、目标用户或页面主任务
 - 必须复用的组件、容器、样式体系或 `project-mamba` 约束
 - 是否存在英文翻译或 i18n 要求
 
-如果当前还没有已确认原型，不能假装可以直接进入实施；必须先转到 `agione-ui-skill`，待原型确认后再进入实现。
+如果当前还没有已确认原型，不能假装可以直接进入实施；必须先转到 `agione-ui`，待原型确认后再进入实现。
 
 ## 接收参数说明
 - `target`：目标页面、组件、模块、目录或业务区域。
-- `prototype_source`：`external_design` 或 `agione_ui_generated`；如果当前还没有原型，先留空并转到 `agione-ui-skill`。
+- `prototype_source`：`external_design` 或 `agione_ui_generated`；如果当前还没有原型，先留空并转到 `agione-ui`。
 - `source`：设计稿、HTML 原型、截图、接口结构、业务说明、现有页面。
 - `constraints`：组件库、目录结构、主题变量、权限限制、复用要求、交付边界。
 - `translation`：是否需要英文翻译、术语统一或 i18n 改造。
@@ -47,7 +47,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 ## 执行前先读
 - `rules/00-global-task-scope.mdc`
 - `rules/10-existing-frontend-dev.mdc`
-- `skills/agione-ui-skill/SKILL.md`
+- `skills/agione-ui/SKILL.md`
 - `skills/frontend-implementer-skill/SKILL.md`
 - 检查清单：`docs/feature-delivery-checklist.md`
 - 输出模板：`templates/existing-project-feature-output-template.md`
@@ -57,7 +57,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 ## 工作流
 1. 先判断任务是否真的属于 A-1 既有项目新功能开发。
 2. 归一化输入，确认当前是否已有可实施的原型，并判断其来源属于 `external_design` 还是 `agione_ui_generated`。
-3. 如果尚无已确认原型，先转到 `agione-ui-skill` 生成并确认原型；未确认前不进入实施。
+3. 如果尚无已确认原型，先转到 `agione-ui` 生成并确认原型；未确认前不进入实施。
 4. 定位项目上下文：现有页面结构、路由入口、复用组件、相邻模块、目录规范、`project-mamba` 复用机会。
 5. 在进入 `frontend-implementer-skill` 之前，先输出一份极短的“实施前复用校验表”：当前目标 app、app 拓扑、route ownership、页面类型、页面壳、关键字段映射、常量来源、工具来源、加载策略、bootstrap 来源。
 6. 校验当前原型是否足以直接实施：
@@ -73,7 +73,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 ## 标准执行协议
 ### 1. 先确认原型，再进入实施
 - A-1 的实现阶段必须建立在已确认原型上。
-- 如果用户只有业务说明或接口结构，不直接实施，先进入 `agione-ui-skill`。
+- 如果用户只有业务说明或接口结构，不直接实施，先进入 `agione-ui`。
 - 不允许用“边做边想”的方式替代原型确认。
 
 ### 2. `external_design` 来源
@@ -84,7 +84,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 不允许因为抽象的“产品感”“层级感”或个人审美判断，主动改写已确认原型的节奏与密度；除非用户明确要求，先贴原型，再做主题兼容。
 
 ### 3. `agione_ui_generated` 来源
-- `agione-ui-skill` 负责原型生成与收敛，当前 skill 负责拿已确认原型进入项目实施。
+- `agione-ui` 负责原型生成与收敛，当前 skill 负责拿已确认原型进入项目实施。
 - 实施前必须先把页面骨架、区块职责、主操作和关键状态确认清楚。
 - 原型确认后，再结合项目上下文落地，不重复发明另一套页面结构。
 - 原型既然已经确认，默认先复刻原型的布局与样式细节，再处理项目 token、主题和组件体系兼容，不把实现阶段变成第二轮设计。 
@@ -130,7 +130,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 如果当前 app 的复用路径或 bootstrap 来源不明确，再读取 `skills/frontend-implementer-skill/docs/project-mamba-app-topology-matrix.md`。
 
 ### 3. `agione_ui_generated` 来源
-- `agione-ui-skill` 负责原型生成与收敛，当前 skill 负责拿已确认原型进入项目实施。
+- `agione-ui` 负责原型生成与收敛，当前 skill 负责拿已确认原型进入项目实施。
 - 实施前必须先把页面骨架、区块职责、主操作和关键状态确认清楚。
 - 原型确认后，再结合项目上下文落地，不重复发明另一套页面结构。
 
@@ -201,7 +201,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 ## writeback_targets
 只有在形成稳定模式时才考虑回写：
 - `skills/existing-project-feature-skill/`
-- `skills/agione-ui-skill/`
+- `skills/agione-ui/`
 - `skills/frontend-implementer-skill/`
 - `skills/translate-terms-skill/`
 - `skills/page-review-skill/`
@@ -221,7 +221,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 11. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
-- 如果当前还没有已确认原型，转交 `agione-ui-skill`。
+- 如果当前还没有已确认原型，转交 `agione-ui`。
 - 如果任务其实是 bug 修复 / 代码优化，转交 `existing-project-fix-skill`。
 - 如果任务已经变成独立审查，转交 `page-review-skill`。
 - 如果任务主要是翻译或 i18n，转交 `translate-terms-skill`。
@@ -241,10 +241,9 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 
 ### 实例 2：只有业务说明和接口结构，需要先做原型再实施
 - 当前不直接进入代码实现。
-- 先转到 `agione-ui-skill` 生成并确认原型。
+- 先转到 `agione-ui` 生成并确认原型。
 - 原型确认后，再进入 `frontend-implementer-skill` 落地。
 
 ### 实例 3：开发过程中发现按钮文案和中英翻译不一致
 - 不单独打断主链路。
 - 在实现落地阶段叠加 `translate-terms-skill`，统一术语、locale key 和 i18n 改造。
-

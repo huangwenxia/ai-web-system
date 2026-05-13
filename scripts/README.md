@@ -96,7 +96,7 @@ node scripts/sync-skills.mjs --terminal=claude-code,codex
 ### 只同步一个 skill
 
 ```powershell
-node scripts/sync-skills.mjs --terminal=cursor --name=agione-ui-skill
+node scripts/sync-skills.mjs --terminal=cursor --name=agione-ui
 ```
 
 ### 只同步仓库内 rules 投影

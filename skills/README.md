@@ -23,7 +23,7 @@
 
 ### 专业型 / 执行型 skill
 
-- `agione-ui-skill`：唯一 UI 原型生成入口
+- `agione-ui`：唯一 UI 原型生成入口
 - `frontend-implementer-skill`：页面与组件实施、修复、重构落地
 - `mamba-dark-mode-override`：深色模式专项排查与修正
 - `translate-terms-skill`：同时承担 A-2 主入口与专业能力
@@ -32,7 +32,7 @@
 
 - A-1 新功能开发的实施阶段，一定建立在已确认原型之上。
 - 如果已有外部原型、设计稿或已确认页面，直接进入 `existing-project-feature-skill` 编排实施。
-- 如果还没有原型，先通过 `agione-ui-skill` 生成并确认原型，再进入实施。
+- 如果还没有原型，先通过 `agione-ui` 生成并确认原型，再进入实施。
 - A-0 独立审查统一收敛到 `page-review-skill`，不再拆成多条结构 / 视觉 / UX 独立入口。
 
 ## 推荐目录结构
