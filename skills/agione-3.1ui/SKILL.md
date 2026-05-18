@@ -1,5 +1,5 @@
 ---
-name: agione-ui
+name: agione-3.10-ui
 version: 3.10
 description: >
   AGIOne Console UI prototype generator. Produces single-file HTML prototypes that feel
