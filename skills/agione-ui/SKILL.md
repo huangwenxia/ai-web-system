@@ -1,6 +1,6 @@
 ---
 name: agione-ui
-version: 4.0
+version: 4.2
 description: >
   AGIOne Console UI prototype generator. Produces single-file HTML prototypes that feel
   like the real product — consistent, professional, bilingual (中/EN), Light/Dark.
@@ -9,7 +9,7 @@ description: >
   or anything referencing the AGIOne design language.
 ---
 
-# AGIOne Console UI Skill — v4.0 (Production Aligned)
+# AGIOne Console UI Skill — v4.2 (Production Aligned)
 
 > **设计哲学**
 > 本 skill 分两个层级：
@@ -227,6 +227,25 @@ cp [skill-dir]/agione-console-shell-sample-v1.html ./[新原型].html
       - **Rule-gap 出口**：REQ 给的具体值在当前 chrome / DS 下产生明显违和（如 `width: 1200px` 撑爆视口、`#ff0000` 在 dark mode 完全消失）时，走 §0.4 输出 `rule-gap: §1.4-12.2`，标明 REQ 值 + DS 建议值 + 理由。**禁止**默默改值不告诉 owner
     - **不要把 REQ 表格当摆设** —— REQ 元素清单表里每一行都是必须实现的契约，不要跳过 conditional badge / 二次确认 / 校验逻辑
     - **保守判断字号** —— REQ 说"大号字 / 主信息"时映射到 `.type-display-sm`（32px），不是 `.type-h3`（16px）。详见 AI-USAGE Typography 触发词映射表
+
+13. **禁止自动 Playwright 截图验证**（v4.1，⚠️ 性能问题）：
+    - 生成完原型后**不要**自动调用 Playwright / Browser MCP / Chrome MCP 等浏览器工具截图验证视觉
+    - 默认验证手段已足够：`node --check`（JS 语法）+ Bash grep（chip 位置 / token 残留 / Logo 长度）
+    - 浏览器视觉确认交给用户自己 open
+    - **唯一例外**：用户 prompt 中明确出现以下任一关键词时才允许：
+      - "playwright" / "截图" / "screenshot"
+      - "视觉验证" / "看效果" / "render check"
+    - **理由**：Playwright 启动 + 渲染 + 截图单次 30-90s，绝大多数原型生成不需要这步；让用户自己浏览器打开 0 成本。
+
+14. **L3 业务卡：自由 + 5 条底线**（v4.2，⚠️ 高频审美问题）：
+    - **不强制统一卡片模板**——业务卡形状自由（GPU 详情卡 / 规格卡 / 反馈卡 / 商品卡…千变万化）
+    - 但**任何自定义卡 / 自定义视觉元素都必须遵守 5 条底线**：
+      1. **token 化**：圆角 / 阴影 / padding / 颜色 / 间距 / 动效全用 `var(--ui-*)`，禁硬编码
+      2. **字号走 `.type-*` class**：禁手写 `font-size` / `font-weight` / `font-family` / `line-height`
+      3. **同页同类卡字号一致**：列表 / 网格里并列的多张卡，标题字号统一（如都用 `.type-h3`，不要一个 h3 一个 h2）
+      4. **视觉焦点数字用 `.type-display-sm`（32px）**：价格 / Token 量 / 主参数等卡片中部主数字，不要用 `.type-h1`（30px）
+      5. **避免 inline style 堆叠**：单页 `<main>` 内业务区 inline style > 50 处时抽 `.<feature>-<part>` class 复用
+    - **完整规则 + 检查方法见 `design-system/AI-USAGE.md § L3 自定义协议`**
 
 ## 1.5 必须用 token 的属性
 

@@ -20,6 +20,13 @@ AI 会收到下述之一：
 
 单文件 HTML，浏览器直接打开可跑。**必须**通过下述工作流生成。
 
+**⛔ 禁止自动调用 Playwright / Browser MCP / Chrome MCP 截图验证**（v4.1）
+
+- 生成完原型后**不要**自动浏览器截图（单次 30-90s，绝大多数场景不需要）
+- 默认验证已足够：`node --check`（JS 语法）+ `grep`（chip 位置 / token 残留 / Logo 长度）
+- 浏览器视觉确认交给用户自己 open
+- **唯一例外**：用户 prompt 含关键词 "playwright" / "截图" / "screenshot" / "视觉验证" / "看效果" 时才调用
+
 ---
 
 ## 🔥 4 层决策流（每生成一页都走一遍）
@@ -175,13 +182,38 @@ REQ 文档常用自然语言描述字号（"大号字 / 主信息 / 标题"）�
 
 ## L3 自定义协议（catalog 找不到 / 决策树兜不住时）
 
-适用场景：商品卡片 / SKU 网格 / 营销 hero / 行业特定可视化等
+适用场景：商品卡片 / SKU 网格 / 营销 hero / GPU 详情卡 / 规格选择卡 / 提交反馈卡 / 行业特定可视化等
 
-规则：
-1. **L1 铁律仍必须遵守**（chrome / token / Badge 词汇表 / 列表页根布局 / 字型 class）
-2. 自定义 class 名用 `<feature>-<part>` 格式，scoped 到当前页（如 `.bp-sku` for Browse Plans SKU）
-3. 数据特性写入注释让设计师 review 后决定是否升级 L2
-4. 自定义 CSS 仍用 var(--*) token，不硬编码
+### 业务自由 + 5 条底线（v4.2 加固）
+
+**业务卡形状千变万化**（GPU 详情卡多分区 / 规格卡价格主导 / 成功反馈卡全屏 / Hero 横条…）—— **不强制套统一模板**。结构 / 子部件 / 布局由 AI 按业务自由设计。
+
+但**任何自定义卡 / 自定义视觉元素都必须遵守 5 条底线**：
+
+| # | 底线 | 检查方法 |
+|---|------|---------|
+| 1 | **token 化**：圆角 / 阴影 / padding / 颜色 / 间距 / 动效全用 `var(--ui-*)`，禁硬编码 hex / px（layout-only 例外见 §1.5） | `grep -E "border-radius:\s*[0-9]"` 应 = 0 |
+| 2 | **字号走 `.type-*` class**：禁手写 `font-size` / `font-weight` / `font-family` / `line-height` | `<main>` 内 `font-size:` 应 = 0 |
+| 3 | **同页同类卡字号一致**：列表 / 网格中**并列**的多张业务卡，标题字号必须**统一**。<br>❌ ModelCard 用 `.type-h3`、PlanCard 用 `.type-h2`（视觉错乱）<br>✅ 都用 `.type-h3` | 人审：列表卡标题字号应只有 1 种 |
+| 4 | **视觉焦点数字用 `.type-display-sm`**：价格 / Token 量 / 主参数 / GPU VRAM 等"卡片中部最大数字" → `.type-display-sm`（32px Manrope 800），**不要**用 `.type-h1`（30px） | 人审：找出每个卡的最大数字字号 |
+| 5 | **避免 inline style 堆叠**：单个 `<main>` 内**业务区** inline style 数量 > 50 处时考虑抽 `.<feature>-<part>` class 到 `<style>` 复用 | `awk '/<main/,/<\/main>/' \| grep -c "style="` 警戒 50 |
+
+### 不约束的（业务自由）
+
+| 维度 | 自由度 |
+|------|-------|
+| 卡片结构 / 行数 / 子部件 | ✅ 业务决定 |
+| 卡片形状（标准 / 横条 / 多区 / 全屏 / 反馈）| ✅ 设计决定 |
+| 特殊状态（active / readonly / disabled / selected）| ✅ 设计决定 |
+| 是否用 `<CardBox>` 还是手写 `<article>` / `<div class="xxx-card">` | ✅ 看场景 — 标准卡用 CardBox 省事，特殊视觉允许手写自定义 class |
+
+### class 命名规范
+
+- L3 自定义 class 用 `<feature>-<part>` 格式，scoped 到当前页
+  - 例：`.bp-sku` (Browse Plans SKU) / `.gpu-card-vram` / `.spec-total-card`
+- BEM 修饰用 `.is-<state>`：`.frame-card.is-active.is-readonly` 或 `.flavor-card.is-disabled`
+- 数据特性写入注释让设计师 review 后决定是否升级 L2
+- 多次复用的视觉模式（≥ 3 处出现）→ 考虑反馈给 owner 升级到 L2 / shell-sample
 
 **第三方品牌色例外**（v3.12 P1 闭环补）：
 - 支付通道 / SSO Logo 等场景需要原厂品牌色（如 Alipay `#1677ff`、Stripe `#635bff`）
