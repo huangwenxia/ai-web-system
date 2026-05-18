@@ -1,0 +1,141 @@
+<!--
+  Detail Page · 详情/配置页骨架（v3.16）
+
+  使用：把下面 <!-- BEGIN PARTIAL --> 到 <!-- END PARTIAL --> 之间的内容
+  复制到 cp 出来的 shell-sample 的 <main class="main"> 内。
+
+  必备组件：
+  - MainBox (css-pattern)            — 根容器
+  - Breadcrumb (runtime-component)   — 顶部层级路径
+  - PageHeader (runtime-component)   — title + subtitle + meta + 右操作
+  - MetricsStrip (runtime-component) — 5-cell 等分指标条（数据型详情页推荐，可删）
+  - Tabs (runtime-component)         — 详情子模块切换（underline 变体）
+  - DetailSection (runtime-component) × N — 各 Tab 下的分块单元
+
+  布局原则：
+  - Breadcrumb → PageHeader → MetricsStrip → Tabs → DetailSection × N（一条主线，不要左右分栏）
+  - MetricsStrip 仅当本页面有 ≥4 个技术/业务指标时启用；纯配置类详情页可删
+  - 每个 Tab 内用 DetailSection 分块，section 间距 var(--ui-space-xl)
+  - 详情元数据（创建时间 / 创建人 / 配置项 等）用 <KvCard>，禁止用 KpiCard
+
+  必需 Vue state（已在 shell-sample setup 内提供，或自行扩展）：
+  - detailTab (string)              — 当前激活的 tab key，默认 'overview'
+  - detailBreadcrumb (Array)        — Breadcrumb items
+  - detailMetrics (Array)           — MetricsStrip items（若启用）
+  - detailTabs (Array)              — Tabs options
+-->
+
+<!-- BEGIN PARTIAL -->
+<div class="main-box" data-component="main-box">
+
+  <!-- Breadcrumb：顶部层级路径 -->
+  <Breadcrumb :items="detailBreadcrumb" />
+
+  <!-- PageHeader：title + subtitle + 右操作 -->
+  <PageHeader
+    :title="t.detailTitle"
+    :subtitle="t.detailSubtitle"
+  >
+    <template #actions>
+      <el-button size="small">{{ t.btnEdit }}</el-button>
+      <el-button type="primary" size="small">{{ t.btnPrimary }}</el-button>
+    </template>
+  </PageHeader>
+
+  <!-- MetricsStrip：5-cell 等分指标条（数据型详情页推荐；配置类详情页可删除此段） -->
+  <MetricsStrip :items="detailMetrics" />
+
+  <!-- Tabs：切换详情子模块 -->
+  <Tabs
+    :options="detailTabs"
+    v-model="detailTab"
+    variant="underline"
+  />
+
+  <!-- 内容滚动区：每个 Tab 一个 v-show 区块；每块内用 DetailSection 分组 -->
+  <el-scrollbar>
+    <div class="scroll-box-inner" data-scroll-box data-component="scroll-box">
+
+      <!-- Tab 1：概览 -->
+      <section v-show="detailTab === 'overview'" class="flex-col" style="gap: var(--ui-space-xl);">
+        <DetailSection :title="t.sectionMetaTitle">
+          <KvCard :items="detailMeta" />
+        </DetailSection>
+
+        <DetailSection :title="t.sectionAboutTitle">
+          <template #headerRight>
+            <el-button size="small" text>{{ t.btnViewAll }}</el-button>
+          </template>
+          <p class="type-body" style="color: var(--ui-text-muted);">
+            {{ t.aboutPlaceholder }}
+          </p>
+        </DetailSection>
+      </section>
+
+      <!-- Tab 2：监控（占位） -->
+      <section v-show="detailTab === 'monitor'" class="flex-col" style="gap: var(--ui-space-xl);">
+        <DetailSection :title="t.sectionMonitorTitle">
+          <div style="height: 280px; display: flex; align-items: center; justify-content: center; color: var(--ui-text-muted);">
+            <span>{{ t.chartPlaceholder }}</span>
+          </div>
+        </DetailSection>
+      </section>
+
+      <!-- Tab 3：历史/日志（占位） -->
+      <section v-show="detailTab === 'history'" class="flex-col" style="gap: var(--ui-space-xl);">
+        <DetailSection :title="t.sectionHistoryTitle">
+          <div style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--ui-text-muted);">
+            <span>{{ t.tablePlaceholder }}</span>
+          </div>
+        </DetailSection>
+      </section>
+
+    </div>
+  </el-scrollbar>
+
+</div>
+<!-- END PARTIAL -->
+
+<!--
+  对应 setup() 内补充（已在 shell-sample 内或自行扩展）：
+
+  const detailTab = ref('overview');
+
+  const detailBreadcrumb = ref([
+    { label: '控制台', href: '#' },
+    { label: 'My Models', href: '#' },
+    { label: 'qwen2.5-7b-finetune' },  // 当前页不带 href
+  ]);
+
+  const detailMetrics = ref([
+    { label: 'QPS',    value: '1,234'  },
+    { label: '延迟',   value: '238ms'  },
+    { label: '成功率', value: '99.85%' },
+    { label: 'GPU',    value: '68%'    },
+    { label: '活跃',   value: '128'    },
+  ]);
+
+  const detailTabs = ref([
+    { label: '概览',     value: 'overview' },
+    { label: '实时监控', value: 'monitor'  },
+    { label: '历史记录', value: 'history'  },
+  ]);
+
+  const detailMeta = ref([
+    { label: '模型 ID',    value: 'model-7f3a92e1' },
+    { label: '版本',       value: 'v1.2'           },
+    { label: '部署时间',   value: '2026-04-12'     },
+    { label: '所属团队',   value: 'NLP 推理组'      },
+  ]);
+
+  对应 i18n keys（需在 i18n.zh / i18n.en 各加）：
+  - detailTitle / detailSubtitle / btnEdit / btnPrimary / btnViewAll
+  - sectionMetaTitle / sectionAboutTitle / sectionMonitorTitle / sectionHistoryTitle
+  - aboutPlaceholder / chartPlaceholder / tablePlaceholder
+
+  反模式 ❌：
+  - 详情页用 HeaderBox（缺面包屑和 meta，应用 PageHeader）
+  - 详情元数据用 KpiCard（数字字体不合适，应用 KvCard）
+  - 详情页用 left sidebar + right content 分栏（违反 chrome 一致性，应用 Tabs 切换）
+  - 详情子模块用 Stepper（用户以为必须按序，应用 Tabs）
+-->

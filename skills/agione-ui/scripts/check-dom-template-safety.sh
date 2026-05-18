@@ -99,12 +99,16 @@ else
   pass "No \\uXXXX unicode escapes"
 fi
 
-# P8 (v2.0): No hard-coded hex colors outside :root blocks (theme safety)
+# P8 (v2.1): No hard-coded hex colors outside :root blocks in CSS (theme safety)
 echo "[P8] Colors via CSS variables (no hard-coded hex outside :root)"
-# Extract only lines that contain #rgb/#rrggbb; filter out declarations inside :root / [data-theme]
-# Heuristic: a hex line is a violation if it's not within 40 lines of a :root{ or [data-theme blocks.
+# Extract only the <style> block; JS darkVars/lightVars theme maps intentionally hold raw
+# color values and are not business CSS. Within CSS, allow :root / [data-theme] token
+# declarations and flag remaining #rgb/#rrggbb literals.
 HARDCODED=$(awk '
-  BEGIN{inroot=0}
+  BEGIN{instyle=0; inroot=0}
+  /^[[:space:]]*<style([[:space:]>]|$)/ {instyle=1; next}
+  /^[[:space:]]*<\/style>/ {instyle=0}
+  !instyle {next}
   /:root *\{|\[data-theme[^]]*\] *\{/ {inroot=1}
   inroot && /^\s*\}/ {inroot=0}
   !inroot && /#[0-9a-fA-F]{3,8}([^0-9a-fA-F]|$)/ && !/^[[:space:]]*\/\// && !/^[[:space:]]*\*/ && !/^[[:space:]]*<!--/ {
@@ -121,7 +125,7 @@ fi
 # Extra 1: No self-closing custom components (el-*, PascalCase icon tags)
 echo "[X1] No self-closing custom components"
 # Match <el-xxx ... /> or <Xxx ... /> but exclude void HTML (br, hr, img, input, meta, link, source, area, col, embed, wbr)
-BAD=$(grep -nE '<(el-[a-zA-Z0-9-]+|[A-Z][a-zA-Z0-9]*)[^>]*/>' "$FILE" || true)
+BAD=$(grep -nE '<(el-[a-zA-Z0-9-]+|[A-Z][a-zA-Z0-9]*)[^>]*/>' "$FILE" | grep -vE '^[0-9]+:[[:space:]]*(//|\*|<!--)' || true)
 if [[ -n "$BAD" ]]; then
   fail "Self-closing custom component tag — must use explicit closing tag"
   echo "$BAD" | head -5 | sed 's/^/    /'

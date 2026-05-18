@@ -1,0 +1,336 @@
+<!--FRONTMATTER
+name: Upload
+level: L2
+cls: el-upload
+tag: <el-upload>
+data-component: upload
+since: v3.4
+status: stable
+related: Form
+description: 文件上传（拖拽 / 点击 / 进度 / 列表）
+data-characteristics: 拖拽 drop-zone; 进度条; 文件列表
+when-to-use: 文档 / 图片 / 模型文件上传
+when-not-to-use: —
+intent: 表单
+signal: TREE-⑨
+type: element-plus
+FRONTMATTER-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Upload — AGIOne DS</title>
+<!-- Vue + Element Plus + Icons + Lucide（与生产环境一致） -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-plus@2.9.1/dist/index.css">
+<script src="https://unpkg.com/element-plus@2.9.1/dist/index.full.min.js"></script>
+<script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/400.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ── Design tokens (字节级抄自 shell-sample :root) ── */
+:root {
+  --ui-topnav-bg:          #1a1025;
+  --ui-topnav-accent:      #2d2240;
+  --ui-topnav-foreground:          #f0edf5;
+  --ui-topnav-muted:       #8b7fa0;
+  --ui-topnav-active-bg:   #312870;
+  --ui-topnav-active-fg:   #c4bdff;
+  --ui-topnav-height:      56px;
+
+  --ui-sidebar-bg:         #fafafa;
+  --ui-sidebar-border:     #e4e4e7;
+  --ui-sidebar-foreground:         #09090b;
+  --ui-sidebar-muted:      #71717a;
+  --ui-sidebar-active-bg:  #e4e4e7;
+  --ui-sidebar-active-fg:  #18181b;
+  --ui-sidebar-width:      256px;
+  --ui-body-bg:            #ffffff;
+  --ui-body-radius:        16px 16px 0 0;
+
+  --ui-color-primary:        #5f4ecf;
+  --ui-color-primary-hover:  #4a3eb0;
+  --ui-color-primary-active: #3d3399;
+  --ui-color-primary-subtle: #ece9f9;
+  --ui-text-on-brand:   #ffffff;
+
+  --ui-text-primary:           #09090b;
+  --ui-bg-page:           #ffffff;
+  --ui-bg-card:                 #ffffff;
+  --ui-accent:               #f4f4f5;
+  --ui-bg-muted:                #f4f4f5;
+  --ui-text-muted:     #71717a;
+  --ui-text-secondary:       #3f3f46;
+  --ui-text-placeholder:     #a1a1aa;
+  --ui-text-disabled:        #d4d4d8;
+  --ui-border-soft:          #f4f4f5;
+  --ui-border-default:               #e4e4e7;
+  --ui-border-strong:        #a1a1aa;
+  --ui-input:                #ffffff;
+
+  --ui-color-success:        #22c55e;
+  --ui-color-warning:        #f59e0b;
+  --ui-color-destructive:    #ef4444;
+  --ui-color-success-subtle:     #ecfdf5;
+  --ui-color-warning-subtle:     #fef3c7;
+  --ui-color-destructive-subtle: #fef2f2;
+
+  --ui-badge-purple-bg: #f2eef8;  --ui-badge-purple-fg: #6a4e9a;
+  --ui-badge-blue-bg:   #eef1f8;  --ui-badge-blue-fg:   #4a6298;
+  --ui-badge-green-bg:  #eef5f0;  --ui-badge-green-fg:  #3a7252;
+  --ui-badge-orange-bg: #f8f1ec;  --ui-badge-orange-fg: #8a5e38;
+  --ui-badge-yellow-bg: #f7f4ea;  --ui-badge-yellow-fg: #7a6228;
+  --ui-badge-muted-bg:  var(--ui-bg-muted); --ui-badge-muted-fg: var(--ui-text-muted);
+
+  --ui-shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
+  --ui-shadow-md:  0 2px 8px rgba(0,0,0,0.08);
+  --ui-shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
+  --ui-shadow-xl:  0 8px 32px rgba(0,0,0,0.16);
+
+  --ui-radius-sm:   4px;
+  --ui-radius-md:   6px;
+  --ui-radius-lg:   8px;
+  --ui-radius-xl:   12px;
+  --ui-radius-2xl:  16px;
+  --ui-radius-pill: 9999px;
+
+  --ui-font-heading: 'Manrope Variable', Inter, system-ui, sans-serif;
+  --ui-font-base:    'Inter Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --ui-font-mono:    'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+  --ui-duration-fast: 150ms;
+  --ui-duration-base: 250ms;
+  --ui-duration-slow: 400ms;
+  --ui-ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ui-avatar-bg: #7c3aed;
+  --ui-ring: #18181b;
+
+  /* 4 个缓动函数（v3.10 扩展，配合 anim-* preset class 使用） */
+  --ui-ease-in:     cubic-bezier(0.4, 0, 1, 1);          /* 加速退出 / 离场 */
+  --ui-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);      /* 平滑双向 / 切换 */
+  --ui-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* 轻弹性 / 强调反馈 */
+
+  --ui-space-xs:   4px;
+  --ui-space-sm:   8px;
+  --ui-space-md:   12px;
+  --ui-space-base: 16px;
+  --ui-space-lg:   20px;
+  --ui-space-xl:   24px;
+  --ui-space-2xl:  32px;
+  --ui-space-3xl:  48px;
+
+  --ui-z-base: 1; --ui-z-raised: 10; --ui-z-sidebar: 100; --ui-z-topbar: 200;
+  --ui-z-dropdown: 300; --ui-z-sticky: 400; --ui-z-tooltip: 500;
+  --ui-z-drawer: 600; --ui-z-dialog-mask: 699; --ui-z-dialog: 700;
+  --ui-z-loading: 800; --ui-z-message: 900;
+
+  --ui-icon-xs: 12px; --ui-icon-sm: 14px; --ui-icon-base: 16px;
+  --ui-icon-md: 18px; --ui-icon-lg: 20px; --ui-icon-xl: 24px;
+  --ui-icon-2xl: 40px; --ui-icon-3xl: 48px;
+
+  /* Element Plus */
+  --el-border-radius-base:  6px;
+  --el-border-color:        var(--ui-border-default);
+  --el-bg-color:            var(--ui-bg-page);
+  --el-bg-color-page:       var(--ui-accent);
+  --el-bg-color-overlay:    #ffffff;
+  --el-text-color-primary:  var(--ui-text-primary);
+  --el-text-color-regular:  var(--ui-text-secondary);
+  --el-text-color-secondary:var(--ui-text-muted);
+  --el-text-color-placeholder: var(--ui-text-placeholder);
+  --el-text-color-disabled: var(--ui-text-disabled);
+  --el-fill-color-blank:    var(--ui-input);
+  --el-fill-color-light:    var(--ui-accent);
+  --el-fill-color:          #f0f0f0;
+  --el-color-primary:       var(--ui-color-primary);
+  --el-disabled-bg-color:   var(--ui-bg-muted);
+  --el-disabled-border-color: var(--ui-border-default);
+  --el-mask-color:          rgba(255,255,255,0.9);
+}
+
+body { font-family: var(--ui-font-base); background: var(--ui-sidebar-bg); padding: 32px; margin: 0; color: var(--ui-text-primary); }
+h1 { font-size: 24px; margin: 0 0 8px; font-family: var(--ui-font-heading); font-weight: 800; }
+h2 { font-size: 16px; margin: 32px 0 12px; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+pre { background: var(--ui-topnav-bg); color: var(--ui-topnav-foreground); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; max-width: 720px; }
+
+/* ── DS shared utility classes（与 agione-design-system.html 同步） ── */
+.preview-frame { position: relative; padding: var(--ui-space-xl); border: 1px dashed var(--ui-border-default); border-radius: var(--ui-radius-lg); background: var(--ui-bg-page); display: flex; flex-direction: column; gap: var(--ui-space-base); min-height: 80px; max-width: 1200px; }
+.flex-row { display: flex; align-items: center; gap: var(--ui-space-sm); flex-wrap: wrap; }
+.flex-col { display: flex; flex-direction: column; gap: var(--ui-space-sm); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--ui-space-base); }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ui-space-base); }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ui-space-base); }
+.ds-variant-row { display: grid; grid-template-columns: 80px 1fr; gap: var(--ui-space-base); align-items: center; padding: 6px 0; }
+.ds-variant-label { font-size: 11px; font-weight: 600; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Component CSS (extracted from shell-sample + DS demo styles) ── */
+.usage-bar { display: inline-flex; align-items: center; gap: var(--ui-space-sm); min-width: 120px; }
+.usage-bar__track { flex: 1; height: 6px; background: var(--ui-bg-muted); border-radius: var(--ui-radius-pill); overflow: hidden; min-width: 60px; }
+.usage-bar__fill { height: 100%; border-radius: var(--ui-radius-pill); transition: width var(--ui-duration-base); }
+.usage-bar__fill--primary { background: var(--ui-color-primary); }
+.upload-zone { border: 1.5px dashed var(--ui-border-strong); border-radius: var(--ui-radius-lg); background: var(--ui-accent); padding: var(--ui-space-2xl) var(--ui-space-xl); display: flex; flex-direction: column; align-items: center; gap: var(--ui-space-sm); cursor: pointer; transition: border-color var(--ui-duration-fast), background var(--ui-duration-fast); text-align: center; }
+.upload-zone:hover { border-color: var(--ui-color-primary); background: var(--ui-color-primary-subtle); }
+.upload-zone__icon { width: 36px; height: 36px; border-radius: var(--ui-radius-md); background: var(--ui-bg-card); border: 1px solid var(--ui-border-default); display: flex; align-items: center; justify-content: center; color: var(--ui-color-primary); }
+.upload-zone__icon [data-lucide] { width: 18px; height: 18px; }
+.upload-zone__title { font-size: 14px; font-weight: 500; color: var(--ui-text-primary); }
+.upload-zone__title strong { color: var(--ui-color-primary); }
+.upload-zone__hint { font-size: 12px; color: var(--ui-text-muted); line-height: 1.6; }
+.upload-list { display: flex; flex-direction: column; gap: var(--ui-space-sm); margin-top: var(--ui-space-md); }
+.upload-item { display: flex; align-items: center; gap: var(--ui-space-sm); padding: var(--ui-space-sm) var(--ui-space-md); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-md); background: var(--ui-bg-card); }
+.upload-item__icon { width: 28px; height: 28px; border-radius: var(--ui-radius-sm); background: var(--ui-accent); display: flex; align-items: center; justify-content: center; color: var(--ui-text-muted); flex-shrink: 0; }
+.upload-item__icon [data-lucide] { width: 14px; height: 14px; }
+.upload-item__main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.upload-item__name { font-size: 13px; color: var(--ui-text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.upload-item__meta { font-size: 11px; color: var(--ui-text-muted); display: flex; gap: 6px; align-items: center; font-family: var(--ui-font-mono); }
+.upload-item__status { font-size: 11px; font-weight: 500; flex-shrink: 0; }
+.upload-item--done { background: var(--ui-color-success-subtle); border-color: var(--ui-color-success); }
+.upload-item--done .upload-item__icon { background: var(--ui-color-success); color: #fff; }
+.upload-item--done .upload-item__status { color: var(--ui-color-success); }
+.upload-item--error { background: var(--ui-color-destructive-subtle); border-color: var(--ui-color-destructive); }
+.upload-item--error .upload-item__icon { background: var(--ui-color-destructive); color: #fff; }
+.upload-item--error .upload-item__status { color: var(--ui-color-destructive); }
+.upload-item__close { color: var(--ui-text-muted); padding: 4px; transition: color var(--ui-duration-fast); flex-shrink: 0; }
+.upload-item__close:hover { color: var(--ui-color-destructive); }
+.upload-item__close [data-lucide] { width: 14px; height: 14px; }
+</style>
+</head>
+<body>
+
+<h1>Upload</h1>
+<p style="color: var(--ui-text-muted); margin: 0;">文件上传（拖拽 / 点击 / 进度 / 列表）</p>
+
+<h2>Preview</h2>
+<div id="app">
+  <div class="preview-frame">
+<div style="background: var(--ui-bg-card); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-lg); padding: var(--ui-space-lg);">
+                    <div class="upload-zone">
+                      <div class="upload-zone__icon"><i data-lucide="cloud-upload"></i></div>
+                      <div class="upload-zone__title">点击或<strong>拖拽文件到此</strong>上传</div>
+                      <div class="upload-zone__hint">支持 .csv / .xlsx / .json，单文件最大 100MB，最多 10 个</div>
+                    </div>
+                    <div class="upload-list">
+                      <div class="upload-item upload-item--done">
+                        <div class="upload-item__icon"><i data-lucide="check"></i></div>
+                        <div class="upload-item__main">
+                          <div class="upload-item__name">tenants_2026Q2.csv</div>
+                          <div class="upload-item__meta"><span>2.4 MB</span><span style="opacity:.5">·</span><span>2 秒前</span></div>
+                        </div>
+                        <span class="upload-item__status">已完成</span>
+                        <button class="upload-item__close"><i data-lucide="x"></i></button>
+                      </div>
+                      <div class="upload-item">
+                        <div class="upload-item__icon"><i data-lucide="file-text"></i></div>
+                        <div class="upload-item__main">
+                          <div class="upload-item__name">licenses_active.xlsx</div>
+                          <div class="upload-item__meta"><span>8.7 MB</span><span style="opacity:.5">·</span><span>62%</span></div>
+                          <div class="usage-bar" style="margin-top: 4px;">
+                            <div class="usage-bar__track" style="height: 4px;"><div class="usage-bar__fill usage-bar__fill--primary" style="width: 62%;"></div></div>
+                          </div>
+                        </div>
+                        <span class="upload-item__status" style="color: var(--ui-color-primary);">上传中</span>
+                        <button class="upload-item__close"><i data-lucide="x"></i></button>
+                      </div>
+                      <div class="upload-item upload-item--error">
+                        <div class="upload-item__icon"><i data-lucide="x"></i></div>
+                        <div class="upload-item__main">
+                          <div class="upload-item__name">audit_log_2025.json</div>
+                          <div class="upload-item__meta"><span>156 MB</span><span style="opacity:.5">·</span><span>超出 100MB 限制</span></div>
+                        </div>
+                        <span class="upload-item__status">失败</span>
+                        <button class="upload-item__close"><i data-lucide="x"></i></button>
+                      </div>
+                    </div>
+                  </div>
+  </div>
+</div>
+
+<h2>何时使用</h2>
+<p style="line-height: 1.8;">✅ 文档 / 图片 / 模型文件上传</p>
+
+<h2>何时不使用</h2>
+<p style="line-height: 1.8;">❌ —</p>
+
+<script>
+// 挂载 Vue + EP；setup() 内含与 DS 同源的全部 mock 数据（dsTableData / i18nLangs / radioPlans 等）
+const { createApp, ref, reactive, computed } = Vue;
+const app = Vue.createApp({
+  setup() {
+
+    const isDark = ref(false);
+    const lang = ref('zh');
+    const active = ref('intro');
+
+    // ── Motion Library replay：点击 Replay 让 :key 重建，CSS animation 重放 ──
+    const replayKey = ref(0);
+    function replay() { replayKey.value++; }
+
+    // ── I18nField 生产组件用状态（mock 数据 + 当前激活 tab） ──
+    // 4 种语言：zh-CN / en / ja / ko；每种都有"套餐名称 + 描述"两个字段
+    const i18nLangs = [
+      { code: 'zh', emoji: '🇨🇳', label: '中文',   short: '中',   required: true  },
+      { code: 'en', emoji: '🇺🇸', label: 'English', short: 'EN',  required: true  },
+      { code: 'ja', emoji: '🇯🇵', label: '日本語',  short: '日',   required: false },
+      { code: 'ko', emoji: '🇰🇷', label: '한국어',  short: '韩',   required: false },
+    ];
+    const i18nValues = reactive({
+      zh: { name: '企业旗舰版',         desc: '为大客户准备的全功能套餐' },
+      en: { name: 'Enterprise Ultimate', desc: 'Full-feature plan for enterprise customers' },
+      ja: { name: 'エンタープライズプロ', desc: '' },
+      ko: { name: '',                   desc: '' },
+    });
+    // 当前激活的语言 tab
+    const i18nFldATab = ref('zh');
+    function i18nIsFilled(code, field) {
+      return (i18nValues[code]?.[field] || '').trim().length > 0;
+    }
+    function i18nFilledCount(field) {
+      return i18nLangs.filter(l => i18nIsFilled(l.code, field)).length;
+    }
+    function i18nRequiredMissing(field) {
+      return i18nLangs.filter(l => l.required && !i18nIsFilled(l.code, field)).length;
+    }
+
+    // ── Radio 现代化评审用状态 ──
+    // 4 个选项（套餐），4 版各自独立 ref，互不影响
+    const radioPlans = [
+      { code: 'basic',      name: '基础版',   desc: '100K 调用 / 月' },
+      { code: 'pro',        name: '专业版',   desc: '1M 调用 / 月' },
+      { code: 'enterprise', name: '企业版',   desc: '10M 调用 + SLA' },
+      { code: 'ultimate',   name: '旗舰版',   desc: '定制 + 专属支持' },
+    ];
+    const radioModA = ref('pro');
+    const radioModB = ref('enterprise');
+    const radioModC = ref('pro');
+    const radioModD = ref('enterprise');
+
+    // ── DataTable mock 数据（演示用） ──
+    const dsTableData = ref([
+      { name: '蚂蚁金服 - AI 平台', plan: '企业旗舰', planColor: 'badge-purple', status: 'Active', statusBadge: 'badge-green', usagePct: 62, usageColor: 'usage-bar__fill--primary', expire: '2026-06-30', bgIdx: 1 },
+      { name: '字节跳动 - 视频生成', plan: '企业版', planColor: 'badge-blue', status: 'Pending', statusBadge: 'badge-orange', usagePct: 88, usageColor: 'usage-bar__fill--warning', expire: '2026-05-12', bgIdx: 2 },
+      { name: '阿里云 - 智能客服', plan: '专业版', planColor: 'badge-green', status: 'Active', statusBadge: 'badge-green', usagePct: 45, usageColor: 'usage-bar__fill--primary', expire: '2026-05-14', bgIdx: 3 },
+      { name: '京东物流 - 仓储 AI', plan: '专业版', planColor: 'badge-green', status: 'Active', statusBadge: 'badge-green', usagePct: 28, usageColor: 'usage-bar__fill--success', expire: '2026-05-16', bgIdx: 4 },
+      { name: '腾讯云 - 内容审核', plan: '企业版', planColor: 'badge-blue', status: 'Active', statusBadge: 'badge-green', usagePct: 100, usageColor: 'usage-bar__fill--danger', expire: '2026-08-21', bgIdx: 5 },
+      { name: '美团 - 配送调度', plan: '基础版', planColor: 'badge-muted', status: 'Inactive', statusBadge: 'badge-muted', usagePct: 12, usageColor: 'usage-bar__fill--success', expire: '2026-12-01', bgIdx: 6 },
+    ]);
+
+        // — stubs for DS-specific helpers that the return references —
+    const toggleTheme = () => {};
+    const toggleLang  = () => {};
+
+    return { isDark, lang, active, toggleTheme, toggleLang, dsTableData, replayKey, replay, i18nLangs, i18nValues, i18nFldATab, i18nIsFilled, i18nFilledCount, i18nRequiredMissing, radioPlans, radioModA, radioModB, radioModC, radioModD, ElementPlusIconsVue: window.ElementPlusIconsVue }
+  }
+});
+for (const [k, c] of Object.entries(ElementPlusIconsVue || {})) {
+  app.component(k, c);
+}
+app.use(ElementPlus);
+// 抑制 Vue 对 v-for / v-model 中未定义变量的警告，避免 demo 数据缺失时整体崩溃
+app.config.warnHandler = () => {};
+try { app.mount('#app'); } catch (e) { console.warn('[demo mount]', e.message); }
+lucide.createIcons && lucide.createIcons();
+</script>
+</body>
+</html>

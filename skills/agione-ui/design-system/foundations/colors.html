@@ -1,0 +1,350 @@
+<!--FRONTMATTER
+name: Colors
+level: foundation
+cls: —
+tag: —
+data-component: —
+since: v3.4
+status: stable
+related: —
+description: 颜色系统：主色 + 中性 5 级 + 状态色 + Badge 6 色 + TopBar 深紫板
+data-characteristics: —
+when-to-use: AI 引用某颜色 token 时（如 --ui-color-primary）
+when-not-to-use: —
+type: reference-only
+FRONTMATTER-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Colors — AGIOne DS</title>
+<!-- Vue + Element Plus + Icons + Lucide（与生产环境一致） -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-plus@2.9.1/dist/index.css">
+<script src="https://unpkg.com/element-plus@2.9.1/dist/index.full.min.js"></script>
+<script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/400.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ── Design tokens (字节级抄自 shell-sample :root) ── */
+:root {
+  --ui-topnav-bg:          #1a1025;
+  --ui-topnav-accent:      #2d2240;
+  --ui-topnav-foreground:          #f0edf5;
+  --ui-topnav-muted:       #8b7fa0;
+  --ui-topnav-active-bg:   #312870;
+  --ui-topnav-active-fg:   #c4bdff;
+  --ui-topnav-height:      56px;
+
+  --ui-sidebar-bg:         #fafafa;
+  --ui-sidebar-border:     #e4e4e7;
+  --ui-sidebar-foreground:         #09090b;
+  --ui-sidebar-muted:      #71717a;
+  --ui-sidebar-active-bg:  #e4e4e7;
+  --ui-sidebar-active-fg:  #18181b;
+  --ui-sidebar-width:      256px;
+  --ui-body-bg:            #ffffff;
+  --ui-body-radius:        16px 16px 0 0;
+
+  --ui-color-primary:        #5f4ecf;
+  --ui-color-primary-hover:  #4a3eb0;
+  --ui-color-primary-active: #3d3399;
+  --ui-color-primary-subtle: #ece9f9;
+  --ui-text-on-brand:   #ffffff;
+
+  --ui-text-primary:           #09090b;
+  --ui-bg-page:           #ffffff;
+  --ui-bg-card:                 #ffffff;
+  --ui-accent:               #f4f4f5;
+  --ui-bg-muted:                #f4f4f5;
+  --ui-text-muted:     #71717a;
+  --ui-text-secondary:       #3f3f46;
+  --ui-text-placeholder:     #a1a1aa;
+  --ui-text-disabled:        #d4d4d8;
+  --ui-border-soft:          #f4f4f5;
+  --ui-border-default:               #e4e4e7;
+  --ui-border-strong:        #a1a1aa;
+  --ui-input:                #ffffff;
+
+  --ui-color-success:        #22c55e;
+  --ui-color-warning:        #f59e0b;
+  --ui-color-destructive:    #ef4444;
+  --ui-color-success-subtle:     #ecfdf5;
+  --ui-color-warning-subtle:     #fef3c7;
+  --ui-color-destructive-subtle: #fef2f2;
+
+  --ui-badge-purple-bg: #f2eef8;  --ui-badge-purple-fg: #6a4e9a;
+  --ui-badge-blue-bg:   #eef1f8;  --ui-badge-blue-fg:   #4a6298;
+  --ui-badge-green-bg:  #eef5f0;  --ui-badge-green-fg:  #3a7252;
+  --ui-badge-orange-bg: #f8f1ec;  --ui-badge-orange-fg: #8a5e38;
+  --ui-badge-yellow-bg: #f7f4ea;  --ui-badge-yellow-fg: #7a6228;
+  --ui-badge-muted-bg:  var(--ui-bg-muted); --ui-badge-muted-fg: var(--ui-text-muted);
+
+  --ui-shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
+  --ui-shadow-md:  0 2px 8px rgba(0,0,0,0.08);
+  --ui-shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
+  --ui-shadow-xl:  0 8px 32px rgba(0,0,0,0.16);
+
+  --ui-radius-sm:   4px;
+  --ui-radius-md:   6px;
+  --ui-radius-lg:   8px;
+  --ui-radius-xl:   12px;
+  --ui-radius-2xl:  16px;
+  --ui-radius-pill: 9999px;
+
+  --ui-font-heading: 'Manrope Variable', Inter, system-ui, sans-serif;
+  --ui-font-base:    'Inter Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --ui-font-mono:    'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+  --ui-duration-fast: 150ms;
+  --ui-duration-base: 250ms;
+  --ui-duration-slow: 400ms;
+  --ui-ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ui-avatar-bg: #7c3aed;
+  --ui-ring: #18181b;
+
+  /* 4 个缓动函数（v3.10 扩展，配合 anim-* preset class 使用） */
+  --ui-ease-in:     cubic-bezier(0.4, 0, 1, 1);          /* 加速退出 / 离场 */
+  --ui-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);      /* 平滑双向 / 切换 */
+  --ui-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* 轻弹性 / 强调反馈 */
+
+  --ui-space-xs:   4px;
+  --ui-space-sm:   8px;
+  --ui-space-md:   12px;
+  --ui-space-base: 16px;
+  --ui-space-lg:   20px;
+  --ui-space-xl:   24px;
+  --ui-space-2xl:  32px;
+  --ui-space-3xl:  48px;
+
+  --ui-z-base: 1; --ui-z-raised: 10; --ui-z-sidebar: 100; --ui-z-topbar: 200;
+  --ui-z-dropdown: 300; --ui-z-sticky: 400; --ui-z-tooltip: 500;
+  --ui-z-drawer: 600; --ui-z-dialog-mask: 699; --ui-z-dialog: 700;
+  --ui-z-loading: 800; --ui-z-message: 900;
+
+  --ui-icon-xs: 12px; --ui-icon-sm: 14px; --ui-icon-base: 16px;
+  --ui-icon-md: 18px; --ui-icon-lg: 20px; --ui-icon-xl: 24px;
+  --ui-icon-2xl: 40px; --ui-icon-3xl: 48px;
+
+  /* Element Plus */
+  --el-border-radius-base:  6px;
+  --el-border-color:        var(--ui-border-default);
+  --el-bg-color:            var(--ui-bg-page);
+  --el-bg-color-page:       var(--ui-accent);
+  --el-bg-color-overlay:    #ffffff;
+  --el-text-color-primary:  var(--ui-text-primary);
+  --el-text-color-regular:  var(--ui-text-secondary);
+  --el-text-color-secondary:var(--ui-text-muted);
+  --el-text-color-placeholder: var(--ui-text-placeholder);
+  --el-text-color-disabled: var(--ui-text-disabled);
+  --el-fill-color-blank:    var(--ui-input);
+  --el-fill-color-light:    var(--ui-accent);
+  --el-fill-color:          #f0f0f0;
+  --el-color-primary:       var(--ui-color-primary);
+  --el-disabled-bg-color:   var(--ui-bg-muted);
+  --el-disabled-border-color: var(--ui-border-default);
+  --el-mask-color:          rgba(255,255,255,0.9);
+}
+
+body { font-family: var(--ui-font-base); background: var(--ui-sidebar-bg); padding: 32px; margin: 0; color: var(--ui-text-primary); }
+h1 { font-size: 24px; margin: 0 0 8px; font-family: var(--ui-font-heading); font-weight: 800; }
+h2 { font-size: 16px; margin: 32px 0 12px; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+pre { background: var(--ui-topnav-bg); color: var(--ui-topnav-foreground); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; max-width: 720px; }
+
+/* ── DS shared utility classes（与 agione-design-system.html 同步） ── */
+.preview-frame { position: relative; padding: var(--ui-space-xl); border: 1px dashed var(--ui-border-default); border-radius: var(--ui-radius-lg); background: var(--ui-bg-page); display: flex; flex-direction: column; gap: var(--ui-space-base); min-height: 80px; max-width: 1200px; }
+.ds-variant-row { display: grid; grid-template-columns: 80px 1fr; gap: var(--ui-space-base); align-items: center; padding: 6px 0; }
+.ds-variant-label { font-size: 11px; font-weight: 600; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Component CSS (extracted from shell-sample + DS demo styles) ── */
+.ds-section-head { margin-bottom: var(--ui-space-xl); }
+.ds-section-eyebrow { font-size: 11px; font-weight: 700; color: var(--ui-color-primary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.ds-section-title { font-family: var(--ui-font-heading); font-size: 26px; font-weight: 800; line-height: 1.2; color: var(--ui-text-primary); margin-bottom: 6px; letter-spacing: -0.01em; }
+.ds-section-desc { font-size: 14px; line-height: 1.7; color: var(--ui-text-muted); max-width: 720px; }
+.ds-subhead { display: flex; align-items: baseline; justify-content: space-between; gap: var(--ui-space-base); margin: var(--ui-space-2xl) 0 var(--ui-space-md); }
+.ds-subhead:first-child { margin-top: 0; }
+.ds-subtitle { font-family: var(--ui-font-heading); font-size: 18px; font-weight: 700; color: var(--ui-text-primary); letter-spacing: -0.005em; display: flex; align-items: center; gap: var(--ui-space-sm); }
+.ds-subtitle .ds-anchor { font-size: 12px; color: var(--ui-text-muted); font-family: var(--ui-font-mono); font-weight: 500; }
+.ds-subdesc { font-size: 13px; line-height: 1.6; color: var(--ui-text-muted); max-width: 560px; margin-left: auto; text-align: right; }
+.token-grid { display: grid; gap: var(--ui-space-base); }
+.token-grid--colors { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.swatch { display: flex; flex-direction: column; gap: 6px; padding: 12px; border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-lg); background: var(--ui-bg-card); }
+.swatch-chip { height: 56px; border-radius: var(--ui-radius-md); border: 1px solid var(--ui-border-soft); }
+.swatch-name { font-size: 12px; font-weight: 600; color: var(--ui-text-primary); }
+.swatch-token { font-size: 11px; color: var(--ui-text-muted); font-family: var(--ui-font-mono); }
+.swatch-hex { font-size: 11px; color: var(--ui-text-secondary); font-family: var(--ui-font-mono); }
+code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px; border-radius: var(--ui-radius-sm); background: var(--ui-accent); color: var(--ui-color-primary); border: 1px solid var(--ui-border-soft); }
+</style>
+</head>
+<body>
+
+<h1>Colors</h1>
+<p style="color: var(--ui-text-muted); margin: 0;">颜色系统：主色 + 中性 5 级 + 状态色 + Badge 6 色 + TopBar 深紫板</p>
+
+<h2>Preview</h2>
+<div id="app">
+  <div class="preview-frame">
+<div class="ds-section-head">
+              <div class="ds-section-eyebrow">Design Tokens · 1/8</div>
+              <h2 class="ds-section-title">颜色系统</h2>
+              <p class="ds-section-desc">主色 + 中性色 + 状态色 + Badge 6 色 + TopBar 深紫色板。所有颜色都通过 CSS 变量暴露，Light/Dark 主题切换由 JS 注入 <code class="token">:root</code> 完成。</p>
+            </div>
+
+            <div class="ds-subhead">
+              <div class="ds-subtitle">主色 Primary <span class="ds-anchor">--ui-color-primary</span></div>
+              <div class="ds-subdesc">最重要的操作和激活态使用，禁止滥用，保持低饱和。</div>
+            </div>
+            <div class="token-grid token-grid--colors">
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-primary)"></div><div class="swatch-name">Primary</div><div class="swatch-token">--ui-color-primary</div><div class="swatch-hex">#5f4ecf · Dark: #7c6ff7</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-primary-hover)"></div><div class="swatch-name">Primary Hover</div><div class="swatch-token">--ui-color-primary-hover</div><div class="swatch-hex">#4a3eb0</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-primary-active)"></div><div class="swatch-name">Primary Active</div><div class="swatch-token">--ui-color-primary-active</div><div class="swatch-hex">#3d3399</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-primary-subtle)"></div><div class="swatch-name">Primary Subtle</div><div class="swatch-token">--ui-color-primary-subtle</div><div class="swatch-hex">#ece9f9</div></div>
+            </div>
+
+            <div class="ds-subhead">
+              <div class="ds-subtitle">中性色 Neutral <span class="ds-anchor">--ui-text-primary / --ui-bg-page / ...</span></div>
+              <div class="ds-subdesc">文字 5 级 + 表面 3 级 + 边框 3 级，覆盖所有非品牌内容。</div>
+            </div>
+            <div class="token-grid token-grid--colors">
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-text-primary)"></div><div class="swatch-name">Foreground</div><div class="swatch-token">--ui-text-primary</div><div class="swatch-hex">主文字 · #09090b</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-text-secondary)"></div><div class="swatch-name">Text Secondary</div><div class="swatch-token">--ui-text-secondary</div><div class="swatch-hex">次级文字 · #3f3f46</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-text-muted)"></div><div class="swatch-name">Muted Foreground</div><div class="swatch-token">--ui-text-muted</div><div class="swatch-hex">弱化文字 · #71717a</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-text-placeholder)"></div><div class="swatch-name">Placeholder</div><div class="swatch-token">--ui-text-placeholder</div><div class="swatch-hex">#a1a1aa</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-text-disabled)"></div><div class="swatch-name">Disabled</div><div class="swatch-token">--ui-text-disabled</div><div class="swatch-hex">#d4d4d8</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-bg-page); border-color: var(--ui-border-strong);"></div><div class="swatch-name">Background</div><div class="swatch-token">--ui-bg-page</div><div class="swatch-hex">页面背景 · #ffffff</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-bg-card); border-color: var(--ui-border-strong);"></div><div class="swatch-name">Card</div><div class="swatch-token">--ui-bg-card</div><div class="swatch-hex">卡片背景 · #ffffff</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-accent)"></div><div class="swatch-name">Accent</div><div class="swatch-token">--accent</div><div class="swatch-hex">hover/次要面 · #f4f4f5</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-border-soft)"></div><div class="swatch-name">Border Soft</div><div class="swatch-token">--ui-border-soft</div><div class="swatch-hex">行间细线 · #f4f4f5</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-border-default)"></div><div class="swatch-name">Border</div><div class="swatch-token">--ui-border-default</div><div class="swatch-hex">默认分隔 · #e4e4e7</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-border-strong)"></div><div class="swatch-name">Border Strong</div><div class="swatch-token">--ui-border-strong</div><div class="swatch-hex">强分隔 · #a1a1aa</div></div>
+            </div>
+
+            <div class="ds-subhead">
+              <div class="ds-subtitle">状态色 Status <span class="ds-anchor">success / warning / destructive</span></div>
+              <div class="ds-subdesc">实色用于图标和文字；subtle 用于背景，必须配对使用。</div>
+            </div>
+            <div class="token-grid token-grid--colors">
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-success)"></div><div class="swatch-name">Success</div><div class="swatch-token">--ui-color-success</div><div class="swatch-hex">#22c55e</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-success-subtle)"></div><div class="swatch-name">Success Subtle</div><div class="swatch-token">--ui-color-success-subtle</div><div class="swatch-hex">#ecfdf5</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-warning)"></div><div class="swatch-name">Warning</div><div class="swatch-token">--ui-color-warning</div><div class="swatch-hex">#f59e0b</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-warning-subtle)"></div><div class="swatch-name">Warning Subtle</div><div class="swatch-token">--ui-color-warning-subtle</div><div class="swatch-hex">#fef3c7</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-destructive)"></div><div class="swatch-name">Destructive</div><div class="swatch-token">--ui-color-destructive</div><div class="swatch-hex">#ef4444</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-color-destructive-subtle)"></div><div class="swatch-name">Destructive Subtle</div><div class="swatch-token">--ui-color-destructive-subtle</div><div class="swatch-hex">#fef2f2</div></div>
+            </div>
+
+            <div class="ds-subhead">
+              <div class="ds-subtitle">Badge 6 色 <span class="ds-anchor">bg + fg 成对使用</span></div>
+              <div class="ds-subdesc">每个 Badge 色都有对应的前景色，组合后通过 WCAG AA 对比度。Light/Dark 自动切换。</div>
+            </div>
+            <div class="token-grid token-grid--colors">
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-badge-purple-bg)"></div><div class="swatch-name" style="color:var(--ui-badge-purple-fg)">Purple</div><div class="swatch-token">--ui-badge-purple-bg / fg</div><div class="swatch-hex">#f2eef8 · #6a4e9a</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-badge-blue-bg)"></div><div class="swatch-name" style="color:var(--ui-badge-blue-fg)">Blue</div><div class="swatch-token">--ui-badge-blue-bg / fg</div><div class="swatch-hex">#eef1f8 · #4a6298</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-badge-green-bg)"></div><div class="swatch-name" style="color:var(--ui-badge-green-fg)">Green</div><div class="swatch-token">--ui-badge-green-bg / fg</div><div class="swatch-hex">#eef5f0 · #3a7252</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-badge-orange-bg)"></div><div class="swatch-name" style="color:var(--ui-badge-orange-fg)">Orange</div><div class="swatch-token">--ui-badge-orange-bg / fg</div><div class="swatch-hex">#f8f1ec · #8a5e38</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-badge-yellow-bg)"></div><div class="swatch-name" style="color:var(--ui-badge-yellow-fg)">Yellow</div><div class="swatch-token">--ui-badge-yellow-bg / fg</div><div class="swatch-hex">#f7f4ea · #7a6228</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-badge-muted-bg); border-color: var(--ui-border-strong);"></div><div class="swatch-name" style="color:var(--ui-badge-muted-fg)">Muted</div><div class="swatch-token">--ui-badge-muted-bg / fg</div><div class="swatch-hex">--ui-bg-muted · --ui-text-muted</div></div>
+            </div>
+
+            <div class="ds-subhead">
+              <div class="ds-subtitle">TopBar 深紫色板 <span class="ds-anchor">独立于 Light/Dark，始终深色</span></div>
+              <div class="ds-subdesc">品牌识别色，无论 Light/Dark 主题始终保持深紫，仅 bg/accent/muted 微调。</div>
+            </div>
+            <div class="token-grid token-grid--colors">
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-topnav-bg)"></div><div class="swatch-name" style="color:var(--ui-topnav-foreground);background:var(--ui-topnav-bg);padding:2px 6px;border-radius:4px;display:inline-block;">Topnav BG</div><div class="swatch-token">--ui-topnav-bg</div><div class="swatch-hex">#1a1025 · Dark: #2d2241</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-topnav-accent)"></div><div class="swatch-name">Topnav Accent</div><div class="swatch-token">--ui-topnav-accent</div><div class="swatch-hex">#2d2240</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-topnav-active-bg)"></div><div class="swatch-name">Topnav Active BG</div><div class="swatch-token">--ui-topnav-active-bg</div><div class="swatch-hex">#312870</div></div>
+              <div class="swatch"><div class="swatch-chip" style="background:var(--ui-topnav-active-fg)"></div><div class="swatch-name">Topnav Active FG</div><div class="swatch-token">--ui-topnav-active-fg</div><div class="swatch-hex">#c4bdff</div></div>
+            </div>
+  </div>
+</div>
+
+<h2>何时使用</h2>
+<p style="line-height: 1.8;">✅ AI 引用某颜色 token 时（如 --ui-color-primary）</p>
+
+<h2>何时不使用</h2>
+<p style="line-height: 1.8;">❌ —</p>
+
+<script>
+// 挂载 Vue + EP；setup() 内含与 DS 同源的全部 mock 数据（dsTableData / i18nLangs / radioPlans 等）
+const { createApp, ref, reactive, computed } = Vue;
+const app = Vue.createApp({
+  setup() {
+
+    const isDark = ref(false);
+    const lang = ref('zh');
+    const active = ref('intro');
+
+    // ── Motion Library replay：点击 Replay 让 :key 重建，CSS animation 重放 ──
+    const replayKey = ref(0);
+    function replay() { replayKey.value++; }
+
+    // ── I18nField 生产组件用状态（mock 数据 + 当前激活 tab） ──
+    // 4 种语言：zh-CN / en / ja / ko；每种都有"套餐名称 + 描述"两个字段
+    const i18nLangs = [
+      { code: 'zh', emoji: '🇨🇳', label: '中文',   short: '中',   required: true  },
+      { code: 'en', emoji: '🇺🇸', label: 'English', short: 'EN',  required: true  },
+      { code: 'ja', emoji: '🇯🇵', label: '日本語',  short: '日',   required: false },
+      { code: 'ko', emoji: '🇰🇷', label: '한국어',  short: '韩',   required: false },
+    ];
+    const i18nValues = reactive({
+      zh: { name: '企业旗舰版',         desc: '为大客户准备的全功能套餐' },
+      en: { name: 'Enterprise Ultimate', desc: 'Full-feature plan for enterprise customers' },
+      ja: { name: 'エンタープライズプロ', desc: '' },
+      ko: { name: '',                   desc: '' },
+    });
+    // 当前激活的语言 tab
+    const i18nFldATab = ref('zh');
+    function i18nIsFilled(code, field) {
+      return (i18nValues[code]?.[field] || '').trim().length > 0;
+    }
+    function i18nFilledCount(field) {
+      return i18nLangs.filter(l => i18nIsFilled(l.code, field)).length;
+    }
+    function i18nRequiredMissing(field) {
+      return i18nLangs.filter(l => l.required && !i18nIsFilled(l.code, field)).length;
+    }
+
+    // ── Radio 现代化评审用状态 ──
+    // 4 个选项（套餐），4 版各自独立 ref，互不影响
+    const radioPlans = [
+      { code: 'basic',      name: '基础版',   desc: '100K 调用 / 月' },
+      { code: 'pro',        name: '专业版',   desc: '1M 调用 / 月' },
+      { code: 'enterprise', name: '企业版',   desc: '10M 调用 + SLA' },
+      { code: 'ultimate',   name: '旗舰版',   desc: '定制 + 专属支持' },
+    ];
+    const radioModA = ref('pro');
+    const radioModB = ref('enterprise');
+    const radioModC = ref('pro');
+    const radioModD = ref('enterprise');
+
+    // ── DataTable mock 数据（演示用） ──
+    const dsTableData = ref([
+      { name: '蚂蚁金服 - AI 平台', plan: '企业旗舰', planColor: 'badge-purple', status: 'Active', statusBadge: 'badge-green', usagePct: 62, usageColor: 'usage-bar__fill--primary', expire: '2026-06-30', bgIdx: 1 },
+      { name: '字节跳动 - 视频生成', plan: '企业版', planColor: 'badge-blue', status: 'Pending', statusBadge: 'badge-orange', usagePct: 88, usageColor: 'usage-bar__fill--warning', expire: '2026-05-12', bgIdx: 2 },
+      { name: '阿里云 - 智能客服', plan: '专业版', planColor: 'badge-green', status: 'Active', statusBadge: 'badge-green', usagePct: 45, usageColor: 'usage-bar__fill--primary', expire: '2026-05-14', bgIdx: 3 },
+      { name: '京东物流 - 仓储 AI', plan: '专业版', planColor: 'badge-green', status: 'Active', statusBadge: 'badge-green', usagePct: 28, usageColor: 'usage-bar__fill--success', expire: '2026-05-16', bgIdx: 4 },
+      { name: '腾讯云 - 内容审核', plan: '企业版', planColor: 'badge-blue', status: 'Active', statusBadge: 'badge-green', usagePct: 100, usageColor: 'usage-bar__fill--danger', expire: '2026-08-21', bgIdx: 5 },
+      { name: '美团 - 配送调度', plan: '基础版', planColor: 'badge-muted', status: 'Inactive', statusBadge: 'badge-muted', usagePct: 12, usageColor: 'usage-bar__fill--success', expire: '2026-12-01', bgIdx: 6 },
+    ]);
+
+        // — stubs for DS-specific helpers that the return references —
+    const toggleTheme = () => {};
+    const toggleLang  = () => {};
+
+    return { isDark, lang, active, toggleTheme, toggleLang, dsTableData, replayKey, replay, i18nLangs, i18nValues, i18nFldATab, i18nIsFilled, i18nFilledCount, i18nRequiredMissing, radioPlans, radioModA, radioModB, radioModC, radioModD, ElementPlusIconsVue: window.ElementPlusIconsVue }
+  }
+});
+for (const [k, c] of Object.entries(ElementPlusIconsVue || {})) {
+  app.component(k, c);
+}
+app.use(ElementPlus);
+// 抑制 Vue 对 v-for / v-model 中未定义变量的警告，避免 demo 数据缺失时整体崩溃
+app.config.warnHandler = () => {};
+try { app.mount('#app'); } catch (e) { console.warn('[demo mount]', e.message); }
+lucide.createIcons && lucide.createIcons();
+</script>
+</body>
+</html>
