@@ -1,6 +1,6 @@
 ---
 name: agione-ui
-version: 4.2
+version: 5.1
 description: >
   AGIOne Console UI prototype generator. Produces single-file HTML prototypes that feel
   like the real product — consistent, professional, bilingual (中/EN), Light/Dark.
@@ -9,7 +9,7 @@ description: >
   or anything referencing the AGIOne design language.
 ---
 
-# AGIOne Console UI Skill — v4.2 (Production Aligned)
+# AGIOne Console UI Skill — v5.1 (Production Aligned)
 
 > **设计哲学**
 > 本 skill 分两个层级：
@@ -62,6 +62,10 @@ explore 模式行为：给 2-3 种方案并排展示，L1 铁律仍守，L2/L3 �
 
 **触发条件**：AI 判断某条铁律 / 决策树在当前场景明显不合适、强守反而产出更差结果时。
 
+**先排除：不需要 rule-gap 的场景** ⚠️
+- **L3 业务卡自由场景**（§1.4-14）：业务卡形状自定义、自定义视觉元素（Sankey / 双轨 Hero / event-stream / quota grid 等）只要守了 5 条底线，**这是 §1.4-14 明文允许的正常行为，不要走 rule-gap**
+- **DS catalog 没有的组件**：本来就在 L3 自由层，不存在"违反规则"
+
 **禁止行为**：
 - ❌ 默默不守规则，假装规则不存在
 - ❌ 因为难以判断就放弃规则（默认必须守）
@@ -71,7 +75,7 @@ explore 模式行为：给 2-3 种方案并排展示，L1 铁律仍守，L2/L3 �
 ```html
 <!--AI-NOTES
 rule-gap:
-  - rule: §1.4-6 Scenario Switcher
+  - rule: §1.4-6 Scenario Switcher       # 写完整路径锚点：§<章>.<节>-<编号>
     scene: 本页虽含 5 个订单状态，但 PM 实际只评审默认态，多出 Switcher 反而散焦
     decision: skip
   - rule: §1.4-12.2 REQ 明文宽度
@@ -82,12 +86,55 @@ rule-gap:
 AI-NOTES-->
 ```
 
+**`rule:` 字段格式约定**：必须给完整路径锚点（如 `§1.4-6` / `§1.10-9` / §4.x），让 owner 一眼定位。**禁止只写"组件按等级使用"这种描述性引用**，否则 owner 要在 §1.4 / §1.10 / §4 之间猜要查哪节。
+
+**`decision:` 字段枚举值**：
+- `skip` — 完全跳过该规则
+- `ds-override` — 偏离 DS 推荐做某种自定义（**仅当违反规则时用**；L3 业务卡自由不算违反）
+- `partial-comply` — 部分守、部分不守，已说明理由
+
 **Owner 处理 rule-gap 的标准动作**：
 - **规则真有漏** → 把例外补进 SKILL.md / selection-rules（rule-gap 变成显式例外）
 - **AI 误判** → 在该 prompt 加澄清，下次让 AI 守规则
 - **每次 review 必看 `<!--AI-NOTES-->`**，不然约束系统会停止演化
 
 > ⚠️ **不要滥用**。rule-gap 不是"我懒得遵守"的借口，是"规则跟现实不匹配"的反馈通道。每个 rule-gap 都应该让 owner 学到点新东西。
+
+## 0.5 重新设计触发器（v4.9 引入 · 必读）
+
+> §0.2 的镜像规则：默认偏向 `--edit` 增量改省 token，但**当用户明确要求"重新设计"时，增量改是错误行为**——会复用上一版的构图/层次/视觉决策，无论怎么改都"换汤不换药"。
+
+**触发关键词**（prompt 出现任意一个 → 强制走完整重生成路径）：
+
+- 中文：**重新设计** / **重做** / **推翻重来** / **重新生成** / **从头来** / **抛弃旧版** / **不要基于上一版** / **换一种思路** / **完全不一样**
+- 英文：**redesign** / **start over** / **from scratch** / **fresh take** / **rethink the layout**
+
+**触发后的强制行为**：
+
+1. ❌ **禁止** 走 `--edit` 路径，即使用户提供了旧 HTML 文件路径
+2. ❌ **禁止** Read 旧 HTML 之后照搬其布局 / 卡片排布 / 信息分组 / 视觉焦点
+3. ✅ **从 shell-sample cp 一份全新文件**，按 L2/L3 重新构图
+4. ✅ **可以** Read 旧版本，但**仅用于理解"用户为什么不满意"**——不作为新版的结构起点
+5. ✅ 重生成后在 `<!--AI-NOTES-->` 顶部记录：
+   ```html
+   <!--AI-NOTES
+   redesign:
+     trigger: "用户说『重新设计这个页面』"
+     old-version: by-prototype.html
+     reason-for-redesign: 旧版数字砌墙、5 张同型 KPI 卡视觉单调
+     new-approach: 改用 Dual-Hero + 时间线，主焦点放消耗趋势而非余额堆叠
+   AI-NOTES-->
+   ```
+
+**反例（违反此规则）**：
+
+```
+用户：「这个 dashboard 重新设计一下，太丑了」
+❌ 错误：Read 旧 HTML → Edit 调整颜色和间距 → 结构没动
+✅ 正确：从 shell-sample cp 新文件 → 重新选组件树 → 重新决定层次
+```
+
+**为什么要专门定一条规则**：AI 默认偏向"低成本增量改"省 token，但用户说"重新设计"时正是因为**结构本身就是问题**——增量改无法解决结构问题，只会反复打磨一个错的骨架。
 
 ---
 
@@ -213,13 +260,16 @@ cp [skill-dir]/agione-console-shell-sample-v1.html ./[新原型].html
     - 禁止 EP 默认 `<el-radio>`
     - 决策：含副描述 → `.radio-card` / 2-4 互斥强切换 → `.radio-segmented` / 横排紧凑 → `.radio-pill` / 默认 90% → `.radio-circle`
     - 详见 `design-system/selection-rules.md § ⑥`
-11. **字体走 `.type-*` utility class** ⚠️
-    - 禁止手写 `font-size / font-weight / line-height / font-family`
-    - 10 个 class 覆盖 11-40px：`.type-display / display-sm / h1 / h2 / h3 / body / body-sm / caption / data / table-header`
+11. **字体走 `.type-*` utility class** ⚠️（v5.1 加固）
+    - **禁止在 `<main>` 业务区手写 `font-size / font-weight / line-height / font-family`**（包括 inline `style="..."` 和自定义 CSS class）
+    - 11 个 class 覆盖 11-40px：`.type-display / display-sm / h1 / kpi / h2 / h3 / body / body-sm / caption / data / table-header`
+    - **`.type-kpi`（v5.1 新增，28/700/mono/tabular-nums）** 用于业务卡焦点数字 / KPI 大数字，跟 `.kpi-card__value` 等价
     - 详表见 `design-system/AI-USAGE.md § Typography`
     - **REQ 描述词 → class 映射**（"大号字" / "主信息" / "灰色小字" 等）：见 AI-USAGE.md § Typography 触发词映射表
     - **颜色与字型解耦**：颜色用 `var(--*)` token 独立设置
-    - **chrome 内置 class 豁免**：`.status-badge / .tag / .kpi-card__value` 等自带固定字号，详见 AI-USAGE
+    - **chrome 内置 class 豁免**（13 个，完整清单见 AI-USAGE.md § Chrome 自带 class 字号豁免）：`.header-box__title / .page-header__title / .hero-band__title / .kpi-card__value / .kpi-card__title / .kpi-card__trend / .status-badge / .tag / .empty-state__title / .balance-pill / .balance-pill__cta / .nav-* / .sidebar__*`
+    - **AI 不允许覆盖 chrome class 的字号**（用 `style="font-size:..."` 强改 = 破坏视觉锁定层）
+    - **验证**：`bash scripts/audit-typography.sh <prototype.html>` 应输出 0 violations
 
 12. **保守生成原则**（v3.16 保留，⚠️ 高频问题）：
     - **REQ 没要求的不自加** —— 不要给 SKU 卡加 Active badge / 不要给静态卡加 Hover 飘字 / 不要给表单加 REQ 没提的字段
@@ -245,7 +295,20 @@ cp [skill-dir]/agione-console-shell-sample-v1.html ./[新原型].html
       3. **同页同类卡字号一致**：列表 / 网格里并列的多张卡，标题字号统一（如都用 `.type-h3`，不要一个 h3 一个 h2）
       4. **视觉焦点数字用 `.type-display-sm`（32px）**：价格 / Token 量 / 主参数等卡片中部主数字，不要用 `.type-h1`（30px）
       5. **避免 inline style 堆叠**：单页 `<main>` 内业务区 inline style > 50 处时抽 `.<feature>-<part>` class 复用
+         - **计入分母（应该抽）**：重复出现的样式块（同样 padding / background / border / spacing 组合在多处出现）
+         - **不计入分母（不要硬抽）**：一次性 layout 表达式（如 `grid-template-columns: 200px 1fr` / `display: flex; gap: var(--ui-space-md)` / 单次 `align-items` `justify-content`）—— 这些抽 class 反而要发明语义且无复用价值
     - **完整规则 + 检查方法见 `design-system/AI-USAGE.md § L3 自定义协议`**
+
+15. **信息架构与视觉节奏**（v4.3，⚠️ 最重要 — 防止"数字砌墙"）：
+    - **KpiCard 不是万能砌墙工具**。组件守规则不等于页面好看，AI 容易把所有数据都堆成 KpiCard 网格 → 视觉灾难。
+    - **3 条硬约束**：
+      1. **KpiCard 上限 ≤ 3 个并列**（不是 4，不是 6）；≥ 4 个指标改用 `<MetricsStrip>`（4-6 个）/ 紧凑 K-V 列表（6-10 个）/ 表格（≥ 10 个或带筛选排序）
+      2. **每个主 section 必须有 1 个"视觉焦点"**：display 字号大数字 / Hero 卡组 / 主图表，**禁止全等权重卡片并列 ≥ 4 张**
+      3. **禁止套娃**：CardBox 内不要嵌 KpiCard / 另一个 CardBox（无信息层级，纯堆叠）
+    - **2 个推荐模式**：
+      - **Dual / Multi-Hero**：有"对比关系"的核心指标（Credit vs Quota / Income vs Expense） → 用 **2-3 张并列大 Hero 卡**，每张内含 head + display 数字 + breakdown，**不要拆成 4-6 个等权 KpiCard**
+      - **业务语义 token**：业务有"对立 / 多层 / 分类"关系时，必须定义 `--biz-<feature>-<role>-*` token（如 `--biz-internal-fg` / `--biz-external-fg`），不要全用 `--ui-color-primary`（无语义、视觉单调）
+    - **完整规则 + 视觉节奏底线 + 业务 token 命名规范见 `design-system/AI-USAGE.md § 信息架构与视觉节奏`**
 
 ## 1.5 必须用 token 的属性
 
@@ -394,7 +457,7 @@ const i18n = {
 - [ ] **6. i18n 闭合**：每个语言块 `},` 收尾
 - [ ] **7. Logo 完整**：`LOGO_DARK` / `LOGO_LIGHT` base64 长度均 ≥ 20000
 - [ ] **8. Scenario Switcher**：满足 §1.4-6 触发条件已实现，**且 chip 在 TopNav 右侧（chrome 自动渲染，不在 sidebar / main / page-header）**，Bash 验证：`grep -c demo-mode-chip` 应为 1，`grep -c demo-banner` 应为 1
-- [ ] **9. 组件按等级使用**：L1 必用 `<HeaderBox>` `<KpiCard>` 等组件标签，禁止重新发明（详见 catalog）
+- [ ] **9. 组件按等级使用**：DS catalog 内有的标准组件（`<HeaderBox>` `<KpiCard>` `<DataTable>` `<KvCard>` 等）必用对应标签，禁止重新发明；**但 L3 业务卡自由场景（§1.4-14）豁免** —— catalog 没有的视觉（Sankey / 双轨 Hero / event-stream / quota grid 等）属于合法 L3，**不要为此走 rule-gap**
 - [ ] **10. 多语言字段已用 `<I18nField>`**（v3.10）
 - [ ] **11. Form 已用 `.form-modern` 包裹**（v3.10，无 `<el-form>` 豁免）
 - [ ] **12. Radio 按 variant 选用**（v3.10）
@@ -409,6 +472,12 @@ sed -n '/<script>/,/<\/script>/p' file.html | sed '1d;$d' | node --check
 # Logo 完整性
 grep -E "^const LOGO_(DARK|LIGHT)" file.html | awk -F"'" '{print length($2)}'
 # 输出两行，每行 ≥ 20000
+
+# Typography 漂移检测（v5.1 加固）—— 应输出 0 violations
+bash scripts/audit-typography.sh file.html
+
+# Scenario Switcher 唯一性（v3.16）
+grep -c "demo-mode-chip" file.html   # 应为 1（仅 chrome 自带）
 ```
 
 ---

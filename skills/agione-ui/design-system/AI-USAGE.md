@@ -101,13 +101,14 @@ AI 会收到下述之一：
 
 ## 🎨 Foundations 内联规则（避免 AI Read 11 个 foundation 文件）
 
-### Typography · 10 个 `.type-*` class（v3.12 P3.3 新增 display 系列）
+### Typography · 11 个 `.type-*` class（v3.12 P3.3 + v5.1 新增 .type-kpi）
 
 | Class | 字族 | 字号 / 字重 / 行高 | 用途 |
 |-------|------|-------------------|------|
 | `.type-display` | Manrope | **40 / 800 / 1.15** / -0.5px tracking | dialog 价格 / 营销页 hero / 最大数字展示 |
 | `.type-display-sm` | Manrope | **32 / 800 / 1.15** / -0.3px tracking | 较大数字 / 详情页主指标 |
 | `.type-h1` | Manrope | 30 / 800 / 1.2 | 页面主标题 |
+| `.type-kpi` | IBM Plex Mono | **28 / 700 / 1.2** / tabular-nums | **KPI 大数字 / 业务卡焦点数字（v5.1 新增，跟 .kpi-card__value 同值）** |
 | `.type-h2` | Manrope | 20 / 700 / 1.4 | Section 标题 |
 | `.type-h3` | Inter | 16 / 600 / 1.4 | 卡片 / 弹窗标题 |
 | `.type-body` | Inter | 14 / 400 / 1.6 | 正文（默认） |
@@ -116,9 +117,9 @@ AI 会收到下述之一：
 | `.type-data` | IBM Plex Mono | 13 / 400 / 1.5 / tabular-nums | 数字 / 时间 / ID |
 | `.type-table-header` | Inter | 11 / 600 / 1.4 / uppercase / 0.5px tracking | 表头 |
 
-**禁止**：手写 `font-size` / `font-weight` / `line-height` / `font-family`。10 个 class 已覆盖 30-40px 极大字号到 11px 表头，**应该没有需要硬编码的场景**。
+**禁止**：手写 `font-size` / `font-weight` / `line-height` / `font-family`。11 个 class 已覆盖 11-40px 全梯度，**业务区应该没有需要硬编码的场景**。
 
-**例外**：仅 shell-sample 内置的 chrome class（`.status-badge` `.tag` `.kpi-card__value` 等，见前述「Chrome 自带 class 字号豁免」）豁免。
+**例外**：仅 shell-sample 内置的 chrome class 豁免（见下节「Chrome 自带 class 字号豁免」完整清单）。
 
 ### 📋 REQ 描述词 → class 映射（AI 必查）
 
@@ -222,20 +223,148 @@ REQ 文档常用自然语言描述字号（"大号字 / 主信息 / 标题"）�
 
 ---
 
-## Chrome 自带 class 字号豁免（v3.12 P1 闭环补）
+## 信息架构与视觉节奏（v4.3 加固 · ⚠️ 最重要 — 防止"数字砌墙"）
 
-shell-sample 内置 chrome class 自带固定字号（基于像素级视觉一致性），**豁免 `.type-*` 强制规则**：
+> **核心命题**：组件守规则 ≠ 页面好看。AI 容易把所有数据都堆成 KpiCard 网格 → 页面变成"灰色块阵列"，无视觉焦点、无信息层级。
+>
+> 本节强制 **3 条硬约束 + 2 个推荐模式 + 业务 token 命名规范**，把 AI 从"砌墙工"提升到"有视觉判断的设计师"。
 
-| Class | 内置字号 | 用途 |
-|-------|---------|------|
-| `.status-badge` | 11px / 500 | 状态徽章（圆点 + label）|
-| `.tag` | 11px / 500 | 通用标签 |
-| `.header-box__title` | 24px / 800 | HeaderBox 主标题 |
-| `.kpi-card__value` | 28px / 700 / mono / tabular-nums | KPI 大数字 |
-| `.kpi-card__title` | 12px / 500 / uppercase | KPI 小标签 |
-| `.empty-state__title` | 16px / 600 | EmptyState 标题 |
+### 3 条硬约束（任何 dashboard / overview / 数据型页面都必须守）
 
-**注意**：自己定义 `.po-status` `.bp-price` 等 L3 class 时，仍必须遵守 `.type-*` 规则。豁免仅限上表自带 class。
+#### ① KpiCard 上限 ≤ 3 个并列
+
+| 指标数量 | 推荐组件 |
+|---------|---------|
+| 1 个 | **Hero**：display 字号大数字 + 上下文（不要 KpiCard）|
+| 2-3 个 | `<KpiCard>` × 2-3 网格 |
+| **4-6 个** | `<MetricsStrip>`（横向等分密集）/ 紧凑 K-V 列表 |
+| 6-10 个 | `<KvCard>` 列表（label-value 行）|
+| ≥ 10 个 / 带筛选排序 | `<DataTable>` 表格 |
+
+❌ 错误：8 个 KpiCard 排成 `repeat(4, 1fr)` × 2 行（视觉砌墙）  
+✅ 正确：1 hero + 3 KPI + 表格（视觉节奏）
+
+#### ② 每个主 section 必须有 1 个"视觉焦点"
+
+视觉焦点 ∈ {display 字号大数字 / Hero 卡组 / 主图表 / 主表格}
+
+❌ 错误：全等权重卡片并列 ≥ 4 张（如 `[Card][Card][Card][Card]` 整齐排列）  
+✅ 正确：`[Hero] → [辅卡组 ×3] → [详情区]` 有主次的节奏
+
+#### ③ 禁止套娃
+
+❌ 错误：`<CardBox>` 内嵌 `<KpiCard>` / `<CardBox>` 内嵌 `<CardBox>`  
+✅ 正确：CardBox 是容器，里面直接放业务内容（表格 / 列表 / 图表 / 自定义 DOM），不要再嵌卡片
+
+### 2 个推荐模式（高频场景）
+
+#### 模式 1 · Dual / Multi-Hero（对比关系核心指标）
+
+业务有"对比关系"（如 Credit vs Quota / Income vs Expense / Internal vs External / Used vs Available）时，**用 2-3 张并列大 Hero 卡**，**不要**拆成 4-6 个等权 KpiCard。
+
+每张 Hero 卡含三段：
+
+```html
+<div class="ex-hero-card ex-hero-card--credit">
+  <!-- ① head：icon + 标题 -->
+  <div class="ex-hero-card__head">
+    <i data-lucide="wallet"></i>
+    <span class="type-h2" style="color: var(--biz-external-strong);">Credit</span>
+  </div>
+  <!-- ② primary：display 字号大数字（视觉焦点）-->
+  <div class="ex-hero-card__primary">
+    <span class="type-display-sm" style="color: var(--biz-external-strong);">¥12,543</span>
+    <span class="type-body-sm" style="color: var(--ui-text-muted);">credit</span>
+  </div>
+  <!-- ③ breakdown：3 列小数据（上下文 / 趋势 / 时间）-->
+  <div class="ex-hero-card__breakdown">
+    <div><div class="type-caption">本月支出</div><div class="type-data">-8,234</div></div>
+    <div><div class="type-caption">本月充值</div><div class="type-data">+5,000</div></div>
+    <div><div class="type-caption">剩余天数</div><div class="type-data">12 天</div></div>
+  </div>
+</div>
+```
+
+**典型场景**：财务页 Credit + Quota / 资源页 已用 + 可用 / 订单页 收入 + 支出
+
+#### 模式 2 · 业务语义 Token（vs 通用 primary 滥用）
+
+业务有"对立 / 多层 / 分类"关系时，**必须定义 `--biz-<feature>-<role>-*` 业务 token**，不要全用 `--ui-color-primary`。
+
+**命名规范**：
+- 业务前缀：`--biz-` 或 `--<page-prefix>-tone-`（如 `--fin-`, `--ex-tone-`）
+- 角色：业务语义（如 `internal` / `external` / `derived` / `inherited` / `pending`）
+- 字段：`-strong`（实色）/ `-fg`（前景）/ `-bg`（背景）/ `-subtle`（弱色）
+
+```css
+:root {
+  /* 财务页业务调色板 */
+  --biz-internal-strong: var(--ui-color-primary);  /* 自家配额 */
+  --biz-internal-fg:     var(--ui-color-primary);
+  --biz-external-strong: var(--ui-color-success);  /* 客户付费 */
+  --biz-external-fg:     var(--ui-color-success);
+  --biz-derived-fg:      var(--ui-text-secondary); /* 派生 / 计算值 */
+}
+```
+
+**为什么必须**：
+- ✅ 双 Hero / Stacked bar / Layer bar 可以共享同一调色板 → 整页视觉协同
+- ✅ Internal vs External 一眼区分（语义可读）
+- ❌ 全 primary → 视觉单调，不知道哪个数字属于哪类业务
+
+### 视觉节奏底线（自查清单）
+
+生成完原型后用浏览器看一眼，对照：
+
+- [ ] 每个 section 看得出"主角是谁"（视觉焦点存在）
+- [ ] 没有 ≥ 4 张等权卡片并列堆叠
+- [ ] 没有 4-column repeat KPI grid（除非 ≤ 3 个）
+- [ ] CardBox 内没有嵌套其他 CardBox / KpiCard
+- [ ] 业务对比关系有 tone 色区分（不是全 primary）
+
+```bash
+# Bash 辅助检查
+grep -cE "grid-template-columns:\s*repeat\(4" prototype.html
+# 警戒：> 0 表示有 4-tile 砌墙倾向（除非真有 4 个对等指标）
+
+grep -c "<KpiCard" prototype.html
+# 警戒：> 6 个 KpiCard 应该改 MetricsStrip / Table
+
+awk '/<CardBox/{depth++} /<\/CardBox>/{if(depth>1) print "套娃!"; depth--}' prototype.html
+# 期望：无输出
+```
+
+---
+
+## Chrome 自带 class 字号豁免（v3.12 P1 引入 · v5.1 完整化）
+
+shell-sample 内置 chrome / 标准组件 class 自带固定字号（基于像素级视觉一致性），**豁免 `.type-*` 强制规则**。
+
+**豁免完整清单（13 个 class）**：
+
+| Class | 字号 / 字重 / 字族 | 跟 `.type-*` 关系 | 用途 | AI 能否覆盖? |
+|-------|------------------|----------------|------|----------|
+| `.header-box__title` | 20 / 700 / Manrope | 与 `.type-h2` 同值 | HeaderBox 主标题（v5.0 对齐生产）| ❌ 禁止 |
+| `.page-header__title` | 20 / 700 / Manrope | 与 `.type-h2` 同值 | PageHeader 主标题（v5.0 对齐生产）| ❌ 禁止 |
+| `.hero-band__title` | 28 / 800 / Manrope | 接近 `.type-kpi` 但 Manrope 800 | HeroBand 大标题 | ❌ 禁止 |
+| `.kpi-card__value` | **28 / 700 / mono / tabular** | **= `.type-kpi`**（v5.1 等价别名）| KPI 大数字（自定义业务卡焦点数字优先用 `.type-kpi`）| ❌ 禁止 |
+| `.kpi-card__title` | 12 / 500 / Inter / uppercase | 与 `.type-table-header` 接近 | KPI 小标签 | ❌ 禁止 |
+| `.kpi-card__trend` | 12 / — / Inter | 与 `.type-caption` 接近 | KPI 趋势字段 | ❌ 禁止 |
+| `.status-badge` | 11 / 500 / Inter | 与 `.type-table-header` 接近（无 uppercase）| 状态徽章 | ❌ 禁止 |
+| `.tag` | 11 / 500 / Inter | 与 `.type-table-header` 接近 | 通用标签 | ❌ 禁止 |
+| `.empty-state__title` | 16 / 600 / Inter | 与 `.type-h3` 同值 | EmptyState 标题 | ❌ 禁止 |
+| `.balance-pill` | 13 / 600 / mono | 与 `.type-data` 接近（粗重）| TopBar 余额药丸数字 | ❌ 禁止 |
+| `.balance-pill__cta` | 11 / 600 / Inter | 与 `.type-table-header` 接近 | 充值按钮 | ❌ 禁止 |
+| `.nav-search-text` / `.nav-icon-btn` | 13 / Inter | 与 `.type-body-sm` 同值 | TopBar 搜索 / 图标按钮 | ❌ 禁止 |
+| `.sidebar__nav-item` / `.sidebar__group-label` | 13-11 / Inter | 与 `.type-body-sm`/`.type-table-header` 接近 | Sidebar 菜单 | ❌ 禁止 |
+
+**核心约定（v5.1 加固）**：
+
+1. **AI 在 `<main>` 业务区写新的 L3 class（`.po-status` / `.bp-price` / `.foo-card__title` 等）时，仍必须遵守 `.type-*` 规则——禁止手写 `font-size / font-weight / font-family / line-height`**
+2. 上表 13 个 chrome class **AI 不要覆盖其内置字号**（用 `style="font-size: ..."` 强改是错误的，破坏视觉锁定层）
+3. 出现 `.kpi-card__value` 类似的"业务卡需要 28px mono 大数字"场景时：**用 `.type-kpi` class**（v5.1 新增），不要手写
+
+**Rule-gap 出口**：极个别情况确实需要 ad-hoc 字号（如打印样式 / 一次性 marketing 海报），走 §0.4 `rule-gap: §1.4-11`，标 `reason: 一次性 layout 不入 type 体系`。
 
 ---
 
@@ -313,6 +442,49 @@ grep -c "demo-banner" prototype.html      # 应得 1（仅 chrome 自带）
 ```
 
 **业务语义 banner 例外**：与 scenario 无关的页面级提示（如"普通成员只能看自己的数据"）可以自己做一个**蓝色业务 banner**（区别于 chrome 自带橙色 scenario banner），二者可并存。
+
+---
+
+## BalanceBox 契约（v4.6 引入 · v4.8 改为 chrome 常驻）
+
+**TopNav 右侧的余额药丸（balance pill）是 chrome 常驻组件**，跟搜索框、通知铃铛、Demo Mode chip 一样常态显示。跟生产 mamba-layout 的 BalanceBox 视觉一致。
+
+**默认行为（无需任何代码，cp shell-sample 即生效）**：
+- 默认显示 `15,311.79 Credits` + `+ Top Up`，`level: 'normal'`
+- 已在 shell-sample 的 `setup()` 中以默认对象初始化
+
+**AI 何时需要覆盖（少数情况）**：
+
+```js
+// shell-sample 已预声明：
+// const balance = ref({ balance: 15311.79, level: 'normal', currency: 'Credits', showTopUp: true });
+
+// 场景 1：finance / quota / billing 页面演示告警态
+balance.value = {
+  balance:    213.5,
+  level:      'low',           // 'normal' | 'low' | 'critical' | 'empty'
+  currency:   'Credits',       // 直接显示（**不自动加 s**），如 'Credits' / 'CREDIT' / '¥' / 'Tokens'
+  showTopUp:  true,
+};
+
+// 场景 2：极少数页面需要显式隐藏药丸
+balance.value = null;
+```
+
+4 种 level 自动配色：
+- `normal`：默认 topnav-muted 色（**database** icon — 圆筒造型最接近 EP Coin）
+- `low`：warning 半透明背景（wallet icon）
+- `critical`：destructive 强提示（triangle-alert icon + 脉冲 dot）
+- `empty`：destructive 实色填充（circle-x icon + 脉冲 dot）
+
+**字段语义提醒**：
+- `currency` **不自动加 s**——传什么显示什么。生产真值是 `Credits`（已含复数），不是 `CREDIT`。
+- `topUpLabel` 不传时 chrome 跟随当前 `lang` 自动 `'充值'`（zh） / `'Top Up'`（en）；只有需要强制覆盖时才传。
+- `showTopUp: false` → 只读药丸，无充值按钮。
+
+**位置铁律**：跟 demo-mode-chip 一样在 TopNav 右侧 chrome 自动渲染，**禁止自己另做 BalanceBox / 充值按钮 / 余额显示**（与 chrome 自带重复）。
+
+**对比旧契约（v4.7 及之前）**：之前是「opt-in」——`balance` 默认 `null`，只有财务类页面 setValue 才显示。v4.8 改为常驻：跟搜索框一样默认就有，AI 只在切换状态/数值或显式隐藏时才覆盖。
 
 ---
 
