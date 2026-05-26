@@ -20,6 +20,7 @@
 - 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
 - 是否已用当前代码核对 `project-mamba-app-topology-matrix.md`；如矩阵冲突，是否以当前代码为准并列为回写候选
 - 如果本次修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts`，是否同步检查 topology matrix 是否需要更新
+- 是否运行 `scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 或全量 topology 检查；drift 是否已阻断继续依赖旧矩阵
 - 如果修改公共层，是否已判断兼容性影响
 
 ## 实现检查

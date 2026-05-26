@@ -30,7 +30,7 @@
 - 当前目标项目：
 - app 拓扑：T1 common-shell source / T2 common-view mixed / T3 multi-source route / T4 standalone route
 - route ownership：本地 `src/views` / `~common` / `~cbdp` / 其他
-- 拓扑验证：已核对 `vite.config.ts` / `src/main.ts` / router 入口；矩阵是否需回写：
+- 拓扑验证：已核对 `vite.config.ts` / `src/main.ts` / router 入口；topology 脚本结果；矩阵是否需回写：
 - 页面类型：
 - 页面壳：
 - 字段映射：

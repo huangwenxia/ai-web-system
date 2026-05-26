@@ -10,7 +10,8 @@
   - 路由来源是只来自当前 app，还是同时挂载了 `common` / 其他 app 的 views
   - 页面壳、i18n、auth、install、directives、globals、store 来源于本 app 还是共享层
   - 当前 app 的样式入口文件名是 `tailwind.css` 还是 `tailwindcss.css`
-- 读取后用当前代码校验 `docs/project-mamba-app-topology-matrix.md`；如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
+- 读取后用当前代码校验 `docs/project-mamba-app-topology-matrix.md`；推荐从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
+- 修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 时，从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --all --suggest`；出现 drift 时先处理事实依据，不继续依赖旧矩阵。
 - 在完成这一步之前，不允许直接把 `apps/common/src/components` 或通用页面组合当成无条件默认答案。
 
 ## app 拓扑分类
@@ -60,7 +61,7 @@
 - 当前目标 app
 - app 拓扑：T1 / T2 / T3 / T4
 - 当前页面的 route ownership：本 app `src/views` / `~common` / `~cbdp` / 其他挂载来源
-- 拓扑验证证据：已核对 `vite.config.ts` / `src/main.ts` / router 入口；如矩阵冲突，记录当前代码结论
+- 拓扑验证证据：已核对 `vite.config.ts` / `src/main.ts` / router 入口；记录 topology 验证脚本结果；如矩阵冲突，记录当前代码结论
 - 页面类型：列表 / 卡片列表 / 详情 / 创建编辑 / 多步骤 / 组合容器
 - 页面壳来源：当前 app / `apps/common/src/components` / 其他共享层
 - 业务组件层级：页面壳 / 业务区块 / 当前 app 业务复用 / 通用业务控件 / 基础控件

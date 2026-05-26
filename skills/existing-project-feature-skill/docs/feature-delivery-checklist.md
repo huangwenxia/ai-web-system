@@ -20,6 +20,7 @@
 - 如果命中 `project-mamba`，是否已先读取当前 app 的 `vite.config.ts` 与 `src/main.ts`
 - 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
 - 如果命中 `project-mamba`，是否已用当前代码核对 `project-mamba-app-topology-matrix.md`；如矩阵冲突，是否以当前代码为准并列为回写候选
+- 如果命中 `project-mamba`，是否运行 topology 验证脚本；drift 是否已阻断继续依赖旧矩阵
 
 ## 原型完整性检查
 - 是否确认主操作、关键字段和信息层级已明确

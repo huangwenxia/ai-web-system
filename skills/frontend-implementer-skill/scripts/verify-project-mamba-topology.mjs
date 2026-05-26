@@ -5,7 +5,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const scriptPath = fileURLToPath(import.meta.url);
-const DEFAULT_MATRIX = 'skills/frontend-implementer-skill/docs/project-mamba-app-topology-matrix.md';
+const scriptDir = path.dirname(scriptPath);
+const DEFAULT_MATRIX = path.resolve(scriptDir, '../docs/project-mamba-app-topology-matrix.md');
 const ROUTE_SOURCE_LABELS = {
   local: 'local src/views',
   common: 'common views',
@@ -20,7 +21,7 @@ function usage() {
 Options:
   --app=<name[,name]>     Verify one or more apps. Default: all apps under apps/*
   --all                  Verify all apps under apps/*
-  --matrix=<path>         Matrix markdown path. Default: ${DEFAULT_MATRIX}
+  --matrix=<path>         Matrix markdown path. Default: ${path.relative(process.cwd(), DEFAULT_MATRIX)}
   --json                 Print JSON instead of Markdown
   --suggest              Include suggested matrix sections in Markdown output
   --help                 Show this help
@@ -73,6 +74,10 @@ function listApps() {
 
   return readdirSync(appsRoot, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
+    .filter((entry) => {
+      const appRoot = path.join(appsRoot, entry.name);
+      return existsSync(path.join(appRoot, 'vite.config.ts')) || existsSync(path.join(appRoot, 'src', 'main.ts'));
+    })
     .map((entry) => entry.name)
     .sort();
 }
@@ -383,7 +388,7 @@ function main() {
 
   const knownApps = listApps();
   const apps = unique(options.apps.length ? options.apps : knownApps);
-  const matrixPath = path.resolve(process.cwd(), options.matrix);
+  const matrixPath = path.isAbsolute(options.matrix) ? options.matrix : path.resolve(process.cwd(), options.matrix);
   const matrixText = readText(matrixPath);
   const sections = parseMatrixSections(matrixText);
 

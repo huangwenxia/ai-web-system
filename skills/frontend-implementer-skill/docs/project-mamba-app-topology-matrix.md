@@ -4,10 +4,12 @@
 
 ## 保鲜规则
 - 本文件是易变事实缓存，不是最终真相。进入实现前必须重新读取目标 app 的 `vite.config.ts` 与 `src/main.ts`。
+- 推荐从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 抽取当前代码事实并对照本矩阵。
+- 修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 后，必须从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --all --suggest` 做全量检查。
 - 优先用 `rg -n "dirs:|VITE_ROUTER_MODULES|baseRoute|resolve\\(" apps/<app>/vite.config.ts` 核对路由挂载来源。
 - 优先用 `rg -n "install|directives|global|locales|auth|initTheme|tailwind" apps/<app>/src/main.ts` 核对 bootstrap 来源。
 - 如果本文件与当前代码冲突，以当前代码为准，并在回写候选中标记需要更新本矩阵。
-- 修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 后，必须同步检查本矩阵是否过期。
+- 脚本发现 drift 时应阻断继续依赖本矩阵；先以当前代码为准，再人工确认是否回写矩阵。
 
 ## T1：common-shell source app
 ### common

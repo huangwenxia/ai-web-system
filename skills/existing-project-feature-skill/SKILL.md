@@ -52,6 +52,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 检查清单：`docs/feature-delivery-checklist.md`
 - 输出模板：`templates/existing-project-feature-output-template.md`
 - 命中 `project-mamba` 新功能实现时，确认 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 的交付前检查口径
+- 命中 `project-mamba` 时，确认 `skills/frontend-implementer-skill/scripts/verify-project-mamba-topology.mjs` 的拓扑保鲜检查口径
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 
@@ -108,6 +109,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 非 `project-mamba` 仓库时，至少说明：当前目标项目、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
 - 如果这些关键项说不清，就继续查相邻模块；命中 `project-mamba` 时，还要继续查当前 app 的 `vite.config.ts`、`src/main.ts` 与已挂载视图来源，不进入实施。
 - `project-mamba` 的拓扑矩阵只是易变事实缓存；如果矩阵与当前代码冲突，以当前代码为准，并把矩阵更新列为回写候选。
+- 推荐从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`；如果 drift 存在，先记录当前代码事实，不继续依赖旧矩阵。
 - 这张表是实施入口检查，不是额外文档；保持极短，直接写在任务分析或实现前确认里。
 
 ### 7. 原型约束与实施边界

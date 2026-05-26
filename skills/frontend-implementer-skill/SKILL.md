@@ -49,6 +49,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
+- 命中 `project-mamba` 时使用：`scripts/verify-project-mamba-topology.mjs`
 - 命中 `project-mamba` 新功能页面交付时使用：`scripts/check-project-mamba-implementation.mjs`
 - 需要确认具体 app 特性时再读：`docs/project-mamba-app-topology-matrix.md`
 - 涉及字段值碎片、轻量规格块、局部 badge/tag 语义判断时读取：`docs/semantic-display-patterns.md`
@@ -91,6 +92,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面壳、业务区块、项目业务复用、通用业务控件和基础控件要分层判断，不允许直接凭感觉拼一套新结构。
 - 如果 profile 中任一关键项答不上来，就继续查当前页面、相邻模块和已有实现，不直接进入落码。
 - `docs/project-mamba-app-topology-matrix.md` 只是易变事实缓存；进入实现前必须用当前 `vite.config.ts`、`src/main.ts` 和 router 入口验证。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
+- 实现前可以从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 做目标 app 轻量验证；修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 时，必须运行全量 topology 验证。
+- topology 验证出现 drift 时，不得继续相信矩阵；先以当前代码作为实施依据，并在输出中列出 drift 和矩阵回写建议。
 - 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件；脚本无法判断的语义项必须在最终检查表中人工说明。
 - 硬指标不达标时先整改再交付：新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
