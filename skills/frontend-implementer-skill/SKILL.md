@@ -45,6 +45,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ## 执行前先读
 
+路径说明：本节中的 `docs/`、`scripts/`、`templates/` 均相对当前 skill 目录解析；`rules/` 与 `skills/` 仍按 `ai-web-system` 仓库根目录解析。
+
 - `rules/10-existing-frontend-dev.mdc`
 - 检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
