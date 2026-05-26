@@ -2,12 +2,15 @@
 
 本文件承接 `frontend-implementer-skill` 中命中 `project-mamba` 或同构仓库时的专属实施约束。
 
+本文件保存稳定原则和少量事实缓存；`vite.config.ts`、`src/main.ts`、router 挂载来源等易变事实必须现场核对。如果目标仓库存在 `AGENTS.md` 或 `CLAUDE.md`，先把它们作为仓库级事实来源，本 profile 只补充实施判定口径。
+
 ## 先判定 app 拓扑，不把所有 apps 当成同一种项目
 - `project-mamba` 的 app 不是单一拓扑。
 - 进入实现前，必须先读当前 app 的 `vite.config.ts` 和 `src/main.ts`，必要时再读 router 入口，确认：
   - 路由来源是只来自当前 app，还是同时挂载了 `common` / 其他 app 的 views
   - 页面壳、i18n、auth、install、directives、globals、store 来源于本 app 还是共享层
   - 当前 app 的样式入口文件名是 `tailwind.css` 还是 `tailwindcss.css`
+- 读取后用当前代码校验 `docs/project-mamba-app-topology-matrix.md`；如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
 - 在完成这一步之前，不允许直接把 `apps/common/src/components` 或通用页面组合当成无条件默认答案。
 
 ## app 拓扑分类
@@ -29,7 +32,7 @@
 - 当前确认：`wanmore`、`metis`
 - 这类 app 不止挂载一个视图来源。
 - `wanmore`：本地视图按 `common / manager / user` 分段，同时再挂 `common` views。
-- `metis`：同时挂载 `common` views 和 `cbdp` views。
+- `metis`：同时挂载 `common` views、`cbdp` views，并通过虚拟模块拼装 `financial` / `gnosis` / `hashrate` / `wanmore` 等来源。
 - 对这类 app，必须先确认“当前页面到底归谁拥有”，再做组件复用判断。
 
 ### T4：standalone route app
@@ -57,6 +60,7 @@
 - 当前目标 app
 - app 拓扑：T1 / T2 / T3 / T4
 - 当前页面的 route ownership：本 app `src/views` / `~common` / `~cbdp` / 其他挂载来源
+- 拓扑验证证据：已核对 `vite.config.ts` / `src/main.ts` / router 入口；如矩阵冲突，记录当前代码结论
 - 页面类型：列表 / 卡片列表 / 详情 / 创建编辑 / 多步骤 / 组合容器
 - 页面壳来源：当前 app / `apps/common/src/components` / 其他共享层
 - 业务组件层级：页面壳 / 业务区块 / 当前 app 业务复用 / 通用业务控件 / 基础控件
@@ -66,6 +70,30 @@
 - 加载策略
 
 如果这些关键项答不上来，就继续查当前 app 相邻模块和已挂载视图来源，不直接进入落码。
+
+## 新功能最终代码校验
+命中 `project-mamba` 新功能页面时，交付前必须完成自动检查和人工检查两层闭环。
+
+### 自动检查
+- 运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，默认检查本次新增 / 修改文件，也可以显式传入文件路径。
+- 自动检查硬指标：
+  - 新增 `.vue` 物理总行数不超过 250 行
+  - 函数 70 行以内最佳，100 行为上限；超过 100 行必须拆分
+  - Vue SFC 必须使用 `<script setup>`
+- `locale`、`schema`、纯配置组件可以排除 `.vue <= 250` 硬门禁；最终输出必须说明排除原因。
+- 旧文件默认不因历史超限阻断；如果用户明确要求优化旧文件，本次必须纳入拆分或瘦身计划。
+- 当用户明确指定旧文件优化时，运行脚本可追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
+
+### 人工检查
+- 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。
+- 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 拆分落点按复用半径决定：页面私有就近放当前页面目录；同模块多个页面复用放模块级目录；当前 app 多模块复用放 app 级 `commons` / `components`；跨 app 稳定复用才考虑 `apps/common` 或 `@repo`。
+- 组件能力优先项目已有封装、Element Plus 和 `easybill-ui`；布局、间距和尺寸优先 Tailwind；原生 HTML 只用于合适的视觉结构或现有能力缺口。
+- Vue 3 实现优先 `<script setup>`、TypeScript、`defineModel` 和 `computed`；`watch` 只处理副作用，不维护可推导状态。
+- `defineProps` 简单场景可用泛型；复杂数组、对象、联合类型、业务类型数组或需要 default / required / validator 时，使用对象写法配合 `PropType`。`PropType` 与业务类型必须使用 `import type`。
+- 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
+- props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
+- 最终输出必须给出达标 / 未达标检查表：`.vue <= 250`、复用检查、抽离清单、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。
 
 ## 页面壳与组件选择规则
 ### T1：common-shell source app
@@ -81,7 +109,7 @@
 ### T3：multi-source route app
 - 先确认当前页面来自哪个挂载目录
 - `wanmore`：先判断页面来自 `src/views/common`、`src/views/manager`、`src/views/user` 哪一层
-- `metis`：先判断页面来自本地 `src/views`、`~common` 还是 `~cbdp`
+- `metis`：先判断页面来自本地 `src/views`、`~common`、`~cbdp`，还是 `VITE_ROUTER_MODULES` 挂载的其他 app 来源
 - 确认 route ownership 后，再在对应来源内找相邻页面和同语义实现
 - 不允许在 route ownership 不清楚时直接跳到 `apps/common/src/components` 或通用组件层
 
@@ -136,11 +164,12 @@
 ## 样式与 bootstrap 规则
 - 样式入口文件名不能想当然：有的 app 用 `tailwind.css`，有的用 `tailwindcss.css`
 - i18n、auth、install、directives、globals、store 以当前 app `src/main.ts` 的真实 wiring 为准
-- 对 `zguan`、`hashrate`、`wanmore` 这类 bootstrap 明显更本地化或跨 app 引用的项目，不要把 `common` 的初始化链直接套过去
+- 对 `zguan`、`hashrate`、`wanmore` 这类 bootstrap 更本地化或存在跨 app alias 的项目，不要把 `common` 的初始化链直接套过去；先看当前 `main.ts`
 
 ## Font token and prototype adaptation
 - Before copying typography from an AGIOne prototype into `project-mamba`, inspect the target app's actual font variables and local font assets. Do not assume prototype font names are available in the target app.
-- For `hashrate` and apps using `apps/common/src/assets/scss/vars.scss`, treat `--el-font-family` / `--ui-font-body` as the default UI font for prose, labels, buttons, filters, alerts, tags, and normal business text.
+- Do not assume `apps/common/src/assets/scss/vars.scss` exists. Locate the actual style entry and token file from the target app's `src/main.ts`, local `assets/scss/*`, and imported shared styles before choosing font tokens.
+- When the target app actually defines or imports `--el-font-family` / `--ui-font-body`, treat them as the default UI font for prose, labels, buttons, filters, alerts, tags, and normal business text.
 - Use `--ui-font-mono` only for technical identifiers and machine-readable values: image names, registry paths, IDs, code-like strings, numeric capacity values, timestamps, and similar table cells where scan alignment matters. Pair numeric mono text with `font-variant-numeric: tabular-nums` when alignment is required.
 - Use `--ui-font-heading` only for heading semantics. If the configured heading family, such as Manrope, has no local font asset or app-level import, expect fallback to `--el-font-family` and do not force prototype-only font names locally.
 - When a prototype uses `Inter Variable`, `Manrope Variable`, `IBM Plex Mono`, `PingFang SC`, or `Microsoft YaHei`, copy only size, weight, line-height, color, spacing, and smoothing details unless the target app already provides or explicitly imports the same font resources.

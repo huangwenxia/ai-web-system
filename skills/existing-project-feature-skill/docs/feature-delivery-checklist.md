@@ -19,6 +19,7 @@
 - 是否确认 `project-mamba` 中存在可复用组件或组合模式
 - 如果命中 `project-mamba`，是否已先读取当前 app 的 `vite.config.ts` 与 `src/main.ts`
 - 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
+- 如果命中 `project-mamba`，是否已用当前代码核对 `project-mamba-app-topology-matrix.md`；如矩阵冲突，是否以当前代码为准并列为回写候选
 
 ## 原型完整性检查
 - 是否确认主操作、关键字段和信息层级已明确
@@ -30,6 +31,9 @@
 - 是否把页面层、区块层和子组件层职责拆清
 - 是否保证业务逻辑完整性与数据展示正确性同时成立
 - 如果命中 `project-mamba`，是否已明确 bootstrap 来源是本地 / `@common` / 跨 app 复用
+- 如果命中 `project-mamba` 新功能页面，是否把最终代码校验作为交付门禁，而不是可选建议
+- 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并说明未复用原因
+- 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因
 
 ## 边界与细节检查
 - 加载态
@@ -38,6 +42,17 @@
 - 权限态
 - 禁用态
 - 对齐、间距、层级、节奏、顺滑度和明显 1px 级细节问题
+
+## `project-mamba` 最终代码校验
+- 是否运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件
+- 新增 `.vue` 是否按物理总行数控制在 250 行以内
+- 旧文件是否默认排除历史超限；若用户明确要求优化旧文件，是否纳入瘦身或拆分计划
+- `locale`、`schema`、纯配置组件如被排除，是否说明排除原因
+- 函数是否 70 行以内为最佳，100 行为上限；超过 100 行是否已拆分
+- 复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
+- 是否使用 Vue 3 `<script setup>`、TypeScript、`defineModel` 优先、`computed` 优先；`watch` 是否只用于副作用；`defineProps` 类型、`PropType` 和数组 / 对象默认值是否合规
+- 布局样式是否优先 Tailwind；功能交互是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
+- 最终输出是否给出达标 / 未达标检查表，并说明验证命令、整改结果或例外原因
 
 ## 叠加能力检查
 - 是否需要叠加 `translate-terms-skill`

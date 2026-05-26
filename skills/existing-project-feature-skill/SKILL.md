@@ -51,6 +51,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - `skills/frontend-implementer-skill/SKILL.md`
 - 检查清单：`docs/feature-delivery-checklist.md`
 - 输出模板：`templates/existing-project-feature-output-template.md`
+- 命中 `project-mamba` 新功能实现时，确认 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 的交付前检查口径
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 
@@ -58,7 +59,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 1. 先判断任务是否真的属于 A-1 既有项目新功能开发。
 2. 归一化输入，确认当前是否已有可实施的原型，并判断其来源属于 `external_design` 还是 `agione_ui_generated`。
 3. 如果尚无已确认原型，先转到 `agione-ui` 生成并确认原型；未确认前不进入实施。
-4. 定位项目上下文：现有页面结构、路由入口、复用组件、相邻模块、目录规范、`project-mamba` 复用机会。
+4. 定位项目上下文：现有页面结构、路由入口、复用组件、相邻模块、目录规范、`project-mamba` 复用机会；命中 `project-mamba` 时必须用当前 `vite.config.ts`、`src/main.ts` 和 router 入口核对 app 拓扑与 route ownership。
 5. 在进入 `frontend-implementer-skill` 之前，先输出一份极短的“实施前复用校验表”：当前目标 app、app 拓扑、route ownership、页面类型、页面壳、关键字段映射、常量来源、工具来源、加载策略、bootstrap 来源。
 6. 校验当前原型是否足以直接实施：
    - 页面骨架和区块职责是否清晰
@@ -66,9 +67,10 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
    - 主任务、主操作和信息层级是否已确认
 7. 进入 `frontend-implementer-skill` 完成代码落地，优先复用现有模式和 `project-mamba`。
 8. 如果存在英文翻译、术语统一或 i18n 需求，叠加 `translate-terms-skill`。
-9. 默认做一轮产品级细节复查：对齐、间距、信息节奏、交互顺滑度、1px 级别可见问题和边界状态完整性。
-10. 只有当任务已经变成独立审查时，才转交 `page-review-skill`；不要把每次实施都默认扩成独立审查。
-11. 判断本次是否形成稳定模式，决定是否回写到标准或同步升级相关 skill。
+9. 命中 `project-mamba` 新功能页面时，实施完成后必须执行“最终代码校验”：能自动检查的运行脚本，不能自动判断的在最终检查表中明确是否达标。
+10. 默认做一轮产品级细节复查：对齐、间距、信息节奏、交互顺滑度、1px 级别可见问题和边界状态完整性。
+11. 只有当任务已经变成独立审查时，才转交 `page-review-skill`；不要把每次实施都默认扩成独立审查。
+12. 判断本次是否形成稳定模式，决定是否回写到标准或同步升级相关 skill。
 
 ## 标准执行协议
 ### 1. 先确认原型，再进入实施
@@ -105,6 +107,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 命中 `project-mamba` 或同构仓库时，至少说明：当前目标 app、app 拓扑、route ownership、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略、应用入口。
 - 非 `project-mamba` 仓库时，至少说明：当前目标项目、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
 - 如果这些关键项说不清，就继续查相邻模块；命中 `project-mamba` 时，还要继续查当前 app 的 `vite.config.ts`、`src/main.ts` 与已挂载视图来源，不进入实施。
+- `project-mamba` 的拓扑矩阵只是易变事实缓存；如果矩阵与当前代码冲突，以当前代码为准，并把矩阵更新列为回写候选。
 - 这张表是实施入口检查，不是额外文档；保持极短，直接写在任务分析或实现前确认里。
 
 ### 7. 原型约束与实施边界
@@ -185,6 +188,16 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 命中 `project-mamba` 或同构仓库时，进一步以 `skills/frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 为准。
 - 如果当前 app 的复用路径或 bootstrap 来源不明确，再读取 `skills/frontend-implementer-skill/docs/project-mamba-app-topology-matrix.md`。
 
+### 11. `project-mamba` 新功能代码闭环校验
+- 命中 `project-mamba` 或同构仓库的新功能页面实现时，当前主 skill 必须把“最终代码校验”作为交付门禁，而不是可选建议。
+- 进入实现前的复用校验仍由当前主 skill 触发；具体代码质量、拆分、Vue 语法、Tailwind / Element Plus 使用等判定下沉到 `frontend-implementer-skill` 与 `docs/project-mamba-implementation-profile.md`。
+- 交付前必须运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件；脚本无法判断的语义项必须在最终检查表中人工说明。
+- 硬指标不达标时不得直接交付：新增 `.vue` 超过 250 行、函数超过 100 行、Vue SFC 未使用 `<script setup>` 都必须先整改。旧文件默认不因历史超限阻断；但如果用户明确要求优化旧文件，本次也必须纳入拆分或瘦身计划。
+- `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
+- 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。确实没有合适能力时，才允许新增。
+- 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 最终输出必须包含达标 / 未达标检查表：`.vue <= 250`、复用检查、抽离清单、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。未达标项必须说明已整改或例外原因。
+
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
@@ -215,10 +228,11 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 5. 原型约束 / 实施决策 / 关键实现判断。
 6. 实现结果或当前交付结果。
 7. 边界状态与产品级细节检查结果。
-8. 风险、影响范围与最小验证建议。
-9. 是否需要叠加独立审查流。
-10. 回写候选与 skill 同步升级建议。
-11. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
+8. 命中 `project-mamba` 新功能实现时，最终代码校验检查表与脚本运行结果。
+9. 风险、影响范围与最小验证建议。
+10. 是否需要叠加独立审查流。
+11. 回写候选与 skill 同步升级建议。
+12. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
 - 如果当前还没有已确认原型，转交 `agione-ui`。

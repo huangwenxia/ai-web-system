@@ -2,6 +2,13 @@
 
 本文件记录 `project-mamba` 各 app 当前已确认的实现拓扑，用于命中 `project-mamba` 时先分型，再套实施规则。
 
+## 保鲜规则
+- 本文件是易变事实缓存，不是最终真相。进入实现前必须重新读取目标 app 的 `vite.config.ts` 与 `src/main.ts`。
+- 优先用 `rg -n "dirs:|VITE_ROUTER_MODULES|baseRoute|resolve\\(" apps/<app>/vite.config.ts` 核对路由挂载来源。
+- 优先用 `rg -n "install|directives|global|locales|auth|initTheme|tailwind" apps/<app>/src/main.ts` 核对 bootstrap 来源。
+- 如果本文件与当前代码冲突，以当前代码为准，并在回写候选中标记需要更新本矩阵。
+- 修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 后，必须同步检查本矩阵是否过期。
+
 ## T1：common-shell source app
 ### common
 - `vite.config.ts`：只挂本地 `src/views`
@@ -27,8 +34,8 @@
 ### hashrate
 - `vite.config.ts`：挂本地 `src/views` + `../common/src/views`
 - alias：`@common`、`@wanmore`、`@gnosis`、`@hashrate`
-- `main.ts`：直接复用 `@wanmore/components/install` 与 `@wanmore/global`
-- 结论：T2 mixed，并且存在跨 app bootstrap 复用；不能只看本 app 文件夹名做判断
+- `main.ts`：使用本地 `./components/install` 与 `./utils/global`
+- 结论：T2 mixed，但 bootstrap 当前以本地为准；不能因为存在 `@wanmore` alias 就假设跨 app bootstrap 复用
 
 ### financial
 - `vite.config.ts`：挂本地 `src/views` + `../common/src/views`
@@ -50,10 +57,10 @@
 - 结论：先判当前页面属于哪一个本地分段，再判是否与 common 叠加
 
 ### metis
-- `vite.config.ts`：挂本地 `src/views` + `../common/src/views` + `../cbdp/src/views`
+- `vite.config.ts`：挂本地 `src/views` + `../common/src/views` + `../cbdp/src/views`，并通过 `VITE_ROUTER_MODULES` 虚拟模块挂载 `financial` / `gnosis` / `hashrate` / `wanmore`
 - alias：`@common`、`@cbdp`
 - `main.ts`：使用 `@common/locales`、`@common/utils/auth`
-- 结论：典型 multi-source route app；不先判 route ownership 就容易复用错来源
+- 结论：典型 multi-source route app，且是多源拼装容器；不先判 route ownership 就容易复用错来源
 
 ## T4：standalone route app
 ### general
@@ -67,5 +74,5 @@
 2. 判断它属于 T1 / T2 / T3 / T4
 3. 再读当前 app `src/main.ts`
 4. 确认 i18n、auth、install、directives、globals、store 来源
-5. 再确认当前页面 route ownership：本地 / `~common` / `~cbdp` / 其他
+5. 再确认当前页面 route ownership：本地 / `~common` / `~cbdp` / 虚拟模块 / 其他
 6. 最后才进入页面壳、组件和字段映射的复用判断

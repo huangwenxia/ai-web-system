@@ -5,6 +5,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 你是一名资深前端开发工程师，负责把已明确的原型、设计约束和组件边界落成可维护实现。
 
+本 skill 的 source-of-truth 是 `ai-web-system` 源仓库；同步到终端或项目的运行时副本只读，不能反向当作规范源。
+
 ## 适用场景
 
 - 根据已确认的原型、设计稿或现有页面方案实现 Vue / TS 页面与组件。
@@ -47,8 +49,12 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
+- 命中 `project-mamba` 新功能页面交付时使用：`scripts/check-project-mamba-implementation.mjs`
 - 需要确认具体 app 特性时再读：`docs/project-mamba-app-topology-matrix.md`
 - 涉及字段值碎片、轻量规格块、局部 badge/tag 语义判断时读取：`docs/semantic-display-patterns.md`
+- 涉及 token、Tailwind、Element Plus、AGIOne 或样式边界时读取：`docs/token-and-style-policy.md`
+- handoff 链路不清楚时读取：`docs/handoff-state-machine.md`
+- 需要对照常见坏写法时读取：`docs/implementation-anti-patterns.md`
 - 新功能但原型未确认时回退 `skills/existing-project-feature-skill/SKILL.md`
 - 涉及翻译、术语统一或 i18n 改造时读取 `skills/translate-terms-skill/SKILL.md`
 - 需要独立结构、视觉或交互审查时读取 `skills/page-review-skill/SKILL.md`
@@ -58,11 +64,12 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 1. 先判断任务属于：实现 / bug 修复 / 重构 / 文档补全。
 2. 明确当前输入前提、约束条件和依赖标准。
 3. 判断修改范围：单组件 / 页面局部 / 页面级模块。
-4. 如果目标是 `project-mamba` 或同构仓库，先输出一份极短的“复用校验表”：页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
+4. 如果目标是 `project-mamba` 或同构仓库，先用当前 app 的 `vite.config.ts`、`src/main.ts`、router 入口校验拓扑和 route ownership，再输出极短“复用校验表”。
 5. 优先复用现有组件、模式和目录结构，不重新发明一套实现。
-6. 输出实现或修改结果，并明确边界态与风险。
-7. 判断是否需要叠加独立 `page-review-skill`。
-8. 判断本次是否值得回写到标准、案例、资产或规则。
+6. 命中 `project-mamba` 新功能页面交付时，运行自动检查脚本并补齐人工最终代码校验表。
+7. 输出实现或修改结果，并明确边界态与风险。
+8. 判断是否需要叠加独立 `page-review-skill`。
+9. 判断本次是否值得回写到标准、案例、资产或规则。
 
 ## 标准执行协议
 
@@ -83,6 +90,12 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 进入实现前先输出一份极短的“复用校验表”：页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
 - 页面壳、业务区块、项目业务复用、通用业务控件和基础控件要分层判断，不允许直接凭感觉拼一套新结构。
 - 如果 profile 中任一关键项答不上来，就继续查当前页面、相邻模块和已有实现，不直接进入落码。
+- `docs/project-mamba-app-topology-matrix.md` 只是易变事实缓存；进入实现前必须用当前 `vite.config.ts`、`src/main.ts` 和 router 入口验证。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
+- 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件；脚本无法判断的语义项必须在最终检查表中人工说明。
+- 硬指标不达标时先整改再交付：新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`。
+- 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
+- 用户明确指定旧文件优化时，运行脚本可追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
+- `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
 
 ### 3. 按场景切执行策略
 
@@ -91,6 +104,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 先确认页面原型是否已经明确；不明确则回退到 `existing-project-feature-skill`，必要时先转到 `agione-ui`。
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
+- 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增。
+- 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
 
 #### bug 修复
 
@@ -112,10 +127,20 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 是否完整覆盖 loading、empty、error、permission、disabled 状态。
 - 是否遵守项目既有目录、命名、样式 token 和组件复用方式。
 - 命名是否表达业务语义，公共逻辑是否应抽到 composable，同类展示是否已优先复用。
+- 新增 `.vue` 是否控制在 250 行以内；超过时优先拆组件或 `useXxx.ts`，而不是压缩可读性。
+- 函数尽量控制在 70 行以内，100 行为上限；超过 100 行必须拆分。复杂且接近上限的函数顶部写一句功能说明，不写废话注释。
+- 组件只做一件事；复杂逻辑抽为 `useXxx.ts`，让数据处理、交互副作用和视图表达分离。
 
 ### 5. 组件 API 与边界
 
 - `props` 类型完整、默认值明确，只暴露必要输入；事件命名表达用户意图或状态变化，不用实现导向命名。
+- 简单 props 可使用泛型 `defineProps<T>()`；复杂数组、对象、联合类型、业务类型数组，尤其需要 `default` / `required` / `validator` 时，使用对象写法配合 `PropType`。
+- `PropType` 必须使用 type-only import：`import type { PropType } from 'vue'`；业务类型也使用 `import type`，避免无意义运行时 import。
+- 数组 / 对象 props 的 `default` 必须使用工厂函数：`default: () => []`、`default: () => ({})`，禁止 `default: []` 或 `default: {}`。
+- `required: true` 不写 `default`；有 `default` 时通常不写 `required: false`，避免语义重复。
+- props 命名必须表达业务语义，避免 `data`、`list`、`info`、`config` 这类泛名；优先使用 `userList`、`permissionOptions` 等明确名称。
+- 不直接修改 props，包括对象 / 数组 props 的深层 mutation；需要子组件编辑时，复制为本地状态或改用 `defineModel`。
+- props 解构只用于简单只读展示；涉及响应式依赖、`computed`、`watch` 或传给函数时，优先保留 `props.xxx`。
 - 双向绑定优先走标准 `modelValue / update:modelValue` 或具名 `v-model`；`slots` 用于结构扩展，不用于绕过组件边界。
 - `defineExpose` 只暴露必要实例能力；页面层负责容器与整体编排，子组件负责内容区和局部交互。
 - 交互型配置要先分清三层：**动作语义**（如 `type: primary / danger`）、**可用状态**（如 `disabled`、`loading`、`disableTip`）、**视觉实现**（按钮 / 菜单 / popper 的样式）。不要为了修视觉表现，直接改动作语义；优先在最靠近问题的状态层或渲染层修正。
@@ -135,45 +160,14 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 基础界面元素必须优先使用 Element Plus 和当前项目已有封装组件，不默认直接落原生交互元素。
 - 命中 Tailwind 项目时，Expression 层的布局、间距、尺寸必须优先使用 Tailwind utility class；禁止为这些属性新建自定义 CSS class。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。
+- 双向绑定优先使用 `defineModel`；能用 `computed` 推导的状态不用 `watch` 同步，`watch` 只处理接口请求、外部同步、事件订阅等副作用。
 - 样式只描述当前组件，不污染外层；通用组件不写页面级样式分支。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度。
 - 如果任务已有明确原型，除图标外，布局、间距、悬浮/聚焦背景、边框、圆角、字体颜色等可观察样式细节默认应与原型保持一致；只有原型颜色 token 与项目 UI 规范冲突时，才优先使用项目允许的 token 体系。
 - 已确认原型的任务里，不允许因为抽象“层级优化”“产品感”或个人审美，主动改写原型节奏与密度；先贴原型，再做主题兼容与实现修正。
 - token 选择必须先分层：项目语义、自定义壳层、页面结构和业务容器优先使用 `--ui-*`；Element Plus 原生组件的内部 anatomy、fill、placeholder、disabled、overlay、border 和原生状态优先使用 `--el-*`。不要因为文件位于项目目录里，就把所有样式都强行写成 `--ui-*`。
 - 如果自定义组件只是组合 `el-button`、`el-dropdown`、`el-select`、`el-dialog` 等 Element Plus 原生组件，则外壳关系、分组节奏、页面级容器语义走 `--ui-*`，组件内部状态与浮层细节优先复用 `--el-*` 与既有 bridge。
-
-#### AGIOne 规范在已有项目改造中的铁律
-
-- 如果用户明确要求“整体扫一遍 / 优化整个项目 / 做 AGIOne 规范治理”，才执行全项目扫描治理流程：先确认或补齐基础设施，再按硬编码颜色、字体层级、表单、Radio、动效等问题分组批量治理。
-- 如果任务只是改某个已有页面、某个功能或某个 bug，不默认全项目治理；仅在当前改动范围和直接依赖组件内遵循 AGIOne 规范，改到哪里带到哪里。
-- 已有项目页面实施时，必须先查当前项目和 `common` 是否已有对应 token、组件、utility 或全局样式。若 `common` 已有对应内容，必须优先转换为 `common` 标准，例如 `--ui-*` / `--el-*` token、已有表单样式、已有 Radio 样式、已有 typography 工具类。
-- 若 `common` 不存在对应能力，且需求只服务当前 app，则优先使用当前 app 的 soft override 或 app-local 组件，不为单项目效果直接污染 `common`。
-- 只有当同一语义展示模式或样式能力已经明确跨项目复用，且命名、状态、主题适配边界稳定时，才考虑把 app-local soft override 上提到 `common`。
-- 页面实现中默认遵循 AGIOne 视觉底线：颜色走语义 token；字体层级走已有 typography / type utility；表单接入 `.form-modern` 或项目既有现代表单样式；Radio 按 segmented / circle / pill / card 选择既有样式；hover 动效控制在 150ms 左右，避免无业务意义的 translate / scale / 过强阴影。
-- AGIOne 规范不得覆盖既有实施 skill 的职责边界：新增功能、bug 修复、翻译、暗黑模式、页面审查仍按对应 skill 执行；AGIOne 只作为当前改动范围内的视觉和交互合规约束。
-
-#### 允许例外
-
-- 只有在纯结构 / 布局语义容器场景，或 Element Plus 与当前项目组件体系没有对应能力时，才允许使用原生标签。
-- 只有在 Tailwind 无法准确表达的复杂选择器、第三方组件深层覆盖、伪元素 / 伪类组合或非布局类视觉语义场景，才允许补充局部样式。
-- 带 `el-dropdown`、`el-popover`、`el-tooltip`、`el-select` 等 popper 浮层的组件，优先在组件内部通过 `popper-class` 与组件自身样式接管浮层壳层、宽度、圆角、边框、阴影和菜单项交互；不要优先依赖页面外层覆盖去修补浮层样式。
-- 如果原型本身与主题 token、组件体系或可访问性要求冲突，可做最小偏离；偏离应只解决冲突点，不借机二次设计。
-
-#### 禁止事项
-
-- 禁止为了单页面效果污染共享层或把页面布局职责转回自定义 CSS class。
-- 禁止绕开 Element Plus / 当前项目组件体系，直接堆原生交互元素。
-- 禁止新增职责不清、输入输出混乱、数据流冗余的新组件。
-- 禁止在已有明确原型的任务里，用“优化”为名改写原型的布局密度、边框语言、悬浮反馈或字体层级。
-- 禁止把交互语义层（如 `primary` / `danger`）当成视觉补丁位来回改动。
-- 禁止把 `--el-*` 和 `--ui-*` 混成一层概念：不要用 `--ui-*` 去重建 Element Plus 原生 anatomy，也不要用 `--el-*` 替代项目级页面语义 token。
-
-#### 组件新增判定条件
-
-- 当现有组件组合无法达到目标效果，或虽然能实现但会导致代码明显混乱、冗余、可读性差时，允许在当前目标项目内新增组件。
-- 新增组件必须按当前项目引用拓扑选择落点：页面私有放页面局部 `components/`，模块复用放模块级组件目录，app 级复用放当前 app 的 `src/components/`。
-- 如果同一“语义展示模式”在多个页面/模块重复出现（例如“轻量结构化规格碎片”），且语义与视觉目标稳定一致，则应从局部实现正式上提为项目级组件；语义模式定义与判定口径见 `docs/semantic-display-patterns.md`。
-- 如果任务明确要求人工比对，新组件替换旧实现时，旧代码先注释保留，不直接删除。
+- 样式、AGIOne、原生 HTML 兜底和组件新增判定的细则见 `docs/token-and-style-policy.md`；不要在主协议里重复展开。
 
 ### 8. 数据、枚举与表格展示
 
@@ -219,10 +213,11 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 1. 主任务类型与输入前提。
 2. 使用的约束条目。
 3. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
-4. 风险、边界说明与最小验证建议。
-5. 是否需要叠加独立审查流。
-6. 回写候选与 skill 同步升级建议。
-7. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
+4. 命中 `project-mamba` 新功能页面时，最终代码校验检查表与自动检查脚本结果。
+5. 风险、边界说明与最小验证建议。
+6. 是否需要叠加独立审查流。
+7. 回写候选与 skill 同步升级建议。
+8. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
 
