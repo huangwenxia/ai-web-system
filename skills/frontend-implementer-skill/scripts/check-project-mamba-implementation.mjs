@@ -162,6 +162,57 @@ function findExternalStyleReferences(source, lineOffset = 0) {
   return errors;
 }
 
+function findScrollbarPolicyViolations(source, lineOffset = 0) {
+  const errors = [];
+  const customScrollbarRegexes = [
+    /::-(?:webkit-)?scrollbar[\w-]*/gi,
+    /\bscrollbar-(?:width|color)\s*:/gi,
+    /\b-ms-overflow-style\s*:/gi,
+  ];
+  const nativeOverflowRegex = /\boverflow(?:-[xy])?\s*:\s*(?:auto|scroll)\b/gi;
+  let match;
+
+  for (const regex of customScrollbarRegexes) {
+    while ((match = regex.exec(source))) {
+      errors.push(`custom scrollbar styling at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; use el-scrollbar`);
+    }
+  }
+
+  while ((match = nativeOverflowRegex.exec(source))) {
+    errors.push(`native overflow scrollbar at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; use el-scrollbar`);
+  }
+
+  return errors;
+}
+
+function findScrollbarClassViolations(source, lineOffset = 0) {
+  const errors = [];
+  const scrollUtilities = new Set(['overflow-auto', 'overflow-scroll', 'overflow-x-auto', 'overflow-x-scroll', 'overflow-y-auto', 'overflow-y-scroll']);
+  const classRegex = /\bclass\s*=\s*["']([^"']+)["']/gi;
+  let match;
+
+  while ((match = classRegex.exec(source))) {
+    const tokens = match[1].split(/\s+/).filter(Boolean);
+    const badToken = tokens.find((token) => {
+      const utility = token.split(':').pop();
+      return scrollUtilities.has(utility) || utility === 'no-scrollbar' || /^scrollbar(?:-|$)/.test(utility);
+    });
+
+    if (badToken) {
+      errors.push(`scrollbar utility class "${badToken}" at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; use el-scrollbar`);
+    }
+  }
+
+  return errors;
+}
+
+function findScrollbarViolations(source, lineOffset = 0) {
+  return [
+    ...findScrollbarPolicyViolations(source, lineOffset),
+    ...findScrollbarClassViolations(source, lineOffset),
+  ];
+}
+
 function getAttrValue(attrs, name) {
   const match = attrs.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i'));
   return match ? match[1] : '';
@@ -509,6 +560,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
   const { messages, errors, warnings } = result;
   if (isImplementationStyleScope(normalized)) {
     errors.push(...findExternalStyleReferences(content, 0));
+    errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
     errors.push(...checkComponentColocation(normalized, content));
   }
@@ -535,6 +587,7 @@ function checkScriptFile(content, normalized, result) {
   const { errors, warnings } = result;
   if (isImplementationStyleScope(normalized)) {
     errors.push(...findExternalStyleReferences(content, 0));
+    errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkComponentColocation(normalized, content));
   }
 
@@ -561,6 +614,7 @@ function checkFile(file, statusCode, options) {
   } else if (isStyleExtension(extension) && inImplementationStyleScope) {
     const { errors } = result;
     errors.push('external style file in a view/component scope is not allowed; move styles into the owning .vue <style scoped> block or an existing shared style entry');
+    errors.push(...findScrollbarViolations(content, 0));
   }
 
   return result;

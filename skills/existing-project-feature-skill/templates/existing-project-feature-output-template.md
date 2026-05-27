@@ -67,6 +67,7 @@
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规
 - Tailwind / Element Plus / 原生 HTML 使用：达标 / 未达标
+- 滚动容器 / scrollbar：使用 `el-scrollbar` 或项目内建滚动能力 / 未涉及 / 未达标（说明整改）
 - 未达标整改或例外原因：
 
 ## 风险与影响范围

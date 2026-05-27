@@ -94,11 +94,12 @@
 - 若组件私有逻辑需要抽 `useXxx.ts`、局部 `types.ts` 或 `utils.ts`，使用组件同名目录收纳；页面级或模块级共享逻辑才放在页面 / 模块目录。
 - 拆分落点按复用半径决定：页面私有就近放当前页面目录；同模块多个页面复用放模块级目录；当前 app 多模块复用放 app 级 `commons` / `components`；跨 app 稳定复用才考虑 `apps/common` 或 `@repo`。
 - 组件能力优先项目已有封装、Element Plus 和 `easybill-ui`；布局、间距和尺寸优先 Tailwind；原生 HTML 只用于合适的视觉结构或现有能力缺口。
+- 页面或组件自身需要滚动容器时，必须使用 `el-scrollbar` 或项目已有内建滚动组件；禁止自行使用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 或自定义 scrollbar 样式。
 - Vue 3 实现优先 `<script setup>`、TypeScript、`defineModel` 和 `computed`；`watch` 只处理副作用，不维护可推导状态。
 - `defineProps` 简单场景可用泛型；复杂数组、对象、联合类型、业务类型数组或需要 default / required / validator 时，使用对象写法配合 `PropType`。`PropType` 与业务类型必须使用 `import type`。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、滚动容器 / scrollbar、边界状态、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则

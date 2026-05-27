@@ -173,6 +173,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 - 模板负责声明结构，复杂判断必须移到 `computed` 或方法；稳定列表禁止使用数组索引作为长期 `key`。
 - 基础界面元素必须优先使用 Element Plus 和当前项目已有封装组件，不默认直接落原生交互元素。
+- 页面或组件自身需要滚动容器时必须使用 `el-scrollbar`；禁止用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll`、`::-webkit-scrollbar`、`scrollbar-width/color` 或 `scrollbar-*` 类自行实现或美化 scrollbar。Element Plus / 项目已有表格、列表组件的内建滚动能力除外。
 - 命中 Tailwind 项目时，Expression 层的布局、间距、尺寸必须优先使用 Tailwind utility class；禁止为这些属性新建自定义 CSS class。
 - 新增或改造页面 / 组件时，禁止外部引用样式文件；只允许 Tailwind utility class 或组件内部 `<style scoped>`，共享主题能力必须走项目既有样式入口。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。

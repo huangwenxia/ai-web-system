@@ -55,6 +55,7 @@
 - 复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
 - 是否使用 Vue 3 `<script setup>`、TypeScript、`defineModel` 优先、`computed` 优先；`watch` 是否只用于副作用；`defineProps` 类型、`PropType` 和数组 / 对象默认值是否合规
 - 布局样式是否优先 Tailwind；功能交互是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
+- 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 - 最终输出是否给出达标 / 未达标检查表，并说明验证命令、整改结果或例外原因
 
 ## 叠加能力检查

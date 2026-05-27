@@ -113,3 +113,24 @@ const props = defineProps({
 ```md
 先用 app-local 组件或 soft override。只有跨 app 语义和主题边界稳定后，再考虑上提 common。
 ```
+
+## 9. 自己实现或美化 scrollbar
+错误：
+```vue
+<div class="max-h-80 overflow-y-auto scrollbar-thin">
+  ...
+</div>
+
+<style scoped>
+.panel::-webkit-scrollbar {
+  width: 6px;
+}
+</style>
+```
+
+正确：
+```vue
+<el-scrollbar max-height="320px">
+  ...
+</el-scrollbar>
+```

@@ -18,6 +18,8 @@
 ## Element Plus 与原生 HTML
 - 功能型交互优先项目已有封装、Element Plus 和 `easybill-ui`。
 - 原生 HTML 只用于纯结构 / 布局语义容器，或现有组件体系确实没有对应能力的小范围结构。
+- 页面或组件自身需要滚动容器时，必须使用 `el-scrollbar`；不要用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll`、`::-webkit-scrollbar`、`scrollbar-width/color`、`scrollbar-*` / `no-scrollbar` 类自行实现或美化 scrollbar。
+- 如果已有 Element Plus / 项目表格、列表、卡片容器内建滚动能力，优先使用其内建 props 或封装能力，不再额外套原生滚动容器。
 - 带 `el-dropdown`、`el-popover`、`el-tooltip`、`el-select` 等 popper 浮层时，优先在组件内部通过 `popper-class` 和组件自身样式接管浮层壳层、宽度、圆角、边框、阴影和菜单项交互。
 - 不优先依赖页面外层覆盖修补 Element Plus 浮层样式。
 

@@ -48,6 +48,7 @@
 - 数组 / 对象 props 的 `default` 是否使用工厂函数；是否避免 `required: false` 与 `default` 的重复语义
 - props 命名是否表达业务语义；子组件是否避免直接修改 props 或 props 对象 / 数组的深层值
 - 布局样式是否优先 Tailwind；交互型能力是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
+- 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 
 ## 边界状态检查
 - 加载态
