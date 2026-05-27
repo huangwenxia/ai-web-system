@@ -111,6 +111,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
+- 组件私有逻辑因体积或职责需要抽 `useXxx.ts` 时，必须改用组件同名目录收纳：`components/Foo/Foo.vue`、`components/Foo/useFoo.ts`、`components/Foo/types.ts`、`components/Foo/utils.ts`；组件私有 hook / types / utils 不散落在 `components/` 根目录。页面级或模块级共享逻辑才允许放在页面 / 模块目录。
 
 #### bug 修复
 
@@ -132,9 +134,11 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 是否完整覆盖 loading、empty、error、permission、disabled 状态。
 - 是否遵守项目既有目录、命名、样式 token 和组件复用方式。
 - 命名是否表达业务语义，公共逻辑是否应抽到 composable，同类展示是否已优先复用。
+- 页面块组件抽离后，是否继续消除了重复视觉 / 交互片段，而不是把重复从页面搬到子组件内部。
 - 新增 `.vue` 是否控制在 250 行以内；超过时优先拆组件或 `useXxx.ts`，而不是压缩可读性。
 - 函数尽量控制在 70 行以内，100 行为上限；超过 100 行必须拆分。复杂且接近上限的函数顶部写一句功能说明，不写废话注释。
 - 组件只做一件事；复杂逻辑抽为 `useXxx.ts`，让数据处理、交互副作用和视图表达分离。
+- 组件私有 hook / types / utils 是否与对应 `.vue` 放在组件同名目录；不要为了瘦身把局部文件散到上层目录。
 
 ### 5. 组件 API 与边界
 
@@ -164,6 +168,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 模板负责声明结构，复杂判断必须移到 `computed` 或方法；稳定列表禁止使用数组索引作为长期 `key`。
 - 基础界面元素必须优先使用 Element Plus 和当前项目已有封装组件，不默认直接落原生交互元素。
 - 命中 Tailwind 项目时，Expression 层的布局、间距、尺寸必须优先使用 Tailwind utility class；禁止为这些属性新建自定义 CSS class。
+- 新增或改造页面 / 组件时，禁止外部引用样式文件；只允许 Tailwind utility class 或组件内部 `<style scoped>`，共享主题能力必须走项目既有样式入口。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。
 - 双向绑定优先使用 `defineModel`；能用 `computed` 推导的状态不用 `watch` 同步，`watch` 只处理接口请求、外部同步、事件订阅等副作用。
 - 样式只描述当前组件，不污染外层；通用组件不写页面级样式分支。

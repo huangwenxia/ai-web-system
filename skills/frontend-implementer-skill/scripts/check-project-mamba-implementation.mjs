@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 const VUE_LINE_LIMIT = 250;
 const FUNCTION_WARN_LIMIT = 70;
 const FUNCTION_ERROR_LIMIT = 100;
+const SCRIPT_EXTENSIONS = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
+const STYLE_EXTENSIONS = new Set(['.css', '.scss', '.sass', '.less', '.pcss', '.postcss']);
 
 const scriptPath = fileURLToPath(import.meta.url);
 
@@ -20,7 +22,9 @@ Options:
   --strict-vue-lines      Enforce the 250-line limit for all checked .vue files
   --help                  Show this help
 
-When no files are provided, the script checks added/modified/untracked git files.`);
+When no files are provided, the script checks added/modified/untracked git files.
+Component/page implementation code must use Tailwind utilities or component-local <style scoped>; external style files/imports are rejected.
+Repeated visual/interaction blocks should be extracted into child components, and component-local hooks/types/utils must live in a same-named component folder.`);
 }
 
 function parseArgs(argv) {
@@ -51,7 +55,7 @@ function runGit(args) {
       cwd: process.cwd(),
       encoding: 'utf8',
       stdio: ['ignore', 'pipe', 'ignore'],
-    }).trim();
+    }).replace(/[\r\n]+$/, '');
   } catch {
     return '';
   }
@@ -113,6 +117,174 @@ function isVueLineLimitExcluded(file) {
     parts.includes('schemas') ||
     /(^|[-_.])(schema|config|columns|constant|constants|options)([-_.]|$)/.test(base)
   );
+}
+
+function isImplementationStyleScope(file) {
+  const normalized = normalizeGitPath(file).toLowerCase();
+  return (
+    /^apps\/[^/]+\/src\/(?:views|components)\//.test(normalized) ||
+    /^apps\/common\/src\/(?:views|components)\//.test(normalized) ||
+    /^packages\/(?:mamba-ui|ui)\/src\/(?:views|components)\//.test(normalized)
+  );
+}
+
+function isStyleExtension(extension) {
+  return STYLE_EXTENSIONS.has(extension);
+}
+
+function isScriptExtension(extension) {
+  return SCRIPT_EXTENSIONS.has(extension);
+}
+
+function findExternalStyleReferences(source, lineOffset = 0) {
+  const errors = [];
+  const styleImportRegex = /(^|\n)\s*import\s+(?:[^'"]*?\s+from\s+)?['"][^'"]+\.(?:css|scss|sass|less|pcss|postcss)(?:\?[^'"]*)?['"]/gi;
+  const vueStyleSrcRegex = /<style\b[^>]*\bsrc\s*=\s*['"][^'"]+['"][^>]*>/gi;
+  const styleAtImportRegex = /(^|\n)\s*@(import|use|forward)\s+['"][^'"]+\.(?:css|scss|sass|less|pcss|postcss)(?:\?[^'"]*)?['"]/gi;
+  let match;
+
+  while ((match = styleImportRegex.exec(source))) {
+    errors.push(`external style import at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; use Tailwind utilities or component-local <style scoped>`);
+  }
+
+  while ((match = vueStyleSrcRegex.exec(source))) {
+    errors.push(`<style src> at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; keep component styles in scoped style blocks`);
+  }
+
+  while ((match = styleAtImportRegex.exec(source))) {
+    errors.push(`style @${match[2]} at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed in component/page implementation code`);
+  }
+
+  return errors;
+}
+
+function getAttrValue(attrs, name) {
+  const match = attrs.match(new RegExp(`\\b${name}\\s*=\\s*["']([^"']*)["']`, 'i'));
+  return match ? match[1] : '';
+}
+
+function normalizeClassValue(classValue) {
+  return classValue
+    .split(/\s+/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .sort()
+    .join(' ');
+}
+
+function isInteractiveClassValue(classValue) {
+  return (
+    /\bcursor-pointer\b/.test(classValue) ||
+    /\btransition/.test(classValue) ||
+    /\bhover:/.test(classValue) ||
+    /\bfocus:/.test(classValue) ||
+    /\bactive:/.test(classValue)
+  );
+}
+
+function countBy(items) {
+  const map = new Map();
+  for (const item of items) {
+    if (!item) continue;
+    map.set(item, (map.get(item) || 0) + 1);
+  }
+  return map;
+}
+
+function checkRepeatedVisualInteractionBlocks(source) {
+  const errors = [];
+  const popoverKeys = [];
+  const popoverRegex = /<el-popover\b([^>]*)>[\s\S]*?<template\s+#reference>[\s\S]*?<button\b([^>]*)>/gi;
+  let match;
+
+  while ((match = popoverRegex.exec(source))) {
+    const popoverAttrs = match[1];
+    const buttonAttrs = match[2];
+    const buttonClass = normalizeClassValue(getAttrValue(buttonAttrs, 'class'));
+    if (!buttonClass || !isInteractiveClassValue(buttonClass)) continue;
+
+    const key = [
+      getAttrValue(popoverAttrs, 'placement') || 'default-placement',
+      getAttrValue(popoverAttrs, 'trigger') || 'default-trigger',
+      getAttrValue(popoverAttrs, 'popper-class') || 'default-popper',
+      buttonClass,
+    ].join('|');
+    popoverKeys.push(key);
+  }
+
+  for (const [, count] of countBy(popoverKeys)) {
+    if (count >= 3) {
+      errors.push(`repeated el-popover trigger shell appears ${count} times; extract the shared visual/interaction shell into a child component`);
+    }
+  }
+
+  const classValues = [];
+  const classRegex = /\bclass\s*=\s*["']([^"']+)["']/gi;
+  while ((match = classRegex.exec(source))) {
+    const value = normalizeClassValue(match[1]);
+    if (value.split(/\s+/).length < 6 || !isInteractiveClassValue(value)) continue;
+    classValues.push(value);
+  }
+
+  for (const [classValue, count] of countBy(classValues)) {
+    if (count >= 3) {
+      errors.push(`repeated interactive class block appears ${count} times; extract it into a child component instead of duplicating the visual/interaction code (${classValue.slice(0, 120)}...)`);
+    }
+  }
+
+  return unique(errors);
+}
+
+function getComponentsPathInfo(file) {
+  const normalized = normalizeGitPath(file);
+  const parts = normalized.split('/');
+  const componentIndex = parts.lastIndexOf('components');
+  if (componentIndex < 0) return null;
+
+  const after = parts.slice(componentIndex + 1);
+  if (after.length === 0) return null;
+
+  return {
+    after,
+    componentRoot: parts.slice(0, componentIndex + 1).join('/'),
+    directChild: after.length === 1,
+    folderName: after.length > 1 ? after[0] : '',
+    baseName: path.basename(normalized),
+    extension: path.extname(normalized).toLowerCase(),
+  };
+}
+
+function isComponentLocalSupportFile(file) {
+  const baseName = path.basename(file);
+  return /^(use[A-Z].*|types|utils|.*\.(types|utils))\.(ts|tsx|js|jsx)$/.test(baseName);
+}
+
+function importsSiblingSupportFile(source) {
+  return /from\s*['"]\.\/(?:use[A-Z][^'"]*|types|utils|[^/'"]+\.(?:types|utils))['"]/g.test(source);
+}
+
+function checkComponentColocation(file, content) {
+  const errors = [];
+  const info = getComponentsPathInfo(file);
+  if (!info) return errors;
+
+  if (info.extension === '.vue' && info.directChild && importsSiblingSupportFile(content)) {
+    const componentName = path.basename(info.baseName, '.vue');
+    errors.push(`component-local hooks/types/utils for ${info.baseName} must live under ${info.componentRoot}/${componentName}/ with ${componentName}.vue, not as sibling files in components/`);
+  }
+
+  if (isComponentLocalSupportFile(file)) {
+    if (info.directChild) {
+      errors.push(`component-local support file ${info.baseName} must be placed in a same-named component folder with its owning .vue file`);
+    } else {
+      const expectedComponent = `${info.componentRoot}/${info.folderName}/${info.folderName}.vue`;
+      if (!existsSync(path.resolve(process.cwd(), expectedComponent))) {
+        errors.push(`component-local support file ${info.baseName} must live beside ${info.folderName}.vue in ${info.componentRoot}/${info.folderName}/`);
+      }
+    }
+  }
+
+  return errors;
 }
 
 function getVueScriptBlocks(content) {
@@ -321,8 +493,15 @@ function checkFile(file, statusCode, options) {
   const content = readFileSync(absolute, 'utf8');
   const extension = path.extname(file).toLowerCase();
   const normalized = normalizeGitPath(file);
+  const inImplementationStyleScope = isImplementationStyleScope(normalized);
 
   if (extension === '.vue') {
+    if (inImplementationStyleScope) {
+      errors.push(...findExternalStyleReferences(content, 0));
+      errors.push(...checkRepeatedVisualInteractionBlocks(content));
+      errors.push(...checkComponentColocation(normalized, content));
+    }
+
     const lineCount = content.split(/\r?\n/).length;
     const excluded = isVueLineLimitExcluded(normalized);
     const enforceLineLimit = options.strictVueLines || isAddedOrUntracked(statusCode);
@@ -361,7 +540,12 @@ function checkFile(file, statusCode, options) {
         }
       }
     }
-  } else if (['.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs'].includes(extension)) {
+  } else if (isScriptExtension(extension)) {
+    if (inImplementationStyleScope) {
+      errors.push(...findExternalStyleReferences(content, 0));
+      errors.push(...checkComponentColocation(normalized, content));
+    }
+
     for (const fn of findFunctionLengths(content, 0)) {
       if (fn.length > FUNCTION_ERROR_LIMIT) {
         errors.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; limit is ${FUNCTION_ERROR_LIMIT}`);
@@ -369,6 +553,8 @@ function checkFile(file, statusCode, options) {
         warnings.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; prefer <= ${FUNCTION_WARN_LIMIT}`);
       }
     }
+  } else if (isStyleExtension(extension) && inImplementationStyleScope) {
+    errors.push('external style file in a view/component scope is not allowed; move styles into the owning .vue <style scoped> block or an existing shared style entry');
   }
 
   return { file: normalized, errors, warnings, messages };
@@ -384,10 +570,13 @@ function main() {
   const statusMap = getStatusMap();
   const files = unique(options.files.length > 0 ? options.files : getChangedFiles(options.base))
     .map(normalizeGitPath)
-    .filter((file) => /\.(vue|ts|tsx|js|jsx|mjs|cjs)$/i.test(file));
+    .filter((file) => {
+      const extension = path.extname(file).toLowerCase();
+      return isScriptExtension(extension) || isStyleExtension(extension);
+    });
 
   if (files.length === 0) {
-    console.log('Project Mamba implementation check: no Vue/TS/JS files to inspect.');
+    console.log('Project Mamba implementation check: no Vue/TS/JS/style files to inspect.');
     return;
   }
 

@@ -11,6 +11,7 @@
 ## Tailwind 与 scoped 样式
 - 布局、间距、尺寸、对齐、普通排版优先 Tailwind utility class。
 - 复杂选择器、伪类 / 伪元素、第三方组件深层覆盖、浮层壳层和主题状态，使用 scoped SCSS 或项目既有样式入口。
+- 新增或改造页面 / 组件不得通过 `<style src>`、`import './*.scss'`、`@import`、`@use` 等方式外部引用样式；组件私有样式必须留在当前 `.vue` 的 `<style scoped>` 内。
 - 禁止为了单页面效果把布局职责转回一批自定义 CSS class。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度。
 
