@@ -87,6 +87,7 @@
 
 ### 人工检查
 - 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。
+- 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
 - 抽离大页面块后继续检查抽出的页面块组件：重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮不得留在同一组件内反复复制，应再抽成小子组件。
 - 若组件私有逻辑需要抽 `useXxx.ts`、局部 `types.ts` 或 `utils.ts`，使用组件同名目录收纳；页面级或模块级共享逻辑才放在页面 / 模块目录。
@@ -97,6 +98,7 @@
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
 - 最终输出必须给出达标 / 未达标检查表：`.vue <= 250`、复用检查、抽离清单、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。
+- 涉及组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs` 并说明结构 warning 的整改或保留原因。
 
 ## 页面壳与组件选择规则
 ### T1：common-shell source app

@@ -53,6 +53,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 输出模板：`templates/existing-project-feature-output-template.md`
 - 命中 `project-mamba` 新功能实现时，确认 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 的交付前检查口径
 - 命中 `project-mamba` 时，确认 `skills/frontend-implementer-skill/scripts/verify-project-mamba-topology.mjs` 的拓扑保鲜检查口径
+- 涉及组件拆分、抽离、目录落点或 API 设计时，确认 `skills/frontend-implementer-skill/docs/component-extraction-policy.md` 与 `scripts/check-component-structure.mjs`
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 
@@ -197,7 +198,8 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 硬指标不达标时不得直接交付：新增 `.vue` 超过 250 行、函数超过 100 行、Vue SFC 未使用 `<script setup>` 都必须先整改。旧文件默认不因历史超限阻断；但如果用户明确要求优化旧文件，本次也必须纳入拆分或瘦身计划。
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
 - 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。确实没有合适能力时，才允许新增。
-- 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 涉及组件抽离或目录调整时，最终必须运行组件结构检查脚本，并说明 warning 的整改或保留原因。
 - 最终输出必须包含达标 / 未达标检查表：`.vue <= 250`、复用检查、抽离清单、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议

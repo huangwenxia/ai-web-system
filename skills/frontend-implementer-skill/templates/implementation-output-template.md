@@ -43,7 +43,8 @@
 - 自动检查结果：通过 / 未通过 / 未运行（说明原因）
 - `.vue <= 250`：达标 / 未达标 / 排除（locale / schema / 纯配置 / 旧文件历史超限）
 - 复用检查：已查 `easybill-ui` / `apps/common` / 当前项目 `commons` / `views/components` / `@repo/hooks` / 当前项目 `utils`
-- 新增组件 / Hook 抽离清单：
+- 新增组件 / Hook 抽离清单：不变量 / 可变量 / 复用半径 / 目录落点 / API 契约
+- 组件结构检查：`check-component-structure.mjs` 结果 / warning 整改或保留原因
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规
 - Tailwind / Element Plus / 原生 HTML 使用：达标 / 未达标

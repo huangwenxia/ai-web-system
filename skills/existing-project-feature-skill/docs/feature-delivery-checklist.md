@@ -35,6 +35,7 @@
 - 如果命中 `project-mamba` 新功能页面，是否把最终代码校验作为交付门禁，而不是可选建议
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并说明未复用原因
 - 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因
+- 发生组件拆分时，是否已明确不变量 / 可变量、复用半径、目录落点和 API 契约；是否避免把组件私有 hook / types / utils 散到上层目录
 
 ## 边界与细节检查
 - 加载态
@@ -46,6 +47,7 @@
 
 ## `project-mamba` 最终代码校验
 - 是否运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件
+- 涉及组件抽离或目录调整时，是否运行 `skills/frontend-implementer-skill/scripts/check-component-structure.mjs`
 - 新增 `.vue` 是否按物理总行数控制在 250 行以内
 - 旧文件是否默认排除历史超限；若用户明确要求优化旧文件，是否纳入瘦身或拆分计划
 - `locale`、`schema`、纯配置组件如被排除，是否说明排除原因

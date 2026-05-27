@@ -53,6 +53,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
 - 命中 `project-mamba` 时使用：`scripts/verify-project-mamba-topology.mjs`
 - 命中 `project-mamba` 新功能页面交付时使用：`scripts/check-project-mamba-implementation.mjs`
+- 涉及组件拆分、抽离、目录落点或 API 设计时读取：`docs/component-extraction-policy.md`
+- 涉及组件目录结构检查时使用：`scripts/check-component-structure.mjs`
 - 需要确认具体 app 特性时再读：`docs/project-mamba-app-topology-matrix.md`
 - 涉及字段值碎片、轻量规格块、局部 badge/tag 语义判断时读取：`docs/semantic-display-patterns.md`
 - 涉及 token、Tailwind、Element Plus、AGIOne 或样式边界时读取：`docs/token-and-style-policy.md`
@@ -68,8 +70,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 2. 明确当前输入前提、约束条件和依赖标准。
 3. 判断修改范围：单组件 / 页面局部 / 页面级模块。
 4. 如果目标是 `project-mamba` 或同构仓库，先用当前 app 的 `vite.config.ts`、`src/main.ts`、router 入口校验拓扑和 route ownership，再输出极短“复用校验表”。
-5. 优先复用现有组件、模式和目录结构，不重新发明一套实现。
-6. 命中 `project-mamba` 新功能页面交付时，运行自动检查脚本并补齐人工最终代码校验表。
+5. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
+6. 命中 `project-mamba` 新功能页面交付时，运行自动检查脚本和组件结构检查脚本，并补齐人工最终代码校验表。
 7. 输出实现或修改结果，并明确边界态与风险。
 8. 判断是否需要叠加独立 `page-review-skill`。
 9. 判断本次是否值得回写到标准、案例、资产或规则。
@@ -97,6 +99,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 实现前可以从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 做目标 app 轻量验证；修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 时，必须运行全量 topology 验证。
 - topology 验证出现 drift 时，不得继续相信矩阵；先以当前代码作为实施依据，并在输出中列出 drift 和矩阵回写建议。
 - 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件；脚本无法判断的语义项必须在最终检查表中人工说明。
+- 涉及组件抽离或目录调整时运行 `scripts/check-component-structure.mjs`；结构 warning 不一定阻断，但必须在最终检查表中说明是否整改或保留原因。
 - 硬指标不达标时先整改再交付：新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
 - 用户明确指定旧文件优化时，运行脚本可追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
@@ -111,6 +114,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
 - 组件私有逻辑因体积或职责需要抽 `useXxx.ts` 时，必须改用组件同名目录收纳：`components/Foo/Foo.vue`、`components/Foo/useFoo.ts`、`components/Foo/types.ts`、`components/Foo/utils.ts`；组件私有 hook / types / utils 不散落在 `components/` 根目录。页面级或模块级共享逻辑才允许放在页面 / 模块目录。
 
@@ -139,6 +143,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 函数尽量控制在 70 行以内，100 行为上限；超过 100 行必须拆分。复杂且接近上限的函数顶部写一句功能说明，不写废话注释。
 - 组件只做一件事；复杂逻辑抽为 `useXxx.ts`，让数据处理、交互副作用和视图表达分离。
 - 组件私有 hook / types / utils 是否与对应 `.vue` 放在组件同名目录；不要为了瘦身把局部文件散到上层目录。
+- 组件抽离、目录落点和 API 契约是否符合 `docs/component-extraction-policy.md`；厚组件是否使用胶囊目录，薄组件是否保持平铺。
 
 ### 5. 组件 API 与边界
 
