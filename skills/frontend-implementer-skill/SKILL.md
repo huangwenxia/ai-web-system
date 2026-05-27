@@ -71,7 +71,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 3. 判断修改范围：单组件 / 页面局部 / 页面级模块。
 4. 如果目标是 `project-mamba` 或同构仓库，先用当前 app 的 `vite.config.ts`、`src/main.ts`、router 入口校验拓扑和 route ownership，再输出极短“复用校验表”。
 5. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
-6. 命中 `project-mamba` 新功能页面交付时，运行自动检查脚本和组件结构检查脚本，并补齐人工最终代码校验表。
+6. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐人工最终代码校验表。
 7. 输出实现或修改结果，并明确边界态与风险。
 8. 判断是否需要叠加独立 `page-review-skill`。
 9. 判断本次是否值得回写到标准、案例、资产或规则。
@@ -96,13 +96,14 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面壳、业务区块、项目业务复用、通用业务控件和基础控件要分层判断，不允许直接凭感觉拼一套新结构。
 - 如果 profile 中任一关键项答不上来，就继续查当前页面、相邻模块和已有实现，不直接进入落码。
 - `docs/project-mamba-app-topology-matrix.md` 只是易变事实缓存；进入实现前必须用当前 `vite.config.ts`、`src/main.ts` 和 router 入口验证。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
-- 实现前可以从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 做目标 app 轻量验证；修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 时，必须运行全量 topology 验证。
+- 命中 `project-mamba` 新功能或 route ownership 不清楚时，必须从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 做目标 app 验证；修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 时，必须运行全量 topology 验证。
 - topology 验证出现 drift 时，不得继续相信矩阵；先以当前代码作为实施依据，并在输出中列出 drift 和矩阵回写建议。
-- 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件；脚本无法判断的语义项必须在最终检查表中人工说明。
-- 涉及组件抽离或目录调整时运行 `scripts/check-component-structure.mjs`；结构 warning 不一定阻断，但必须在最终检查表中说明是否整改或保留原因。
-- 硬指标不达标时先整改再交付：新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`。
+- topology 脚本出现 `unknown`、未识别 route source、运行目录错误或矩阵 drift 时，不能把 topology 判定视为通过；必须先补当前代码证据或列为阻断项。
+- 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs`，并显式传入本次目标文件或在输出中列出脚本实际 checked files；空检查不得视为通过。
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，必须运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
+- 硬指标不达标时先整改再交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
-- 用户明确指定旧文件优化时，运行脚本可追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
+- 用户明确指定旧文件优化，或旧 `.vue` 是本次新功能的主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
 
 ### 3. 按场景切执行策略
@@ -112,8 +113,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 先确认页面原型是否已经明确；不明确则回退到 `existing-project-feature-skill`，必要时先转到 `agione-ui`。
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
-- 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增。
-- 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增，并在最终输出列出检索范围、命中候选和未复用原因。
+- 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
 - 组件私有逻辑因体积或职责需要抽 `useXxx.ts` 时，必须改用组件同名目录收纳：`components/Foo/Foo.vue`、`components/Foo/useFoo.ts`、`components/Foo/types.ts`、`components/Foo/utils.ts`；组件私有 hook / types / utils 不散落在 `components/` 根目录。页面级或模块级共享逻辑才允许放在页面 / 模块目录。
@@ -228,7 +229,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 1. 主任务类型与输入前提。
 2. 使用的约束条目。
 3. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
-4. 命中 `project-mamba` 新功能页面时，最终代码校验检查表与自动检查脚本结果。
+4. 命中 `project-mamba` 新功能页面时，最终代码校验检查表、自动检查脚本结果和 checked files 覆盖范围。
 5. 风险、边界说明与最小验证建议。
 6. 是否需要叠加独立审查流。
 7. 回写候选与 skill 同步升级建议。

@@ -20,7 +20,7 @@
 - 如果命中 `project-mamba`，是否已先读取当前 app 的 `vite.config.ts` 与 `src/main.ts`
 - 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
 - 如果命中 `project-mamba`，是否已用当前代码核对 `project-mamba-app-topology-matrix.md`；如矩阵冲突，是否以当前代码为准并列为回写候选
-- 如果命中 `project-mamba`，是否运行 topology 验证脚本；drift 是否已阻断继续依赖旧矩阵
+- 如果命中 `project-mamba` 新功能或 route ownership 不清楚，是否运行 topology 验证脚本；`unknown`、空 route source、运行目录错误或 drift 是否已阻断继续依赖旧矩阵
 
 ## 原型完整性检查
 - 是否确认主操作、关键字段和信息层级已明确
@@ -33,8 +33,8 @@
 - 是否保证业务逻辑完整性与数据展示正确性同时成立
 - 如果命中 `project-mamba`，是否已明确 bootstrap 来源是本地 / `@common` / 跨 app 复用
 - 如果命中 `project-mamba` 新功能页面，是否把最终代码校验作为交付门禁，而不是可选建议
-- 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并说明未复用原因
-- 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因
+- 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
+- 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；最终是否对照抽离前预案与实际落地差异
 - 发生组件拆分时，是否已明确不变量 / 可变量、复用半径、目录落点和 API 契约；是否避免把组件私有 hook / types / utils 散到上层目录
 
 ## 边界与细节检查
@@ -46,10 +46,10 @@
 - 对齐、间距、层级、节奏、顺滑度和明显 1px 级细节问题
 
 ## `project-mamba` 最终代码校验
-- 是否运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件
-- 涉及组件抽离或目录调整时，是否运行 `skills/frontend-implementer-skill/scripts/check-component-structure.mjs`
+- 是否运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，且显式传入目标文件或列出 checked files；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `skills/frontend-implementer-skill/scripts/check-component-structure.mjs --strict`
 - 新增 `.vue` 是否按物理总行数控制在 250 行以内
-- 旧文件是否默认排除历史超限；若用户明确要求优化旧文件，是否纳入瘦身或拆分计划
+- 旧文件是否默认排除历史超限；若用户明确要求优化旧文件，或旧 `.vue` 是本次新功能主承载页面，是否使用 `--strict-vue-lines` 并纳入瘦身或拆分计划
 - `locale`、`schema`、纯配置组件如被排除，是否说明排除原因
 - 函数是否 70 行以内为最佳，100 行为上限；超过 100 行是否已拆分
 - 复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释

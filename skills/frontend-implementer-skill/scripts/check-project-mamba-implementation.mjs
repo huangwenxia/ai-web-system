@@ -20,6 +20,7 @@ function usage() {
 Options:
   --base=<ref>            Git base used for changed files. Default: HEAD
   --strict-vue-lines      Enforce the 250-line limit for all checked .vue files
+  --allow-empty           Allow an empty target set. Use only for explicit non-code checks
   --help                  Show this help
 
 When no files are provided, the script checks added/modified/untracked git files.
@@ -31,6 +32,7 @@ function parseArgs(argv) {
   const options = {
     base: 'HEAD',
     strictVueLines: false,
+    allowEmpty: false,
     files: [],
   };
 
@@ -41,6 +43,8 @@ function parseArgs(argv) {
       options.base = arg.slice('--base='.length);
     } else if (arg === '--strict-vue-lines') {
       options.strictVueLines = true;
+    } else if (arg === '--allow-empty') {
+      options.allowEmpty = true;
     } else {
       options.files.push(arg);
     }
@@ -122,8 +126,8 @@ function isVueLineLimitExcluded(file) {
 function isImplementationStyleScope(file) {
   const normalized = normalizeGitPath(file).toLowerCase();
   return (
-    /^apps\/[^/]+\/src\/(?:views|components)\//.test(normalized) ||
-    /^apps\/common\/src\/(?:views|components)\//.test(normalized) ||
+    /^apps\/[^/]+\/src\/(?:views|components|commons)\//.test(normalized) ||
+    /^apps\/common\/src\/(?:views|components|commons)\//.test(normalized) ||
     /^packages\/(?:mamba-ui|ui)\/src\/(?:views|components)\//.test(normalized)
   );
 }
@@ -475,89 +479,91 @@ function checkPropConventions(source, lineOffset = 0) {
   return { errors, warnings };
 }
 
+function addFunctionLengthFindings(source, lineOffset, errors, warnings) {
+  for (const fn of findFunctionLengths(source, lineOffset)) {
+    if (fn.length > FUNCTION_ERROR_LIMIT) {
+      errors.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; limit is ${FUNCTION_ERROR_LIMIT}`);
+    } else if (fn.length > FUNCTION_WARN_LIMIT) {
+      warnings.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; prefer <= ${FUNCTION_WARN_LIMIT}`);
+    }
+  }
+}
+
+function checkVueLineLimit(content, normalized, statusCode, options, messages, errors, warnings) {
+  const lineCount = content.split(/\r?\n/).length;
+  const excluded = isVueLineLimitExcluded(normalized);
+  const enforceLineLimit = options.strictVueLines || isAddedOrUntracked(statusCode);
+
+  if (excluded) {
+    messages.push(`line limit excluded (${lineCount} lines): locale/schema/config-like file`);
+  } else if (lineCount > VUE_LINE_LIMIT && enforceLineLimit) {
+    errors.push(`.vue line limit exceeded: ${lineCount}/${VUE_LINE_LIMIT} lines`);
+  } else if (lineCount > VUE_LINE_LIMIT) {
+    warnings.push(`existing .vue exceeds ${VUE_LINE_LIMIT} lines (${lineCount}); optimize when this file is in scope`);
+  } else {
+    messages.push(`.vue line count ok: ${lineCount}/${VUE_LINE_LIMIT}`);
+  }
+}
+
+function checkVueFile(content, normalized, statusCode, options, result) {
+  const { messages, errors, warnings } = result;
+  if (isImplementationStyleScope(normalized)) {
+    errors.push(...findExternalStyleReferences(content, 0));
+    errors.push(...checkRepeatedVisualInteractionBlocks(content));
+    errors.push(...checkComponentColocation(normalized, content));
+  }
+
+  checkVueLineLimit(content, normalized, statusCode, options, messages, errors, warnings);
+
+  const scriptBlocks = getVueScriptBlocks(content);
+  if (scriptBlocks.length === 0) {
+    warnings.push('no <script> block found; verify this SFC is intentionally template-only');
+  }
+
+  for (const block of scriptBlocks) {
+    if (!/\bsetup\b/i.test(block.attrs)) {
+      errors.push(`Vue SFC script block at line ${block.startLine} is not <script setup>`);
+    }
+    const propConvention = checkPropConventions(block.code, block.startLine);
+    errors.push(...propConvention.errors);
+    warnings.push(...propConvention.warnings);
+    addFunctionLengthFindings(block.code, block.startLine, errors, warnings);
+  }
+}
+
+function checkScriptFile(content, normalized, result) {
+  const { errors, warnings } = result;
+  if (isImplementationStyleScope(normalized)) {
+    errors.push(...findExternalStyleReferences(content, 0));
+    errors.push(...checkComponentColocation(normalized, content));
+  }
+
+  addFunctionLengthFindings(content, 0, errors, warnings);
+}
+
 function checkFile(file, statusCode, options) {
-  const messages = [];
-  const errors = [];
-  const warnings = [];
+  const result = { file: normalizeGitPath(file), errors: [], warnings: [], messages: [] };
   const absolute = path.resolve(process.cwd(), file);
 
   if (!existsSync(absolute)) {
-    return {
-      file,
-      errors: [`File does not exist: ${file}`],
-      warnings,
-      messages,
-    };
+    result.errors.push(`File does not exist: ${file}`);
+    return result;
   }
 
   const content = readFileSync(absolute, 'utf8');
   const extension = path.extname(file).toLowerCase();
-  const normalized = normalizeGitPath(file);
-  const inImplementationStyleScope = isImplementationStyleScope(normalized);
+  const inImplementationStyleScope = isImplementationStyleScope(result.file);
 
   if (extension === '.vue') {
-    if (inImplementationStyleScope) {
-      errors.push(...findExternalStyleReferences(content, 0));
-      errors.push(...checkRepeatedVisualInteractionBlocks(content));
-      errors.push(...checkComponentColocation(normalized, content));
-    }
-
-    const lineCount = content.split(/\r?\n/).length;
-    const excluded = isVueLineLimitExcluded(normalized);
-    const enforceLineLimit = options.strictVueLines || isAddedOrUntracked(statusCode);
-
-    if (excluded) {
-      messages.push(`line limit excluded (${lineCount} lines): locale/schema/config-like file`);
-    } else if (lineCount > VUE_LINE_LIMIT && enforceLineLimit) {
-      errors.push(`.vue line limit exceeded: ${lineCount}/${VUE_LINE_LIMIT} lines`);
-    } else if (lineCount > VUE_LINE_LIMIT) {
-      warnings.push(`existing .vue exceeds ${VUE_LINE_LIMIT} lines (${lineCount}); optimize when this file is in scope`);
-    } else {
-      messages.push(`.vue line count ok: ${lineCount}/${VUE_LINE_LIMIT}`);
-    }
-
-    const scriptBlocks = getVueScriptBlocks(content);
-    if (scriptBlocks.length === 0) {
-      warnings.push('no <script> block found; verify this SFC is intentionally template-only');
-    } else {
-      for (const block of scriptBlocks) {
-        if (!/\bsetup\b/i.test(block.attrs)) {
-          errors.push(`Vue SFC script block at line ${block.startLine} is not <script setup>`);
-        }
-      }
-    }
-
-    for (const block of scriptBlocks) {
-      const propConvention = checkPropConventions(block.code, block.startLine);
-      errors.push(...propConvention.errors);
-      warnings.push(...propConvention.warnings);
-
-      for (const fn of findFunctionLengths(block.code, block.startLine)) {
-        if (fn.length > FUNCTION_ERROR_LIMIT) {
-          errors.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; limit is ${FUNCTION_ERROR_LIMIT}`);
-        } else if (fn.length > FUNCTION_WARN_LIMIT) {
-          warnings.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; prefer <= ${FUNCTION_WARN_LIMIT}`);
-        }
-      }
-    }
+    checkVueFile(content, result.file, statusCode, options, result);
   } else if (isScriptExtension(extension)) {
-    if (inImplementationStyleScope) {
-      errors.push(...findExternalStyleReferences(content, 0));
-      errors.push(...checkComponentColocation(normalized, content));
-    }
-
-    for (const fn of findFunctionLengths(content, 0)) {
-      if (fn.length > FUNCTION_ERROR_LIMIT) {
-        errors.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; limit is ${FUNCTION_ERROR_LIMIT}`);
-      } else if (fn.length > FUNCTION_WARN_LIMIT) {
-        warnings.push(`function ${fn.name} lines ${fn.start}-${fn.end} is ${fn.length} lines; prefer <= ${FUNCTION_WARN_LIMIT}`);
-      }
-    }
+    checkScriptFile(content, result.file, result);
   } else if (isStyleExtension(extension) && inImplementationStyleScope) {
+    const { errors } = result;
     errors.push('external style file in a view/component scope is not allowed; move styles into the owning .vue <style scoped> block or an existing shared style entry');
   }
 
-  return { file: normalized, errors, warnings, messages };
+  return result;
 }
 
 function main() {
@@ -577,6 +583,10 @@ function main() {
 
   if (files.length === 0) {
     console.log('Project Mamba implementation check: no Vue/TS/JS/style files to inspect.');
+    if (!options.allowEmpty) {
+      console.error('error: empty check is not allowed; pass explicit target files or use --allow-empty with a reason in the final checklist');
+      process.exitCode = 1;
+    }
     return;
   }
 

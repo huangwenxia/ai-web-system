@@ -277,6 +277,22 @@ function compareFactsWithMatrix(facts, section) {
   const drift = [];
   const warnings = [];
 
+  if (!facts.files.viteConfig) {
+    drift.push(`apps/${facts.app}/vite.config.ts missing or unreadable`);
+  }
+
+  if (!facts.files.main) {
+    drift.push(`apps/${facts.app}/src/main.ts missing or unreadable`);
+  }
+
+  if (facts.routeSources.length === 0) {
+    drift.push('route sources not recognized from vite.config.ts');
+  }
+
+  if (facts.topology === 'unknown') {
+    drift.push('topology unknown from current code');
+  }
+
   if (!section) {
     drift.push('matrix section missing');
     return { drift, warnings };
@@ -399,6 +415,7 @@ function main() {
     } else {
       console.log(message);
     }
+    process.exitCode = 1;
     return;
   }
 

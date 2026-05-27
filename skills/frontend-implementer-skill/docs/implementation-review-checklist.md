@@ -20,7 +20,8 @@
 - 如果命中 `project-mamba`，是否已判定 app 拓扑与当前页面的 route ownership
 - 是否已用当前代码核对 `project-mamba-app-topology-matrix.md`；如矩阵冲突，是否以当前代码为准并列为回写候选
 - 如果本次修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts`，是否同步检查 topology matrix 是否需要更新
-- 是否运行 `scripts/verify-project-mamba-topology.mjs --app=<app> --suggest` 或全量 topology 检查；drift 是否已阻断继续依赖旧矩阵
+- 命中新功能或 route ownership 不清楚时，是否运行 `scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`；修改 `vite.config.ts` / `main.ts` 时是否运行全量 topology 检查
+- topology 结果是否不是 `unknown`、不是空 route source、不是运行目录错误；drift 是否已阻断继续依赖旧矩阵
 - 如果修改公共层，是否已判断兼容性影响
 
 ## 实现检查
@@ -34,8 +35,8 @@
 - 是否先区分当前样式问题属于项目语义层（`--ui-*`）还是 Element Plus 原生 anatomy / 状态层（`--el-*`），并在正确 token 层修改，而不是把两套 token 混用成视觉补丁
 - 如果当前任务已有明确原型，是否先核对实现结果与原型在布局、间距、边框、圆角、hover/focus 背景、字体颜色等可观察细节上的一致性，再判断是否需要主题兼容修正
 - 如果交互视觉看起来不对，是否先区分语义层（type / intent）、状态层（disabled / loading / reason）和渲染层（button / menu / popper 样式），而不是直接跨层改配置
-- 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并说明未复用原因
-- 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界
+- 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
+- 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界；最终是否对照抽离前预案与实际落地差异
 - 抽离前是否已按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、目录落点和 API 契约
 - 大页面块抽离后，是否再次检查抽离出的页面块组件内部是否仍有重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮；存在重复时是否继续抽成更小子组件
 - 组件私有 hook / types / utils 是否与对应 `.vue` 放进组件同名目录；页面级或模块级共享逻辑才允许放在页面 / 模块目录
@@ -56,10 +57,11 @@
 - 禁用态
 
 ## `project-mamba` 自动检查
-- 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`
-- 涉及组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs`
-- 自动检查是否覆盖本次新增 / 修改文件，或是否显式传入目标文件
+- 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`，且显式传入目标文件或列出 checked files
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
+- 自动检查是否覆盖本次新增 / 修改文件；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
 - 自动检查未通过时，是否先整改硬指标再交付
+- 旧 `.vue` 是本次新功能主承载页面时，是否使用 `--strict-vue-lines`
 - `locale`、`schema`、纯配置组件如被排除，是否说明排除原因
 
 ## 风险检查

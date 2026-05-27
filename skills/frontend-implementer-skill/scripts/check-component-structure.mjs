@@ -16,6 +16,7 @@ function usage() {
 Options:
   --base=<ref>       Git base used for changed paths. Default: HEAD
   --strict           Treat warnings as errors
+  --allow-empty      Allow an empty target set. Use only when no component directory is in scope
   --help             Show this help
 
 When no paths are provided, the script checks directories related to added/modified git files.`);
@@ -25,6 +26,7 @@ function parseArgs(argv) {
   const options = {
     base: 'HEAD',
     strict: false,
+    allowEmpty: false,
     paths: [],
   };
 
@@ -33,6 +35,8 @@ function parseArgs(argv) {
       options.help = true;
     } else if (arg === '--strict') {
       options.strict = true;
+    } else if (arg === '--allow-empty') {
+      options.allowEmpty = true;
     } else if (arg.startsWith('--base=')) {
       options.base = arg.slice('--base='.length);
     } else {
@@ -252,10 +256,24 @@ function main() {
   }
 
   const inputs = options.paths.length ? options.paths : changedFiles(options.base);
+  const missingExplicitPaths = options.paths
+    .map(normalize)
+    .filter((input) => !existsSync(path.resolve(process.cwd(), input)));
+
+  if (missingExplicitPaths.length) {
+    console.error(`Component structure check: explicit path(s) not found: ${missingExplicitPaths.join(', ')}`);
+    process.exitCode = 1;
+    return;
+  }
+
   const dirs = collectDirs(inputs);
 
   if (dirs.length === 0) {
     console.log('Component structure check: no relevant directories to inspect.');
+    if (!options.allowEmpty) {
+      console.error('error: empty structure check is not allowed; pass explicit component paths or use --allow-empty with a reason in the final checklist');
+      process.exitCode = 1;
+    }
     return;
   }
 

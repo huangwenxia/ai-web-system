@@ -10,8 +10,9 @@
   - 路由来源是只来自当前 app，还是同时挂载了 `common` / 其他 app 的 views
   - 页面壳、i18n、auth、install、directives、globals、store 来源于本 app 还是共享层
   - 当前 app 的样式入口文件名是 `tailwind.css` 还是 `tailwindcss.css`
-- 读取后用当前代码校验 `docs/project-mamba-app-topology-matrix.md`；推荐从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
+- 读取后用当前代码校验 `docs/project-mamba-app-topology-matrix.md`；命中新功能或 route ownership 不清楚时，必须从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
 - 修改 `apps/*/vite.config.ts` 或 `apps/*/src/main.ts` 时，从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --all --suggest`；出现 drift 时先处理事实依据，不继续依赖旧矩阵。
+- topology 脚本出现 `unknown`、未识别 route source、运行目录错误或矩阵 drift 时，不能视为通过；必须先补当前代码证据或列为阻断项。
 - 在完成这一步之前，不允许直接把 `apps/common/src/components` 或通用页面组合当成无条件默认答案。
 
 ## app 拓扑分类
@@ -76,19 +77,19 @@
 命中 `project-mamba` 新功能页面时，交付前必须完成自动检查和人工检查两层闭环。
 
 ### 自动检查
-- 运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，默认检查本次新增 / 修改文件，也可以显式传入文件路径。
+- 运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，必须显式传入本次目标文件，或在最终输出列出脚本实际 checked files；空检查不得视为通过。
 - 自动检查硬指标：
   - 新增 `.vue` 物理总行数不超过 250 行
   - 函数 70 行以内最佳，100 行为上限；超过 100 行必须拆分
   - Vue SFC 必须使用 `<script setup>`
 - `locale`、`schema`、纯配置组件可以排除 `.vue <= 250` 硬门禁；最终输出必须说明排除原因。
 - 旧文件默认不因历史超限阻断；如果用户明确要求优化旧文件，本次必须纳入拆分或瘦身计划。
-- 当用户明确指定旧文件优化时，运行脚本可追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
+- 当用户明确指定旧文件优化，或旧 `.vue` 是本次新功能主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
 
 ### 人工检查
-- 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。
+- 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；最终输出必须列出检索范围、命中候选和未复用原因。
 - 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
-- 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
+- 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离大页面块后继续检查抽出的页面块组件：重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮不得留在同一组件内反复复制，应再抽成小子组件。
 - 若组件私有逻辑需要抽 `useXxx.ts`、局部 `types.ts` 或 `utils.ts`，使用组件同名目录收纳；页面级或模块级共享逻辑才放在页面 / 模块目录。
 - 拆分落点按复用半径决定：页面私有就近放当前页面目录；同模块多个页面复用放模块级目录；当前 app 多模块复用放 app 级 `commons` / `components`；跨 app 稳定复用才考虑 `apps/common` 或 `@repo`。
@@ -97,8 +98,8 @@
 - `defineProps` 简单场景可用泛型；复杂数组、对象、联合类型、业务类型数组或需要 default / required / validator 时，使用对象写法配合 `PropType`。`PropType` 与业务类型必须使用 `import type`。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：`.vue <= 250`、复用检查、抽离清单、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。
-- 涉及组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs` 并说明结构 warning 的整改或保留原因。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则
 ### T1：common-shell source app

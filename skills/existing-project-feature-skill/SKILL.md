@@ -110,7 +110,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 非 `project-mamba` 仓库时，至少说明：当前目标项目、页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
 - 如果这些关键项说不清，就继续查相邻模块；命中 `project-mamba` 时，还要继续查当前 app 的 `vite.config.ts`、`src/main.ts` 与已挂载视图来源，不进入实施。
 - `project-mamba` 的拓扑矩阵只是易变事实缓存；如果矩阵与当前代码冲突，以当前代码为准，并把矩阵更新列为回写候选。
-- 推荐从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`；如果 drift 存在，先记录当前代码事实，不继续依赖旧矩阵。
+- 命中 `project-mamba` 新功能或 route ownership 不清楚时，必须从目标项目根目录运行 `node <skill-dir>/scripts/verify-project-mamba-topology.mjs --app=<app> --suggest`；如果出现 `unknown`、未识别 route source、运行目录错误或 drift，先补当前代码证据或列为阻断项，不继续依赖旧矩阵。
 - 这张表是实施入口检查，不是额外文档；保持极短，直接写在任务分析或实现前确认里。
 
 ### 7. 原型约束与实施边界
@@ -194,13 +194,13 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 ### 11. `project-mamba` 新功能代码闭环校验
 - 命中 `project-mamba` 或同构仓库的新功能页面实现时，当前主 skill 必须把“最终代码校验”作为交付门禁，而不是可选建议。
 - 进入实现前的复用校验仍由当前主 skill 触发；具体代码质量、拆分、Vue 语法、Tailwind / Element Plus 使用等判定下沉到 `frontend-implementer-skill` 与 `docs/project-mamba-implementation-profile.md`。
-- 交付前必须运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 检查本次新增 / 修改文件；脚本无法判断的语义项必须在最终检查表中人工说明。
-- 硬指标不达标时不得直接交付：新增 `.vue` 超过 250 行、函数超过 100 行、Vue SFC 未使用 `<script setup>` 都必须先整改。旧文件默认不因历史超限阻断；但如果用户明确要求优化旧文件，本次也必须纳入拆分或瘦身计划。
+- 交付前必须运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，并显式传入本次目标文件或在最终输出列出脚本实际 checked files；空检查不得视为通过，脚本无法判断的语义项必须在最终检查表中人工说明。
+- 硬指标不达标时不得直接交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 超过 250 行、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败都必须先整改。旧文件默认不因历史超限阻断；但如果用户明确要求优化旧文件，或旧 `.vue` 是本次新功能主承载页面，必须使用 `--strict-vue-lines` 并纳入拆分或瘦身计划。
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
-- 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。确实没有合适能力时，才允许新增。
-- 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。
-- 涉及组件抽离或目录调整时，最终必须运行组件结构检查脚本，并说明 warning 的整改或保留原因。
-- 最终输出必须包含达标 / 未达标检查表：`.vue <= 250`、复用检查、抽离清单、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。未达标项必须说明已整改或例外原因。
+- 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。最终输出列出检索范围、检索关键词、命中候选和未复用原因；确实没有合适能力时，才允许新增。
+- 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，最终必须运行 `check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
+- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、边界状态、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。

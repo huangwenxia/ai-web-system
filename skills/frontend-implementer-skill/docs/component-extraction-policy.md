@@ -106,7 +106,8 @@ utils/bus.ts
 - 复用范围和建议落点。
 - props / emits / slots / `defineModel`。
 - 是否需要私有 `useXxx.ts`、`types.ts`、`constants.ts`。
-- 是否已有组件、hooks、utils 可复用，以及未复用原因。
+- 是否已有组件、hooks、utils 可复用：记录检索范围、检索关键词、命中候选、采用或未复用原因。
+- 最终落地时对照抽离前预案；如果组件名、目录、职责或 API 有变化，说明变化原因。
 
 ## 上提机制
 - 第一次：页面私有实现。
