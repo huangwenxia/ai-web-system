@@ -118,6 +118,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增，并在最终输出列出检索范围、命中候选和未复用原因。
 - 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
+- 页面模板中 `v-if` / `v-else-if` / `v-else` 状态分支过多时必须评估抽离：loading、error、empty、permission、filtered-empty、list-body 等分支堆在同一区块超过 3 个，或单个状态块超过约 30 行时，优先抽成页面私有状态展示组件或内容区子组件，例如 `ModelScopePanel`、`ScopeListBody`、`StatePanel`。页面保留数据获取、筛选和事件编排，子组件负责稳定 UI 骨架、状态分支和局部交互。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。

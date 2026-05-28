@@ -57,6 +57,8 @@
 - 函数是否 70 行以内为最佳，100 行为上限；超过 100 行是否已拆分
 - 复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
 - 是否使用 Vue 3 `<script setup>`、TypeScript、`defineModel` 优先、`computed` 优先；`watch` 是否只用于副作用；`defineProps` 类型、`PropType` 和数组 / 对象默认值是否合规；抽离组件是否避免外部业务类型直接走 `defineProps<ExternalType>()`
+- 页面模板中 loading / error / empty / permission / filtered-empty / list-body 等状态分支过多时，是否抽成页面私有状态展示组件或内容区子组件；若保留在页面，是否说明原因
+- 最终页面结构是否清晰、职责是否可读；如果代码呈现冗杂混乱、主模板难以扫读、状态分支和交互细节缠在一起，是否已认真审视并执行组件抽离或说明保留原因
 - 布局样式是否优先 Tailwind；功能交互是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
 - 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
 - 简单 flex 布局是否写在 template class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS

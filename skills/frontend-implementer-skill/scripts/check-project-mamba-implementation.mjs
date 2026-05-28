@@ -36,7 +36,7 @@ Options:
 
 When no files are provided, the script checks added/modified/untracked git files.
 Component/page implementation code must use Tailwind utilities or component-local <style scoped>; external style files/imports are rejected.
-Repeated visual/interaction blocks should be extracted into child components, and component-local hooks/types/utils must live in a same-named component folder.`);
+Repeated visual/interaction blocks and heavy conditional state branches should be extracted into child components, and component-local hooks/types/utils must live in a same-named component folder.`);
 }
 
 function parseArgs(argv) {
@@ -441,6 +441,32 @@ function checkRepeatedVisualInteractionBlocks(source) {
   return unique(errors);
 }
 
+function findStateBranchExtractionWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const branchRegex = /\bv-(if|else-if|else)\b(?:\s*=\s*["']([^"']*)["'])?/gi;
+  const stateLikePattern = /(loading|error|empty|permission|authorized|disabled|filtered|scope|list|items|length|retry)/i;
+  const branches = [];
+  let match;
+
+  while ((match = branchRegex.exec(source))) {
+    branches.push({
+      directive: match[1],
+      expression: match[2] || '',
+      line: lineNumberAt(source, match.index, lineOffset),
+    });
+  }
+
+  const stateLikeCount = branches.filter((branch) => stateLikePattern.test(branch.expression)).length;
+  if (branches.length >= 4 && stateLikeCount >= 2) {
+    const firstLine = branches[0].line;
+    warnings.push(
+      `template has ${branches.length} conditional branches (${stateLikeCount} state-like) starting near line ${firstLine}; consider extracting loading/error/empty/list state UI into a child component`,
+    );
+  }
+
+  return warnings;
+}
+
 function getComponentsPathInfo(file) {
   const normalized = normalizeGitPath(file);
   const parts = normalized.split('/');
@@ -831,6 +857,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
+    warnings.push(...findStateBranchExtractionWarnings(content, 0));
     errors.push(...checkComponentColocation(normalized, content));
   }
   errors.push(...findEscapedChineseText(content, 0));

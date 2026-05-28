@@ -92,6 +92,7 @@
 ### 人工检查
 - 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；最终输出必须列出检索范围、命中候选和未复用原因。
 - 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
+- 页面模板中 loading、error、empty、permission、filtered-empty、list-body 等 `v-if` / `v-else-if` / `v-else` 状态分支超过 3 个，或单个状态块超过约 30 行时，必须优先抽成页面私有状态展示组件或内容区子组件；页面保留数据和事件编排，子组件承接状态 UI。
 - 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离大页面块后继续检查抽出的页面块组件：重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮不得留在同一组件内反复复制，应再抽成小子组件。
@@ -104,7 +105,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、`v-for` 复用检查、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、`v-for` 复用检查、状态分支抽离、页面结构清晰 / 冗杂抽离审视、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则

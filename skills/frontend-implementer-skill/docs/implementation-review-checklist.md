@@ -37,8 +37,10 @@
 - 如果交互视觉看起来不对，是否先区分语义层（type / intent）、状态层（disabled / loading / reason）和渲染层（button / menu / popper 样式），而不是直接跨层改配置
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
+- 页面模板是否堆了过多 `v-if` / `v-else-if` / `v-else` 状态分支；loading / error / empty / permission / filtered-empty / list-body 等分支超过 3 个或状态块过长时，是否抽成页面私有状态展示组件或内容区子组件
 - 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界；最终是否对照抽离前预案与实际落地差异
 - 抽离前是否已按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、目录落点和 API 契约
+- 最终页面结构是否清晰、职责是否可读；如果代码呈现冗杂混乱、主模板难以扫读、状态分支和交互细节缠在一起，是否已认真审视并执行组件抽离或说明保留原因
 - 大页面块抽离后，是否再次检查抽离出的页面块组件内部是否仍有重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮；存在重复时是否继续抽成更小子组件
 - 组件私有 hook / types / utils 是否与对应 `.vue` 放进组件同名目录；页面级或模块级共享逻辑才允许放在页面 / 模块目录
 - 新增 `.vue` 是否控制在 250 行以内；旧文件若被用户指定优化，是否纳入瘦身或拆分计划

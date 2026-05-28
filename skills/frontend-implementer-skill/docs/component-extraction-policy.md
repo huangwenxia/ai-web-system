@@ -4,6 +4,7 @@
 
 ## 核心原则
 - 先抽不变的结构 / 交互骨架，不抽业务数据和业务动作。
+- 组件抽离的首要宗旨是让最终页面结构清晰、职责可读、代码不冗杂混乱；如果当前实现已经让页面主模板难以扫读、状态分支和交互细节缠在一起，或重复壳层导致可读性明显下降，必须认真审视是否抽成组件，而不是继续在原文件里堆判断和样式。
 - 先放近处，再逐级上提；先稳定契约，再进入公共层。
 - 目录要帮助定位上下文。复杂组件按“组件胶囊”聚合 `.vue`、私有 hook、types、constants、私有子组件，不把相关文件散到多个上层目录。
 - 页面层负责业务编排、接口请求、筛选条件、表格刷新和路由跳转；组件层负责稳定 UI 骨架、局部交互和输入输出。
@@ -88,6 +89,15 @@ utils/bus.ts
 命名按语义，不按实现：
 - 推荐：`SingleSelectFilter`、`FilterOptionPopover`、`PopoverFilterSelect`、`FieldValueFragments`。
 - 避免：`PopoverRadioButton`、`TagSelect`、`RadioPopover`，除非它们真是实现细节组件且只私有使用。
+
+## 状态分支抽离
+页面模板出现成组 `v-if` / `v-else-if` / `v-else` 时，先判断它是不是稳定的内容区状态机。满足任意一项就优先抽成页面私有组件：
+- 同一区块同时承载 loading、error、empty、permission、filtered-empty、list-body 中的 3 个以上分支。
+- 多个分支重复同一套居中、图标、空态、按钮或重试壳层。
+- 状态分支把主页面模板撑厚，导致真实列表项、筛选区或操作区难以扫读。
+- 状态 UI 有独立交互，例如 retry、clear filter、select scope、expand detail。
+
+推荐落点：页面私有 `components/ScopeListBody.vue`、`components/ModelScopePanel.vue`，或组件胶囊内的 `components/StatePanel.vue`。父页面保留接口请求、筛选条件、权限判断和业务事件；子组件只通过 props / emits 接收状态、列表数据和局部操作。
 
 ## API 设计
 组件 API 必须小而清晰：
