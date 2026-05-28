@@ -155,6 +155,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 - `props` 类型完整、默认值明确，只暴露必要输入；事件命名表达用户意图或状态变化，不用实现导向命名。
 - 简单 props 可使用泛型 `defineProps<T>()`；复杂数组、对象、联合类型、业务类型数组，尤其需要 `default` / `required` / `validator` 时，使用对象写法配合 `PropType`。
+- 抽离出来的组件如果 props 类型来自外部 `types.ts`、相对路径或业务类型导入，避免直接使用 `defineProps<ExternalType>()` 或在泛型 props 中引用 imported type；优先改成运行时 props 对象 + `PropType`，防止 SFC 编译宏在抽离后无法解析外部类型。
 - `PropType` 必须使用 type-only import：`import type { PropType } from 'vue'`；业务类型也使用 `import type`，避免无意义运行时 import。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数：`default: () => []`、`default: () => ({})`，禁止 `default: []` 或 `default: {}`。
 - `required: true` 不写 `default`；有 `default` 时通常不写 `required: false`，避免语义重复。
@@ -179,15 +180,17 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 模板负责声明结构，复杂判断必须移到 `computed` 或方法；稳定列表禁止使用数组索引作为长期 `key`。
 - 基础界面元素必须优先使用 Element Plus 和当前项目已有封装组件，不默认直接落原生交互元素。
 - 页面或组件自身需要滚动容器时必须使用 `el-scrollbar`；禁止用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll`、`::-webkit-scrollbar`、`scrollbar-width/color` 或 `scrollbar-*` 类自行实现或美化 scrollbar。Element Plus / 项目已有表格、列表组件的内建滚动能力除外。
-- 页面、区块、表单项、工具栏、卡片列表等布局默认使用 flex；禁止新增 CSS Grid 布局，包括 Tailwind `grid` / `grid-cols-*` / `col-span-*` / `row-span-*` 等 grid utility，以及 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
-- 命中 Tailwind 项目时，Expression 层的布局、间距、尺寸必须优先使用 Tailwind utility class；禁止为这些属性新建自定义 CSS class。
+- 命中 Tailwind 项目时，普通布局、间距、尺寸和对齐必须优先使用 Tailwind utility class；`flex`、`flex-wrap`、`gap-*`、`min-w-0`、`items-center` 等简单 flex 布局能力应直接写在 template class 里。
+- 页面、区块、表单项、工具栏、卡片列表等布局默认使用 flex；禁止新增 CSS Grid 布局，包括 Tailwind `grid` / `inline-grid` / `grid-cols-*` / `grid-rows-*` / `col-span-*` / `row-span-*` / `grid-flow-*` 等 grid utility，以及 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
+- 复杂样式再放组件内部 `<style scoped>`：container query、第三方组件深层覆盖、hover / focus 状态和复杂响应式断点可以进 scoped SCSS；但 scoped SCSS 里也不能新增 CSS Grid 布局。
+- 组件结构必须按自身容器宽度稳定自适应；内容区变窄但 viewport 未变时，row / card / toolbar 应使用容器能力、flex wrap、`min-w-0`、弹性收缩和换行策略处理，不只依赖 `@media` 改结构。
 - 新增或改造页面 / 组件时，禁止外部引用样式文件；只允许 Tailwind utility class 或组件内部 `<style scoped>`，共享主题能力必须走项目既有样式入口。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。
 - 双向绑定优先使用 `defineModel`；能用 `computed` 推导的状态不用 `watch` 同步，`watch` 只处理接口请求、外部同步、事件订阅等副作用。
 - 样式只描述当前组件，不污染外层；通用组件不写页面级样式分支。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度。
 - 如果任务已有明确原型，除图标外，布局、间距、悬浮/聚焦背景、边框、圆角、字体颜色等可观察样式细节默认应与原型保持一致；只有原型颜色 token 与项目 UI 规范冲突时，才优先使用项目允许的 token 体系。
-- 已确认原型的任务里，不允许因为抽象“层级优化”“产品感”或个人审美，主动改写原型节奏与密度；先贴原型，再做主题兼容与实现修正。
+- 已确认原型的任务里，不允许因为抽象“层级优化”“产品感”、布局工具偏好或个人审美，主动改写原型节奏与密度；不能为了避开 flex 细节把紧凑 row 改成大卡片，先贴原型，再做主题兼容与实现修正。
 - token 选择必须先分层：项目语义、自定义壳层、页面结构和业务容器优先使用 `--ui-*`；Element Plus 原生组件的内部 anatomy、fill、placeholder、disabled、overlay、border 和原生状态优先使用 `--el-*`。不要因为文件位于项目目录里，就把所有样式都强行写成 `--ui-*`。
 - 如果自定义组件只是组合 `el-button`、`el-dropdown`、`el-select`、`el-dialog` 等 Element Plus 原生组件，则外壳关系、分组节奏、页面级容器语义走 `--ui-*`，组件内部状态与浮层细节优先复用 `--el-*` 与既有 bridge。
 - 样式、AGIOne、原生 HTML 兜底和组件新增判定的细则见 `docs/token-and-style-policy.md`；不要在主协议里重复展开。

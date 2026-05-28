@@ -45,11 +45,14 @@
 - 函数是否 70 行以内为最佳、100 行为上限；复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
 - 是否优先使用 `<script setup>`、TypeScript、`defineModel`、`computed`；`watch` 是否只用于副作用
 - `defineProps` 是否按场景选择泛型或对象写法；复杂数组 / 对象 / 联合类型 / 业务类型数组是否使用 `PropType`
+- 抽离组件是否避免 `defineProps<ExternalType>()` 或泛型 props 直接引用 imported type；外部业务类型 props 是否改为运行时 props 对象 + `PropType`
 - `PropType` 与业务类型是否使用 `import type`
 - 数组 / 对象 props 的 `default` 是否使用工厂函数；是否避免 `required: false` 与 `default` 的重复语义
 - props 命名是否表达业务语义；子组件是否避免直接修改 props 或 props 对象 / 数组的深层值
-- 布局样式是否优先 Tailwind；交互型能力是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
+- 布局样式是否优先 Tailwind utility；交互型能力是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
 - 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
+- 简单 flex 布局是否写在 template class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS
+- 内容区宽度变化但 viewport 不变时，row / card / toolbar 是否按自身容器宽度稳定自适应，而不是只靠 `@media` 改结构
 - 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 
 ## 边界状态检查

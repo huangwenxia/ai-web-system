@@ -10,8 +10,10 @@
 
 ## Tailwind 与 scoped 样式
 - 布局、间距、尺寸、对齐、普通排版优先 Tailwind utility class；布局结构默认使用 flex。
+- `flex`、`flex-wrap`、`gap-*`、`min-w-0`、`items-center`、`justify-between` 等普通 flex 布局能力优先写在 template class 里，不为它们新增自定义 CSS class。
 - 禁止新增 CSS Grid 布局：不要使用 Tailwind `grid`、`inline-grid`、`grid-cols-*`、`grid-rows-*`、`col-span-*`、`row-span-*`、`grid-flow-*` 等 grid utility，也不要使用 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
-- 复杂选择器、伪类 / 伪元素、第三方组件深层覆盖、浮层壳层和主题状态，使用 scoped SCSS 或项目既有样式入口。
+- 复杂选择器、container query、伪类 / 伪元素、第三方组件深层覆盖、浮层壳层、主题状态和复杂响应式断点，使用 scoped SCSS 或项目既有样式入口；但 scoped SCSS 里也不能新增 CSS Grid 布局。
+- 响应式结构应优先按自身容器宽度稳定自适应；不要只依赖 viewport `@media` 在页面 viewport 不变、内容区变窄时切换 row / card / toolbar 结构。
 - 新增或改造页面 / 组件不得通过 `<style src>`、`import './*.scss'`、`@import`、`@use` 等方式外部引用样式；组件私有样式必须留在当前 `.vue` 的 `<style scoped>` 内。
 - 禁止为了单页面效果把布局职责转回一批自定义 CSS class。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度。

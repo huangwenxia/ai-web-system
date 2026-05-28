@@ -96,6 +96,7 @@ utils/bus.ts
 - 双向绑定：优先 `defineModel`。
 - 扩展：slot 承接视图差异，不承接业务数据处理。
 - 类型：复杂数组、对象、联合类型、业务类型数组使用 `PropType`，并 `import type`。
+- 外部类型：抽离组件的 props 类型如果来自 `./types`、相对路径、`@/types` 或业务模型导入，不直接依赖 `defineProps<ExternalType>()`；使用运行时 props 对象 + `PropType`，避免 SFC 编译阶段解析外部类型失败。
 - 默认值：数组 / 对象 props 的 `default` 必须用工厂函数。
 
 ## 抽离清单

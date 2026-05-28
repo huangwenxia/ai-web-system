@@ -685,10 +685,84 @@ function findDefinePropsBlocks(source) {
   return blocks;
 }
 
+function collectImportedTypeNames(source) {
+  const importedTypes = new Set();
+  const importRegex = /(^|\n)\s*import\s+(type\s+)?([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/g;
+  let match;
+
+  while ((match = importRegex.exec(source))) {
+    const isTypeOnlyImport = Boolean(match[2]);
+    const clause = match[3].trim();
+    const importSource = match[4];
+    if (importSource === 'vue') continue;
+
+    const namedMatch = clause.match(/\{([\s\S]*?)\}/);
+    if (namedMatch) {
+      for (const rawSpecifier of namedMatch[1].split(',')) {
+        let specifier = rawSpecifier.trim();
+        if (!specifier) continue;
+        const isInlineTypeImport = specifier.startsWith('type ');
+        if (!isTypeOnlyImport && !isInlineTypeImport) continue;
+        specifier = specifier.replace(/^type\s+/, '').trim();
+        const aliasMatch = specifier.match(/\bas\s+([A-Za-z_$][\w$]*)$/);
+        const name = aliasMatch ? aliasMatch[1] : specifier.match(/^([A-Za-z_$][\w$]*)/)?.[1];
+        if (name) importedTypes.add(name);
+      }
+      continue;
+    }
+
+    if (isTypeOnlyImport) {
+      const defaultName = clause.match(/^([A-Za-z_$][\w$]*)/)?.[1];
+      if (defaultName) importedTypes.add(defaultName);
+    }
+  }
+
+  return importedTypes;
+}
+
+function findDefinePropsGenericUsages(source) {
+  const usages = [];
+  let cursor = 0;
+
+  while (cursor < source.length) {
+    const callIndex = source.indexOf('defineProps', cursor);
+    if (callIndex < 0) break;
+
+    let cursorAfterName = callIndex + 'defineProps'.length;
+    while (/\s/.test(source[cursorAfterName] ?? '')) cursorAfterName += 1;
+    if (source[cursorAfterName] !== '<') {
+      cursor = cursorAfterName;
+      continue;
+    }
+
+    let depth = 0;
+    for (let index = cursorAfterName; index < source.length; index += 1) {
+      const char = source[index];
+      if (char === '<') depth += 1;
+      if (char === '>') depth -= 1;
+      if (depth === 0) {
+        usages.push({
+          text: source.slice(cursorAfterName + 1, index),
+          start: cursorAfterName,
+        });
+        cursor = index + 1;
+        break;
+      }
+    }
+
+    if (cursor <= cursorAfterName) {
+      cursor = cursorAfterName + 1;
+    }
+  }
+
+  return usages;
+}
+
 function checkPropConventions(source, lineOffset = 0) {
   const errors = [];
   const warnings = [];
   const badImportRegex = /(^|\n)\s*import\s*\{[^}]*\bPropType\b[^}]*\}\s*from\s*['"]vue['"]/g;
+  const importedTypeNames = collectImportedTypeNames(source);
   let match;
 
   while ((match = badImportRegex.exec(source))) {
@@ -711,6 +785,13 @@ function checkPropConventions(source, lineOffset = 0) {
 
     while ((match = looseArrayObjectRegex.exec(block.text))) {
       warnings.push(`Array/Object prop type at line ${lineNumberAt(block.text, match.index, lineBase)} should use PropType for complex values`);
+    }
+  }
+
+  for (const generic of findDefinePropsGenericUsages(source)) {
+    const referencedImportedType = Array.from(importedTypeNames).find((name) => new RegExp(`\\b${name}\\b`).test(generic.text));
+    if (referencedImportedType) {
+      warnings.push(`defineProps generic at line ${lineNumberAt(source, generic.start, lineOffset)} references imported type "${referencedImportedType}"; extracted components with external business props should use runtime props object + PropType to avoid SFC macro resolution failures`);
     }
   }
 

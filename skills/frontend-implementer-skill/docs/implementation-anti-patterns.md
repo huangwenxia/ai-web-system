@@ -88,7 +88,34 @@ const props = defineProps({
 })
 ```
 
-## 7. 为页面布局新增一堆 scoped class
+## 7. 抽离组件 props 直接使用外部类型泛型
+错误：
+```ts
+import type { ModelMatchRowProps } from './types'
+
+const props = defineProps<ModelMatchRowProps>()
+```
+
+正确：
+```ts
+import type { PropType } from 'vue'
+import type { ModelMatchRow } from './types'
+
+const props = defineProps({
+  row: {
+    type: Object as PropType<ModelMatchRow>,
+    required: true,
+  },
+  selectedIds: {
+    type: Array as PropType<string[]>,
+    default: () => [],
+  },
+})
+```
+
+原因：抽离组件后，SFC 编译宏需要在编译阶段解析 `defineProps<T>()` 的类型。外部 `types.ts`、复杂泛型、联合类型或插件生成的 `anonymous.vue` 场景可能解析失败；运行时 props 对象 + `PropType` 更稳定。
+
+## 8. 为页面布局新增一堆 scoped class
 错误：
 ```vue
 <div class="page-header-row">
@@ -103,7 +130,7 @@ const props = defineProps({
 </div>
 ```
 
-## 8. 为单页效果污染共享层
+## 9. 为单页效果污染共享层
 错误：
 ```md
 为了一个页面的特殊卡片阴影，直接改 apps/common/src/assets/scss/reset.scss。
@@ -114,7 +141,7 @@ const props = defineProps({
 先用 app-local 组件或 soft override。只有跨 app 语义和主题边界稳定后，再考虑上提 common。
 ```
 
-## 9. 自己实现或美化 scrollbar
+## 10. 自己实现或美化 scrollbar
 错误：
 ```vue
 <div class="max-h-80 overflow-y-auto scrollbar-thin">
@@ -135,11 +162,11 @@ const props = defineProps({
 </el-scrollbar>
 ```
 
-## 10. 新增 CSS Grid 布局
+## 11. 新增 CSS Grid 布局，或只靠 viewport 断点改结构
 错误：
 ```vue
-<div class="grid grid-cols-3 gap-4">
-  ...
+<div class="grid grid-cols-3 gap-6 rounded-xl p-6">
+  <!-- 原型是紧凑 row，这里用了 grid 且被改成了大卡片 -->
 </div>
 
 <style scoped>
@@ -147,17 +174,40 @@ const props = defineProps({
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
+
+@media (max-width: 1280px) {
+  .model-row {
+    flex-direction: column;
+  }
+}
 </style>
 ```
 
 正确：
 ```vue
-<div class="flex flex-wrap gap-4">
-  ...
+<div class="model-row flex items-center gap-3">
+  <div class="min-w-0 flex-1">...</div>
+  <div class="model-row__meta shrink-0">...</div>
 </div>
+
+<style scoped>
+.model-row {
+  container-type: inline-size;
+}
+
+@container (max-width: 560px) {
+  .model-row {
+    flex-wrap: wrap;
+  }
+
+  .model-row__meta {
+    flex: 0 0 100%;
+  }
+}
+</style>
 ```
 
-## 11. 直接用原生标签 `v-for` 渲染重复视觉单元
+## 12. 直接用原生标签 `v-for` 渲染重复视觉单元
 错误：
 ```vue
 <span v-for="tag in displayTags" :key="tag" class="model-match-row__tag">
@@ -179,7 +229,7 @@ const props = defineProps({
 出现 v-for 前先查项目已有组件或同语义封装；确实没有合适能力时，才手写循环并在最终检查表说明未复用原因。
 ```
 
-## 12. 把中文展示文案写成 Unicode escape
+## 13. 把中文展示文案写成 Unicode escape
 目标：
 ```md
 源码按 UTF-8 保存，中文保持可读；不要把 Unicode escape 当成防乱码方案。

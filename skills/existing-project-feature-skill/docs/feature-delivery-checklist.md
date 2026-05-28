@@ -56,9 +56,11 @@
 - 源码是否保持 UTF-8 且无明显乱码；中文文案、`zh-CN` / `zh-cn` locale value、枚举 label 和状态文案是否直接写可读中文；是否避免用 `\uXXXX` Unicode escape 作为防乱码手段；正则中的单个中文字符或中文标点是否直写；如为 Unicode 字符范围匹配等技术例外是否说明原因
 - 函数是否 70 行以内为最佳，100 行为上限；超过 100 行是否已拆分
 - 复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
-- 是否使用 Vue 3 `<script setup>`、TypeScript、`defineModel` 优先、`computed` 优先；`watch` 是否只用于副作用；`defineProps` 类型、`PropType` 和数组 / 对象默认值是否合规
+- 是否使用 Vue 3 `<script setup>`、TypeScript、`defineModel` 优先、`computed` 优先；`watch` 是否只用于副作用；`defineProps` 类型、`PropType` 和数组 / 对象默认值是否合规；抽离组件是否避免外部业务类型直接走 `defineProps<ExternalType>()`
 - 布局样式是否优先 Tailwind；功能交互是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
 - 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
+- 简单 flex 布局是否写在 template class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS
+- 内容区宽度变化但 viewport 不变时，row / card / toolbar 是否按自身容器宽度稳定自适应，而不是只靠 `@media` 改结构
 - 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 - 最终输出是否给出达标 / 未达标检查表，并说明验证命令、整改结果或例外原因
 
