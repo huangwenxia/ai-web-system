@@ -53,6 +53,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 输出模板：`templates/existing-project-feature-output-template.md`
 - 命中 `project-mamba` 新功能实现时，确认 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 的交付前检查口径
 - 命中 `project-mamba` 时，确认 `skills/frontend-implementer-skill/scripts/verify-project-mamba-topology.mjs` 的拓扑保鲜检查口径
+- 涉及中文文案、locale、枚举 label、状态文案或业务展示常量时，确认 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 的 UTF-8 / BOM / 乱码检查口径
 - 涉及组件拆分、抽离、目录落点或 API 设计时，确认 `skills/frontend-implementer-skill/docs/component-extraction-policy.md` 与 `scripts/check-component-structure.mjs`
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
@@ -152,7 +153,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 命中 Tailwind 项目时，布局、间距、尺寸优先通过模板中的 Tailwind utility class 表达。
 - 基础界面元素优先使用 Element Plus 与当前项目已有封装组件。
 
-#### 允许例外
+#### 当前项目内新增组件的例外
 - 如果 `common` 组件与当前项目组件的组合无法高保真实现目标，或虽然能实现但会让代码明显混乱、冗余、可读性差，则允许在当前项目内新增组件。
 
 #### 禁止事项
@@ -195,12 +196,15 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 命中 `project-mamba` 或同构仓库的新功能页面实现时，当前主 skill 必须把“最终代码校验”作为交付门禁，而不是可选建议。
 - 进入实现前的复用校验仍由当前主 skill 触发；具体代码质量、拆分、Vue 语法、Tailwind / Element Plus 使用等判定下沉到 `frontend-implementer-skill` 与 `docs/project-mamba-implementation-profile.md`。
 - 交付前必须运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，并显式传入本次目标文件或在最终输出列出脚本实际 checked files；空检查不得视为通过，脚本无法判断的语义项必须在最终检查表中人工说明。
+- 新增或修改含中文文案、locale、枚举 label、状态文案、业务展示常量的文件时，必须运行 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 检查本次目标文件或目录；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 硬指标不达标时不得直接交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 超过 250 行、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败都必须先整改。旧文件默认不因历史超限阻断；但如果用户明确要求优化旧文件，或旧 `.vue` 是本次新功能主承载页面，必须使用 `--strict-vue-lines` 并纳入拆分或瘦身计划。
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
+- 源码必须按 UTF-8 保存，目标是“不乱码且可读”；不要用 `\uXXXX` Unicode escape 作为防乱码手段。中文文案、`zh-CN` / `zh-cn` locale value、枚举 label、状态文案和业务展示常量必须直接写可读中文。正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），并在最终输出说明。
 - 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。最终输出列出检索范围、检索关键词、命中候选和未复用原因；确实没有合适能力时，才允许新增。
+- 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
 - 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，最终必须运行 `check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
-- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、滚动容器 / scrollbar、边界状态、验证命令。未达标项必须说明已整改或例外原因。
+- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、`v-for` 复用检查、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、滚动容器 / scrollbar、边界状态、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。

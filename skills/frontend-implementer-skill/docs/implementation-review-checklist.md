@@ -36,6 +36,7 @@
 - 如果当前任务已有明确原型，是否先核对实现结果与原型在布局、间距、边框、圆角、hover/focus 背景、字体颜色等可观察细节上的一致性，再判断是否需要主题兼容修正
 - 如果交互视觉看起来不对，是否先区分语义层（type / intent）、状态层（disabled / loading / reason）和渲染层（button / menu / popper 样式），而不是直接跨层改配置
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
+- 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界；最终是否对照抽离前预案与实际落地差异
 - 抽离前是否已按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、目录落点和 API 契约
 - 大页面块抽离后，是否再次检查抽离出的页面块组件内部是否仍有重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮；存在重复时是否继续抽成更小子组件
@@ -48,6 +49,7 @@
 - 数组 / 对象 props 的 `default` 是否使用工厂函数；是否避免 `required: false` 与 `default` 的重复语义
 - props 命名是否表达业务语义；子组件是否避免直接修改 props 或 props 对象 / 数组的深层值
 - 布局样式是否优先 Tailwind；交互型能力是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
+- 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
 - 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 
 ## 边界状态检查
@@ -59,11 +61,13 @@
 
 ## `project-mamba` 自动检查
 - 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`，且显式传入目标文件或列出 checked files
+- 是否运行 `scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
 - 自动检查是否覆盖本次新增 / 修改文件；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
 - 自动检查未通过时，是否先整改硬指标再交付
 - 旧 `.vue` 是本次新功能主承载页面时，是否使用 `--strict-vue-lines`
 - `locale`、`schema`、纯配置组件如被排除，是否说明排除原因
+- 源码是否保持 UTF-8 且无明显乱码；中文文案、`zh-CN` / `zh-cn` locale value、枚举 label 和状态文案是否直接写可读中文；是否避免用 `\uXXXX` Unicode escape 作为防乱码手段；正则中的单个中文字符或中文标点是否直写；如为 Unicode 字符范围匹配等技术例外是否说明原因
 
 ## 风险检查
 - 修改范围是否过大

@@ -55,6 +55,7 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 - locale 最小模板：`templates/locale-entry-template.md`
 - 涉及新功能开发时读取 `skills/existing-project-feature-skill/SKILL.md`
 - 涉及页面实现落地时读取 `skills/frontend-implementer-skill/SKILL.md`
+- 涉及 `project-mamba` 或同构前端项目的 Vue / locale 文件落地时，使用 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 检查目标文件的 UTF-8 / BOM / 常见乱码
 
 ## 工作流
 
@@ -68,8 +69,9 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
    - locale key 完整性校验
 4. 如果任务属于 A-1 或 A-3 里的附加翻译需求，则作为子流程执行，不单独打断主链路。
 5. 统一术语、文案、状态表达和 i18n key，必要时补齐双语 locale。
-6. 标记歧义项、冲突项和待确认项。
-7. 判断这次结果是否形成稳定术语规则或国际化处理规范，决定是否回写。
+6. 涉及实际文件改动时，验证目标文件 UTF-8 可读，不用 Unicode escape 掩盖乱码。
+7. 标记歧义项、冲突项和待确认项。
+8. 判断这次结果是否形成稳定术语规则或国际化处理规范，决定是否回写。
 
 ## 任务分类
 
@@ -175,6 +177,7 @@ description: "处理产品文案、界面文案、术语统一和 Vue 文件 i18
 
 - 修改 zh-cn 时，必须同步修改 en。
 - 不允许只补中文，不补英文。
+- 源码和 locale 文件必须按 UTF-8 保存，目标是“不乱码且可读”；中文 locale value 必须直接写可读中文，禁止把中文写成 `\uXXXX` Unicode escape，不能用转义字符作为防乱码手段。正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），但不能用于界面文案、状态文案、枚举 label 或业务展示常量。
 - 英文文案要与中文语义一致，而不是机械直译或随意简化。
 - 按钮文案优先简短动词开头，标题用可读标题式表达，错误提示和日志提示要与中文语义完整对应。
 

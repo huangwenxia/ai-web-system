@@ -10,6 +10,17 @@ const FUNCTION_WARN_LIMIT = 70;
 const FUNCTION_ERROR_LIMIT = 100;
 const SCRIPT_EXTENSIONS = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
 const STYLE_EXTENSIONS = new Set(['.css', '.scss', '.sass', '.less', '.pcss', '.postcss']);
+const MOJIBAKE_TOKENS = [
+  0xfffd,
+  0x951f,
+  0x9983,
+  0x923f,
+  0x59dd,
+  0x93c2,
+  0x7efe,
+  0x9352,
+  0x7487,
+].map((codePoint) => String.fromCharCode(codePoint));
 
 const scriptPath = fileURLToPath(import.meta.url);
 
@@ -162,6 +173,94 @@ function findExternalStyleReferences(source, lineOffset = 0) {
   return errors;
 }
 
+function isCjkOrChinesePunctuation(codePoint) {
+  return (
+    (codePoint >= 0x3400 && codePoint <= 0x4dbf) ||
+    (codePoint >= 0x4e00 && codePoint <= 0x9fff) ||
+    (codePoint >= 0xf900 && codePoint <= 0xfaff) ||
+    (codePoint >= 0x3000 && codePoint <= 0x303f) ||
+    (codePoint >= 0xff00 && codePoint <= 0xffef)
+  );
+}
+
+function isEscaped(index, text) {
+  let slashCount = 0;
+  for (let cursor = index - 1; cursor >= 0 && text[cursor] === '\\'; cursor -= 1) {
+    slashCount += 1;
+  }
+  return slashCount % 2 === 1;
+}
+
+function isInsideQuotedString(line, column) {
+  const quoteOpen = { "'": false, '"': false, '`': false };
+  for (let index = 0; index < column; index += 1) {
+    const char = line[index];
+    if ((char === "'" || char === '"' || char === '`') && !isEscaped(index, line)) {
+      quoteOpen[char] = !quoteOpen[char];
+    }
+  }
+
+  return quoteOpen["'"] || quoteOpen['"'] || quoteOpen['`'];
+}
+
+function lineInfoAt(source, index) {
+  const lineStart = source.lastIndexOf('\n', index - 1) + 1;
+  const lineEnd = source.indexOf('\n', index);
+  const end = lineEnd >= 0 ? lineEnd : source.length;
+  return {
+    text: source.slice(lineStart, end),
+    column: index - lineStart,
+  };
+}
+
+function isUnicodeRangeEscape(line, column) {
+  const before = line.slice(Math.max(0, column - 16), column);
+  const after = line.slice(column + 6, column + 24);
+
+  return /\\{1,2}u[0-9a-fA-F]{4}\s*-\s*\\?$/.test(before) || /^\s*-\s*\\{1,2}u[0-9a-fA-F]{4}/.test(after);
+}
+
+function isInsideRegexLiteral(line, column) {
+  const before = line.slice(0, column);
+  const after = line.slice(column + 6);
+  const lastSlash = before.search(/\/(?:[^/\\]|\\.)*$/);
+  if (lastSlash < 0 || before[lastSlash - 1] === '/') return false;
+
+  return /(?:[^/\\]|\\.)*\//.test(after);
+}
+
+function findEscapedChineseText(source, lineOffset = 0) {
+  const errors = [];
+  const unicodeEscapeRegex = /\\u([0-9a-fA-F]{4})/g;
+  let match;
+
+  while ((match = unicodeEscapeRegex.exec(source))) {
+    const codePoint = Number.parseInt(match[1], 16);
+    const line = lineInfoAt(source, match.index);
+    if (!isCjkOrChinesePunctuation(codePoint)) continue;
+    if (isUnicodeRangeEscape(line.text, line.column)) continue;
+    if (!isInsideQuotedString(line.text, line.column) && !isInsideRegexLiteral(line.text, line.column)) continue;
+
+    errors.push(`Chinese unicode escape "${match[0]}" at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; write readable Chinese text directly unless it is a Unicode character range such as \\u4e00-\\u9fff`);
+  }
+
+  return errors;
+}
+
+function findMojibakeText(source, lineOffset = 0) {
+  const errors = [];
+
+  for (const token of MOJIBAKE_TOKENS) {
+    let index = source.indexOf(token);
+    while (index >= 0) {
+      errors.push(`possible mojibake "${token}" at line ${lineNumberAt(source, index, lineOffset)}; keep source files UTF-8 and readable, do not fix by unicode-escaping Chinese text`);
+      index = source.indexOf(token, index + token.length);
+    }
+  }
+
+  return errors;
+}
+
 function findScrollbarPolicyViolations(source, lineOffset = 0) {
   const errors = [];
   const customScrollbarRegexes = [
@@ -210,6 +309,58 @@ function findScrollbarViolations(source, lineOffset = 0) {
   return [
     ...findScrollbarPolicyViolations(source, lineOffset),
     ...findScrollbarClassViolations(source, lineOffset),
+  ];
+}
+
+function findGridPolicyViolations(source, lineOffset = 0) {
+  const errors = [];
+  const gridCssRegexes = [
+    /\bdisplay\s*:\s*(?:inline-)?grid\b/gi,
+    /\bgrid(?:-(?:template(?:-(?:columns|rows|areas))?|auto(?:-(?:flow|columns|rows))?|column|row|area))?\s*:/gi,
+  ];
+  let match;
+
+  for (const regex of gridCssRegexes) {
+    while ((match = regex.exec(source))) {
+      errors.push(`CSS grid layout at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; use flex layout`);
+    }
+  }
+
+  return errors;
+}
+
+function isGridUtility(utility) {
+  return (
+    utility === 'grid' ||
+    utility === 'inline-grid' ||
+    /^grid-(?:cols|rows|flow)-/.test(utility) ||
+    /^(?:col|row)-(?:span|start|end)-/.test(utility) ||
+    /^auto-(?:cols|rows)-/.test(utility) ||
+    /^place-(?:content|items|self)-/.test(utility)
+  );
+}
+
+function findGridClassViolations(source, lineOffset = 0) {
+  const errors = [];
+  const classRegex = /\bclass\s*=\s*["']([^"']+)["']/gi;
+  let match;
+
+  while ((match = classRegex.exec(source))) {
+    const tokens = match[1].split(/\s+/).filter(Boolean);
+    const badToken = tokens.find((token) => isGridUtility(token.split(':').pop()));
+
+    if (badToken) {
+      errors.push(`grid utility class "${badToken}" at line ${lineNumberAt(source, match.index, lineOffset)} is not allowed; use flex layout`);
+    }
+  }
+
+  return errors;
+}
+
+function findGridViolations(source, lineOffset = 0) {
+  return [
+    ...findGridPolicyViolations(source, lineOffset),
+    ...findGridClassViolations(source, lineOffset),
   ];
 }
 
@@ -358,6 +509,42 @@ function getVueScriptBlocks(content) {
   }
 
   return blocks;
+}
+
+function getVueTemplateBlocks(content) {
+  const blocks = [];
+  const templateRegex = /<template\b[^>]*>([\s\S]*?)<\/template>/gi;
+  let match;
+
+  while ((match = templateRegex.exec(content))) {
+    const before = content.slice(0, match.index);
+    const startLine = before.split(/\r?\n/).length;
+    blocks.push({
+      code: match[1],
+      startLine,
+    });
+  }
+
+  return blocks;
+}
+
+function isNativeHtmlTag(tagName) {
+  return /^[a-z]+[1-6]?$/.test(tagName) && !tagName.startsWith('el-');
+}
+
+function findVForReuseWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const vForRegex = /<([A-Za-z][\w.-]*)\b[^>]*\bv-for\s*=\s*["'][^"']+["'][^>]*>/g;
+  let match;
+
+  while ((match = vForRegex.exec(source))) {
+    const tagName = match[1];
+    const line = lineNumberAt(source, match.index, lineOffset);
+    const prefix = isNativeHtmlTag(tagName) ? `native <${tagName}> v-for` : `<${tagName}> v-for`;
+    warnings.push(`${prefix} at line ${line} must have reuse evidence in the final checklist; check project components before rendering repeated items manually`);
+  }
+
+  return warnings;
 }
 
 function stripRegexLiterals(line) {
@@ -560,12 +747,19 @@ function checkVueFile(content, normalized, statusCode, options, result) {
   const { messages, errors, warnings } = result;
   if (isImplementationStyleScope(normalized)) {
     errors.push(...findExternalStyleReferences(content, 0));
+    errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
     errors.push(...checkComponentColocation(normalized, content));
   }
+  errors.push(...findEscapedChineseText(content, 0));
+  errors.push(...findMojibakeText(content, 0));
 
   checkVueLineLimit(content, normalized, statusCode, options, messages, errors, warnings);
+
+  for (const block of getVueTemplateBlocks(content)) {
+    warnings.push(...findVForReuseWarnings(block.code, block.startLine));
+  }
 
   const scriptBlocks = getVueScriptBlocks(content);
   if (scriptBlocks.length === 0) {
@@ -587,9 +781,12 @@ function checkScriptFile(content, normalized, result) {
   const { errors, warnings } = result;
   if (isImplementationStyleScope(normalized)) {
     errors.push(...findExternalStyleReferences(content, 0));
+    errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkComponentColocation(normalized, content));
   }
+  errors.push(...findEscapedChineseText(content, 0));
+  errors.push(...findMojibakeText(content, 0));
 
   addFunctionLengthFindings(content, 0, errors, warnings);
 }
@@ -614,6 +811,7 @@ function checkFile(file, statusCode, options) {
   } else if (isStyleExtension(extension) && inImplementationStyleScope) {
     const { errors } = result;
     errors.push('external style file in a view/component scope is not allowed; move styles into the owning .vue <style scoped> block or an existing shared style entry');
+    errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
   }
 

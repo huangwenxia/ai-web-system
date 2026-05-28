@@ -78,28 +78,32 @@
 
 ### 自动检查
 - 运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，必须显式传入本次目标文件，或在最终输出列出脚本实际 checked files；空检查不得视为通过。
+- 运行 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 检查本次目标文件或目录，覆盖 UTF-8 BOM 与常见乱码；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 自动检查硬指标：
   - 新增 `.vue` 物理总行数不超过 250 行
   - 函数 70 行以内最佳，100 行为上限；超过 100 行必须拆分
   - Vue SFC 必须使用 `<script setup>`
 - `locale`、`schema`、纯配置组件可以排除 `.vue <= 250` 硬门禁；最终输出必须说明排除原因。
+- 源码必须按 UTF-8 保存，目标是“不乱码且可读”；不要用 `\uXXXX` Unicode escape 作为防乱码手段。中文文案、`zh-CN` / `zh-cn` locale value、枚举 label、状态文案和业务展示常量必须直接写可读中文。正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），并在最终输出说明。
+- `verify-encoding.mjs` 只负责 UTF-8 / BOM / 常见乱码；中文 Unicode escape 是否违规由 `check-project-mamba-implementation.mjs` 与最终人工检查共同兜底。
 - 旧文件默认不因历史超限阻断；如果用户明确要求优化旧文件，本次必须纳入拆分或瘦身计划。
 - 当用户明确指定旧文件优化，或旧 `.vue` 是本次新功能主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
 
 ### 人工检查
 - 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；最终输出必须列出检索范围、命中候选和未复用原因。
+- 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
 - 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离大页面块后继续检查抽出的页面块组件：重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮不得留在同一组件内反复复制，应再抽成小子组件。
 - 若组件私有逻辑需要抽 `useXxx.ts`、局部 `types.ts` 或 `utils.ts`，使用组件同名目录收纳；页面级或模块级共享逻辑才放在页面 / 模块目录。
 - 拆分落点按复用半径决定：页面私有就近放当前页面目录；同模块多个页面复用放模块级目录；当前 app 多模块复用放 app 级 `commons` / `components`；跨 app 稳定复用才考虑 `apps/common` 或 `@repo`。
-- 组件能力优先项目已有封装、Element Plus 和 `easybill-ui`；布局、间距和尺寸优先 Tailwind；原生 HTML 只用于合适的视觉结构或现有能力缺口。
+- 组件能力优先项目已有封装、Element Plus 和 `easybill-ui`；布局、间距和尺寸优先 Tailwind；布局结构默认使用 flex，禁止新增 Tailwind grid utility 或 CSS Grid 属性；原生 HTML 只用于合适的视觉结构或现有能力缺口。
 - 页面或组件自身需要滚动容器时，必须使用 `el-scrollbar` 或项目已有内建滚动组件；禁止自行使用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 或自定义 scrollbar 样式。
 - Vue 3 实现优先 `<script setup>`、TypeScript、`defineModel` 和 `computed`；`watch` 只处理副作用，不维护可推导状态。
 - `defineProps` 简单场景可用泛型；复杂数组、对象、联合类型、业务类型数组或需要 default / required / validator 时，使用对象写法配合 `PropType`。`PropType` 与业务类型必须使用 `import type`。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、滚动容器 / scrollbar、边界状态、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、`v-for` 复用检查、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、滚动容器 / scrollbar、边界状态、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则
@@ -165,6 +169,7 @@
 - 当前模块已有 `constant.ts` 时优先就近复用；没有时再用应用级 `src/utils/constant.ts`
 - 新增或修改枚举时，同时检查当前 app 对应的 `src/locales/zh-cn/constant.ts` 和 `src/locales/en/constant.ts`
 - 筛选项、表单选项、详情回显、表格列展示必须共用同一份 options
+- `zh-cn` / `zh-CN` 文案值保持 UTF-8 中文直写，不使用 `\uXXXX` 转义；英文 locale 保持英文原文。若出现乱码，先修复编码链路，不用转义规避；只有 Unicode 字符范围匹配等技术场景可以例外，单个中文字符或中文标点不属于例外。
 - 如果当前 app 已有状态常量惯例，沿用现有 `type`、`effect`、`border`、`icon` 结构
 - 如果 `main.ts` 实际使用的是 `@common/locales`，则共享 locale 变更按跨 app 影响处理
 

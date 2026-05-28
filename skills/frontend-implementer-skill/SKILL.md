@@ -53,6 +53,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
 - 命中 `project-mamba` 时使用：`scripts/verify-project-mamba-topology.mjs`
 - 命中 `project-mamba` 新功能页面交付时使用：`scripts/check-project-mamba-implementation.mjs`
+- 校验 UTF-8 / BOM / 常见乱码时使用：`scripts/verify-encoding.mjs`
 - 涉及组件拆分、抽离、目录落点或 API 设计时读取：`docs/component-extraction-policy.md`
 - 涉及组件目录结构检查时使用：`scripts/check-component-structure.mjs`
 - 需要确认具体 app 特性时再读：`docs/project-mamba-app-topology-matrix.md`
@@ -100,11 +101,13 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - topology 验证出现 drift 时，不得继续相信矩阵；先以当前代码作为实施依据，并在输出中列出 drift 和矩阵回写建议。
 - topology 脚本出现 `unknown`、未识别 route source、运行目录错误或矩阵 drift 时，不能把 topology 判定视为通过；必须先补当前代码证据或列为阻断项。
 - 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs`，并显式传入本次目标文件或在输出中列出脚本实际 checked files；空检查不得视为通过。
+- 新增或修改含中文文案、locale、枚举 label、状态文案、业务展示常量的文件时，必须运行 `scripts/verify-encoding.mjs` 检查本次目标文件或目录；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，必须运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 - 硬指标不达标时先整改再交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
 - 用户明确指定旧文件优化，或旧 `.vue` 是本次新功能的主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
+- 源码必须按 UTF-8 保存，目标是“不乱码且可读”；不要用 `\uXXXX` Unicode escape 作为防乱码手段。中文文案、`zh-CN` / `zh-cn` locale value、枚举 label、状态文案和业务展示常量必须直接写可读中文。正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），并在最终检查表说明原因。
 
 ### 3. 按场景切执行策略
 
@@ -114,6 +117,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增，并在最终输出列出检索范围、命中候选和未复用原因。
+- 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
@@ -134,6 +138,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 ### 4. 关键实现检查
 
 - 组件职责是否单一，输入输出是否清晰。
+- 模板中每个 `v-for` 是否已先检查项目已有组件或同语义封装；手写循环是否已有未复用原因。
 - 派生状态是否应改为 `computed`，而不是 `watch` 同步副本。
 - 模板是否只负责结构表达，复杂判断是否已转移到具名逻辑。
 - 是否完整覆盖 loading、empty、error、permission、disabled 状态。
@@ -174,6 +179,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 模板负责声明结构，复杂判断必须移到 `computed` 或方法；稳定列表禁止使用数组索引作为长期 `key`。
 - 基础界面元素必须优先使用 Element Plus 和当前项目已有封装组件，不默认直接落原生交互元素。
 - 页面或组件自身需要滚动容器时必须使用 `el-scrollbar`；禁止用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll`、`::-webkit-scrollbar`、`scrollbar-width/color` 或 `scrollbar-*` 类自行实现或美化 scrollbar。Element Plus / 项目已有表格、列表组件的内建滚动能力除外。
+- 页面、区块、表单项、工具栏、卡片列表等布局默认使用 flex；禁止新增 CSS Grid 布局，包括 Tailwind `grid` / `grid-cols-*` / `col-span-*` / `row-span-*` 等 grid utility，以及 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
 - 命中 Tailwind 项目时，Expression 层的布局、间距、尺寸必须优先使用 Tailwind utility class；禁止为这些属性新建自定义 CSS class。
 - 新增或改造页面 / 组件时，禁止外部引用样式文件；只允许 Tailwind utility class 或组件内部 `<style scoped>`，共享主题能力必须走项目既有样式入口。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。
@@ -190,6 +196,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 - 列表页偏精简，详情页偏完整，创建 / 编辑页围绕完成操作组织字段；同一业务字段的命名、单位、格式和含义必须一致。
 - 状态 / 枚举字段优先走统一字典组件、集中常量或统一映射方法，必须具备未知值兜底。
+- 中文 label、状态文案、locale value 必须保持 UTF-8 可读中文，不写 `\uXXXX` 转义；出现乱码时先修复文件编码、读写方式或终端显示编码，不能用 Unicode escape 掩盖乱码。只有 Unicode 字符范围匹配等技术场景可以例外，单个中文字符或中文标点不属于例外。
 - 普通文本列、日期列、状态列优先走项目已有列工厂或统一配置；只有在现有列能力无法表达时，才使用自定义渲染。
 - 长文本列应具备省略和 tooltip；宽度、固定列、排序、隐藏等能力优先通过统一配置表达。
 

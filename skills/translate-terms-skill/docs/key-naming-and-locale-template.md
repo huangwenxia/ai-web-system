@@ -30,6 +30,12 @@
 2. 打开 locale 文件核实对象嵌套层级
 3. 确认真实 key 前缀后再写入 Vue 和 locale
 
+## 中文 value 可读性
+- `zh-cn` / `zh-CN` locale value 必须直接写 UTF-8 可读中文，不使用 `\uXXXX` Unicode escape；不能用 Unicode escape 作为防乱码手段。
+- 枚举 label、状态文案、按钮文案、提示文案和业务展示常量同样保持中文直写。
+- 如果出现乱码，先修复文件编码、读写方式、终端显示编码或生成脚本配置，不要把中文转义成 ASCII。
+- 正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），且这类例外必须不是界面文案。
+
 ## 双语同步模板
 新增 key 时，zh-cn 和 en 应同步更新。
 

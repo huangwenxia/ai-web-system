@@ -57,16 +57,20 @@
 - topology 验证命令：
 - topology 验证结果：通过 / 未通过 / 未运行（说明原因）
 - 自动检查命令：
+- encoding 验证命令：
 - 自动检查结果：通过 / 未通过 / 未运行（说明原因）
 - checked files：
 - `.vue <= 250`：达标 / 未达标 / 排除（locale / schema / 纯配置 / 旧文件历史超限）
+- UTF-8 / 中文直写 / Unicode escape：达标 / 未达标 / 技术例外（仅 Unicode 字符范围匹配等，说明原因）
 - 复用检查证据：检索范围 / 检索关键词 / 命中候选 / 采用或未复用原因
+- `v-for` 复用检查：未涉及 / 已查可复用组件（列出范围、候选、未复用原因）/ 未达标
 - 新增组件 / Hook 抽离预案：将抽离代码块 / 不变量 / 可变量 / 复用半径 / 目录落点 / API 契约
 - 抽离实际落地：与预案一致 / 不一致（说明原因）
 - 组件结构检查：`check-component-structure.mjs --strict` 结果 / 非 strict 或 `--allow-empty` 原因
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规
 - Tailwind / Element Plus / 原生 HTML 使用：达标 / 未达标
+- flex 布局 / 禁用 grid：达标 / 未达标
 - 滚动容器 / scrollbar：使用 `el-scrollbar` 或项目内建滚动能力 / 未涉及 / 未达标（说明整改）
 - 未达标整改或例外原因：
 

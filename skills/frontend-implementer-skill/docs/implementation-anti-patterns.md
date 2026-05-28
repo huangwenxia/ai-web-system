@@ -134,3 +134,81 @@ const props = defineProps({
   ...
 </el-scrollbar>
 ```
+
+## 10. 新增 CSS Grid 布局
+错误：
+```vue
+<div class="grid grid-cols-3 gap-4">
+  ...
+</div>
+
+<style scoped>
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+</style>
+```
+
+正确：
+```vue
+<div class="flex flex-wrap gap-4">
+  ...
+</div>
+```
+
+## 11. 直接用原生标签 `v-for` 渲染重复视觉单元
+错误：
+```vue
+<span v-for="tag in displayTags" :key="tag" class="model-match-row__tag">
+  {{ tag }}
+</span>
+```
+
+正确：
+```vue
+<OverflowTag
+  v-if="displayTags.length"
+  :tags="displayTags"
+  tag-max-width="180px"
+/>
+```
+
+说明：
+```md
+出现 v-for 前先查项目已有组件或同语义封装；确实没有合适能力时，才手写循环并在最终检查表说明未复用原因。
+```
+
+## 12. 把中文展示文案写成 Unicode escape
+目标：
+```md
+源码按 UTF-8 保存，中文保持可读；不要把 Unicode escape 当成防乱码方案。
+```
+
+错误：
+```ts
+const INPUT_MODALITY_LABELS = {
+  'zh-CN': {
+    text: '\u6587\u672c',
+    file: '\u6587\u4ef6',
+  },
+}
+```
+
+正确：
+```ts
+const INPUT_MODALITY_LABELS = {
+  'zh-CN': {
+    text: '文本',
+    file: '文件',
+  },
+}
+```
+
+技术例外：
+```ts
+const parts = value.split(/[,，]/)
+const chinesePattern = new RegExp('[\\u4e00-\\u9fff]')
+```
+
+说明：`/[,，]/` 中的 `，` 是单个可读中文标点，必须直写；`[\u4e00-\u9fff]` 是 Unicode 字符范围匹配，可以保留转义，但要在最终检查表说明原因。
