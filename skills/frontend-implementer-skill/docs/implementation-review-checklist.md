@@ -36,6 +36,8 @@
 - 如果当前任务已有明确原型，是否先核对实现结果与原型在布局、间距、边框、圆角、hover/focus 背景、字体颜色等可观察细节上的一致性，再判断是否需要主题兼容修正
 - 如果交互视觉看起来不对，是否先区分语义层（type / intent）、状态层（disabled / loading / reason）和渲染层（button / menu / popper 样式），而不是直接跨层改配置
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
+- 弹出层表单、抽屉表单、popover 表单是否先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；如手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`，是否说明命中候选和未复用原因
+- 表格是否先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层；是否明确表格主能力不在 `apps/common/src/utils`，只有导入导出场景才查 `apps/common/src/utils/genericExportImport.ts` 等 common utils；如手写 `el-table` / `<table>`，是否说明命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 页面模板是否堆了过多 `v-if` / `v-else-if` / `v-else` 状态分支；loading / error / empty / permission / filtered-empty / list-body 等分支超过 3 个或状态块过长时，是否抽成页面私有状态展示组件或内容区子组件
 - 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界；最终是否对照抽离前预案与实际落地差异

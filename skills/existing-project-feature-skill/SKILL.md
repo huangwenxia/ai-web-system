@@ -201,12 +201,14 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
 - 源码必须按 UTF-8 保存，目标是“不乱码且可读”；不要用 `\uXXXX` Unicode escape 作为防乱码手段。中文文案、`zh-CN` / `zh-cn` locale value、枚举 label、状态文案和业务展示常量必须直接写可读中文。正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），并在最终输出说明。
 - 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。最终输出列出检索范围、检索关键词、命中候选和未复用原因；确实没有合适能力时，才允许新增。
+- 弹出层表单、抽屉表单、popover 表单不得默认手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`；先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块已有 modal/form 封装和 `easybill-ui`。确实无法复用时，才能基于 Element Plus 组合实现，并在最终输出列出命中候选和未复用原因。
+- 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
 - 页面模板中 loading、error、empty、permission、filtered-empty、list-body 等状态分支过多时，必须评估是否抽出页面私有状态展示组件或内容区子组件；不要把大量 `v-if` / `v-else-if` / `v-else` 堆在主页面模板里。
 - 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离组件的 props 如果引用外部业务类型、`./types` 或相对路径导入类型，不直接使用 `defineProps<ExternalType>()`；优先使用运行时 props 对象 + `PropType`，避免 SFC 编译阶段无法解析外部类型。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，最终必须运行 `check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
-- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、`v-for` 复用检查、状态分支抽离、页面结构清晰 / 冗杂抽离审视、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。未达标项必须说明已整改或例外原因。
+- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、页面结构清晰 / 冗杂抽离审视、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。

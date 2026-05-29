@@ -117,6 +117,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增，并在最终输出列出检索范围、命中候选和未复用原因。
+- 弹出层表单、抽屉表单、popover 表单不得默认手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`；先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块已有 modal/form 封装和 `easybill-ui`。确实无法复用时，才能基于 Element Plus 组合实现，并在最终输出列出命中候选和未复用原因。
+- 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
 - 页面模板中 `v-if` / `v-else-if` / `v-else` 状态分支过多时必须评估抽离：loading、error、empty、permission、filtered-empty、list-body 等分支堆在同一区块超过 3 个，或单个状态块超过约 30 行时，优先抽成页面私有状态展示组件或内容区子组件，例如 `ModelScopePanel`、`ScopeListBody`、`StatePanel`。页面保留数据获取、筛选和事件编排，子组件负责稳定 UI 骨架、状态分支和局部交互。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。

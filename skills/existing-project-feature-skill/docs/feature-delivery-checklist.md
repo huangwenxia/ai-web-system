@@ -34,6 +34,8 @@
 - 如果命中 `project-mamba`，是否已明确 bootstrap 来源是本地 / `@common` / 跨 app 复用
 - 如果命中 `project-mamba` 新功能页面，是否把最终代码校验作为交付门禁，而不是可选建议
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
+- 弹出层表单、抽屉表单、popover 表单是否先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；如手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`，是否说明命中候选和未复用原因
+- 表格是否先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层；是否明确表格主能力不在 `apps/common/src/utils`，只有导入导出场景才查 `apps/common/src/utils/genericExportImport.ts` 等 common utils；如手写 `el-table` / `<table>`，是否说明命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；最终是否对照抽离前预案与实际落地差异
 - 发生组件拆分时，是否已明确不变量 / 可变量、复用半径、目录落点和 API 契约；是否避免把组件私有 hook / types / utils 散到上层目录

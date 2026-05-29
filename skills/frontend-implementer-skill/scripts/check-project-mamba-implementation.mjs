@@ -573,6 +573,43 @@ function findVForReuseWarnings(source, lineOffset = 0) {
   return warnings;
 }
 
+function findRawElementPlusOverlayFormWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const overlayRegex = /<(el-dialog|el-drawer|el-popover)(?=[\s>/])[\s\S]*?<\/\1>/gi;
+  let match;
+
+  while ((match = overlayRegex.exec(source))) {
+    const block = match[0];
+    if (!/<el-form(?:\s|>|\/)/i.test(block) && !/<el-form-item(?:\s|>|\/)/i.test(block)) {
+      continue;
+    }
+
+    const line = lineNumberAt(source, match.index, lineOffset);
+    warnings.push(
+      `${match[1]} form overlay at line ${line} uses raw Element Plus form markup; first check existing dialog/drawer/popover form components, InstanceForm/Schema form patterns, apps/common, current app commons/views/components, easybill-ui, and document reuse candidates or non-reuse reason in the final checklist`,
+    );
+  }
+
+  return warnings;
+}
+
+function findRawTableReuseWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const rawTableRegex = /<(el-table|table)(?=[\s>/])[^>]*>/gi;
+  let match;
+
+  while ((match = rawTableRegex.exec(source))) {
+    const tagName = match[1].toLowerCase();
+    const line = lineNumberAt(source, match.index, lineOffset);
+    const tableKind = tagName === 'el-table' ? 'Element Plus el-table' : 'native table';
+    warnings.push(
+      `${tableKind} at line ${line} must have table reuse evidence in the final checklist; first check existing CurdTable/DataTable/table wrappers, ColumnFactory, useCurdTable, apps/common component layer, current app commons/views/components, and current module table patterns. apps/common/src/utils is not the primary table source; check genericExportImport there only for import/export flows. Document candidates or non-reuse reason`,
+    );
+  }
+
+  return warnings;
+}
+
 function stripRegexLiterals(line) {
   return line.replace(/\/(?:\\.|[^/\\\r\n])+\/[dgimsuvy]*/g, 'REGEX');
 }
@@ -867,6 +904,8 @@ function checkVueFile(content, normalized, statusCode, options, result) {
 
   for (const block of getVueTemplateBlocks(content)) {
     warnings.push(...findVForReuseWarnings(block.code, block.startLine));
+    warnings.push(...findRawElementPlusOverlayFormWarnings(block.code, block.startLine));
+    warnings.push(...findRawTableReuseWarnings(block.code, block.startLine));
   }
 
   const scriptBlocks = getVueScriptBlocks(content);
