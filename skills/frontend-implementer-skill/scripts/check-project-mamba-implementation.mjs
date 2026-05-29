@@ -143,6 +143,17 @@ function isImplementationStyleScope(file) {
   );
 }
 
+function isViewEntryVue(file) {
+  const normalized = normalizeGitPath(file).toLowerCase();
+  if (!/^apps\/[^/]+\/src\/views\/.+\.vue$/.test(normalized)) return false;
+
+  const baseName = path.basename(normalized);
+  if (baseName === 'index.vue') return true;
+
+  const ownerDirName = path.basename(path.dirname(normalized));
+  return path.basename(baseName, '.vue') === ownerDirName;
+}
+
 function isStyleExtension(extension) {
   return STYLE_EXTENSIONS.has(extension);
 }
@@ -552,6 +563,44 @@ function findStateBranchExtractionWarnings(source, lineOffset = 0) {
   }
 
   return warnings;
+}
+
+function countPattern(source, regex) {
+  let count = 0;
+  let match;
+  regex.lastIndex = 0;
+  while ((match = regex.exec(source))) {
+    count += 1;
+  }
+  return count;
+}
+
+function findPageEntryStructureWarnings(content, normalized) {
+  if (!isViewEntryVue(normalized)) return [];
+
+  const templateBlocks = getVueTemplateBlocks(content);
+  const template = templateBlocks.map((block) => block.code).join('\n');
+  if (!template.trim()) return [];
+
+  const templateLineCount = template.split(/\r?\n/).length;
+  const sectionLikeCount = countPattern(template, /<(?:section|aside|article|el-scrollbar|MainBox|HeaderBox)\b/gi);
+  const branchCount = countPattern(template, /\bv-(?:if|else-if|else)\b/gi);
+  const loopCount = countPattern(template, /\bv-for\b/gi);
+  const complexScore = sectionLikeCount + branchCount + loopCount;
+
+  if (templateLineCount >= 120 && complexScore >= 8) {
+    return [
+      `primary structure check: view entry ${normalized} has ${templateLineCount} template lines with ${sectionLikeCount} section-like blocks, ${branchCount} conditional branches, and ${loopCount} loops; review extraction into page-private components before delivery`,
+    ];
+  }
+
+  if (branchCount >= 5 || loopCount >= 4) {
+    return [
+      `primary structure check: view entry ${normalized} has ${branchCount} conditional branches and ${loopCount} loops; keep index/main .vue as orchestration and extract stable UI blocks when readability drops`,
+    ];
+  }
+
+  return [];
 }
 
 function getComponentsPathInfo(file) {
@@ -1003,6 +1052,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
+    warnings.push(...findPageEntryStructureWarnings(content, normalized));
     warnings.push(...findStateBranchExtractionWarnings(content, 0));
     errors.push(...checkComponentColocation(normalized, content));
   }

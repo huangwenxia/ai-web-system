@@ -40,6 +40,7 @@
 - 表格是否先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层；是否明确表格主能力不在 `apps/common/src/utils`，只有导入导出场景才查 `apps/common/src/utils/genericExportImport.ts` 等 common utils；如手写 `el-table` / `<table>`，是否说明命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 页面模板是否堆了过多 `v-if` / `v-else-if` / `v-else` 状态分支；loading / error / empty / permission / filtered-empty / list-body 等分支超过 3 个或状态块过长时，是否抽成页面私有状态展示组件或内容区子组件
+- 首要校验：新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 是否仍保持页面编排清晰；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块是否已抽成同目录页面私有组件
 - 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界；最终是否对照抽离前预案与实际落地差异
 - 抽离前是否已按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、目录落点和 API 契约
 - 最终页面结构是否清晰、职责是否可读；如果代码呈现冗杂混乱、主模板难以扫读、状态分支和交互细节缠在一起，是否已认真审视并执行组件抽离或说明保留原因

@@ -103,6 +103,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs`，并显式传入本次目标文件或在输出中列出脚本实际 checked files；空检查不得视为通过。
 - 新增或修改含中文文案、locale、枚举 label、状态文案、业务展示常量的文件时，必须运行 `scripts/verify-encoding.mjs` 检查本次目标文件或目录；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，必须运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
+- 首要人工门禁是页面结构清晰 / 冗杂抽离审视：新增功能或页面时，`src/views/**/index.vue` 和同目录主 `.vue` 不能承载过多页面区块、状态分支、交互细节和样式壳层；如果主模板难以扫读或职责混杂，必须先抽成页面私有组件，再继续交付。
 - 硬指标不达标时先整改再交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
 - 用户明确指定旧文件优化，或旧 `.vue` 是本次新功能的主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
@@ -121,6 +122,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
 - 页面模板中 `v-if` / `v-else-if` / `v-else` 状态分支过多时必须评估抽离：loading、error、empty、permission、filtered-empty、list-body 等分支堆在同一区块超过 3 个，或单个状态块超过约 30 行时，优先抽成页面私有状态展示组件或内容区子组件，例如 `ModelScopePanel`、`ScopeListBody`、`StatePanel`。页面保留数据获取、筛选和事件编排，子组件负责稳定 UI 骨架、状态分支和局部交互。
+- 新增或重写页面入口时，`index.vue` 只做页面编排：页面壳、数据入口、区块组合和主事件；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块应优先进入同目录 `components/`。同目录主 `.vue` 也按同一规则审查，不能因为不是 `index.vue` 就逃过抽离。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
