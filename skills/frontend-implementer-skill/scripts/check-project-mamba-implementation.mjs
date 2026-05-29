@@ -495,6 +495,11 @@ function importsSiblingSupportFile(source) {
   return /from\s*['"]\.\/(?:use[A-Z][^'"]*|types|utils|[^/'"]+\.(?:types|utils))['"]/g.test(source);
 }
 
+function hasComponentEntry(componentRoot, folderName) {
+  const folder = `${componentRoot}/${folderName}`;
+  return ['index.vue', `${folderName}.vue`].some((name) => existsSync(path.resolve(process.cwd(), folder, name)));
+}
+
 function checkComponentColocation(file, content) {
   const errors = [];
   const info = getComponentsPathInfo(file);
@@ -509,9 +514,8 @@ function checkComponentColocation(file, content) {
     if (info.directChild) {
       errors.push(`component-local support file ${info.baseName} must be placed in a same-named component folder with its owning .vue file`);
     } else {
-      const expectedComponent = `${info.componentRoot}/${info.folderName}/${info.folderName}.vue`;
-      if (!existsSync(path.resolve(process.cwd(), expectedComponent))) {
-        errors.push(`component-local support file ${info.baseName} must live beside ${info.folderName}.vue in ${info.componentRoot}/${info.folderName}/`);
+      if (!hasComponentEntry(info.componentRoot, info.folderName)) {
+        errors.push(`component-local support file ${info.baseName} must live beside index.vue or ${info.folderName}.vue in ${info.componentRoot}/${info.folderName}/`);
       }
     }
   }
