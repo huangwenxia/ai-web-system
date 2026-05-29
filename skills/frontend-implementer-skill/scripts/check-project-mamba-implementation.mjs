@@ -37,7 +37,7 @@ Options:
 
 When no files are provided, the script checks added/modified/untracked git files.
 Component/page implementation code must use Tailwind utilities or component-local <style scoped>; external style files/imports are rejected.
-Repeated visual/interaction blocks and heavy conditional state branches should be extracted into child components, and component-local hooks/types/utils must live in a same-named component folder.`);
+Repeated visual/interaction blocks and heavy conditional state branches should be extracted into child components, component-local hooks/types/utils must live in a same-named component folder, and icon usage must be covered by the final prototype icon semantic/dependency review.`);
 }
 
 function parseArgs(argv) {
@@ -863,6 +863,33 @@ function findRawTableReuseWarnings(source, lineOffset = 0) {
   return warnings;
 }
 
+function findIconSemanticReviewWarnings(source, lineOffset = 0) {
+  const findings = [];
+  const patterns = [
+    ['Element Plus <el-icon>', new RegExp('</?el-icon\\b', 'i')],
+    ['@element-plus/icons-vue', new RegExp("from\\s*['\"]@element-plus/icons-vue['\"]")],
+    ['lucide-vue-next', new RegExp("from\\s*['\"]lucide-vue-next['\"]")],
+    ['@iconify/vue', new RegExp("from\\s*['\"]@iconify/vue['\"]")],
+  ];
+
+  for (const [label, regex] of patterns) {
+    const match = source.match(regex);
+    if (!match) continue;
+    findings.push({
+      label,
+      line: lineNumberAt(source, match.index, lineOffset),
+    });
+  }
+
+  if (findings.length === 0) return [];
+
+  const firstLine = Math.min(...findings.map((finding) => finding.line));
+  const labels = findings.map((finding) => finding.label).join(', ');
+  return [
+    `icon usage detected near line ${firstLine} (${labels}); final checklist must compare prototype icon system and specific icon names with implementation mapping, check current app dependencies and shared icon wrappers, and document adoption/deviation reason. Do not silently substitute approximate icons`,
+  ];
+}
+
 function stripRegexLiterals(line) {
   return line.replace(/\/(?:\\.|[^/\\\r\n])+\/[dgimsuvy]*/g, 'REGEX');
 }
@@ -1149,6 +1176,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
     warnings.push(...findPageEntryStructureWarnings(content, normalized));
     warnings.push(...findStateBranchExtractionWarnings(content, 0));
+    warnings.push(...findIconSemanticReviewWarnings(content, 0));
     errors.push(...checkComponentColocation(normalized, content));
   }
   errors.push(...findEscapedChineseText(content, 0));

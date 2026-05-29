@@ -95,7 +95,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 - 命中 `project-mamba` 或同构仓库时，必须读取 `docs/project-mamba-implementation-profile.md`。
 - 进入实现前先输出一份极短的“复用校验表”：页面类型、页面壳、字段映射、常量来源、工具来源、加载策略。
-- 严格复查先行模式下，复用校验表升级为完整表：每个自定义 UI、每个 `v-for`、tag / badge / status、dialog / form / table / filter 都要说明是否已有项目组件、工具或目录可复用，并给出实际搜索命令、关键词、命中候选和采用 / 未复用原因。
+- 严格复查先行模式下，复用校验表升级为完整表：每个自定义 UI、每个 `v-for`、tag / badge / status、dialog / form / table / filter、icon / 图标体系都要说明是否已有项目组件、工具、图标库或目录可复用，并给出实际搜索命令、关键词、命中候选和采用 / 未复用原因。
 - 页面壳、业务区块、项目业务复用、通用业务控件和基础控件要分层判断，不允许直接凭感觉拼一套新结构。
 - 如果 profile 中任一关键项答不上来，就继续查当前页面、相邻模块和已有实现，不直接进入落码。
 - `docs/project-mamba-app-topology-matrix.md` 只是易变事实缓存；进入实现前必须用当前 `vite.config.ts`、`src/main.ts` 和 router 入口验证。如果冲突，以当前代码为准，并把矩阵更新列为回写候选。
@@ -124,6 +124,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 弹出层表单、抽屉表单、popover 表单不得默认手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`；先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块已有 modal/form 封装和 `easybill-ui`。确实无法复用时，才能基于 Element Plus 组合实现，并在最终输出列出命中候选和未复用原因。
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
+- 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称（如 Lucide 的 rocket / route / memory-stick），再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
 - 页面模板中 `v-if` / `v-else-if` / `v-else` 状态分支过多时必须评估抽离：loading、error、empty、permission、filtered-empty、list-body 等分支堆在同一区块超过 3 个，或单个状态块超过约 30 行时，优先抽成页面私有状态展示组件或内容区子组件，例如 `ModelScopePanel`、`ScopeListBody`、`StatePanel`。页面保留数据获取、筛选和事件编排，子组件负责稳定 UI 骨架、状态分支和局部交互。
 - 新增或重写页面入口时，`index.vue` 只做页面编排：页面壳、数据入口、区块组合和主事件；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块应优先进入同目录 `components/`。同目录主 `.vue` 也按同一规则审查，不能因为不是 `index.vue` 就逃过抽离。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
@@ -199,7 +200,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 双向绑定优先使用 `defineModel`；能用 `computed` 推导的状态不用 `watch` 同步，`watch` 只处理接口请求、外部同步、事件订阅等副作用。
 - 样式只描述当前组件，不污染外层；通用组件不写页面级样式分支。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度。
-- 如果任务已有明确原型，除图标外，布局、间距、悬浮/聚焦背景、边框、圆角、字体颜色等可观察样式细节默认应与原型保持一致；只有原型颜色 token 与项目 UI 规范冲突时，才优先使用项目允许的 token 体系。
+- 如果任务已有明确原型，图标语义 / 图标体系、布局、间距、悬浮/聚焦背景、边框、圆角、字体颜色等可观察样式细节默认应与原型保持一致；只有原型颜色 token 与项目 UI 规范冲突时，才优先使用项目允许的 token 体系。图标不作为默认例外；若因依赖、授权、项目规范或图标库缺失需要替换，必须说明映射和偏离原因。
 - 已确认原型的任务里，不允许因为抽象“层级优化”“产品感”、布局工具偏好或个人审美，主动改写原型节奏与密度；不能为了避开 flex 细节把紧凑 row 改成大卡片，先贴原型，再做主题兼容与实现修正。
 - token 选择必须先分层：项目语义、自定义壳层、页面结构和业务容器优先使用 `--ui-*`；Element Plus 原生组件的内部 anatomy、fill、placeholder、disabled、overlay、border 和原生状态优先使用 `--el-*`。不要因为文件位于项目目录里，就把所有样式都强行写成 `--ui-*`。
 - 如果自定义组件只是组合 `el-button`、`el-dropdown`、`el-select`、`el-dialog` 等 Element Plus 原生组件，则外壳关系、分组节奏、页面级容器语义走 `--ui-*`，组件内部状态与浮层细节优先复用 `--el-*` 与既有 bridge。
