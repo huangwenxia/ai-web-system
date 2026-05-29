@@ -78,6 +78,19 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 9. 判断是否需要叠加独立 `page-review-skill`。
 10. 判断本次是否值得回写到标准、案例、资产或规则。
 
+## 新页面功能开发顺序铁律
+目标是一次性开发到位，不是写完再靠审查补救。新增页面 / 新功能模块必须按下面顺序推进，并在最终检查表逐项说明是否完成：
+1. 需求 / 原型确认：确认页面主任务、区块、状态、弹窗、筛选、卡片、表格、空 / 加载 / 错误态；原型不够实施时先补原型，不进代码。
+2. 项目上下文和复用扫描：确认当前 app、路由归属、页面壳、已有组件、已有表格 / 表单 / 弹窗 / 状态组件、hooks / utils / constants；每个自定义 UI、`v-for`、tag / badge / status、dialog / form / table / filter、icon 都要有复用证据。
+3. 页面结构拆分设计：先定 `index.vue`、业务容器组件、纯视觉组件、胶囊目录和事件边界；`index.vue` 只做页面编排。
+4. 数据归属设计：先决定数据归谁；业务容器组件自取数并闭环 loading / empty / error / refresh，页面只保留 route、共享状态和流程编排，纯视觉组件只接 props。
+5. 目录和胶囊结构落位：复杂功能进 `components/Foo/index.vue` 胶囊，私有 hook / type / constants 跟着组件走，禁止 `Foo/Foo.vue` 和 components 根目录同前缀平铺。
+6. 实现业务容器组件：先实现取数、状态、交互和对外 emit，例如 `SelectedModelStrip`、`RecommendConstraintPanel`、`RecommendPlanPanel`。
+7. 实现纯视觉组件：再实现 `PlanCard`、`Pill`、`IconCapsule`、`MetricCell` 等纯展示组件；它们不能 import Api / router / store / mock。
+8. 组装页面 `index.vue`：最后接线，只传最小状态，只接收 emit，不解构一长串子组件私有数据，不直接 import 一堆兄弟细节组件。
+9. 自动校验：跑类型检查、实现检查、组件结构 strict 检查、编码检查和 diff check；命中 `project-mamba` 时显式列 checked files。
+10. 语义复查：复查页面入口结构、数据归属组件、胶囊目录、递归三轮抽离、复用证据、flex / 禁用 grid、Tailwind 优先和边界态完整性。
+
 ## 标准执行协议
 
 ### 1. 先做上下文定位
