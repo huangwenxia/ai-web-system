@@ -37,7 +37,7 @@ Options:
 
 When no files are provided, the script checks added/modified/untracked git files.
 Component/page implementation code must use Tailwind utilities or component-local <style scoped>; external style files/imports are rejected.
-Repeated visual/interaction blocks and heavy conditional state branches should be extracted into child components, component-local hooks/types/utils must live in a same-named component folder, and icon usage must be covered by the final prototype icon semantic/dependency review.`);
+Repeated visual/interaction blocks and heavy conditional state branches should be extracted into child components, component-local hooks/types/constants/utils must live in a same-named component folder with index.vue, and icon usage must be covered by the final prototype icon semantic/dependency review.`);
 }
 
 function parseArgs(argv) {
@@ -625,16 +625,16 @@ function getComponentsPathInfo(file) {
 
 function isComponentLocalSupportFile(file) {
   const baseName = path.basename(file);
-  return /^(use[A-Z].*|types|utils|.*\.(types|utils))\.(ts|tsx|js|jsx)$/.test(baseName);
+  return /^(use[A-Z].*|types|type|constants|constant|utils|.*\.(types|utils|constants))\.(ts|tsx|js|jsx)$/.test(baseName);
 }
 
 function importsSiblingSupportFile(source) {
-  return /from\s*['"]\.\/(?:use[A-Z][^'"]*|types|utils|[^/'"]+\.(?:types|utils))['"]/g.test(source);
+  return /from\s*['"]\.\/(?:use[A-Z][^'"]*|types|type|constants|constant|utils|[^/'"]+\.(?:types|utils|constants))['"]/g.test(source);
 }
 
 function hasComponentEntry(componentRoot, folderName) {
   const folder = `${componentRoot}/${folderName}`;
-  return ['index.vue', `${folderName}.vue`].some((name) => existsSync(path.resolve(process.cwd(), folder, name)));
+  return existsSync(path.resolve(process.cwd(), folder, 'index.vue'));
 }
 
 function checkComponentColocation(file, content) {
@@ -642,17 +642,21 @@ function checkComponentColocation(file, content) {
   const info = getComponentsPathInfo(file);
   if (!info) return errors;
 
+  if (info.extension === '.vue' && !info.directChild && info.baseName === `${info.folderName}.vue`) {
+    errors.push(`component capsule ${info.componentRoot}/${info.folderName}/ must use index.vue as the entry; rename ${info.baseName} to index.vue`);
+  }
+
   if (info.extension === '.vue' && info.directChild && importsSiblingSupportFile(content)) {
     const componentName = path.basename(info.baseName, '.vue');
-    errors.push(`component-local hooks/types/utils for ${info.baseName} must live under ${info.componentRoot}/${componentName}/ with ${componentName}.vue, not as sibling files in components/`);
+    errors.push(`component-local hooks/types/constants/utils for ${info.baseName} must live under ${info.componentRoot}/${componentName}/ with index.vue, not as sibling files in components/`);
   }
 
   if (isComponentLocalSupportFile(file)) {
     if (info.directChild) {
-      errors.push(`component-local support file ${info.baseName} must be placed in a same-named component folder with its owning .vue file`);
+      errors.push(`component-local support file ${info.baseName} must be placed in a same-named component folder with index.vue`);
     } else {
       if (!hasComponentEntry(info.componentRoot, info.folderName)) {
-        errors.push(`component-local support file ${info.baseName} must live beside index.vue or ${info.folderName}.vue in ${info.componentRoot}/${info.folderName}/`);
+        errors.push(`component-local support file ${info.baseName} must live beside index.vue in ${info.componentRoot}/${info.folderName}/`);
       }
     }
   }
@@ -740,6 +744,33 @@ function resolveLocalVueImport(fromFile, specifier) {
       ];
 
   return candidates.find((candidate) => existsSync(path.resolve(process.cwd(), candidate))) || '';
+}
+
+function findPageRootImportFanoutWarnings(content, normalized) {
+  if (!isViewEntryVue(normalized)) return [];
+
+  const warnings = [];
+  const pageDir = normalizeGitPath(path.dirname(normalized));
+  const directSiblingImports = [];
+  const localVueImports = [];
+
+  for (const specifier of getRelativeVueImportSpecifiers(content)) {
+    const child = resolveLocalVueImport(normalized, specifier);
+    if (!child) continue;
+
+    localVueImports.push(child);
+    if (normalizeGitPath(path.dirname(child)) === pageDir) directSiblingImports.push(child);
+  }
+
+  if (directSiblingImports.length >= 3) {
+    warnings.push(`page root ${normalized} imports ${directSiblingImports.length} sibling .vue files directly (${directSiblingImports.join(', ')}); keep page root orchestration-only and move detailed UI into capsule directories`);
+  }
+
+  if (localVueImports.length >= 6) {
+    warnings.push(`page root ${normalized} imports ${localVueImports.length} local Vue components; review whether small/detail UI should be grouped inside feature capsules instead of being fanned out from index.vue`);
+  }
+
+  return warnings;
 }
 
 function collectLocalVueDescendants(rootFile, maxDepth) {
@@ -1028,6 +1059,171 @@ function findDefinePropsBlocks(source) {
   return blocks;
 }
 
+function splitTopLevelObjectEntries(objectText) {
+  const inner = objectText.replace(/^\s*\{/, '').replace(/\}\s*$/, '');
+  const entries = [];
+  let start = 0;
+  let depth = 0;
+  let quote = null;
+  let escaped = false;
+
+  for (let index = 0; index < inner.length; index += 1) {
+    const char = inner[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+
+    if (char === '\\') {
+      escaped = true;
+      continue;
+    }
+
+    if (quote) {
+      if (char === quote) quote = null;
+      continue;
+    }
+
+    if (char === '"' || char === "'" || char === '`') {
+      quote = char;
+      continue;
+    }
+
+    if ('{[('.includes(char)) depth += 1;
+    if ('}])'.includes(char)) depth -= 1;
+
+    if (char === ',' && depth === 0) {
+      entries.push(inner.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+
+  entries.push(inner.slice(start).trim());
+  return entries.filter(Boolean);
+}
+
+function objectEntryName(entry) {
+  const cleaned = entry
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '')
+    .trim();
+  if (!cleaned || cleaned.startsWith('...')) return '';
+
+  const keyValue = cleaned.match(/^([A-Za-z_$][\w$]*)\s*:/);
+  if (keyValue) return keyValue[1];
+
+  const shorthand = cleaned.match(/^([A-Za-z_$][\w$]*)\b/);
+  return shorthand?.[1] || '';
+}
+
+function objectEntryNames(objectText) {
+  return splitTopLevelObjectEntries(objectText).map(objectEntryName).filter(Boolean);
+}
+
+function dataOwnershipGroups(names) {
+  const groups = new Set();
+  const dataLikeSuffix = /(List|Options|Tags|Cards|TableData|Data|Loading|Empty|Error|Selected|Dialog|Form|Visible|Open|State)$/;
+
+  for (const name of names) {
+    if (!dataLikeSuffix.test(name)) continue;
+    const group = name.replace(dataLikeSuffix, '');
+    groups.add(group || name);
+  }
+
+  return groups;
+}
+
+function findReturnedObjectLiteral(body) {
+  const returnMatch = body.match(/\breturn\s*\{/);
+  if (!returnMatch) return null;
+  return findObjectLiteralAfter(body, returnMatch.index + returnMatch[0].indexOf('{'));
+}
+
+function findHookReturnOwnershipFindings(source, lineOffset = 0) {
+  const errors = [];
+  const warnings = [];
+  const lines = source.split(/\r?\n/);
+
+  for (const fn of findFunctionLengths(source, lineOffset)) {
+    if (!/^use[A-Z]/.test(fn.name)) continue;
+
+    const localStart = Math.max(0, fn.start - lineOffset - 1);
+    const localEnd = Math.max(localStart, fn.end - lineOffset);
+    const body = lines.slice(localStart, localEnd).join('\n');
+    const returned = findReturnedObjectLiteral(body);
+    if (!returned) continue;
+
+    const names = objectEntryNames(returned.text);
+    const groups = dataOwnershipGroups(names);
+    const apiCallCount = (body.match(/\b(?:api|Api|service|Service|request|fetch[A-Z]\w*|get[A-Z]\w*|post[A-Z]\w*)\s*[.(]/g) || []).length;
+    const line = fn.start + body.slice(0, returned.start).split(/\r?\n/).length - 1;
+
+    if (names.length > 10) {
+      errors.push(`hook ${fn.name} returns ${names.length} values at line ${line}; split by data-owning business component instead of one page-level hook`);
+    } else if (names.length > 8) {
+      warnings.push(`hook ${fn.name} returns ${names.length} values at line ${line}; final checklist must justify why it is not split by component ownership`);
+    }
+
+    if (groups.size >= 4 || (groups.size >= 3 && apiCallCount >= 2)) {
+      warnings.push(`hook ${fn.name} appears to own ${groups.size} data groups (${Array.from(groups).join(', ')}) and ${apiCallCount} request-like calls; page-level hooks should keep only shared flow state`);
+    }
+  }
+
+  return { errors, warnings };
+}
+
+function findHookDestructureOwnershipFindings(source, lineOffset = 0, normalized = '') {
+  const errors = [];
+  const warnings = [];
+  const isPageRoot = isViewEntryVue(normalized);
+  const destructureRegex = /\b(?:const|let)\s*\{([\s\S]*?)\}\s*=\s*(use[A-Z]\w*)\s*\(/g;
+  let match;
+
+  while ((match = destructureRegex.exec(source))) {
+    const names = objectEntryNames(`{${match[1]}}`);
+    const groups = dataOwnershipGroups(names);
+    const line = lineNumberAt(source, match.index, lineOffset);
+    const hookName = match[2];
+
+    if (isPageRoot && names.length > 10) {
+      errors.push(`page root destructures ${names.length} values from ${hookName} at line ${line}; index.vue must not own child-component private data`);
+    } else if (isPageRoot && names.length > 8) {
+      warnings.push(`page root destructures ${names.length} values from ${hookName} at line ${line}; justify or split by data-owning component`);
+    }
+
+    if (isPageRoot && groups.size >= 3) {
+      warnings.push(`page root destructures multiple component data groups from ${hookName} at line ${line} (${Array.from(groups).join(', ')}); page hooks should keep shared flow state only`);
+    }
+  }
+
+  return { errors, warnings };
+}
+
+function componentDisplayName(normalized) {
+  const baseName = path.basename(normalized, path.extname(normalized));
+  if (baseName === 'index') return path.basename(path.dirname(normalized));
+  return baseName;
+}
+
+function isPureVisualComponentName(name) {
+  return /(Pill|IconCapsule|MetricCell|CardItem|PlanCard|EmptyState|Badge|Tag|Metric)$/.test(name);
+}
+
+function findPureVisualDataAccessErrors(source, lineOffset = 0, normalized = '') {
+  const componentName = componentDisplayName(normalized);
+  if (!isPureVisualComponentName(componentName)) return [];
+
+  const errors = [];
+  const dataAccessRegex = /(?:from\s*['"][^'"]*(?:\/api\b|\/api\/|@\/api|service|mock|router|store|vue-router|pinia)[^'"]*['"])|(?:\buse(?:Route|Router|Store)\s*\()/gi;
+  let match;
+
+  while ((match = dataAccessRegex.exec(source))) {
+    errors.push(`pure visual component ${componentName} imports or accesses data/navigation state at line ${lineNumberAt(source, match.index, lineOffset)}; visual components only receive props`);
+  }
+
+  return errors;
+}
+
 function collectImportedTypeNames(source) {
   const importedTypes = new Set();
   const importRegex = /(^|\n)\s*import\s+(type\s+)?([\s\S]*?)\s+from\s+['"]([^'"]+)['"]/g;
@@ -1175,9 +1371,11 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
     warnings.push(...findPageEntryStructureWarnings(content, normalized));
+    warnings.push(...findPageRootImportFanoutWarnings(content, normalized));
     warnings.push(...findStateBranchExtractionWarnings(content, 0));
     warnings.push(...findIconSemanticReviewWarnings(content, 0));
     errors.push(...checkComponentColocation(normalized, content));
+    errors.push(...findPureVisualDataAccessErrors(content, 0, normalized));
   }
   errors.push(...findEscapedChineseText(content, 0));
   errors.push(...findMojibakeText(content, 0));
@@ -1207,6 +1405,12 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     const propConvention = checkPropConventions(block.code, block.startLine);
     errors.push(...propConvention.errors);
     warnings.push(...propConvention.warnings);
+    const hookReturnOwnership = findHookReturnOwnershipFindings(block.code, block.startLine);
+    errors.push(...hookReturnOwnership.errors);
+    warnings.push(...hookReturnOwnership.warnings);
+    const hookDestructureOwnership = findHookDestructureOwnershipFindings(block.code, block.startLine, normalized);
+    errors.push(...hookDestructureOwnership.errors);
+    warnings.push(...hookDestructureOwnership.warnings);
     addFunctionLengthFindings(block.code, block.startLine, errors, warnings);
   }
 }
@@ -1222,6 +1426,9 @@ function checkScriptFile(content, normalized, result) {
   errors.push(...findEscapedChineseText(content, 0));
   errors.push(...findMojibakeText(content, 0));
 
+  const hookReturnOwnership = findHookReturnOwnershipFindings(content, 0);
+  errors.push(...hookReturnOwnership.errors);
+  warnings.push(...hookReturnOwnership.warnings);
   addFunctionLengthFindings(content, 0, errors, warnings);
 }
 

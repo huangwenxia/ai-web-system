@@ -7,7 +7,39 @@ import { fileURLToPath } from 'node:url';
 
 const scriptPath = fileURLToPath(import.meta.url);
 const FLAT_COMPONENT_WARN_LIMIT = 8;
-const SIDECAR_NAMES = new Set(['types.ts', 'constants.ts', 'constant.ts', 'helpers.ts', 'helper.ts', 'events.ts', 'bus.ts']);
+const SAME_PREFIX_FLAT_WARN_LIMIT = 3;
+const SIDECAR_NAMES = new Set(['types.ts', 'type.ts', 'constants.ts', 'constant.ts', 'helpers.ts', 'helper.ts', 'events.ts', 'bus.ts']);
+const COMPONENT_SUFFIX_TOKENS = new Set([
+  'Actions',
+  'Action',
+  'Badge',
+  'Badges',
+  'Body',
+  'Card',
+  'Cards',
+  'Dialog',
+  'Drawer',
+  'Empty',
+  'Error',
+  'Filter',
+  'Filters',
+  'Form',
+  'Header',
+  'Item',
+  'List',
+  'Loading',
+  'Modal',
+  'Panel',
+  'Row',
+  'Section',
+  'Selector',
+  'Status',
+  'Summary',
+  'Table',
+  'Tag',
+  'Tags',
+  'Toolbar',
+]);
 
 function usage() {
   console.log(`Usage:
@@ -139,13 +171,12 @@ function directEntries(dir) {
   }
 }
 
-function hasVueEntry(dir, componentName) {
-  const candidates = [
-    path.join(dir, 'index.vue'),
-    path.join(dir, `${componentName}.vue`),
-  ];
+function hasEntryFile(dir) {
+  return ['index.vue', 'index.ts'].some((name) => existsSync(path.resolve(process.cwd(), dir, name)));
+}
 
-  return candidates.some((candidate) => existsSync(path.resolve(process.cwd(), candidate)));
+function hasIndexVueEntry(dir) {
+  return existsSync(path.resolve(process.cwd(), dir, 'index.vue'));
 }
 
 function isComponentsRoot(dir) {
@@ -165,8 +196,33 @@ function isCapsuleDir(dir) {
   return parent === 'components';
 }
 
+function hasDirectIndexVue(dir) {
+  return existsSync(path.resolve(process.cwd(), dir, 'index.vue'));
+}
+
 function isSidecarFile(name) {
   return SIDECAR_NAMES.has(name) || /^use[A-Z].+\.(ts|tsx|js|jsx)$/.test(name);
+}
+
+function componentNameTokens(fileName) {
+  const baseName = fileName.replace(/\.vue$/, '');
+  return baseName
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .split(/[\s._-]+/)
+    .filter(Boolean);
+}
+
+function flatFeatureKey(fileName) {
+  const tokens = componentNameTokens(fileName);
+  if (tokens.length <= 1) return '';
+
+  const withoutSuffix = [...tokens];
+  while (withoutSuffix.length > 1 && COMPONENT_SUFFIX_TOKENS.has(withoutSuffix.at(-1))) {
+    withoutSuffix.pop();
+  }
+
+  if (withoutSuffix.length !== tokens.length) return withoutSuffix.join('');
+  return tokens[0];
 }
 
 function checkComponentsRoot(dir) {
@@ -177,6 +233,19 @@ function checkComponentsRoot(dir) {
 
   if (directVue.length > FLAT_COMPONENT_WARN_LIMIT) {
     warnings.push(`components root has ${directVue.length} direct .vue files; group thick/repeated components into capsule directories`);
+  }
+
+  const groups = new Map();
+  for (const fileName of directVue) {
+    const key = flatFeatureKey(fileName);
+    if (!key) continue;
+    groups.set(key, [...(groups.get(key) || []), fileName]);
+  }
+
+  for (const [key, files] of groups) {
+    if (files.length >= SAME_PREFIX_FLAT_WARN_LIMIT) {
+      warnings.push(`components root has ${files.length} direct .vue files with feature prefix "${key}" (${files.join(', ')}); move the feature into a capsule directory with index.vue`);
+    }
   }
 
   if (sidecars.length) {
@@ -193,9 +262,16 @@ function checkCapsuleDir(dir) {
   const hasSidecars = entries.some((entry) => entry.isFile() && isSidecarFile(entry.name));
   const privateVueCount = entries.filter((entry) => entry.isFile() && entry.name.endsWith('.vue')).length;
   const hasPrivateComponentsDir = entries.some((entry) => entry.isDirectory() && entry.name === 'components');
+  const hasSameNameVue = entries.some((entry) => entry.isFile() && entry.name === `${componentName}.vue`);
 
-  if ((hasSidecars || hasPrivateComponentsDir || privateVueCount > 1) && !hasVueEntry(dir, componentName)) {
-    warnings.push(`component capsule ${normalize(dir)} has sidecars/private children but no index.vue or ${componentName}.vue entry`);
+  if (hasSameNameVue) {
+    warnings.push(`component capsule ${normalize(dir)} must use index.vue as the Vue entry; rename ${componentName}.vue to index.vue`);
+  }
+
+  if ((hasSidecars || hasPrivateComponentsDir || privateVueCount > 0) && !hasIndexVueEntry(dir)) {
+    warnings.push(`component capsule ${normalize(dir)} has Vue/private support files but no index.vue entry`);
+  } else if (!hasEntryFile(dir)) {
+    warnings.push(`capsule directory ${normalize(dir)} must expose a clear index.vue or index.ts entry`);
   }
 
   return warnings;
@@ -237,6 +313,19 @@ function checkHooksRoot(dir) {
   return warnings;
 }
 
+function checkModuleRoot(dir) {
+  const warnings = [];
+  if (!hasDirectIndexVue(dir) || isCapsuleDir(dir)) return warnings;
+
+  const entries = directEntries(dir);
+  const sidecars = entries.filter((entry) => entry.isFile() && isSidecarFile(entry.name)).map((entry) => entry.name);
+  if (sidecars.length) {
+    warnings.push(`module root ${normalize(dir)} has index.vue plus direct hook/type/constants files (${sidecars.join(', ')}); move detail UI state into same-named capsule directories and keep page root orchestration-only`);
+  }
+
+  return warnings;
+}
+
 function checkDir(dir) {
   const warnings = [];
 
@@ -244,6 +333,7 @@ function checkDir(dir) {
   if (isCapsuleDir(dir)) warnings.push(...checkCapsuleDir(dir));
   if (isUtilsRoot(dir)) warnings.push(...checkUtilsRoot(dir));
   if (isHooksRoot(dir)) warnings.push(...checkHooksRoot(dir));
+  if (!isComponentsRoot(dir) && !isCapsuleDir(dir) && !isUtilsRoot(dir) && !isHooksRoot(dir)) warnings.push(...checkModuleRoot(dir));
 
   return { dir: normalize(dir), warnings };
 }

@@ -46,8 +46,13 @@
 - 表格是否先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层；是否明确表格主能力不在 `apps/common/src/utils`，只有导入导出场景才查 `apps/common/src/utils/genericExportImport.ts` 等 common utils；如手写 `el-table` / `<table>`，是否说明命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 图标是否完成原型语义与依赖复查：原型图标体系 / 具体图标名、当前 app 已安装图标库、共享 UI 图标封装、当前实现图标映射、是否新增依赖或偏离原型，是否都已列明；不允许静默用近似图标替代明确原型图标
+- 数据归属组件强校验：是否避免一个 `usePage` / `useXxx` 大 hook 管全页数据；业务容器组件的数据获取、loading、empty、error、refresh 是否在组件内部闭环；页面 `index.vue` 是否只保留 route、共享状态和跨组件事件编排
+- `index.vue` 是否避免 destructure 一长串子组件私有数据；`usePage` / `useXxx` 返回值超过 8-10 个时是否拆分或说明原因
+- 纯视觉组件是否只接收 props；`Pill` / `IconCapsule` / `MetricCell` / `CardItem` / `EmptyState` / `PlanCard` 等是否没有 import Api / router / store / mock service
 - 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；最终是否对照抽离前预案与实际落地差异
 - 发生组件拆分时，是否已明确不变量 / 可变量、复用半径、目录落点和 API 契约；是否避免把组件私有 hook / types / utils 散到上层目录
+- 胶囊目录强校验：`components/` 根目录是否避免同功能前缀平铺；有 hook / type / constants 的新增模块是否进入同名胶囊目录；胶囊目录是否有 `index.vue` 或 `index.ts`；组件胶囊是否使用 `index.vue` 而不是 `Foo.vue`
+- 页面根 `index.vue` 是否只做编排；是否避免承载细节 UI 或直接 import 一堆兄弟组件
 - 发生组件抽离后，是否执行递归三轮抽离复查：脚本是否先完成 3 轮递归覆盖检查并把入口文件、一级子组件、子组件内部文件纳入 checked files；AI 是否在最终检查表中分别给出第 1 轮入口文件、第 2 轮一级子组件、第 3 轮子组件内部文件的语义结论；每轮是否检查结构清晰、已有项目能力复用、进一步抽离可能、Tailwind 样式优先和胶囊目录；第 3 轮仍有问题时是否继续加轮整改
 
 ## 边界与细节检查

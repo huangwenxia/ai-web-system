@@ -9,6 +9,7 @@
 - 先放近处，再逐级上提；先稳定契约，再进入公共层。
 - 目录要帮助定位上下文。复杂组件按“组件胶囊”聚合 `.vue`、私有 hook、types、constants、私有子组件，不把相关文件散到多个上层目录。
 - 页面层负责业务编排、接口请求、筛选条件、表格刷新和路由跳转；组件层负责稳定 UI 骨架、局部交互和输入输出。
+- 实现完成后必须自检：`components/` 根目录不能出现一堆同一功能前缀的平铺文件；新增模块如果有 `index.vue` 以外的 hook / type / constants，必须有同名胶囊目录；每个胶囊目录必须有清晰入口 `index.vue` 或 `index.ts`；页面根 `index.vue` 只做编排，不承载细节 UI，不直接 import 一堆兄弟组件。
 
 ## 递归三轮复查铁律
 组件抽离不是“入口页瘦下来就结束”。每次新增功能页面、页面级重构或组件抽离后，脚本必须先做至少 3 轮递归覆盖检查，确保入口文件、一级子组件、子组件内部文件都纳入 checked files；随后由 AI 在最终检查表中给出每轮语义结论：
@@ -17,6 +18,23 @@
 - 第 3 轮：子组件内部的子组件、私有 hooks、types、utils。检查相关文件是否收敛在同名胶囊目录，API 是否小而清晰，是否仍有可复用项目能力未使用。
 
 第 3 轮必须没有新的抽离候选；如果脚本发现缺失 checked files，先补齐后重跑；如果 AI 语义复查仍发现结构混乱、复用遗漏、样式可迁 Tailwind 或胶囊目录问题，先整改，再继续第 4 轮、第 5 轮，直到一轮全绿。最终输出必须列出三轮检查结果，不能只说“已抽离”。
+
+## 数据获取与 hook 拆分铁律
+禁止把页面所有数据都塞进一个 `usePage` / `useXxx` 大 hook。数据跟着业务组件走，页面只管结构和跨组件编排；纯视觉组件只吃 props，大 hook 只负责共享流程，不负责替所有子组件取数。
+
+- 业务容器组件自己获取自己的数据：后端接口数据在该业务组件内部请求；mock 数据放在该业务组件内部或同胶囊目录的 `mock` / `constants` 中；loading / empty / error / refresh 由该业务组件自己维护。
+- 页面 `index.vue` 只保留结构性编排和少量跨组件状态：route query / route params、页面级主流程状态、真正被多个兄弟组件共享的最小状态、跨组件事件编排。
+- 纯视觉组件不请求接口：`Pill`、`IconCapsule`、`MetricCell`、`CardItem`、`EmptyState`、`RecommendPlanCard` 这类只接收 props；它们只负责展示，不知道接口、路由、store、mock。
+- 业务组件可以组合纯视觉组件：例如 `RecommendPlanPanel` 自己请求推荐方案并维护 `planList` / `planLoading` / `selectedPlan`，`RecommendPlanCard` 只展示单个方案，`RecommendMetricCell` / `RecommendPill` 只展示视觉片段。
+
+如果一个 hook 同时返回以下多类数据，就必须拆分：A 组件的数据列表和 loading、B 组件的数据列表和 loading、弹窗表单数据、路由跳转、多个接口请求、多组 options / tags / cards / table data。页面级 hook 最多负责“共享状态与流程编排”，不能替代组件自己的数据层。
+
+实现完成后检查：
+- `index.vue` 不能 destructure 一长串子组件私有数据。
+- `usePage` / `useXxx` 返回值超过 8-10 个，必须说明为什么不拆；超过 10 个默认视为需要拆分。
+- 每个业务组件的数据获取、loading、empty、error 是否在组件内部闭环。
+- 纯视觉组件不得 import Api / router / store / mock service。
+- mock 和真实接口的切换应在业务组件或其同名胶囊 hook 内完成。
 
 ## 抽离前判断
 按候选单元逐项判断：
@@ -36,7 +54,7 @@
 - 纯逻辑复用：`useXxx.ts`；纯格式化：`formatters.ts`；事件总线语义：`events.ts`，不要叫 `utils/bus.ts`。
 
 ## 目录模式
-薄组件继续平铺：
+薄组件只有在没有私有 hook / type / constants、没有私有子组件、也没有同功能前缀集群时才允许平铺：
 
 ```txt
 components/
@@ -67,23 +85,30 @@ components/
         └── TagMenu.vue
 ```
 
-页面共享内容留在页面根部：
+同名胶囊目录下禁止再放同名 `.vue`，例如 `components/ModelStoreFilters/ModelStoreFilters.vue` 不合规；Vue 入口必须是 `components/ModelStoreFilters/index.vue`。非 Vue 纯逻辑胶囊可以用 `index.ts` 作为入口。
+
+页面根只保留编排；共享内容只有在确实属于页面 / 模块级编排时才留在页面根部。细节 UI 的 hook / type / constants 必须跟随对应胶囊：
 
 ```txt
 store/
 ├── index.vue
-├── types.ts
-├── constants.ts
-├── events.ts
-├── hooks/
+├── types.ts        # 页面级共享类型，不能是某个组件私有类型
+├── constants.ts    # 页面级共享常量，不能是某个组件私有常量
+├── hooks/          # 页面级编排 hook，不放组件私有逻辑
 │   └── useDeployScopes.ts
 └── components/
+    └── ScopeList/
+        ├── index.vue
+        ├── useScopeList.ts
+        ├── types.ts
+        └── constants.ts
 ```
 
 避免把当前组件私有文件散到：
 
 ```txt
 components/Foo.vue
+components/Foo/Foo.vue
 utils/useFoo.ts
 utils/types.ts
 utils/bus.ts

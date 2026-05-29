@@ -127,11 +127,13 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称（如 Lucide 的 rocket / route / memory-stick），再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
 - 页面模板中 `v-if` / `v-else-if` / `v-else` 状态分支过多时必须评估抽离：loading、error、empty、permission、filtered-empty、list-body 等分支堆在同一区块超过 3 个，或单个状态块超过约 30 行时，优先抽成页面私有状态展示组件或内容区子组件，例如 `ModelScopePanel`、`ScopeListBody`、`StatePanel`。页面保留数据获取、筛选和事件编排，子组件负责稳定 UI 骨架、状态分支和局部交互。
 - 新增或重写页面入口时，`index.vue` 只做页面编排：页面壳、数据入口、区块组合和主事件；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块应优先进入同目录 `components/`。同目录主 `.vue` 也按同一规则审查，不能因为不是 `index.vue` 就逃过抽离。
+- 数据获取按“数据归属组件”拆分，禁止默认一个 `usePage` / `useXxx` 大 hook 管全页数据。业务容器组件自己请求自己的接口或 mock，自己维护 loading / empty / error / refresh；页面 `index.vue` 只保留 route query / params、页面级主流程状态、真正跨兄弟组件共享的最小状态和跨组件事件编排；纯视觉组件只接收 props，禁止 import Api / router / store / mock service。`usePage` / `useXxx` 同时返回多组列表、loading、弹窗表单、路由跳转、多个请求或多组 options / tags / cards / table data 时必须拆分。
+- 实现完成后必须做胶囊目录强自检：`components/` 根目录不能出现一堆同一功能前缀的平铺文件；新增模块如果有 `index.vue` 以外的 hook / type / constants，必须有同名胶囊目录；每个胶囊目录必须有清晰入口 `index.vue` 或 `index.ts`；页面根 `index.vue` 不承载细节 UI，不直接 import 一堆兄弟组件。复杂功能按胶囊目录组织，页面根只做编排，组件私有 hook / type / constants 跟着组件走，小胶囊收进模块内部，稳定复用后再上提。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
 - 组件抽离必须执行“递归三轮复查”铁律：脚本先做至少 3 轮递归覆盖检查，确保入口文件、一级子组件、子组件内部文件都纳入 checked files；随后 AI 在最终检查表中给出 3 轮语义结论。每轮都分别检查结构是否清晰、是否优先复用项目已有组件 / Hook / utils、是否还存在进一步抽离可能、样式是否优先 Tailwind 且只在必要时保留 scoped、私有 hook / types / utils / 子组件是否放在同名胶囊目录。第 3 轮必须没有新的抽离候选；若仍发现问题，整改后继续加轮，直到一轮全绿。
-- 组件私有逻辑因体积或职责需要抽 `useXxx.ts` 时，必须改用组件同名目录收纳：`components/Foo/Foo.vue`、`components/Foo/useFoo.ts`、`components/Foo/types.ts`、`components/Foo/utils.ts`；组件私有 hook / types / utils 不散落在 `components/` 根目录。页面级或模块级共享逻辑才允许放在页面 / 模块目录。
+- 组件私有逻辑因体积或职责需要抽 `useXxx.ts` 时，必须改用组件同名目录收纳：`components/Foo/index.vue`、`components/Foo/useFoo.ts`、`components/Foo/types.ts`、`components/Foo/constants.ts`、`components/Foo/utils.ts`；同名胶囊目录下禁止再放 `Foo.vue`，Vue 入口必须命名为 `index.vue`。组件私有 hook / types / constants / utils 不散落在 `components/` 根目录。页面级或模块级共享逻辑才允许放在页面 / 模块目录。
 
 #### bug 修复
 
@@ -155,11 +157,12 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 是否遵守项目既有目录、命名、样式 token 和组件复用方式。
 - 命名是否表达业务语义，公共逻辑是否应抽到 composable，同类展示是否已优先复用。
 - 页面块组件抽离后，是否继续消除了重复视觉 / 交互片段，而不是把重复从页面搬到子组件内部。
+- 数据是否跟着业务组件走；页面根是否只保留共享状态和流程编排；纯视觉组件是否只吃 props；是否避免 `usePage` / `useXxx` 大 hook 替所有子组件取数。
 - 新增 `.vue` 是否控制在 250 行以内；超过时优先拆组件或 `useXxx.ts`，而不是压缩可读性。
 - 函数尽量控制在 70 行以内，100 行为上限；超过 100 行必须拆分。复杂且接近上限的函数顶部写一句功能说明，不写废话注释。
 - 组件只做一件事；复杂逻辑抽为 `useXxx.ts`，让数据处理、交互副作用和视图表达分离。
-- 组件私有 hook / types / utils 是否与对应 `.vue` 放在组件同名目录；不要为了瘦身把局部文件散到上层目录。
-- 组件抽离、目录落点和 API 契约是否符合 `docs/component-extraction-policy.md`；厚组件是否使用胶囊目录，薄组件是否保持平铺。
+- 组件私有 hook / types / constants / utils 是否与对应 `index.vue` 放在组件同名目录；不要为了瘦身把局部文件散到上层目录。
+- 组件抽离、目录落点和 API 契约是否符合 `docs/component-extraction-policy.md`；厚组件是否使用 `components/Foo/index.vue` 胶囊目录，薄组件是否只在没有同功能前缀集群和私有 hook / type / constants 时保持平铺。
 
 ### 5. 组件 API 与边界
 

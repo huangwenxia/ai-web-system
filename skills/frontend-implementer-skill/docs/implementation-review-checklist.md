@@ -50,12 +50,17 @@
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 页面模板是否堆了过多 `v-if` / `v-else-if` / `v-else` 状态分支；loading / error / empty / permission / filtered-empty / list-body 等分支超过 3 个或状态块过长时，是否抽成页面私有状态展示组件或内容区子组件
 - 首要校验：新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 是否仍保持页面编排清晰；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块是否已抽成同目录页面私有组件
+- 数据归属组件强校验：是否避免一个 `usePage` / `useXxx` 大 hook 管全页数据；业务容器组件的数据获取、loading、empty、error、refresh 是否在组件内部闭环；页面 `index.vue` 是否只保留 route、共享状态和跨组件事件编排
+- `index.vue` 是否避免 destructure 一长串子组件私有数据；`usePage` / `useXxx` 返回值超过 8-10 个时是否拆分或说明原因
+- 纯视觉组件是否只接收 props；`Pill` / `IconCapsule` / `MetricCell` / `CardItem` / `EmptyState` / `PlanCard` 等是否没有 import Api / router / store / mock service
+- 胶囊目录强校验：`components/` 根目录是否避免同功能前缀平铺；有 hook / type / constants 的新增模块是否进入同名胶囊目录；胶囊目录是否有 `index.vue` 或 `index.ts`；组件胶囊是否使用 `index.vue` 而不是 `Foo.vue`
+- 页面根 `index.vue` 是否只做编排；是否避免承载细节 UI 或直接 import 一堆兄弟组件
 - 抽离前是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责、抽离原因和必要的 `props` / `emits` / `defineModel` 边界；最终是否对照抽离前预案与实际落地差异
 - 抽离前是否已按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、目录落点和 API 契约
 - 最终页面结构是否清晰、职责是否可读；如果代码呈现冗杂混乱、主模板难以扫读、状态分支和交互细节缠在一起，是否已认真审视并执行组件抽离或说明保留原因
 - 大页面块抽离后，是否再次检查抽离出的页面块组件内部是否仍有重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮；存在重复时是否继续抽成更小子组件
 - 是否执行递归三轮抽离复查：脚本是否先完成 3 轮递归覆盖检查并把入口文件、一级子组件、子组件内部文件纳入 checked files；AI 是否在最终检查表中分别给出第 1 轮入口文件、第 2 轮一级子组件、第 3 轮子组件内部文件的语义结论；每轮是否检查结构清晰、已有项目能力复用、进一步抽离可能、Tailwind 样式优先和胶囊目录；第 3 轮仍有问题时是否继续加轮整改
-- 组件私有 hook / types / utils 是否与对应 `.vue` 放进组件同名目录；页面级或模块级共享逻辑才允许放在页面 / 模块目录
+- 组件私有 hook / types / constants / utils 是否与对应 `index.vue` 放进组件同名目录；页面级或模块级共享逻辑才允许放在页面 / 模块目录
 - 新增 `.vue` 是否控制在 250 行以内；旧文件若被用户指定优化，是否纳入瘦身或拆分计划
 - 函数是否 70 行以内为最佳、100 行为上限；复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
 - 是否优先使用 `<script setup>`、TypeScript、`defineModel`、`computed`；`watch` 是否只用于副作用

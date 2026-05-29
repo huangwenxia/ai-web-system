@@ -209,11 +209,13 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
 - 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称，再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
 - 页面模板中 loading、error、empty、permission、filtered-empty、list-body 等状态分支过多时，必须评估是否抽出页面私有状态展示组件或内容区子组件；不要把大量 `v-if` / `v-else-if` / `v-else` 堆在主页面模板里。
+- 数据获取按“数据归属组件”拆分，禁止默认一个 `usePage` / `useXxx` 大 hook 管全页数据。业务容器组件自己请求自己的接口或 mock，自己维护 loading / empty / error / refresh；页面 `index.vue` 只保留 route、页面主流程、真正共享的最小状态和跨组件事件编排；纯视觉组件只接收 props，禁止 import Api / router / store / mock service。`usePage` / `useXxx` 返回值超过 8-10 个或同时返回多组列表、loading、弹窗表单、路由跳转、多个请求、多组 options / tags / cards / table data 时，必须拆分或说明例外。
 - 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 发生组件抽离后，必须执行递归三轮抽离复查：脚本先做至少 3 轮递归覆盖检查，确保入口文件、一级子组件、子组件内部文件都纳入 checked files；随后 AI 在最终检查表中给出 3 轮语义结论，分别检查结构清晰、已有项目组件 / Hook / utils 复用、进一步抽离可能、Tailwind 样式优先和胶囊目录。第 3 轮仍有问题时继续加轮整改，最终输出列出三轮结论。
 - 抽离组件的 props 如果引用外部业务类型、`./types` 或相对路径导入类型，不直接使用 `defineProps<ExternalType>()`；优先使用运行时 props 对象 + `PropType`，避免 SFC 编译阶段无法解析外部类型。
+- 实现完成后必须做胶囊目录强自检：`components/` 根目录不能出现一堆同一功能前缀的平铺文件；新增模块如果有 `index.vue` 以外的 hook / type / constants，必须有同名胶囊目录；每个胶囊目录必须有清晰入口 `index.vue` 或 `index.ts`；组件胶囊入口必须是 `index.vue`，禁止 `Foo/Foo.vue`；页面根 `index.vue` 只做编排，不承载细节 UI，不直接 import 一堆兄弟组件。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，最终必须运行 `check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。实现脚本的 checked files 必须覆盖入口文件和所有本地抽离子组件；脚本如提示 local child component 未纳入检查，必须补齐文件后重跑。
-- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、递归三轮抽离复查、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用（含简单 scoped 样式是否迁到 Tailwind）、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、验证命令。未达标项必须说明已整改或例外原因。
+- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用（含简单 scoped 样式是否迁到 Tailwind）、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。
