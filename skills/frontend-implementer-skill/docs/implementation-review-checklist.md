@@ -13,6 +13,14 @@
 - 输入前提是否足够支撑直接落代码
 - 如果是新功能开发，是否已经有已确认原型；没有则是否回退到 `existing-project-feature-skill` 或 `agione-ui`
 
+## 严格复查先行检查
+- 用户要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，是否在任何代码编辑前先输出四张表
+- 现有组件 / 工具 / 目录复用校验表是否覆盖每个自定义 UI、每个 `v-for`、tag / badge / status、dialog / form / table / filter，并给出搜索命令、关键词、命中候选、采用或未复用原因
+- 原型对比表是否按头部、筛选区、卡片区、弹窗、空 / 加载 / 错误态逐块对比原型与现有实现，说明差异、影响和最小整改项
+- Vue 结构自检是否覆盖页面是否过重、组件拆分是否合理、状态 / 接口 / 常量是否放对目录，以及 `index.vue` / 同目录主 `.vue` 是否仍保持页面编排清晰
+- 自动检查结果是否覆盖类型检查、实现检查、结构检查、编码检查和 diff check；无法运行时是否说明具体原因，而不是写“通过”
+- 发现问题后是否只做最小修改，并在修改后重新跑上述自动检查和必要的语义复查
+
 ## 上下文定位检查
 - 是否已查到目标组件 / 页面 / composable / util / constant / type 的来源
 - 是否已查到关键调用方、被引用方或路由入口
@@ -70,8 +78,10 @@
 
 ## `project-mamba` 自动检查
 - 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`，且显式传入入口文件和所有本地抽离子组件，或列出 checked files；若脚本提示 local child component 未纳入检查，是否补齐后重跑
+- 是否运行项目可用的类型检查命令；若仓库没有可用脚本，是否说明缺口和替代检查
 - 是否运行 `scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
+- 是否运行 diff check（至少 `git diff --check`，并人工审视本次 diff 是否只包含目标修改）
 - 自动检查是否覆盖本次新增 / 修改文件；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
 - 自动检查未通过时，是否先整改硬指标再交付
 - 旧 `.vue` 是本次新功能主承载页面时，是否使用 `--strict-vue-lines`

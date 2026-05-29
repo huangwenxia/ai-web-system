@@ -73,12 +73,23 @@
 
 如果这些关键项答不上来，就继续查当前 app 相邻模块和已挂载视图来源，不直接进入落码。
 
+## 严格复查先行模式
+当用户明确要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，`project-mamba` 页面不得先改代码，必须先输出四张表：
+- 现有组件 / 工具 / 目录复用校验表：每个自定义 UI、每个 `v-for`、tag / badge / status、dialog / form / table / filter 都要给出搜索命令、关键词、命中候选、采用或未复用原因。
+- 原型对比表：按头部、筛选区、卡片区、弹窗、空 / 加载 / 错误态逐块对比原型与当前实现，说明差异、影响和最小整改项。
+- Vue 结构自检：判断页面是否过重、组件拆分是否合理、状态 / 接口 / 常量是否放对目录，首要检查 `src/views/**/index.vue` 与同目录主 `.vue` 是否仍清晰可扫读。
+- 自动检查结果：覆盖类型检查、实现检查、结构检查、编码检查和 diff check；无法运行的检查必须说明原因，不得空写通过。
+
+发现问题后才进入最小修改；修改后必须重新跑自动检查，并更新四张表或最终代码校验表中的整改结果。
+
 ## 新功能最终代码校验
 命中 `project-mamba` 新功能页面时，交付前必须完成自动检查和 AI 语义校验两层闭环。
 
 ### 自动检查
 - 运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，必须显式传入本次目标文件，或在最终输出列出脚本实际 checked files；空检查不得视为通过。
+- 运行项目可用的类型检查命令；如果仓库没有可用 typecheck 脚本，最终输出必须说明缺口和替代检查。
 - 运行 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 检查本次目标文件或目录，覆盖 UTF-8 BOM 与常见乱码；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
+- 运行 diff check：至少执行 `git diff --check`，并人工审视本次 diff 是否只包含目标修改。
 - 页面入口结构清晰 / 冗杂抽离审视是首要 AI 语义门禁；新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 如果承载过多页面区块、状态分支、交互细节和样式壳层，必须先抽出页面私有组件并在最终检查表列出。
 - 自动检查硬指标：
   - 新增 `.vue` 物理总行数不超过 250 行
@@ -109,7 +120,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、递归三轮抽离复查、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、递归三轮抽离复查、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则
