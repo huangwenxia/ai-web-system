@@ -63,7 +63,7 @@
 - 最终页面结构是否清晰、职责是否可读；如果代码呈现冗杂混乱、主模板难以扫读、状态分支和交互细节缠在一起，是否已认真审视并执行组件抽离或说明保留原因
 - 布局样式是否优先 Tailwind；功能交互是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
 - 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
-- 简单 flex 布局是否写在 template class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS
+- `<style>` 是否使用 `scoped`；简单 flex / gap / margin / padding / width / height / font 等样式是否写在 template Tailwind class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS
 - 内容区宽度变化但 viewport 不变时，row / card / toolbar 是否按自身容器宽度稳定自适应，而不是只靠 `@media` 改结构
 - 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 - 最终输出是否给出达标 / 未达标检查表，并说明验证命令、整改结果或例外原因

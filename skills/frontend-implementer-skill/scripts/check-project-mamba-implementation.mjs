@@ -173,6 +173,93 @@ function findExternalStyleReferences(source, lineOffset = 0) {
   return errors;
 }
 
+const TAILWIND_PREFERRED_CSS_PROPERTIES = new Set([
+  'display',
+  'flex',
+  'flex-direction',
+  'flex-wrap',
+  'align-items',
+  'align-content',
+  'justify-content',
+  'justify-items',
+  'gap',
+  'row-gap',
+  'column-gap',
+  'margin',
+  'margin-top',
+  'margin-right',
+  'margin-bottom',
+  'margin-left',
+  'padding',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'width',
+  'height',
+  'min-width',
+  'min-height',
+  'max-width',
+  'max-height',
+  'font-size',
+  'font-weight',
+  'line-height',
+  'text-align',
+  'border-radius',
+]);
+
+function stripCssComments(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, '');
+}
+
+function isSimpleStyleSelector(selector) {
+  const normalized = selector.trim();
+  if (!normalized || normalized.startsWith('@')) return false;
+  if (/(^|[\s,])(:deep|::v-deep|:global|::part|::slotted)\b/.test(normalized)) return false;
+  if (/:(?!where\b|is\b|not\b|has\b)/.test(normalized)) return false;
+  return true;
+}
+
+function getTailwindPreferredDeclarations(ruleBody) {
+  const declarations = [];
+  const declarationRegex = /([a-z-]+)\s*:/gi;
+  let match;
+
+  while ((match = declarationRegex.exec(ruleBody))) {
+    const property = match[1].toLowerCase();
+    if (property.startsWith('--')) continue;
+    if (TAILWIND_PREFERRED_CSS_PROPERTIES.has(property)) declarations.push(property);
+  }
+
+  return Array.from(new Set(declarations));
+}
+
+function findTailwindPreferenceWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const cleanSource = stripCssComments(source);
+  const ruleRegex = /([^{}]+)\{([^{}]*)\}/g;
+  let match;
+
+  while ((match = ruleRegex.exec(cleanSource))) {
+    const selector = match[1];
+    if (!isSimpleStyleSelector(selector)) continue;
+
+    const declarations = getTailwindPreferredDeclarations(match[2]);
+    if (declarations.length < 3) continue;
+
+    warnings.push(
+      `style rule at line ${lineNumberAt(cleanSource, match.index, lineOffset)} contains simple layout/spacing/size declarations (${declarations.slice(0, 6).join(', ')}); prefer Tailwind utilities in template, keep scoped style for deep overrides, pseudo states, media/container queries, or hard-to-express styles`,
+    );
+  }
+
+  return warnings;
+}
+
+function findVueStyleBlockScopeErrors(block) {
+  if (/\bscoped\b/i.test(block.attrs)) return [];
+  return [`Vue style block at line ${block.startLine} must be <style scoped>; use Tailwind utilities first and keep component-private CSS scoped`];
+}
+
 function isCjkOrChinesePunctuation(codePoint) {
   return (
     (codePoint >= 0x3400 && codePoint <= 0x4dbf) ||
@@ -558,6 +645,24 @@ function getVueTemplateBlocks(content) {
   return blocks;
 }
 
+function getVueStyleBlocks(content) {
+  const blocks = [];
+  const styleRegex = /<style\b([^>]*)>([\s\S]*?)<\/style>/gi;
+  let match;
+
+  while ((match = styleRegex.exec(content))) {
+    const before = content.slice(0, match.index);
+    const startLine = before.split(/\r?\n/).length;
+    blocks.push({
+      attrs: match[1],
+      code: match[2],
+      startLine,
+    });
+  }
+
+  return blocks;
+}
+
 function isNativeHtmlTag(tagName) {
   return /^[a-z]+[1-6]?$/.test(tagName) && !tagName.startsWith('el-');
 }
@@ -910,6 +1015,11 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     warnings.push(...findVForReuseWarnings(block.code, block.startLine));
     warnings.push(...findRawElementPlusOverlayFormWarnings(block.code, block.startLine));
     warnings.push(...findRawTableReuseWarnings(block.code, block.startLine));
+  }
+
+  for (const block of getVueStyleBlocks(content)) {
+    errors.push(...findVueStyleBlockScopeErrors(block));
+    warnings.push(...findTailwindPreferenceWarnings(block.code, block.startLine));
   }
 
   const scriptBlocks = getVueScriptBlocks(content);

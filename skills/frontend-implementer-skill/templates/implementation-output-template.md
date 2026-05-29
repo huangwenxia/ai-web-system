@@ -58,7 +58,7 @@
 - 组件结构检查：`check-component-structure.mjs --strict` 结果 / 非 strict 或 `--allow-empty` 原因
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规 / 外部业务类型 props 使用 `PropType`
-- Tailwind utility / Element Plus / 原生 HTML 使用：达标 / 未达标
+- Tailwind utility / Element Plus / 原生 HTML 使用：达标 / 未达标（如保留简单 scoped 样式，说明原因）
 - flex 布局 / 禁用 grid：达标 / 未达标
 - 容器自适应：达标 / 未达标
 - 滚动容器 / scrollbar：使用 `el-scrollbar` 或项目内建滚动能力 / 未涉及 / 未达标（说明整改）

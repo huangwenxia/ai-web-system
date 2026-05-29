@@ -208,7 +208,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 发生抽离前，必须先给出极短清单：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因、不变量 / 可变量、复用半径；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离组件的 props 如果引用外部业务类型、`./types` 或相对路径导入类型，不直接使用 `defineProps<ExternalType>()`；优先使用运行时 props 对象 + `PropType`，避免 SFC 编译阶段无法解析外部类型。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，最终必须运行 `check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
-- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、页面结构清晰 / 冗杂抽离审视、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。未达标项必须说明已整改或例外原因。
+- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、页面结构清晰 / 冗杂抽离审视、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用（含简单 scoped 样式是否迁到 Tailwind）、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。
