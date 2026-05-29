@@ -9,7 +9,7 @@
 - 优先用 `rg -n "dirs:|VITE_ROUTER_MODULES|baseRoute|resolve\\(" apps/<app>/vite.config.ts` 核对路由挂载来源。
 - 优先用 `rg -n "install|directives|global|locales|auth|initTheme|tailwind" apps/<app>/src/main.ts` 核对 bootstrap 来源。
 - 如果本文件与当前代码冲突，以当前代码为准，并在回写候选中标记需要更新本矩阵。
-- 脚本发现 drift 时应阻断继续依赖本矩阵；先以当前代码为准，再人工确认是否回写矩阵。
+- 脚本发现 drift 时应阻断继续依赖本矩阵；先以当前代码为准，再由 AI 语义确认是否回写矩阵。
 
 ## T1：common-shell source app
 ### common

@@ -350,11 +350,11 @@ function sectionSuggestion(facts) {
 
   return [
     `### ${facts.app}`,
-    `- \`vite.config.ts\`：${routeBits.length ? `挂载 ${routeBits.join(' + ')}` : '未识别到 views 挂载；需人工确认'}`,
+    `- \`vite.config.ts\`：${routeBits.length ? `挂载 ${routeBits.join(' + ')}` : '未识别到 views 挂载；需 AI 语义确认'}`,
     `- alias：${facts.aliases.length ? facts.aliases.map((alias) => `\`${alias}\``).join('、') : '未识别'}`,
     `- topology：${facts.topology}`,
     '- `main.ts` 关键来源：',
-    ...(imports.length ? imports : ['  - 未识别关键 import；需人工确认']),
+    ...(imports.length ? imports : ['  - 未识别关键 import；需 AI 语义确认']),
     facts.hasVirtualModules ? `- 其他：存在 \`VITE_ROUTER_MODULES\`，需确认虚拟模块 route ownership` : '',
     '- 结论：以当前代码核对后更新。',
   ].filter(Boolean).join('\n');

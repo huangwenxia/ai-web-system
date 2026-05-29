@@ -72,7 +72,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 3. 判断修改范围：单组件 / 页面局部 / 页面级模块。
 4. 如果目标是 `project-mamba` 或同构仓库，先用当前 app 的 `vite.config.ts`、`src/main.ts`、router 入口校验拓扑和 route ownership，再输出极短“复用校验表”。
 5. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
-6. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐人工最终代码校验表。
+6. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
 7. 输出实现或修改结果，并明确边界态与风险。
 8. 判断是否需要叠加独立 `page-review-skill`。
 9. 判断本次是否值得回写到标准、案例、资产或规则。
@@ -102,8 +102,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - topology 脚本出现 `unknown`、未识别 route source、运行目录错误或矩阵 drift 时，不能把 topology 判定视为通过；必须先补当前代码证据或列为阻断项。
 - 新功能页面交付前必须运行 `scripts/check-project-mamba-implementation.mjs`，并显式传入本次目标文件或在输出中列出脚本实际 checked files；空检查不得视为通过。
 - 新增或修改含中文文案、locale、枚举 label、状态文案、业务展示常量的文件时，必须运行 `scripts/verify-encoding.mjs` 检查本次目标文件或目录；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
-- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，必须运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
-- 首要人工门禁是页面结构清晰 / 冗杂抽离审视：新增功能或页面时，`src/views/**/index.vue` 和同目录主 `.vue` 不能承载过多页面区块、状态分支、交互细节和样式壳层；如果主模板难以扫读或职责混杂，必须先抽成页面私有组件，再继续交付。
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，必须运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。实现脚本的 checked files 必须覆盖入口文件和所有本地抽离子组件；脚本如提示 local child component 未纳入检查，必须补齐文件后重跑。
+- 首要 AI 语义门禁是页面结构清晰 / 冗杂抽离审视：新增功能或页面时，`src/views/**/index.vue` 和同目录主 `.vue` 不能承载过多页面区块、状态分支、交互细节和样式壳层；如果主模板难以扫读或职责混杂，必须先抽成页面私有组件，再继续交付。
 - 硬指标不达标时先整改再交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
 - 用户明确指定旧文件优化，或旧 `.vue` 是本次新功能的主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
@@ -126,6 +126,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 大页面块抽离后必须二次检查抽出的页面块组件：若内部仍有重复的视觉壳、交互壳、操作项、浮层触发器或选项渲染，继续抽成更小子组件；父级保留数据编排，子组件只通过 props / emits 表达视图和交互。
+- 组件抽离必须执行“递归三轮复查”铁律：脚本先做至少 3 轮递归覆盖检查，确保入口文件、一级子组件、子组件内部文件都纳入 checked files；随后 AI 在最终检查表中给出 3 轮语义结论。每轮都分别检查结构是否清晰、是否优先复用项目已有组件 / Hook / utils、是否还存在进一步抽离可能、样式是否优先 Tailwind 且只在必要时保留 scoped、私有 hook / types / utils / 子组件是否放在同名胶囊目录。第 3 轮必须没有新的抽离候选；若仍发现问题，整改后继续加轮，直到一轮全绿。
 - 组件私有逻辑因体积或职责需要抽 `useXxx.ts` 时，必须改用组件同名目录收纳：`components/Foo/Foo.vue`、`components/Foo/useFoo.ts`、`components/Foo/types.ts`、`components/Foo/utils.ts`；组件私有 hook / types / utils 不散落在 `components/` 根目录。页面级或模块级共享逻辑才允许放在页面 / 模块目录。
 
 #### bug 修复

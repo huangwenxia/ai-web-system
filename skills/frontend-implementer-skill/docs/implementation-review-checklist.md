@@ -45,6 +45,7 @@
 - 抽离前是否已按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、目录落点和 API 契约
 - 最终页面结构是否清晰、职责是否可读；如果代码呈现冗杂混乱、主模板难以扫读、状态分支和交互细节缠在一起，是否已认真审视并执行组件抽离或说明保留原因
 - 大页面块抽离后，是否再次检查抽离出的页面块组件内部是否仍有重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮；存在重复时是否继续抽成更小子组件
+- 是否执行递归三轮抽离复查：脚本是否先完成 3 轮递归覆盖检查并把入口文件、一级子组件、子组件内部文件纳入 checked files；AI 是否在最终检查表中分别给出第 1 轮入口文件、第 2 轮一级子组件、第 3 轮子组件内部文件的语义结论；每轮是否检查结构清晰、已有项目能力复用、进一步抽离可能、Tailwind 样式优先和胶囊目录；第 3 轮仍有问题时是否继续加轮整改
 - 组件私有 hook / types / utils 是否与对应 `.vue` 放进组件同名目录；页面级或模块级共享逻辑才允许放在页面 / 模块目录
 - 新增 `.vue` 是否控制在 250 行以内；旧文件若被用户指定优化，是否纳入瘦身或拆分计划
 - 函数是否 70 行以内为最佳、100 行为上限；复杂且接近上限的函数顶部是否有一句功能说明，且没有废话注释
@@ -68,7 +69,7 @@
 - 禁用态
 
 ## `project-mamba` 自动检查
-- 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`，且显式传入目标文件或列出 checked files
+- 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`，且显式传入入口文件和所有本地抽离子组件，或列出 checked files；若脚本提示 local child component 未纳入检查，是否补齐后重跑
 - 是否运行 `scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
 - 自动检查是否覆盖本次新增 / 修改文件；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因

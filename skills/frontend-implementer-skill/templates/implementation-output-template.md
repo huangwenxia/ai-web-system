@@ -55,6 +55,7 @@
 - 状态分支抽离：未涉及 / 已抽离（列出组件）/ 保留在页面（说明原因）
 - 新增组件 / Hook 抽离预案：将抽离代码块 / 不变量 / 可变量 / 复用半径 / 目录落点 / API 契约
 - 抽离实际落地：与预案一致 / 不一致（说明原因）
+- 递归三轮抽离复查：脚本 3 轮覆盖结果；第 1 轮入口文件 / 第 2 轮一级子组件 / 第 3 轮子组件内部文件；每轮 AI 语义结论：结构清晰、复用检查、进一步抽离、Tailwind 样式、胶囊目录；未达标则列整改轮次
 - 组件结构检查：`check-component-structure.mjs --strict` 结果 / 非 strict 或 `--allow-empty` 原因
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规 / 外部业务类型 props 使用 `PropType`

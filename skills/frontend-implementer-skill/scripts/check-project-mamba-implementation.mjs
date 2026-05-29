@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 const VUE_LINE_LIMIT = 250;
 const FUNCTION_WARN_LIMIT = 70;
 const FUNCTION_ERROR_LIMIT = 100;
+const RECURSIVE_EXTRACTION_AUDIT_ROUNDS = 3;
 const SCRIPT_EXTENSIONS = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
 const STYLE_EXTENSIONS = new Set(['.css', '.scss', '.sass', '.less', '.pcss', '.postcss']);
 const MOJIBAKE_TOKENS = [
@@ -712,6 +713,100 @@ function getVueStyleBlocks(content) {
   return blocks;
 }
 
+function getRelativeVueImportSpecifiers(content) {
+  const specifiers = [];
+  const sourceRegex = /\bfrom\s*['"](\.[^'"]+)['"]|import\s*\(\s*['"](\.[^'"]+)['"]\s*\)/g;
+  let match;
+
+  while ((match = sourceRegex.exec(content))) {
+    specifiers.push(match[1] || match[2]);
+  }
+
+  return unique(specifiers);
+}
+
+function resolveLocalVueImport(fromFile, specifier) {
+  if (!specifier || !specifier.startsWith('.')) return '';
+
+  const baseDir = path.dirname(fromFile);
+  const rawTarget = normalizeGitPath(path.join(baseDir, specifier));
+  const extension = path.extname(rawTarget).toLowerCase();
+  const candidates = extension === '.vue'
+    ? [rawTarget]
+    : [
+        `${rawTarget}.vue`,
+        `${rawTarget}/index.vue`,
+        `${rawTarget}/${path.basename(rawTarget)}.vue`,
+      ];
+
+  return candidates.find((candidate) => existsSync(path.resolve(process.cwd(), candidate))) || '';
+}
+
+function collectLocalVueDescendants(rootFile, maxDepth) {
+  const descendants = [];
+  const visited = new Set([normalizeGitPath(rootFile)]);
+  const queue = [{ file: normalizeGitPath(rootFile), depth: 0 }];
+
+  while (queue.length) {
+    const current = queue.shift();
+    if (current.depth >= maxDepth) continue;
+
+    const absolute = path.resolve(process.cwd(), current.file);
+    if (!existsSync(absolute)) continue;
+
+    const content = readFileSync(absolute, 'utf8');
+    for (const specifier of getRelativeVueImportSpecifiers(content)) {
+      const child = resolveLocalVueImport(current.file, specifier);
+      if (!child || visited.has(child)) continue;
+
+      visited.add(child);
+      const depth = current.depth + 1;
+      descendants.push({ file: child, depth, parent: current.file });
+      queue.push({ file: child, depth });
+    }
+  }
+
+  return descendants;
+}
+
+function addRecursiveComponentCoverageWarnings(files, results) {
+  const checkedSet = new Set(files.map(normalizeGitPath));
+  const resultMap = new Map(results.map((result) => [result.file, result]));
+  const warned = new Set();
+
+  for (const file of files) {
+    const normalized = normalizeGitPath(file);
+    if (path.extname(normalized).toLowerCase() !== '.vue') continue;
+    if (!isImplementationStyleScope(normalized)) continue;
+
+    const result = resultMap.get(normalized);
+    if (!result) continue;
+
+    const descendants = collectLocalVueDescendants(normalized, RECURSIVE_EXTRACTION_AUDIT_ROUNDS);
+    if (descendants.length === 0) {
+      result.messages.push(`recursive extraction audit coverage ok: no local child components found within ${RECURSIVE_EXTRACTION_AUDIT_ROUNDS} rounds`);
+      continue;
+    }
+
+    let missingCount = 0;
+    for (const child of descendants) {
+      if (checkedSet.has(child.file)) continue;
+      const warnKey = `${normalized}::${child.file}`;
+      if (warned.has(warnKey)) continue;
+
+      warned.add(warnKey);
+      missingCount += 1;
+      result.warnings.push(
+        `recursive extraction audit coverage round ${child.depth}/${RECURSIVE_EXTRACTION_AUDIT_ROUNDS}: local child component ${child.file} imported by ${child.parent} is not included in checked files; include the entry file and every extracted child component in the validation command before final delivery`,
+      );
+    }
+
+    if (missingCount === 0) {
+      result.messages.push(`recursive extraction audit coverage ok: checked local child components through ${RECURSIVE_EXTRACTION_AUDIT_ROUNDS} rounds`);
+    }
+  }
+}
+
 function isNativeHtmlTag(tagName) {
   return /^[a-z]+[1-6]?$/.test(tagName) && !tagName.startsWith('el-');
 }
@@ -1154,6 +1249,7 @@ function main() {
   }
 
   const results = files.map((file) => checkFile(file, statusMap.get(file), options));
+  addRecursiveComponentCoverageWarnings(files, results);
   const errorCount = results.reduce((sum, result) => sum + result.errors.length, 0);
   const warningCount = results.reduce((sum, result) => sum + result.warnings.length, 0);
 

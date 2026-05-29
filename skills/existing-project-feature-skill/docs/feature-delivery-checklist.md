@@ -39,6 +39,7 @@
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 发生抽离前，是否已列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；最终是否对照抽离前预案与实际落地差异
 - 发生组件拆分时，是否已明确不变量 / 可变量、复用半径、目录落点和 API 契约；是否避免把组件私有 hook / types / utils 散到上层目录
+- 发生组件抽离后，是否执行递归三轮抽离复查：脚本是否先完成 3 轮递归覆盖检查并把入口文件、一级子组件、子组件内部文件纳入 checked files；AI 是否在最终检查表中分别给出第 1 轮入口文件、第 2 轮一级子组件、第 3 轮子组件内部文件的语义结论；每轮是否检查结构清晰、已有项目能力复用、进一步抽离可能、Tailwind 样式优先和胶囊目录；第 3 轮仍有问题时是否继续加轮整改
 
 ## 边界与细节检查
 - 加载态
@@ -51,7 +52,7 @@
 ## `project-mamba` 最终代码校验
 - 是否运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，且显式传入目标文件或列出 checked files；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
 - 是否运行 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
-- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `skills/frontend-implementer-skill/scripts/check-component-structure.mjs --strict`
+- 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `skills/frontend-implementer-skill/scripts/check-component-structure.mjs --strict`；实现脚本 checked files 是否覆盖入口文件和所有本地抽离子组件
 - 新增 `.vue` 是否按物理总行数控制在 250 行以内
 - 旧文件是否默认排除历史超限；若用户明确要求优化旧文件，或旧 `.vue` 是本次新功能主承载页面，是否使用 `--strict-vue-lines` 并纳入瘦身或拆分计划
 - `locale`、`schema`、纯配置组件如被排除，是否说明排除原因
