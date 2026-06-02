@@ -78,12 +78,19 @@
 
 强制顺序：原型确认 → app / route ownership / 复用扫描 → 页面结构拆分 → 数据归属设计 → 胶囊目录落位 → 业务容器组件实现 → 纯视觉组件实现 → `index.vue` 组装 → 自动校验 → AI 语义复查。最终检查表必须覆盖每一步；缺任一步时不能视为交付完成。
 
-## 严格复查先行模式
+## 实施前门禁复核模式
 当用户明确要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，`project-mamba` 页面不得先改代码，必须先输出四张表：
 - 现有组件 / 工具 / 目录复用校验表：每个自定义 UI、每个 `v-for`、tag / badge / status、dialog / form / table / filter 都要给出搜索命令、关键词、命中候选、采用或未复用原因。
 - 原型对比表：按头部、筛选区、卡片区、弹窗、空 / 加载 / 错误态、图标语义 / 图标体系逐块对比原型与当前实现，说明差异、影响和最小整改项。
 - Vue 结构自检：判断页面是否过重、组件拆分是否合理、状态 / 接口 / 常量是否放对目录，首要检查 `src/views/**/index.vue` 与同目录主 `.vue` 是否仍清晰可扫读。
 - 自动检查结果：覆盖类型检查、实现检查、结构检查、编码检查和 diff check；无法运行的检查必须说明原因，不得空写通过。
+
+实施前门禁复核至少 3 轮（3 遍）：
+- 第 1 轮：复用与原型差异复查。聚焦现有组件 / 工具 / 目录复用证据、原型逐块差异、图标语义、表格 / 表单 / 弹窗 / `v-for` 是否已有项目能力可复用。
+- 第 2 轮：结构与数据归属复查。聚焦页面入口是否过重、业务容器和纯视觉组件边界、数据是否跟着业务组件走、胶囊目录和 props / emits / `defineModel` 边界是否清晰。
+- 第 3 轮：校验计划与阻断项复查。聚焦 checked files 是否覆盖入口和抽离文件、将运行哪些自动检查、哪些 warning/error 会阻断实施、最小整改路径是否明确。
+
+第 3 轮仍发现阻断项时，不得进入代码实施；继续追加第 4 轮 / 第 5 轮，直到阻断项收敛为明确实施项或用户确认的取舍。
 
 发现问题后才进入最小修改；修改后必须重新跑自动检查，并更新四张表或最终代码校验表中的整改结果。
 
@@ -111,7 +118,7 @@
 - 弹出层表单、抽屉表单、popover 表单不得默认手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`；先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块已有 modal/form 封装和 `easybill-ui`。确实无法复用时，才能基于 Element Plus 组合实现，并在最终输出列出命中候选和未复用原因。
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
-- 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称，再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
+- 图标必须纳入门禁复核：先识别原型使用的图标体系和具体语义名称，再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
 - 页面模板中 loading、error、empty、permission、filtered-empty、list-body 等 `v-if` / `v-else-if` / `v-else` 状态分支超过 3 个，或单个状态块超过约 30 行时，必须优先抽成页面私有状态展示组件或内容区子组件；页面保留数据和事件编排，子组件承接状态 UI。
 - 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 数据获取按“数据归属组件”拆分：禁止一个 `usePage` / `useXxx` 大 hook 管全页数据；业务容器组件自己请求自己的接口或 mock，自己维护 loading / empty / error / refresh；页面 `index.vue` 只保留 route query / params、页面级主流程状态、真正跨兄弟组件共享的最小状态和跨组件事件编排；纯视觉组件只接收 props，禁止 import Api / router / store / mock service。`usePage` / `useXxx` 返回值超过 8-10 个或同时返回多组列表、loading、弹窗表单、路由跳转、多个请求、多组 options / tags / cards / table data 时，必须拆分或说明例外。
@@ -121,14 +128,14 @@
 - 若组件私有逻辑需要抽 `useXxx.ts`、局部 `types.ts`、`constants.ts` 或 `utils.ts`，使用组件同名目录收纳，并以 `index.vue` 作为组件入口；同名胶囊目录下禁止 `Foo.vue`，必须改为 `index.vue`。页面级或模块级共享逻辑才放在页面 / 模块目录。
 - 实现完成后必须做胶囊目录强自检：`components/` 根目录不能出现一堆同一功能前缀的平铺文件；新增模块如果有 `index.vue` 以外的 hook / type / constants，必须有同名胶囊目录；每个胶囊目录必须有 `index.vue` 或 `index.ts`；页面根 `index.vue` 不承载细节 UI，不直接 import 一堆兄弟组件。
 - 拆分落点按复用半径决定：页面私有就近放当前页面目录；同模块多个页面复用放模块级目录；当前 app 多模块复用放 app 级 `commons` / `components`；跨 app 稳定复用才考虑 `apps/common` 或 `@repo`。
-- 组件能力优先项目已有封装、Element Plus 和 `easybill-ui`；布局、间距和尺寸优先 Tailwind utility；布局结构默认使用 flex，禁止新增 Tailwind grid utility 或 CSS Grid 属性；`<style>` 必须 `scoped`，简单布局 / 间距 / 尺寸 / 排版声明优先迁到 template Tailwind class，复杂容器自适应、hover / focus 状态和深层覆盖再放 scoped SCSS；原生 HTML 只用于合适的视觉结构或现有能力缺口。
+- 组件能力优先项目已有封装、Element Plus 和 `easybill-ui`；布局、间距和尺寸优先 Tailwind utility；布局结构默认使用 flex，响应式优先通过 `flex-wrap`、`flex-basis`、`min-w-*`、`max-w-*`、`gap-*`、`ml-auto` 自然换行和收缩，断点只用于布局语义确实变化的少数场景；禁止新增 Tailwind grid utility 或 CSS Grid 属性；`<style>` 必须 `scoped`，简单布局 / 间距 / 尺寸 / 排版声明优先迁到 template Tailwind class，复杂容器自适应、hover / focus 状态和深层覆盖再放 scoped SCSS；原生 HTML 只用于合适的视觉结构或现有能力缺口。
 - 页面或组件自身需要滚动容器时，必须使用 `el-scrollbar` 或项目已有内建滚动组件；禁止自行使用原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 或自定义 scrollbar 样式。
 - Vue 3 实现优先 `<script setup>`、TypeScript、`defineModel` 和 `computed`；`watch` 只处理副作用，不维护可推导状态。
 - `defineProps` 简单场景可用泛型；复杂数组、对象、联合类型、业务类型数组或需要 default / required / validator 时，使用对象写法配合 `PropType`。`PropType` 与业务类型必须使用 `import type`。
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则

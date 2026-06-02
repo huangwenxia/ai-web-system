@@ -13,8 +13,10 @@
 - 输入前提是否足够支撑直接落代码
 - 如果是新功能开发，是否已经有已确认原型；没有则是否回退到 `existing-project-feature-skill` 或 `agione-ui`
 
-## 严格复查先行检查
-- 用户要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，是否在任何代码编辑前先输出四张表
+## 实施前门禁复核检查
+- 用户要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，是否在任何代码编辑前进入实施前门禁复核并先输出四张表
+- 实施前门禁复核是否至少完成 3 轮（3 遍）：第 1 轮查复用证据和原型差异，第 2 轮查 Vue 结构、数据归属和胶囊目录，第 3 轮查自动检查计划、checked files、阻断项和最小整改路径
+- 第 3 轮仍发现阻断项时，是否继续追加第 4 轮 / 第 5 轮复核并先补齐结论，而不是进入代码实施
 - 现有组件 / 工具 / 目录复用校验表是否覆盖每个自定义 UI、每个 `v-for`、tag / badge / status、dialog / form / table / filter，并给出搜索命令、关键词、命中候选、采用或未复用原因
 - 原型对比表是否按头部、筛选区、卡片区、弹窗、空 / 加载 / 错误态、图标语义 / 图标体系逐块对比原型与现有实现，说明差异、影响和最小整改项
 - Vue 结构自检是否覆盖页面是否过重、组件拆分是否合理、状态 / 接口 / 常量是否放对目录，以及 `index.vue` / 同目录主 `.vue` 是否仍保持页面编排清晰
@@ -78,6 +80,7 @@
 - props 命名是否表达业务语义；子组件是否避免直接修改 props 或 props 对象 / 数组的深层值
 - 布局样式是否优先 Tailwind utility；交互型能力是否优先项目组件、Element Plus 或已有封装；原生 HTML 是否只用于合适的视觉结构或能力缺口
 - 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
+- 响应式是否优先使用 `flex-wrap`、`flex-basis`、`min-w-*`、`max-w-*`、`gap-*`、`ml-auto` 等自然换行和收缩能力；若 `check-project-mamba-implementation.mjs` 提示 clustered viewport media breakpoints，是否已整改或说明保留的是语义断点
 - `<style>` 是否使用 `scoped`；简单 flex / gap / margin / padding / width / height / font 等样式是否写在 template Tailwind class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS
 - 内容区宽度变化但 viewport 不变时，row / card / toolbar 是否按自身容器宽度稳定自适应，而不是只靠 `@media` 改结构
 - 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式

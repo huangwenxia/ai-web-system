@@ -9,6 +9,8 @@ const VUE_LINE_LIMIT = 250;
 const FUNCTION_WARN_LIMIT = 70;
 const FUNCTION_ERROR_LIMIT = 100;
 const RECURSIVE_EXTRACTION_AUDIT_ROUNDS = 3;
+const VIEWPORT_BREAKPOINT_MANY_THRESHOLD = 3;
+const VIEWPORT_BREAKPOINT_CLUSTER_THRESHOLD = 80;
 const SCRIPT_EXTENSIONS = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
 const STYLE_EXTENSIONS = new Set(['.css', '.scss', '.sass', '.less', '.pcss', '.postcss']);
 const MOJIBAKE_TOKENS = [
@@ -261,6 +263,56 @@ function findTailwindPreferenceWarnings(source, lineOffset = 0) {
 
     warnings.push(
       `style rule at line ${lineNumberAt(cleanSource, match.index, lineOffset)} contains simple layout/spacing/size declarations (${declarations.slice(0, 6).join(', ')}); prefer Tailwind utilities in template, keep scoped style for deep overrides, pseudo states, media/container queries, or hard-to-express styles`,
+    );
+  }
+
+  return warnings;
+}
+
+function findViewportBreakpointWarnings(source, lineOffset = 0) {
+  const cleanSource = stripCssComments(source);
+  const mediaRegex = /@media\s+([^{]+)\{/gi;
+  const breakpointsByValue = new Map();
+  let mediaMatch;
+
+  while ((mediaMatch = mediaRegex.exec(cleanSource))) {
+    const params = mediaMatch[1];
+    const widthRegex = /\b(?:min|max)-width\s*:\s*(\d+(?:\.\d+)?)px\b/gi;
+    let widthMatch;
+
+    while ((widthMatch = widthRegex.exec(params))) {
+      const value = Number(widthMatch[1]);
+      if (!Number.isFinite(value)) continue;
+      if (!breakpointsByValue.has(value)) {
+        breakpointsByValue.set(value, lineNumberAt(cleanSource, mediaMatch.index, lineOffset));
+      }
+    }
+  }
+
+  const breakpoints = Array.from(breakpointsByValue.entries())
+    .map(([value, line]) => ({ value, line }))
+    .sort((a, b) => a.value - b.value);
+  if (breakpoints.length === 0) return [];
+
+  const warnings = [];
+  if (breakpoints.length >= VIEWPORT_BREAKPOINT_MANY_THRESHOLD) {
+    warnings.push(
+      `viewport media breakpoints at lines ${breakpoints.map((item) => item.line).join(', ')} (${breakpoints.map((item) => `${item.value}px`).join(', ')}) should be justified in the final checklist; prefer flex natural wrapping/shrinking with flex-wrap, flex-basis, min/max width, gap, and ml-auto before adding multiple viewport breakpoints`,
+    );
+  }
+
+  const clusteredPairs = [];
+  for (let index = 1; index < breakpoints.length; index += 1) {
+    const previous = breakpoints[index - 1];
+    const current = breakpoints[index];
+    if (current.value - previous.value <= VIEWPORT_BREAKPOINT_CLUSTER_THRESHOLD) {
+      clusteredPairs.push(`${previous.value}px/${current.value}px`);
+    }
+  }
+
+  if (clusteredPairs.length > 0) {
+    warnings.push(
+      `clustered viewport media breakpoints (${clusteredPairs.join(', ')}) suggest hand-tuned wrapping; prefer flex-wrap/flex-basis/min-w/max-w/gap/ml-auto and keep only semantic layout breakpoints`,
     );
   }
 
@@ -1391,6 +1443,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
   for (const block of getVueStyleBlocks(content)) {
     errors.push(...findVueStyleBlockScopeErrors(block));
     warnings.push(...findTailwindPreferenceWarnings(block.code, block.startLine));
+    warnings.push(...findViewportBreakpointWarnings(block.code, block.startLine));
   }
 
   const scriptBlocks = getVueScriptBlocks(content);
@@ -1450,10 +1503,11 @@ function checkFile(file, statusCode, options) {
   } else if (isScriptExtension(extension)) {
     checkScriptFile(content, result.file, result);
   } else if (isStyleExtension(extension) && inImplementationStyleScope) {
-    const { errors } = result;
+    const { errors, warnings } = result;
     errors.push('external style file in a view/component scope is not allowed; move styles into the owning .vue <style scoped> block or an existing shared style entry');
     errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
+    warnings.push(...findViewportBreakpointWarnings(content, 0));
   }
 
   return result;
