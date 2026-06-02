@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mamba Prototype Implementation"
+  short_description: "把已确认原型落地为 project-mamba 前端代码并校验"
+  default_prompt: "Use $mamba-prototype-implementation to implement this confirmed prototype in project-mamba frontend code and verify fidelity."
