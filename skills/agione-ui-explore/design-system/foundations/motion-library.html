@@ -1,0 +1,512 @@
+<!--FRONTMATTER
+name: Motion Library
+level: foundation
+cls: anim-*
+tag: —
+data-component: —
+since: v3.10
+status: stable
+related: motion
+description: Motion 动画库：fade-in / slide-up / scale-in / replay demo 等
+data-characteristics: —
+when-to-use: 页面 / 组件出场或交互动画
+when-not-to-use: 纯静态展示 → 不必加动画
+type: reference-only
+FRONTMATTER-->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Motion Library — AGIOne DS</title>
+<!-- Vue + Element Plus + Icons + Lucide（与生产环境一致） -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-plus@2.9.1/dist/index.css">
+<script src="https://unpkg.com/element-plus@2.9.1/dist/index.full.min.js"></script>
+<script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/400.css">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style>
+/* ── Design tokens (字节级抄自 shell-sample :root) ── */
+:root {
+  --ui-topnav-bg:          #1a1025;
+  --ui-topnav-accent:      #2d2240;
+  --ui-topnav-foreground:          #f0edf5;
+  --ui-topnav-muted:       #8b7fa0;
+  --ui-topnav-active-bg:   #312870;
+  --ui-topnav-active-fg:   #c4bdff;
+  --ui-topnav-height:      56px;
+
+  --ui-sidebar-bg:         #fafafa;
+  --ui-sidebar-border:     #e4e4e7;
+  --ui-sidebar-foreground:         #09090b;
+  --ui-sidebar-muted:      #71717a;
+  --ui-sidebar-active-bg:  #e4e4e7;
+  --ui-sidebar-active-fg:  #18181b;
+  --ui-sidebar-width:      256px;
+  --ui-body-bg:            #ffffff;
+  --ui-body-radius:        16px 16px 0 0;
+
+  --ui-color-primary:        #5f4ecf;
+  --ui-color-primary-hover:  #4a3eb0;
+  --ui-color-primary-active: #3d3399;
+  --ui-color-primary-subtle: #ece9f9;
+  --ui-text-on-brand:   #ffffff;
+
+  --ui-text-primary:           #09090b;
+  --ui-bg-page:           #ffffff;
+  --ui-bg-card:                 #ffffff;
+  --ui-accent:               #f4f4f5;
+  --ui-bg-muted:                #f4f4f5;
+  --ui-text-muted:     #71717a;
+  --ui-text-secondary:       #3f3f46;
+  --ui-text-placeholder:     #a1a1aa;
+  --ui-text-disabled:        #d4d4d8;
+  --ui-border-soft:          #f4f4f5;
+  --ui-border-default:               #e4e4e7;
+  --ui-border-strong:        #a1a1aa;
+  --ui-input:                #ffffff;
+
+  --ui-color-success:        #22c55e;
+  --ui-color-warning:        #f59e0b;
+  --ui-color-destructive:    #ef4444;
+  --ui-color-success-subtle:     #ecfdf5;
+  --ui-color-warning-subtle:     #fef3c7;
+  --ui-color-destructive-subtle: #fef2f2;
+
+  --ui-badge-purple-bg: #f2eef8;  --ui-badge-purple-fg: #6a4e9a;
+  --ui-badge-blue-bg:   #eef1f8;  --ui-badge-blue-fg:   #4a6298;
+  --ui-badge-green-bg:  #eef5f0;  --ui-badge-green-fg:  #3a7252;
+  --ui-badge-orange-bg: #f8f1ec;  --ui-badge-orange-fg: #8a5e38;
+  --ui-badge-yellow-bg: #f7f4ea;  --ui-badge-yellow-fg: #7a6228;
+  --ui-badge-muted-bg:  var(--ui-bg-muted); --ui-badge-muted-fg: var(--ui-text-muted);
+
+  --ui-shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
+  --ui-shadow-md:  0 2px 8px rgba(0,0,0,0.08);
+  --ui-shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
+  --ui-shadow-xl:  0 8px 32px rgba(0,0,0,0.16);
+
+  --ui-radius-sm:   4px;
+  --ui-radius-md:   6px;
+  --ui-radius-lg:   8px;
+  --ui-radius-xl:   12px;
+  --ui-radius-2xl:  16px;
+  --ui-radius-pill: 9999px;
+
+  --ui-font-heading: 'Manrope Variable', Inter, system-ui, sans-serif;
+  --ui-font-body:    'Inter Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --ui-font-mono:    'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+  --ui-duration-fast: 150ms;
+  --ui-duration-base: 250ms;
+  --ui-duration-slow: 400ms;
+  --ui-ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  --ui-avatar-bg: #7c3aed;
+  --ui-ring: #18181b;
+
+  /* 4 个缓动函数（v3.10 扩展，配合 anim-* preset class 使用） */
+  --ui-ease-in:     cubic-bezier(0.4, 0, 1, 1);          /* 加速退出 / 离场 */
+  --ui-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);      /* 平滑双向 / 切换 */
+  --ui-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);   /* 轻弹性 / 强调反馈 */
+
+  --ui-space-xs:   4px;
+  --ui-space-sm:   8px;
+  --ui-space-md:   12px;
+  --ui-space-base: 16px;
+  --ui-space-lg:   20px;
+  --ui-space-xl:   24px;
+  --ui-space-2xl:  32px;
+  --ui-space-3xl:  48px;
+
+  --ui-z-base: 1; --ui-z-raised: 10; --ui-z-sidebar: 100; --ui-z-topbar: 200;
+  --ui-z-dropdown: 300; --ui-z-sticky: 400; --ui-z-tooltip: 500;
+  --ui-z-drawer: 600; --ui-z-dialog-mask: 699; --ui-z-dialog: 700;
+  --ui-z-loading: 800; --ui-z-message: 900;
+
+  --ui-icon-xs: 12px; --ui-icon-sm: 14px; --ui-icon-base: 16px;
+  --ui-icon-md: 18px; --ui-icon-lg: 20px; --ui-icon-xl: 24px;
+  --ui-icon-2xl: 40px; --ui-icon-3xl: 48px;
+
+  /* Element Plus */
+  --el-border-radius-base:  6px;
+  --el-border-color:        var(--ui-border-default);
+  --el-bg-color:            var(--ui-bg-page);
+  --el-bg-color-page:       var(--ui-accent);
+  --el-bg-color-overlay:    #ffffff;
+  --el-text-color-primary:  var(--ui-text-primary);
+  --el-text-color-regular:  var(--ui-text-secondary);
+  --el-text-color-secondary:var(--ui-text-muted);
+  --el-text-color-placeholder: var(--ui-text-placeholder);
+  --el-text-color-disabled: var(--ui-text-disabled);
+  --el-fill-color-blank:    var(--ui-input);
+  --el-fill-color-light:    var(--ui-accent);
+  --el-fill-color:          #f0f0f0;
+  --el-color-primary:       var(--ui-color-primary);
+  --el-disabled-bg-color:   var(--ui-bg-muted);
+  --el-disabled-border-color: var(--ui-border-default);
+  --el-mask-color:          rgba(255,255,255,0.9);
+}
+
+body { font-family: var(--ui-font-body); background: var(--ui-sidebar-bg); padding: 32px; margin: 0; color: var(--ui-text-primary); }
+h1 { font-size: 24px; margin: 0 0 8px; font-family: var(--ui-font-heading); font-weight: 800; }
+h2 { font-size: 16px; margin: 32px 0 12px; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+pre { background: var(--ui-topnav-bg); color: var(--ui-topnav-foreground); padding: 16px; border-radius: 8px; overflow-x: auto; font-size: 13px; line-height: 1.5; max-width: 720px; }
+
+/* ── DS shared utility classes（与 agione-design-system.html 同步） ── */
+.preview-frame { position: relative; padding: var(--ui-space-xl); border: 1px dashed var(--ui-border-default); border-radius: var(--ui-radius-lg); background: var(--ui-bg-page); display: flex; flex-direction: column; gap: var(--ui-space-base); min-height: 80px; max-width: 1200px; }
+.ds-variant-row { display: grid; grid-template-columns: 80px 1fr; gap: var(--ui-space-base); align-items: center; padding: 6px 0; }
+.ds-variant-label { font-size: 11px; font-weight: 600; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* ── Component CSS (extracted from shell-sample + DS demo styles) ── */
+@keyframes anim-fade-in       { from { opacity: 0; }                                     to { opacity: 1; } }
+@keyframes anim-fade-out      { from { opacity: 1; }                                     to { opacity: 0; } }
+@keyframes anim-scale-in      { from { opacity: 0; transform: scale(0.96); }             to { opacity: 1; transform: scale(1); } }
+@keyframes anim-slide-in-right{ from { opacity: 0; transform: translateX(20px); }        to { opacity: 1; transform: translateX(0); } }
+@keyframes anim-slide-in-up   { from { opacity: 0; transform: translateY(12px); }        to { opacity: 1; transform: translateY(0); } }
+@keyframes ease-compare-roll { from { left: 0; } to { left: calc(100% - 20px); } }
+.ds-section-head { margin-bottom: var(--ui-space-xl); }
+.ds-section-eyebrow { font-size: 11px; font-weight: 700; color: var(--ui-color-primary); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
+.ds-section-title { font-family: var(--ui-font-heading); font-size: 26px; font-weight: 800; line-height: 1.2; color: var(--ui-text-primary); margin-bottom: 6px; letter-spacing: -0.01em; }
+.ds-section-desc { font-size: 14px; line-height: 1.7; color: var(--ui-text-muted); max-width: 720px; }
+.ds-block { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: var(--ui-space-2xl); padding: var(--ui-space-xl); background: var(--ui-bg-card); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-xl); margin-bottom: var(--ui-space-base); }
+.ds-block-meta { display: flex; flex-direction: column; gap: var(--ui-space-md); min-width: 0; }
+.ds-block-name { display: flex; align-items: baseline; gap: var(--ui-space-sm); flex-wrap: wrap; }
+.ds-block-name h3 { font-family: var(--ui-font-heading); font-size: 18px; font-weight: 700; color: var(--ui-text-primary); letter-spacing: -0.005em; }
+.ds-block-tag { display: inline-flex; align-items: center; gap: 4px; height: 20px; padding: 0 8px; border-radius: var(--ui-radius-pill); font-size: 10px; font-weight: 600; letter-spacing: 0.02em; }
+.ds-block-tag.atom    { background: var(--ui-badge-blue-bg);   color: var(--ui-badge-blue-fg); }
+.ds-block-tag.layout  { background: var(--ui-badge-purple-bg); color: var(--ui-badge-purple-fg); }
+.ds-block-tag.feedback{ background: var(--ui-badge-orange-bg); color: var(--ui-badge-orange-fg); }
+.ds-block-tag.data    { background: var(--ui-badge-green-bg);  color: var(--ui-badge-green-fg); }
+.ds-block-tag.action  { background: var(--ui-badge-yellow-bg); color: var(--ui-badge-yellow-fg); }
+.ds-block-tag.ver     { background: var(--ui-bg-muted);           color: var(--ui-text-muted); font-family: var(--ui-font-mono); }
+.ds-block-desc { font-size: 13px; line-height: 1.7; color: var(--ui-text-secondary); }
+.ds-block-when { padding: var(--ui-space-md); border-radius: var(--ui-radius-md); background: var(--ui-accent); border-left: 3px solid var(--ui-color-primary); font-size: 12px; line-height: 1.6; color: var(--ui-text-secondary); }
+.ds-block-when strong { display: block; font-weight: 700; color: var(--ui-text-primary); margin-bottom: 2px; font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
+.ds-prop-table { font-size: 12px; line-height: 1.5; border-collapse: collapse; width: 100%; }
+.ds-prop-table th, .ds-prop-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--ui-border-soft); vertical-align: top; }
+.ds-prop-table th { font-size: 10px; font-weight: 700; color: var(--ui-text-muted); text-transform: uppercase; letter-spacing: 0.06em; background: var(--ui-accent); }
+.ds-prop-table td code { font-family: var(--ui-font-mono); font-size: 11px; padding: 1px 5px; border-radius: var(--ui-radius-sm); background: var(--ui-accent); color: var(--ui-color-primary); }
+.ds-prop-table .req { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--ui-color-destructive); margin-right: 4px; vertical-align: middle; }
+.ds-block-stage { display: flex; flex-direction: column; gap: var(--ui-space-md); min-width: 0; }
+.ds-preview { padding: var(--ui-space-xl); border: 1px dashed var(--ui-border-default); border-radius: var(--ui-radius-lg); background: var(--ui-bg-page); display: flex; flex-direction: column; gap: var(--ui-space-base); align-items: stretch; min-height: 80px; position: relative; }
+.ds-code { position: relative; border-radius: var(--ui-radius-lg); background: #18181b; border: 1px solid var(--ui-border-default); overflow: hidden; }
+.ds-code-head { display: flex; justify-content: space-between; align-items: center; padding: 8px 14px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); }
+.ds-code-lang { font-size: 11px; font-weight: 600; color: #a1a1aa; font-family: var(--ui-font-mono); display: inline-flex; align-items: center; gap: 6px; }
+.ds-code-lang [data-lucide] { width: 12px; height: 12px; }
+.ds-code-copy { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--ui-radius-md); font-size: 11px; font-weight: 600; color: #d4d4d8; background: rgba(255,255,255,0.06); transition: background var(--ui-duration-fast), color var(--ui-duration-fast); }
+.ds-code-copy:hover { background: rgba(255,255,255,0.12); color: #fff; }
+.ds-code-copy.is-copied { background: var(--ui-color-success); color: #fff; }
+.ds-code-copy [data-lucide] { width: 12px; height: 12px; }
+.ds-code pre { margin: 0; padding: 14px 18px; font-family: var(--ui-font-mono); font-size: 12.5px; line-height: 1.7; color: #e4e4e7; overflow-x: auto; tab-size: 2; }
+.ds-code pre .tk-tag    { color: #ff7b72; }
+.ds-code pre .tk-attr   { color: #79c0ff; }
+.ds-code pre .tk-str    { color: #a5d6ff; }
+.ds-code pre .tk-cmt    { color: #6e7681; font-style: italic; }
+.ds-code pre .tk-punct  { color: #c9d1d9; }
+.anim-fade-in        { animation: anim-fade-in        var(--ui-duration-base) var(--ui-ease-out)  both; }
+.anim-fade-out       { animation: anim-fade-out       var(--ui-duration-base) var(--ui-ease-in)   both; }
+.anim-slide-in-right { animation: anim-slide-in-right var(--ui-duration-slow) var(--ui-ease-out)  both; }
+.anim-slide-in-up    { animation: anim-slide-in-up    var(--ui-duration-slow) var(--ui-ease-out)  both; }
+.anim-scale-in       { animation: anim-scale-in       var(--ui-duration-base) var(--ui-ease-out)  both; }
+.anim-stagger > * { animation: anim-fade-in var(--ui-duration-base) var(--ui-ease-out) both; }
+.anim-stagger > *:nth-child(1)  { animation-delay:   0ms; }
+.anim-stagger > *:nth-child(2)  { animation-delay:  30ms; }
+.anim-stagger > *:nth-child(3)  { animation-delay:  60ms; }
+.anim-stagger > *:nth-child(4)  { animation-delay:  90ms; }
+.anim-stagger > *:nth-child(5)  { animation-delay: 120ms; }
+.anim-stagger > *:nth-child(6)  { animation-delay: 150ms; }
+.anim-stagger > *:nth-child(7)  { animation-delay: 180ms; }
+.anim-stagger > *:nth-child(8)  { animation-delay: 210ms; }
+.anim-stagger > *:nth-child(9)  { animation-delay: 240ms; }
+.anim-stagger > *:nth-child(10) { animation-delay: 270ms; }
+}
+
+
+.motion-lib-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--ui-space-base); }
+.motion-lib-item { display: flex; flex-direction: column; gap: 8px; padding: var(--ui-space-base); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-md); background: var(--ui-bg-card); }
+.motion-lib-item__stage { height: 80px; background: var(--ui-accent); border-radius: var(--ui-radius-sm); display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+.motion-lib-item__chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: var(--ui-radius-md); background: var(--ui-color-primary); color: #fff; font-size: 13px; font-weight: 500; box-shadow: var(--ui-shadow-sm); }
+.motion-lib-item__chip [data-lucide] { width: 14px; height: 14px; }
+.motion-lib-item__name { font-family: var(--ui-font-mono); font-size: 12px; font-weight: 600; color: var(--ui-color-primary); }
+.motion-lib-item__hint { font-size: 11px; color: var(--ui-text-muted); line-height: 1.5; }
+.motion-lib-item__btn { align-self: flex-start; padding: 4px 10px; border-radius: var(--ui-radius-sm); border: 1px solid var(--ui-border-default); background: var(--ui-bg-card); font-size: 11px; color: var(--ui-text-muted); cursor: pointer; transition: color var(--ui-duration-fast), border-color var(--ui-duration-fast); }
+.motion-lib-item__btn:hover { color: var(--ui-color-primary); border-color: var(--ui-color-primary); }
+.ease-compare { display: flex; flex-direction: column; gap: var(--ui-space-sm); padding: var(--ui-space-md); background: var(--ui-bg-card); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-md); }
+.ease-compare__row { display: grid; grid-template-columns: 100px 1fr; gap: var(--ui-space-sm); align-items: center; }
+.ease-compare__label { font-family: var(--ui-font-mono); font-size: 11px; }
+.ease-compare__label--out      { color: var(--ui-color-primary); }
+.ease-compare__label--in       { color: var(--ui-badge-orange-fg); }
+.ease-compare__label--in-out   { color: var(--ui-badge-blue-fg); }
+.ease-compare__label--spring   { color: var(--ui-color-success); }
+.ease-compare__label--linear   { color: var(--ui-text-muted); }
+.ease-compare__track { position: relative; height: 6px; background: var(--ui-accent); border-radius: var(--ui-radius-pill); }
+.ease-compare__ball { position: absolute; top: -7px; width: 20px; height: 20px; border-radius: 50%; box-shadow: var(--ui-shadow-sm); }
+.ease-compare__ball--linear   { background: var(--ui-text-muted);    animation: ease-compare-roll 2.4s linear            infinite alternate; }
+.ease-compare__ball--out      { background: var(--ui-color-primary);        animation: ease-compare-roll 2.4s var(--ui-ease-out)    infinite alternate; }
+.ease-compare__ball--in       { background: var(--ui-badge-orange-fg);      animation: ease-compare-roll 2.4s var(--ui-ease-in)     infinite alternate; }
+.ease-compare__ball--in-out   { background: var(--ui-badge-blue-fg);        animation: ease-compare-roll 2.4s var(--ui-ease-in-out) infinite alternate; }
+.ease-compare__ball--spring   { background: var(--ui-color-success);        animation: ease-compare-roll 2.4s var(--ui-ease-spring) infinite alternate; }
+code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px; border-radius: var(--ui-radius-sm); background: var(--ui-accent); color: var(--ui-color-primary); border: 1px solid var(--ui-border-soft); }
+</style>
+</head>
+<body>
+
+<h1>Motion Library</h1>
+<p style="color: var(--ui-text-muted); margin: 0;">Motion 动画库：fade-in / slide-up / scale-in / replay demo 等</p>
+
+<h2>Preview</h2>
+<div id="app">
+  <div class="preview-frame">
+<div class="ds-section-head">
+              <div class="ds-section-eyebrow">Semantics · v3.10</div>
+              <h2 class="ds-section-title">Motion 动画库</h2>
+              <p class="ds-section-desc">在 §1.6 Motion Token 之上的「调用层」：4 个标准缓动函数 + 6 个动画 preset class。AI 生成原型时直接 add class 触发，不要自己写 keyframes。</p>
+            </div>
+
+            <div class="ds-block">
+              <div class="ds-block-meta">
+                <div class="ds-block-name"><h3>4 个缓动函数对比</h3><span class="ds-block-tag layout">tokens</span></div>
+                <p class="ds-block-desc">5 个球同时来回跑（含 linear 对照），看曲线如何影响"运动节奏"。</p>
+                <table class="ds-prop-table">
+                  <thead><tr><th>Token</th><th>用途</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>--ui-ease-out</code></td><td>进入 / hover / Drawer 进入</td></tr>
+                    <tr><td><code>--ui-ease-in</code></td><td>退出 / 离场 / Drawer 关闭</td></tr>
+                    <tr><td><code>--ui-ease-in-out</code></td><td>Tab 切换 / 无方向感过渡</td></tr>
+                    <tr><td><code>--ui-ease-spring</code></td><td>CTA 强调 / 仅"注意力反馈"</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="ds-block-stage">
+                <div class="ease-compare">
+                  <div class="ease-compare__row"><span class="ease-compare__label ease-compare__label--linear">linear</span><div class="ease-compare__track"><div class="ease-compare__ball ease-compare__ball--linear"></div></div></div>
+                  <div class="ease-compare__row"><span class="ease-compare__label ease-compare__label--out">--ui-ease-out</span><div class="ease-compare__track"><div class="ease-compare__ball ease-compare__ball--out"></div></div></div>
+                  <div class="ease-compare__row"><span class="ease-compare__label ease-compare__label--in">--ui-ease-in</span><div class="ease-compare__track"><div class="ease-compare__ball ease-compare__ball--in"></div></div></div>
+                  <div class="ease-compare__row"><span class="ease-compare__label ease-compare__label--in-out">--ui-ease-in-out</span><div class="ease-compare__track"><div class="ease-compare__ball ease-compare__ball--in-out"></div></div></div>
+                  <div class="ease-compare__row"><span class="ease-compare__label ease-compare__label--spring">--ui-ease-spring</span><div class="ease-compare__track"><div class="ease-compare__ball ease-compare__ball--spring"></div></div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="ds-block">
+              <div class="ds-block-meta">
+                <div class="ds-block-name"><h3>6 个动画 Preset Class</h3><span class="ds-block-tag layout">animation</span></div>
+                <p class="ds-block-desc">直接 add class 即触发动画，无需写 keyframes 或自定义 transition。所有 preset 已内置 ease 和 duration token。</p>
+                <div class="ds-block-when">
+                  <strong>使用准则</strong>
+                  ① 用 class 触发动画（如 <code class="token">&lt;div class="anim-fade-in"&gt;</code>），不要自己写 keyframes<br>
+                  ② 父元素加 <code class="token">.anim-stagger</code> 让所有子元素错峰淡入（30ms 间隔）<br>
+                  ③ Drawer / Toast 用 <code class="token">.anim-slide-in-right</code> / <code class="token">.anim-slide-in-up</code><br>
+                  ④ Modal 用 <code class="token">.anim-scale-in</code><br>
+                  ⑤ 已自动适配 <code class="token">prefers-reduced-motion</code>，无需手动处理
+                </div>
+              </div>
+              <div class="ds-block-stage">
+                <div class="ds-preview">
+                  <div class="motion-lib-grid">
+                    <div class="motion-lib-item">
+                      <div class="motion-lib-item__name">.anim-fade-in</div>
+                      <div class="motion-lib-item__hint">透明度 0→1 · base + ease-out · 内容/卡片首次出现</div>
+                      <div class="motion-lib-item__stage">
+                        <div class="motion-lib-item__chip anim-fade-in" :key="'fadein-' + replayKey"><i data-lucide="sparkles"></i>fade in</div>
+                      </div>
+                      <button class="motion-lib-item__btn" @click="replay">↻ Replay</button>
+                    </div>
+                    <div class="motion-lib-item">
+                      <div class="motion-lib-item__name">.anim-fade-out</div>
+                      <div class="motion-lib-item__hint">透明度 1→0 · base + ease-in · 退出 / 移除元素</div>
+                      <div class="motion-lib-item__stage">
+                        <div class="motion-lib-item__chip anim-fade-out" :key="'fadeout-' + replayKey"><i data-lucide="sparkles"></i>fade out</div>
+                      </div>
+                      <button class="motion-lib-item__btn" @click="replay">↻ Replay</button>
+                    </div>
+                    <div class="motion-lib-item">
+                      <div class="motion-lib-item__name">.anim-slide-in-right</div>
+                      <div class="motion-lib-item__hint">从右滑入 · slow + ease-out · Drawer 滑入</div>
+                      <div class="motion-lib-item__stage">
+                        <div class="motion-lib-item__chip anim-slide-in-right" :key="'slideright-' + replayKey"><i data-lucide="panel-right-open"></i>drawer</div>
+                      </div>
+                      <button class="motion-lib-item__btn" @click="replay">↻ Replay</button>
+                    </div>
+                    <div class="motion-lib-item">
+                      <div class="motion-lib-item__name">.anim-slide-in-up</div>
+                      <div class="motion-lib-item__hint">从底滑入 · slow + ease-out · Toast 出现</div>
+                      <div class="motion-lib-item__stage">
+                        <div class="motion-lib-item__chip anim-slide-in-up" :key="'slideup-' + replayKey"><i data-lucide="bell"></i>toast</div>
+                      </div>
+                      <button class="motion-lib-item__btn" @click="replay">↻ Replay</button>
+                    </div>
+                    <div class="motion-lib-item">
+                      <div class="motion-lib-item__name">.anim-scale-in</div>
+                      <div class="motion-lib-item__hint">中心缩放 · base + ease-out · Modal 弹出</div>
+                      <div class="motion-lib-item__stage">
+                        <div class="motion-lib-item__chip anim-scale-in" :key="'scale-' + replayKey"><i data-lucide="square-stack"></i>modal</div>
+                      </div>
+                      <button class="motion-lib-item__btn" @click="replay">↻ Replay</button>
+                    </div>
+                    <div class="motion-lib-item" style="grid-column: span 2;">
+                      <div class="motion-lib-item__name">.anim-stagger &gt; *</div>
+                      <div class="motion-lib-item__hint">列表行错峰淡入 · 30ms 间隔 · 用于 DataTable / 卡片网格首次进入</div>
+                      <div class="motion-lib-item__stage" style="height: auto; padding: 12px; align-items: stretch;">
+                        <div class="anim-stagger" :key="'stagger-' + replayKey" style="width: 100%; display: flex; flex-direction: column; gap: 6px;">
+                          <div style="height: 24px; background: var(--ui-bg-card); border-radius: var(--ui-radius-sm); padding: 4px 10px; font-size: 11px; color: var(--ui-text-muted); display: flex; align-items: center;">Row 1</div>
+                          <div style="height: 24px; background: var(--ui-bg-card); border-radius: var(--ui-radius-sm); padding: 4px 10px; font-size: 11px; color: var(--ui-text-muted); display: flex; align-items: center;">Row 2</div>
+                          <div style="height: 24px; background: var(--ui-bg-card); border-radius: var(--ui-radius-sm); padding: 4px 10px; font-size: 11px; color: var(--ui-text-muted); display: flex; align-items: center;">Row 3</div>
+                          <div style="height: 24px; background: var(--ui-bg-card); border-radius: var(--ui-radius-sm); padding: 4px 10px; font-size: 11px; color: var(--ui-text-muted); display: flex; align-items: center;">Row 4</div>
+                        </div>
+                      </div>
+                      <button class="motion-lib-item__btn" @click="replay">↻ Replay</button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ds-code">
+                  <div class="ds-code-head">
+                    <span class="ds-code-lang"><i data-lucide="code"></i>HTML</span>
+                    <button class="ds-code-copy" type="button"><i data-lucide="copy"></i> Copy</button>
+                  </div>
+<pre v-pre>&lt;!-- 单元素淡入 --&gt;
+&lt;div class="anim-fade-in"&gt;...&lt;/div&gt;
+
+&lt;!-- Drawer 滑入（从右） --&gt;
+&lt;div class="anim-slide-in-right"&gt;...&lt;/div&gt;
+
+&lt;!-- Modal 缩放出现 --&gt;
+&lt;div class="anim-scale-in"&gt;...&lt;/div&gt;
+
+&lt;!-- 列表行错峰淡入（父加 .anim-stagger） --&gt;
+&lt;ul class="anim-stagger"&gt;
+  &lt;li&gt;Row 1&lt;/li&gt;
+  &lt;li&gt;Row 2&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;!-- Vue：动态切换 key 让 v-for 重建触发动画 --&gt;
+&lt;ul class="anim-stagger" :key="dataset.id"&gt;
+  &lt;li v-for="row in rows" :key="row.id"&gt;{{ row.name }}&lt;/li&gt;
+&lt;/ul&gt;</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="ds-block">
+              <div class="ds-block-meta">
+                <div class="ds-block-name"><h3>场景 → Preset 决策表</h3><span class="ds-block-tag layout">guide</span></div>
+                <p class="ds-block-desc">遇到这些场景，直接照表选 preset，不要自己思考。</p>
+              </div>
+              <div class="ds-block-stage">
+                <table class="ds-prop-table">
+                  <thead><tr><th>场景</th><th>用什么</th><th>时长 + 缓动</th></tr></thead>
+                  <tbody>
+                    <tr><td>列表 / 卡片首次出现</td><td><code>.anim-stagger</code> 加在父元素</td><td>base + ease-out（30ms 错峰）</td></tr>
+                    <tr><td>单个内容卡进入</td><td><code>.anim-fade-in</code> 或 <code>.anim-slide-in-up</code></td><td>base + ease-out</td></tr>
+                    <tr><td>Drawer 滑入</td><td><code>.anim-slide-in-right</code></td><td>slow + ease-out</td></tr>
+                    <tr><td>Drawer 关闭</td><td>反向滑出 + ease-in</td><td>slow + ease-in</td></tr>
+                    <tr><td>Modal 弹出</td><td><code>.anim-scale-in</code></td><td>base + ease-out</td></tr>
+                    <tr><td>Toast / Notification</td><td><code>.anim-slide-in-up</code></td><td>base + ease-out</td></tr>
+                    <tr><td>Tab 内容切换</td><td><code>.anim-fade-in</code> 加在新内容上</td><td>fast + ease-in-out</td></tr>
+                    <tr><td>CTA 按钮强调</td><td>transition + <code>--ui-ease-spring</code></td><td>base + ease-spring（仅 Hero / 引导卡）</td></tr>
+                    <tr><td>KPI 数字突变</td><td>JS 数字滚动 + ease-out</td><td>slow + ease-out</td></tr>
+                    <tr><td>Skeleton → 真实内容</td><td>真实内容加 <code>.anim-fade-in</code> + Skeleton v-if 立即消失</td><td>fast + ease-out</td></tr>
+                  </tbody>
+                </table>
+                <div class="ds-block-when" style="margin-top: var(--ui-space-md); background: var(--ui-color-warning-subtle); border-left-color: var(--ui-color-warning);">
+                  <strong>红线（§4.3 修订）</strong>
+                  ① 普通卡片 / 表格行 hover <strong>严禁位移 / scale</strong>（保持原规则）<br>
+                  ② Hero band 入口卡 / CTA 按钮等"主行动强调"<strong>允许 -2px 位移 + ease-spring</strong>（修订：高强调区域可以有反馈）<br>
+                  ③ 不要在同一元素嵌套多层 anim-* class（fade-in 套 slide-in）<br>
+                  ④ <code class="token">prefers-reduced-motion</code> 已自动处理，禁止手动覆盖
+                </div>
+              </div>
+            </div>
+  </div>
+</div>
+
+<h2>何时使用</h2>
+<p style="line-height: 1.8;">✅ 页面 / 组件出场或交互动画</p>
+
+<h2>何时不使用</h2>
+<p style="line-height: 1.8;">❌ 纯静态展示 → 不必加动画</p>
+
+<script>
+// 挂载 Vue + EP；setup() 内含与 DS 同源的全部 mock 数据（dsTableData / i18nLangs / radioPlans 等）
+const { createApp, ref, reactive, computed } = Vue;
+const app = Vue.createApp({
+  setup() {
+
+    const isDark = ref(false);
+    const lang = ref('zh');
+    const active = ref('intro');
+
+    // ── Motion Library replay：点击 Replay 让 :key 重建，CSS animation 重放 ──
+    const replayKey = ref(0);
+    function replay() { replayKey.value++; }
+
+    // ── I18nField 生产组件用状态（mock 数据 + 当前激活 tab） ──
+    // 4 种语言：zh-CN / en / ja / ko；每种都有"套餐名称 + 描述"两个字段
+    const i18nLangs = [
+      { code: 'zh', emoji: '🇨🇳', label: '中文',   short: '中',   required: true  },
+      { code: 'en', emoji: '🇺🇸', label: 'English', short: 'EN',  required: true  },
+      { code: 'ja', emoji: '🇯🇵', label: '日本語',  short: '日',   required: false },
+      { code: 'ko', emoji: '🇰🇷', label: '한국어',  short: '韩',   required: false },
+    ];
+    const i18nValues = reactive({
+      zh: { name: '企业旗舰版',         desc: '为大客户准备的全功能套餐' },
+      en: { name: 'Enterprise Ultimate', desc: 'Full-feature plan for enterprise customers' },
+      ja: { name: 'エンタープライズプロ', desc: '' },
+      ko: { name: '',                   desc: '' },
+    });
+    // 当前激活的语言 tab
+    const i18nFldATab = ref('zh');
+    function i18nIsFilled(code, field) {
+      return (i18nValues[code]?.[field] || '').trim().length > 0;
+    }
+    function i18nFilledCount(field) {
+      return i18nLangs.filter(l => i18nIsFilled(l.code, field)).length;
+    }
+    function i18nRequiredMissing(field) {
+      return i18nLangs.filter(l => l.required && !i18nIsFilled(l.code, field)).length;
+    }
+
+    // ── Radio 现代化评审用状态 ──
+    // 4 个选项（套餐），4 版各自独立 ref，互不影响
+    const radioPlans = [
+      { code: 'basic',      name: '基础版',   desc: '100K 调用 / 月' },
+      { code: 'pro',        name: '专业版',   desc: '1M 调用 / 月' },
+      { code: 'enterprise', name: '企业版',   desc: '10M 调用 + SLA' },
+      { code: 'ultimate',   name: '旗舰版',   desc: '定制 + 专属支持' },
+    ];
+    const radioModA = ref('pro');
+    const radioModB = ref('enterprise');
+    const radioModC = ref('pro');
+    const radioModD = ref('enterprise');
+
+    // ── DataTable mock 数据（演示用） ──
+    const dsTableData = ref([
+      { name: '蚂蚁金服 - AI 平台', plan: '企业旗舰', planColor: 'badge-purple', status: 'Active', statusBadge: 'badge-green', usagePct: 62, usageColor: 'usage-bar__fill--primary', expire: '2026-06-30', bgIdx: 1 },
+      { name: '字节跳动 - 视频生成', plan: '企业版', planColor: 'badge-blue', status: 'Pending', statusBadge: 'badge-orange', usagePct: 88, usageColor: 'usage-bar__fill--warning', expire: '2026-05-12', bgIdx: 2 },
+      { name: '阿里云 - 智能客服', plan: '专业版', planColor: 'badge-green', status: 'Active', statusBadge: 'badge-green', usagePct: 45, usageColor: 'usage-bar__fill--primary', expire: '2026-05-14', bgIdx: 3 },
+      { name: '京东物流 - 仓储 AI', plan: '专业版', planColor: 'badge-green', status: 'Active', statusBadge: 'badge-green', usagePct: 28, usageColor: 'usage-bar__fill--success', expire: '2026-05-16', bgIdx: 4 },
+      { name: '腾讯云 - 内容审核', plan: '企业版', planColor: 'badge-blue', status: 'Active', statusBadge: 'badge-green', usagePct: 100, usageColor: 'usage-bar__fill--danger', expire: '2026-08-21', bgIdx: 5 },
+      { name: '美团 - 配送调度', plan: '基础版', planColor: 'badge-muted', status: 'Inactive', statusBadge: 'badge-muted', usagePct: 12, usageColor: 'usage-bar__fill--success', expire: '2026-12-01', bgIdx: 6 },
+    ]);
+
+        // — stubs for DS-specific helpers that the return references —
+    const toggleTheme = () => {};
+    const toggleLang  = () => {};
+
+    return { isDark, lang, active, toggleTheme, toggleLang, dsTableData, replayKey, replay, i18nLangs, i18nValues, i18nFldATab, i18nIsFilled, i18nFilledCount, i18nRequiredMissing, radioPlans, radioModA, radioModB, radioModC, radioModD, ElementPlusIconsVue: window.ElementPlusIconsVue }
+  }
+});
+for (const [k, c] of Object.entries(ElementPlusIconsVue || {})) {
+  app.component(k, c);
+}
+app.use(ElementPlus);
+// 抑制 Vue 对 v-for / v-model 中未定义变量的警告，避免 demo 数据缺失时整体崩溃
+app.config.warnHandler = () => {};
+try { app.mount('#app'); } catch (e) { console.warn('[demo mount]', e.message); }
+lucide.createIcons && lucide.createIcons();
+</script>
+</body>
+</html>
