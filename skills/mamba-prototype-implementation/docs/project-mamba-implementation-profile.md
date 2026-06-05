@@ -76,7 +76,7 @@
 ## 新页面功能开发顺序
 命中 `project-mamba` 新页面 / 新功能模块时，先确认原型与上下文，再定组件边界、数据归属和胶囊目录，最后落代码和组装 `index.vue`。不得先写一个大页面再补拆分。
 
-强制顺序：原型确认 → app / route ownership / 复用扫描 → 页面结构拆分 → 数据归属设计 → 胶囊目录落位 → 业务容器组件实现 → 纯视觉组件实现 → `index.vue` 组装 → 自动校验 → AI 语义复查。最终检查表必须覆盖每一步；缺任一步时不能视为交付完成。
+强制顺序：原型确认 → app / route ownership / 复用扫描 → 页面结构拆分 → 数据归属设计 → 胶囊目录落位 → 业务容器组件实现 → 纯视觉组件实现 → `index.vue` 组装 → 自动校验 → AI 语义复查。最终检查表必须覆盖每一步；缺任一步时不能视为交付完成。默认自动校验不包含 build。
 
 ## 实施前门禁复核模式
 当用户明确要求“严格复查”“先不要急着改代码”或“先不要改代码”时，`project-mamba` 页面不得先改代码，必须先输出四张表：
@@ -100,6 +100,7 @@
 ### 自动检查
 - 运行 `skills/mamba-prototype-implementation/scripts/check-project-mamba-implementation.mjs`，必须显式传入本次目标文件，或在最终输出列出脚本实际 checked files；空检查不得视为通过。
 - 运行项目可用的类型检查命令；如果仓库没有可用 typecheck 脚本，最终输出必须说明缺口和替代检查。
+- 禁止主动运行构建命令，例如 `pnpm build`、`npm run build`、`yarn build`、`vite build`、`pnpm --filter <app> build`、`pnpm build:<app>`。构建由前端负责人在人工查看页面、确认无问题后手动提交；除非用户本次明确要求 AI 运行 build，否则最终输出记录 build 未运行。
 - 运行 `skills/mamba-prototype-implementation/scripts/verify-encoding.mjs` 检查本次目标文件或目录，覆盖 UTF-8 BOM 与常见乱码；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 运行 diff check：至少执行 `git diff --check`，并人工审视本次 diff 是否只包含目标修改。
 - 页面入口结构清晰 / 冗杂抽离审视是首要 AI 语义门禁；新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 如果承载过多页面区块、状态分支、交互细节和样式壳层，必须先抽出页面私有组件并在最终检查表列出。
@@ -135,7 +136,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、build 未运行说明、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则
@@ -209,6 +210,12 @@
 - 样式入口文件名不能想当然：有的 app 用 `tailwind.css`，有的用 `tailwindcss.css`
 - i18n、auth、install、directives、globals、store 以当前 app `src/main.ts` 的真实 wiring 为准
 - 对 `zguan`、`hashrate`、`wanmore` 这类 bootstrap 更本地化或存在跨 app alias 的项目，不要把 `common` 的初始化链直接套过去；先看当前 `main.ts`
+
+## 路由工具与跳转封装
+- 涉及路由跳转、详情链接、菜单链接或 URL 生成时，先查当前 app、当前模块和相邻页面的既有封装；不要只因为函数同名就替换 import。
+- 当前项目 / 当前 app 内部跳转优先沿用项目内封装；跨 app、共享组件、公共菜单或需要显式指定 app 的跳转，才使用公共 `@repo/utils` 封装。
+- `hashrate` 中确实同时存在两类 `getRouteUrl`：`@hashrate/utils/global` 的 `getRouteUrl(path)` 面向 hashrate 内部路径；`@repo/utils` 的 `getRouteUrl(app, path)` 面向跨 app 或公共跳转。按跳转语义选择，不混用签名。
+- 如果相邻模块已有稳定用法，以相邻模块为第一证据；新增或修改 import 时，在最终检查表说明选择的是项目内封装还是公共封装，以及原因。
 
 ## Font token and prototype adaptation
 - Before copying typography from a prototype into `project-mamba`, inspect the target app's actual font variables and local font assets. Do not assume prototype font names are available in the target app.

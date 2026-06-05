@@ -40,6 +40,7 @@
 - 是否先设计页面结构拆分、数据归属和胶囊目录，再创建文件和落代码
 - 是否先实现业务容器组件和纯视觉组件，最后组装 `index.vue`
 - 是否在实现完成后同时跑自动校验和语义复查，而不是只跑其中一部分
+- 是否未主动运行 build；若最终未运行 build，是否说明“构建由前端负责人人工查看页面并确认后手动提交”
 
 ## 实现检查
 - 是否优先复用现有组件、模式和目录结构
@@ -54,6 +55,7 @@
 - 如果当前任务已有明确原型，是否先核对实现结果与原型在布局、间距、边框、圆角、hover/focus 背景、字体颜色等可观察细节上的一致性，再判断是否需要主题兼容修正
 - 如果交互视觉看起来不对，是否先区分语义层（type / intent）、状态层（disabled / loading / reason）和渲染层（button / menu / popper 样式），而不是直接跨层改配置
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
+- 涉及路由跳转、详情链接、菜单链接或 `getRouteUrl` 时，是否先查当前 app / 当前模块已有封装和相邻用法；当前项目内部跳转优先项目内封装，跨 app、共享组件或公共跳转才使用公共 `@repo/utils` 封装。`hashrate` 中本地 `@hashrate/utils/global` 的 `getRouteUrl(path)` 用于 hashrate 内部路径，公共 `@repo/utils` 的 `getRouteUrl(app, path)` 用于跨 app 或需要显式 app 参数的公共跳转。
 - 弹出层表单、抽屉表单、popover 表单是否先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；如手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`，是否说明命中候选和未复用原因
 - 表格是否先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层；是否明确表格主能力不在 `apps/common/src/utils`，只有导入导出场景才查 `apps/common/src/utils/genericExportImport.ts` 等 common utils；如手写 `el-table` / `<table>`，是否说明命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
@@ -95,6 +97,7 @@
 ## `project-mamba` 自动检查
 - 命中 `project-mamba` 新功能页面时，是否运行 `scripts/check-project-mamba-implementation.mjs`，且显式传入入口文件和所有本地抽离子组件，或列出 checked files；若脚本提示 local child component 未纳入检查，是否补齐后重跑
 - 是否运行项目可用的类型检查命令；若仓库没有可用脚本，是否说明缺口和替代检查
+- 是否没有运行 `pnpm build`、`npm run build`、`yarn build`、`vite build`、`pnpm --filter <app> build`、`pnpm build:<app>` 等构建命令；除非用户本次明确要求，否则 build 不作为 AI 默认验证
 - 是否运行 `scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
 - 是否运行 diff check（至少 `git diff --check`，并人工审视本次 diff 是否只包含目标修改）

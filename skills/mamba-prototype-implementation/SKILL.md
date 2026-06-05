@@ -72,7 +72,7 @@ If a non-frontend requester gives business wording only, translate it into the c
    - Pure display components receive typed props and emit user intent.
    - Component-private hooks/types/constants stay in the same-named capsule.
 7. Match the prototype first, then adapt through project tokens and shared components. Preserve observable layout, density, labels, grouping, icon intent, and interaction behavior unless a project rule forces a specific substitution.
-8. Run validation scripts and the closest app/package type or build command available in the target repository.
+8. Run validation scripts and the closest app/package typecheck command available in the target repository. Do not run build commands unless the user explicitly asks for a build in this task; frontend owners manually inspect the page and submit the build after approval.
 9. For visible UI, run the app and inspect the route in the browser. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome.
 
 ## Fidelity And Validation
