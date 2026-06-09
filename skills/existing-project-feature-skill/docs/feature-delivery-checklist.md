@@ -32,7 +32,9 @@
 - 是否完成项目上下文和复用扫描；自定义 UI、`v-for`、tag / badge / status、dialog / form / table / filter、icon 是否都有搜索证据
 - 是否先设计页面结构拆分、数据归属和胶囊目录，再创建文件和落代码
 - 是否先实现业务容器组件和纯视觉组件，最后组装 `index.vue`
+- 是否在实现落地后整理页面局部纯工具函数：`valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用函数进入当前目录 `utils/index.ts`，必要类型进入 `types/index.ts`
 - 是否在实现完成后同时跑自动校验和语义复查，而不是只跑其中一部分
+- 可见 UI 修改后，是否刷新目标页面并确认页面正常渲染、核心内容未丢失；无法刷新时是否说明原因
 
 ## 严格复查先行检查
 - 用户要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，是否在任何代码编辑前先输出四张表
@@ -73,9 +75,11 @@
 ## `project-mamba` 最终代码校验
 - 是否运行 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs`，且显式传入目标文件或列出 checked files；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
 - 是否运行项目可用的类型检查命令；若仓库没有可用脚本，是否说明缺口和替代检查
+- 是否未运行 build；build 是否明确由前端负责人人工查看页面并确认后手动提交
 - 是否运行 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `skills/frontend-implementer-skill/scripts/check-component-structure.mjs --strict`；实现脚本 checked files 是否覆盖入口文件和所有本地抽离子组件
 - 是否运行 diff check（至少 `git diff --check`，并人工审视本次 diff 是否只包含目标修改）
+- 页面纯工具函数抽离是否达标：页面主文件只保留数据编排、computed、事件处理和组件组装；工具函数不依赖响应式状态、不调用接口、不操作路由；本地引用使用 `./utils/index` / `./types/index`；旧重复函数和废弃文件已删除
 - 新增 `.vue` 是否按物理总行数控制在 250 行以内
 - 旧文件是否默认排除历史超限；若用户明确要求优化旧文件，或旧 `.vue` 是本次新功能主承载页面，是否使用 `--strict-vue-lines` 并纳入瘦身或拆分计划
 - `locale`、`schema`、纯配置组件如被排除，是否说明排除原因

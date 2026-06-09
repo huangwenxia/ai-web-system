@@ -76,7 +76,7 @@
 ## 新页面功能开发顺序
 命中 `project-mamba` 新页面 / 新功能模块时，先确认原型与上下文，再定组件边界、数据归属和胶囊目录，最后落代码和组装 `index.vue`。不得先写一个大页面再补拆分。
 
-强制顺序：原型确认 → app / route ownership / 复用扫描 → 页面结构拆分 → 数据归属设计 → 胶囊目录落位 → 业务容器组件实现 → 纯视觉组件实现 → `index.vue` 组装 → 自动校验 → AI 语义复查。最终检查表必须覆盖每一步；缺任一步时不能视为交付完成。默认自动校验不包含 build。
+强制顺序：原型确认 → app / route ownership / 复用扫描 → 页面结构拆分 → 数据归属设计 → 胶囊目录落位 → 业务容器组件实现 → 纯视觉组件实现 → `index.vue` 组装 → 页面局部纯工具函数整理 → 自动校验 → 浏览器刷新 → AI 语义复查。最终检查表必须覆盖每一步；缺任一步时不能视为交付完成。默认自动校验不包含 build。
 
 ## 实施前门禁复核模式
 当用户明确要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，`project-mamba` 页面不得先改代码，必须先输出四张表：
@@ -103,6 +103,7 @@
 - 禁止主动运行构建命令，例如 `pnpm build`、`npm run build`、`yarn build`、`vite build`、`pnpm --filter <app> build`、`pnpm build:<app>`。构建由前端负责人在人工查看页面、确认无问题后手动提交；除非用户本次明确要求 AI 运行 build，否则最终输出记录 build 未运行。
 - 运行 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 检查本次目标文件或目录，覆盖 UTF-8 BOM 与常见乱码；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 运行 diff check：至少执行 `git diff --check`，并人工审视本次 diff 是否只包含目标修改。
+- 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；没有可用 URL、dev server 或目标路由时，最终输出说明无法刷新原因。
 - 页面入口结构清晰 / 冗杂抽离审视是首要 AI 语义门禁；新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 如果承载过多页面区块、状态分支、交互细节和样式壳层，必须先抽出页面私有组件并在最终检查表列出。
 - 自动检查硬指标：
   - 新增 `.vue` 物理总行数不超过 250 行
@@ -123,6 +124,7 @@
 - 页面模板中 loading、error、empty、permission、filtered-empty、list-body 等 `v-if` / `v-else-if` / `v-else` 状态分支超过 3 个，或单个状态块超过约 30 行时，必须优先抽成页面私有状态展示组件或内容区子组件；页面保留数据和事件编排，子组件承接状态 UI。
 - 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
 - 数据获取按“数据归属组件”拆分：禁止一个 `usePage` / `useXxx` 大 hook 管全页数据；业务容器组件自己请求自己的接口或 mock，自己维护 loading / empty / error / refresh；页面 `index.vue` 只保留 route query / params、页面级主流程状态、真正跨兄弟组件共享的最小状态和跨组件事件编排；纯视觉组件只接收 props，禁止 import Api / router / store / mock service。`usePage` / `useXxx` 返回值超过 8-10 个或同时返回多组列表、loading、弹窗表单、路由跳转、多个请求、多组 options / tags / cards / table data 时，必须拆分或说明例外。
+- 页面主文件只保留数据编排、`computed`、事件处理和组件组装；`valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用工具函数必须抽到当前目录 `utils/index.ts`。工具函数必须是纯函数，不依赖 Vue 响应式状态、不直接调用接口、不操作路由、不改变后端接口调用、字段来源和业务行为。类型定义如需抽离，放到当前目录 `types/index.ts`；本地引用使用 `./utils/index`、`./types/index` 显式入口，抽离后检查所有引用点并删除旧重复函数和废弃文件。
 - 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离大页面块后继续检查抽出的页面块组件：重复视觉壳、交互壳、浮层触发器、选项渲染或操作按钮不得留在同一组件内反复复制，应再抽成小子组件。
 - 抽离后执行递归三轮复查：脚本先做 3 轮递归覆盖检查，第 1 轮覆盖入口文件，第 2 轮覆盖一级子组件，第 3 轮覆盖子组件内部的子组件 / hooks / types / utils；随后 AI 在最终检查表中分别给出三轮语义结论，检查结构清晰、已有项目组件复用、进一步抽离可能、样式 Tailwind 优先和胶囊目录。第 3 轮仍发现问题时必须整改并继续加轮。
@@ -136,7 +138,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、build 未运行说明、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则

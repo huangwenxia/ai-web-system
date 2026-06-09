@@ -72,8 +72,9 @@ If a non-frontend requester gives business wording only, translate it into the c
    - Pure display components receive typed props and emit user intent.
    - Component-private hooks/types/constants stay in the same-named capsule.
 7. Match the prototype first, then adapt through project tokens and shared components. Preserve observable layout, density, labels, grouping, icon intent, and interaction behavior unless a project rule forces a specific substitution.
-8. Run validation scripts and the closest app/package typecheck command available in the target repository. Do not run build commands unless the user explicitly asks for a build in this task; frontend owners manually inspect the page and submit the build after approval.
-9. For visible UI, run the app and inspect the route in the browser. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome.
+8. After implementation, move page-local pure utility helpers such as empty-value display, text normalization, formatting, parsing, and fallback display into the current directory's `utils/index.ts`; move needed local types into `types/index.ts`; use explicit imports such as `./utils/index` and `./types/index`.
+9. Run validation scripts and the closest app/package typecheck command available in the target repository. Do not run build commands unless the user explicitly asks for a build in this task; frontend owners manually inspect the page and submit the build after approval.
+10. For visible UI, refresh the target route in the browser and inspect that the page renders normally and core content is not missing. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome.
 
 ## Fidelity And Validation
 
@@ -97,7 +98,7 @@ End with:
 - Project skills/docs loaded.
 - Reuse decisions and local component decisions.
 - Validation commands and results, including checked files.
-- Browser verification notes for visible UI.
+- Browser refresh / verification notes for visible UI, including whether core content remained visible.
 - Fidelity notes: matched points, adapted points, blockers, and residual risks.
 
 Do not mark a check as passed when it did not run. State the reason and the smallest useful fallback check.

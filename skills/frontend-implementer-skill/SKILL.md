@@ -80,10 +80,12 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 4. 如果用户明确要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”，先进入严格复查先行模式：不得编辑文件，先输出四张表；发现问题后才做最小修改并重新跑校验。
 5. 如果目标是 `project-mamba` 或同构仓库，先用当前 app 的 `vite.config.ts`、`src/main.ts`、router 入口校验拓扑和 route ownership，再输出极短“复用校验表”。
 6. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
-7. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
-8. 输出实现或修改结果，并明确边界态与风险。
-9. 判断是否需要叠加独立 `page-review-skill`。
-10. 判断本次是否值得回写到标准、案例、资产或规则。
+7. 实现落地后做页面局部整理：页面主文件中的纯工具函数按规则抽到当前目录 `utils/index.ts`，必要类型抽到 `types/index.ts`。
+8. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
+9. 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；无法刷新时说明原因。
+10. 输出实现或修改结果，并明确边界态与风险。
+11. 判断是否需要叠加独立 `page-review-skill`。
+12. 判断本次是否值得回写到标准、案例、资产或规则。
 
 ## 新页面功能开发顺序铁律
 目标是一次性开发到位，不是写完再靠审查补救。新增页面 / 新功能模块必须按下面顺序推进，并在最终检查表逐项说明是否完成：
@@ -95,8 +97,10 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 6. 实现业务容器组件：先实现取数、状态、交互和对外 emit，例如 `SelectedModelStrip`、`RecommendConstraintPanel`、`RecommendPlanPanel`。
 7. 实现纯视觉组件：再实现 `PlanCard`、`Pill`、`IconCapsule`、`MetricCell` 等纯展示组件；它们不能 import Api / router / store / mock。
 8. 组装页面 `index.vue`：最后接线，只传最小状态，只接收 emit，不解构一长串子组件私有数据，不直接 import 一堆兄弟细节组件。
-9. 自动校验：跑类型检查、实现检查、组件结构 strict 检查、编码检查和 diff check；命中 `project-mamba` 时显式列 checked files。默认不运行 build，除非用户本次明确要求。
-10. 语义复查：复查页面入口结构、数据归属组件、胶囊目录、递归三轮抽离、复用证据、flex / 禁用 grid、Tailwind 优先和边界态完整性。
+9. 页面局部纯工具函数整理：页面内 `valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用函数统一抽到当前目录 `utils/index.ts`；必要类型抽到当前目录 `types/index.ts`；本地引用使用 `./utils/index`、`./types/index` 显式入口。
+10. 自动校验：跑类型检查、实现检查、组件结构 strict 检查、编码检查和 diff check；命中 `project-mamba` 时显式列 checked files。默认不运行 build，除非用户本次明确要求。
+11. 浏览器刷新：可见页面修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果没有可用 URL / dev server，最终说明无法刷新原因。
+12. 语义复查：复查页面入口结构、数据归属组件、胶囊目录、纯工具函数抽离、递归三轮抽离、复用证据、flex / 禁用 grid、Tailwind 优先和边界态完整性。
 
 ## 标准执行协议
 
@@ -129,6 +133,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 严格复查先行模式必须先输出四张表：现有组件 / 工具 / 目录复用校验表、原型对比表、Vue 结构自检、自动检查结果。自动检查结果至少覆盖类型检查、实现检查、结构检查、编码检查和 diff check；无法运行的检查必须说明原因，不能空写通过。
 - 硬指标不达标时先整改再交付：topology 未通过、实现脚本未覆盖目标文件、新增 `.vue` 物理总行数超过 250、函数超过 100 行、Vue SFC 未使用 `<script setup>`、组件结构 strict 检查失败。
 - build 不属于 AI 默认交付门禁；不得在代码修改完成后主动运行构建命令。构建由前端负责人人工查看页面并确认后手动提交，最终检查表中记录“未运行 build（按规则由前端手动执行）”。
+- 页面主文件纯工具函数不留在页面里长期堆积：实现落地后检查 `valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用函数，抽到当前目录 `utils/index.ts`；这些函数必须不依赖 Vue 响应式状态、不调用接口、不操作路由、不改变后端接口调用、字段来源和业务行为。
+- 类型定义如需随局部工具或页面结构抽离，放到当前目录 `types/index.ts`；本地引用必须写显式入口 `./utils/index`、`./types/index`，避免目录解析或 HMR 不稳定。抽离后检查所有引用点，删除旧的重复函数和废弃文件。
 - 旧文件默认排除历史超限；但用户明确要求优化旧文件时，本次必须纳入拆分或瘦身计划。
 - 用户明确指定旧文件优化，或旧 `.vue` 是本次新功能的主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
 - `locale`、`schema`、纯配置组件可以从 `.vue <= 250 行` 硬门禁中排除，但最终检查表必须说明排除原因。
@@ -149,6 +155,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面模板中 `v-if` / `v-else-if` / `v-else` 状态分支过多时必须评估抽离：loading、error、empty、permission、filtered-empty、list-body 等分支堆在同一区块超过 3 个，或单个状态块超过约 30 行时，优先抽成页面私有状态展示组件或内容区子组件，例如 `ModelScopePanel`、`ScopeListBody`、`StatePanel`。页面保留数据获取、筛选和事件编排，子组件负责稳定 UI 骨架、状态分支和局部交互。
 - 新增或重写页面入口时，`index.vue` 只做页面编排：页面壳、数据入口、区块组合和主事件；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块应优先进入同目录 `components/`。同目录主 `.vue` 也按同一规则审查，不能因为不是 `index.vue` 就逃过抽离。
 - 数据获取按“数据归属组件”拆分，禁止默认一个 `usePage` / `useXxx` 大 hook 管全页数据。业务容器组件自己请求自己的接口或 mock，自己维护 loading / empty / error / refresh；页面 `index.vue` 只保留 route query / params、页面级主流程状态、真正跨兄弟组件共享的最小状态和跨组件事件编排；纯视觉组件只接收 props，禁止 import Api / router / store / mock service。`usePage` / `useXxx` 同时返回多组列表、loading、弹窗表单、路由跳转、多个请求或多组 options / tags / cards / table data 时必须拆分。
+- 页面主文件只保留数据编排、`computed`、事件处理和组件组装。无副作用工具函数必须收敛到当前目录 `utils/index.ts`，例如空值展示、文本归一化、字段格式化、字符串 / 数字解析、兜底显示；不得借抽离改变接口、字段来源、格式语义或业务行为。
 - 实现完成后必须做胶囊目录强自检：`components/` 根目录不能出现一堆同一功能前缀的平铺文件；新增模块如果有 `index.vue` 以外的 hook / type / constants，必须有同名胶囊目录；每个胶囊目录必须有清晰入口 `index.vue` 或 `index.ts`；页面根 `index.vue` 不承载细节 UI，不直接 import 一堆兄弟组件。复杂功能按胶囊目录组织，页面根只做编排，组件私有 hook / type / constants 跟着组件走，小胶囊收进模块内部，稳定复用后再上提。
 - 抽离前必须先列出：将抽离的代码块、组件 / Hook 名称、目标目录、职责、抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
 - 抽离前必须按 `docs/component-extraction-policy.md` 明确不变量、可变量、复用半径、胶囊目录或上提落点；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
@@ -178,6 +185,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 是否遵守项目既有目录、命名、样式 token 和组件复用方式。
 - 命名是否表达业务语义，公共逻辑是否应抽到 composable，同类展示是否已优先复用。
 - 涉及路由跳转或 URL 生成时，是否先按当前项目已有封装和相邻模块用法选择工具；当前 app 内部跳转优先项目内封装，跨 app 或公共跳转才用公共 `@repo/utils` 封装。
+- 页面主文件是否已移除可抽离的纯工具函数；`utils/index.ts` / `types/index.ts` 是否使用显式入口导入；抽离后是否删除旧重复函数和废弃文件。
 - 页面块组件抽离后，是否继续消除了重复视觉 / 交互片段，而不是把重复从页面搬到子组件内部。
 - 数据是否跟着业务组件走；页面根是否只保留共享状态和流程编排；纯视觉组件是否只吃 props；是否避免 `usePage` / `useXxx` 大 hook 替所有子组件取数。
 - 新增 `.vue` 是否控制在 250 行以内；超过时优先拆组件或 `useXxx.ts`，而不是压缩可读性。

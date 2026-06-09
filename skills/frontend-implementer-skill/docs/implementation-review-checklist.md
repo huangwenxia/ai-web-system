@@ -39,8 +39,10 @@
 - 是否完成项目上下文和复用扫描；自定义 UI、`v-for`、tag / badge / status、dialog / form / table / filter、icon 是否都有搜索证据
 - 是否先设计页面结构拆分、数据归属和胶囊目录，再创建文件和落代码
 - 是否先实现业务容器组件和纯视觉组件，最后组装 `index.vue`
+- 是否在实现落地后整理页面局部纯工具函数：`valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用函数进入当前目录 `utils/index.ts`，必要类型进入 `types/index.ts`
 - 是否在实现完成后同时跑自动校验和语义复查，而不是只跑其中一部分
 - 是否未主动运行 build；若最终未运行 build，是否说明“构建由前端负责人人工查看页面并确认后手动提交”
+- 可见 UI 修改后，是否刷新目标页面并确认页面正常渲染、核心内容未丢失；无法刷新时是否说明原因
 
 ## 实现检查
 - 是否优先复用现有组件、模式和目录结构
@@ -48,6 +50,8 @@
 - 数据映射是否符合页面结构和业务语义
 - 是否存在 `watch` 维护派生状态、模板逻辑过重、props/emits 边界不清的问题
 - 是否遵守页面层决策容器、子组件只负责内容的原则
+- 页面主文件是否只保留数据编排、`computed`、事件处理和组件组装；纯工具函数是否不依赖 Vue 响应式状态、不直接调接口、不操作路由、不改变后端接口调用、字段来源和业务行为
+- 本地工具 / 类型引用是否使用显式入口 `./utils/index`、`./types/index`；抽离后是否检查所有引用点并删除旧重复函数、废弃文件
 - 如果存在“规格碎片 / 轻量字段碎片 / 非标签型局部 badge”这类展示，是否先判定其语义，而不是直接套 tag / badge 组件；语义口径见 `docs/semantic-display-patterns.md`
 - 如果涉及 Element Plus 浮层（dropdown / popover / tooltip / select 等），是否优先在组件内部配合 `popper-class` 处理浮层壳层和交互，而不是先用页面外层覆盖修补
 - 是否先区分当前样式问题属于项目语义层（`--ui-*`）还是 Element Plus 原生 anatomy / 状态层（`--el-*`），并在正确 token 层修改，而不是把两套 token 混用成视觉补丁
@@ -101,6 +105,7 @@
 - 是否运行 `scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
 - 是否运行 diff check（至少 `git diff --check`，并人工审视本次 diff 是否只包含目标修改）
+- 是否刷新目标页面并确认正常渲染；浏览器检查不替代自动检查，自动检查也不替代页面刷新
 - 自动检查是否覆盖本次新增 / 修改文件；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因
 - 自动检查未通过时，是否先整改硬指标再交付
 - 旧 `.vue` 是本次新功能主承载页面时，是否使用 `--strict-vue-lines`
