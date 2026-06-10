@@ -9,7 +9,7 @@ description: Convert confirmed prototypes, screenshots, design drafts, HTML prot
 
 Implement approved prototypes in project-mamba frontend code with high fidelity, project-native reuse, and explicit validation. Treat this skill as the execution gate from prototype to code: understand the prototype, locate the owning app/route, reuse the platform component system, implement in Vue 3, then run automated and semantic checks before delivery.
 
-This skill only covers prototype implementation and validation. Do not use it to invent product decisions, perform unrelated maintenance, or hand off to other company-specific skills.
+This skill only covers prototype implementation and validation. Do not use it to invent product decisions, perform unrelated maintenance, or hand off to unrelated company-specific workflows.
 
 ## Source Order
 
@@ -17,10 +17,10 @@ Use this order when constraints conflict:
 
 1. User-confirmed prototype, screenshot, HTML file, design draft, interaction spec, or acceptance notes.
 2. Current target repository code: `AGENTS.md`, target app routes, nearby pages, components, APIs, constants, locales, and styles.
-3. Target repository public project skills under `.codex/skills`, especially `ui-spec` when present.
+3. Target repository project-local guidance files when present and relevant.
 4. This skill's bundled docs and scripts.
 
-If the target repository has additional public skills such as `mamba-page-development` or `easybill-ui-component-manual`, read them only when present and relevant. Do not require them when the repository does not provide them.
+If the target repository has additional project-local guidance, read it only when present and relevant. Do not require it when the repository does not provide it.
 
 ## Bundled Resources
 
@@ -33,6 +33,7 @@ Read these files progressively from this skill directory:
 - `docs/token-and-style-policy.md`: read for visible UI, style, token, Tailwind, Element Plus, popper, scrollbar, or theme decisions.
 - `docs/semantic-display-patterns.md`: read for field chips, status fragments, non-tag badges, metrics, and compact semantic displays.
 - `docs/implementation-anti-patterns.md`: read when the implementation starts drifting into custom UI, oversized pages, weak reuse evidence, or unclear validation.
+- `docs/browser-readonly-diagnostics.md`: read when authorized external Chrome, logged-in pages, or browser DOM/style/network read-only diagnostics are needed.
 
 Run these scripts from the target project root:
 
@@ -74,7 +75,7 @@ If a non-frontend requester gives business wording only, translate it into the c
 7. Match the prototype first, then adapt through project tokens and shared components. Preserve observable layout, density, labels, grouping, icon intent, and interaction behavior unless a project rule forces a specific substitution.
 8. After implementation, move page-local pure utility helpers such as empty-value display, text normalization, formatting, parsing, and fallback display into the current directory's `utils/index.ts`; move needed local types into `types/index.ts`; use explicit imports such as `./utils/index` and `./types/index`.
 9. Run validation scripts and the closest app/package typecheck command available in the target repository. Do not run build commands unless the user explicitly asks for a build in this task; frontend owners manually inspect the page and submit the build after approval.
-10. For visible UI, refresh the target route in the browser and inspect that the page renders normally and core content is not missing. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome.
+10. For visible UI, refresh the target route in the browser and inspect that the page renders normally and core content is not missing. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome. If this requires external controlled Chrome or a logged-in page, follow `docs/browser-readonly-diagnostics.md` and keep the browser work read-only.
 
 ## Fidelity And Validation
 
@@ -95,7 +96,7 @@ End with:
 
 - Prototype source, target app, and route/view ownership.
 - Files changed.
-- Project skills/docs loaded.
+- Project-local guidance and bundled docs loaded.
 - Reuse decisions and local component decisions.
 - Validation commands and results, including checked files.
 - Browser refresh / verification notes for visible UI, including whether core content remained visible.

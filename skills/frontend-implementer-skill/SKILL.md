@@ -71,6 +71,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 新功能但原型未确认时回退 `skills/existing-project-feature-skill/SKILL.md`
 - 涉及翻译、术语统一或 i18n 改造时读取 `skills/translate-terms-skill/SKILL.md`
 - 需要独立结构、视觉或交互审查时读取 `skills/page-review-skill/SKILL.md`
+- 需要使用外部受控 Chrome、真实登录态页面、授权页面 DOM / 样式 / 网络只读诊断时读取：`docs/browser-readonly-diagnostics.md`
 
 ## 工作流
 
@@ -82,7 +83,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 6. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
 7. 实现落地后做页面局部整理：页面主文件中的纯工具函数按规则抽到当前目录 `utils/index.ts`，必要类型抽到 `types/index.ts`。
 8. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
-9. 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；无法刷新时说明原因。
+9. 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果使用外部受控 Chrome 或真实登录态页面，按 `docs/browser-readonly-diagnostics.md` 执行只读诊断；无法刷新时说明原因。
 10. 输出实现或修改结果，并明确边界态与风险。
 11. 判断是否需要叠加独立 `page-review-skill`。
 12. 判断本次是否值得回写到标准、案例、资产或规则。
@@ -99,7 +100,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 8. 组装页面 `index.vue`：最后接线，只传最小状态，只接收 emit，不解构一长串子组件私有数据，不直接 import 一堆兄弟细节组件。
 9. 页面局部纯工具函数整理：页面内 `valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用函数统一抽到当前目录 `utils/index.ts`；必要类型抽到当前目录 `types/index.ts`；本地引用使用 `./utils/index`、`./types/index` 显式入口。
 10. 自动校验：跑类型检查、实现检查、组件结构 strict 检查、编码检查和 diff check；命中 `project-mamba` 时显式列 checked files。默认不运行 build，除非用户本次明确要求。
-11. 浏览器刷新：可见页面修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果没有可用 URL / dev server，最终说明无法刷新原因。
+11. 浏览器刷新：可见页面修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果使用外部受控 Chrome 或真实登录态页面，按 `docs/browser-readonly-diagnostics.md` 执行只读诊断；如果没有可用 URL / dev server，最终说明无法刷新原因。
 12. 语义复查：复查页面入口结构、数据归属组件、胶囊目录、纯工具函数抽离、递归三轮抽离、复用证据、flex / 禁用 grid、Tailwind 优先和边界态完整性。
 
 ## 标准执行协议

@@ -51,6 +51,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - `rules/20-bugfix-and-optimization.mdc`
 - `skills/frontend-implementer-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
+- 需要使用外部受控 Chrome、真实登录态页面或授权页面 DOM / 样式 / 网络只读诊断时，读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`
 - 检查清单：`docs/fix-workflow-checklist.md`
 - 输出模板：`templates/existing-project-fix-output-template.md`
 
@@ -69,8 +70,9 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
    - 如果暴露出明显结构、视觉或体验风险，先完成当前修复，再决定是否升级为独立 `page-review-skill`。
 7. 执行修复或优化，优先修真正的状态源、条件判断、依赖关系或职责边界。
 8. 修复后默认顺手检查同链路的细节一致性、交互顺滑度、边界状态和明显 1px 级可见问题，但不把每次修复都扩成独立大审查。
-9. 明确影响范围、回归风险和最小验证建议。
-10. 判断是否形成稳定治理候选，决定是否回写标准或同步升级相关 skill。
+9. 如果复现或验证需要外部受控 Chrome、真实登录态页面或用户授权页面，按 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md` 做只读诊断，不执行任何业务写操作。
+10. 明确影响范围、回归风险和最小验证建议。
+11. 判断是否形成稳定治理候选，决定是否回写标准或同步升级相关 skill。
 
 ## 标准执行协议
 ### 1. 先追上下文，不先写补丁
@@ -178,4 +180,3 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 ### 实例 3：局部样式 bug 其实暴露出对齐和节奏问题
 - 先完成当前 bug 修复。
 - 修复后如果发现同链路还有明显结构、视觉或体验问题，再决定是否升级为独立 `page-review-skill`。
-

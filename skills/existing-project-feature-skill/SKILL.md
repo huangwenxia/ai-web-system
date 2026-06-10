@@ -57,6 +57,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 涉及组件拆分、抽离、目录落点或 API 设计时，确认 `skills/frontend-implementer-skill/docs/component-extraction-policy.md` 与 `scripts/check-component-structure.mjs`
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
+- 需要使用外部受控 Chrome、真实登录态页面或授权页面 DOM / 样式 / 网络只读诊断时，读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`
 
 ## 工作流
 1. 先判断任务是否真的属于 A-1 既有项目新功能开发。
@@ -80,6 +81,8 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 为了尽量一次性开发好，A-1 新页面 / 新功能模块必须按顺序闭环推进：需求 / 原型确认 → 项目上下文和复用扫描 → 页面结构拆分设计 → 数据归属设计 → 胶囊目录落位 → 业务容器组件实现 → 纯视觉组件实现 → 页面 `index.vue` 组装 → 页面局部纯工具函数整理 → 自动校验 → 浏览器刷新 → 语义复查。不能跳过前置设计直接落一个大 `index.vue`，也不能只在最后补一句“已检查”。
 
 每个阶段都要有对应校验：复用证据、页面入口结构、数据归属组件、页面纯工具函数抽离、胶囊目录、递归三轮抽离、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果和边界态完整性必须在最终检查表中覆盖到位。
+
+如果浏览器刷新或页面检查需要外部受控 Chrome、真实登录态页面或用户授权页面，必须按 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md` 做只读诊断，不执行任何业务写操作。
 
 ## 标准执行协议
 ### 1. 先确认原型，再进入实施

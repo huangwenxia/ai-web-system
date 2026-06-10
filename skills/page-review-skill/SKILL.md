@@ -33,6 +33,7 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 3. 查目标项目的 common/shared 来源：优先看 `apps/common/src/assets/scss/vars.scss`、`tailwindcss.css`、`reset.scss`、共享组件目录和目标 app 已有 soft override。
 4. 若命中 project-mamba 或同构项目，读取项目 UI 规范 skill 或 `frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 中与样式、common 复用有关的部分。
 5. 若用户明确提到 AGIOne，按 AGIOne 严格视觉规则审查；若未提但任务属于本 skill，也默认以 AGIOne 作为视觉审查标尺。
+6. 如果审查真实登录态页面、外部受控 Chrome 或授权页面 DOM / 样式 / 网络状态，先读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`，并保持只读诊断。
 
 ## 审查模式
 
@@ -159,6 +160,7 @@ rg -n "bg-white|text-gray-|border-gray-|text-blue-|bg-blue-|#[0-9a-fA-F]" <targe
 - 不输出没有证据的视觉结论；至少引用截图区域、文件路径、扫描命中或组件代码。
 - 不把截图观察当成代码事实；截图只能证明视觉现象，代码归因必须读实现。
 - 不为了追求全量完美而扩大范围；普通任务只审目标范围和直接依赖。
+- 外部受控 Chrome 只用于只读诊断，不替用户执行保存、提交、删除、审批、发布、导入、导出、上传、下载或任何会改变业务数据的操作。
 
 ## Handoff
 
