@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stock Opportunity Analysis"
+  short_description: "Source-backed multi-stock opportunity research"
+  default_prompt: "Use $stock-opportunity-analysis to compare several stocks for near-term opportunity using verified current data and cited sources."
