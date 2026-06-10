@@ -1,0 +1,4 @@
+interface:
+  display_name: "Stock Stage Diagnosis"
+  short_description: "Diagnose stock stage, funds, business risk."
+  default_prompt: "Use $stock-stage-diagnosis to analyze a stock by stage, dominant capital behavior, business issue, real problem, and current response."
