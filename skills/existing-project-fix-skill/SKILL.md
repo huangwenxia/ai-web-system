@@ -52,6 +52,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - `skills/frontend-implementer-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 - 需要使用外部受控 Chrome、真实登录态页面或授权页面 DOM / 样式 / 网络只读诊断时，读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`
+- 终端 / PowerShell stdout 出现乱码、替换方块、`UnicodeDecodeError`、`illegal multibyte sequence`，或怀疑文件编码被破坏时，先读取 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md`
 - 检查清单：`docs/fix-workflow-checklist.md`
 - 输出模板：`templates/existing-project-fix-output-template.md`
 
@@ -71,8 +72,9 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 7. 执行修复或优化，优先修真正的状态源、条件判断、依赖关系或职责边界。
 8. 修复后默认顺手检查同链路的细节一致性、交互顺滑度、边界状态和明显 1px 级可见问题，但不把每次修复都扩成独立大审查。
 9. 如果复现或验证需要外部受控 Chrome、真实登录态页面或用户授权页面，按 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md` 做只读诊断，不执行任何业务写操作。
-10. 明确影响范围、回归风险和最小验证建议。
-11. 判断是否形成稳定治理候选，决定是否回写标准或同步升级相关 skill。
+10. 如果终端 / PowerShell stdout 在复现、扫描、校验或 git 输出中出现乱码、替换方块、`UnicodeDecodeError`、`illegal multibyte sequence`，必须先按 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md` 验证磁盘字节，不得把控制台渲染当成文件损坏事实。
+11. 明确影响范围、回归风险和最小验证建议。
+12. 判断是否形成稳定治理候选，决定是否回写标准或同步升级相关 skill。
 
 ## 标准执行协议
 ### 1. 先追上下文，不先写补丁

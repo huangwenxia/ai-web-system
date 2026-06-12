@@ -54,6 +54,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 命中 `project-mamba` 新功能实现时，确认 `skills/frontend-implementer-skill/scripts/check-project-mamba-implementation.mjs` 的交付前检查口径
 - 命中 `project-mamba` 时，确认 `skills/frontend-implementer-skill/scripts/verify-project-mamba-topology.mjs` 的拓扑保鲜检查口径
 - 涉及中文文案、locale、枚举 label、状态文案或业务展示常量时，确认 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 的 UTF-8 / BOM / 乱码检查口径
+- 终端 / PowerShell stdout 出现乱码、替换方块、`UnicodeDecodeError`、`illegal multibyte sequence`，或怀疑文件编码被破坏时，先读取 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md`
 - 涉及组件拆分、抽离、目录落点或 API 设计时，确认 `skills/frontend-implementer-skill/docs/component-extraction-policy.md` 与 `scripts/check-component-structure.mjs`
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
@@ -83,6 +84,8 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 每个阶段都要有对应校验：复用证据、页面入口结构、数据归属组件、页面纯工具函数抽离、胶囊目录、递归三轮抽离、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果和边界态完整性必须在最终检查表中覆盖到位。
 
 如果浏览器刷新或页面检查需要外部受控 Chrome、真实登录态页面或用户授权页面，必须按 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md` 做只读诊断，不执行任何业务写操作。
+
+如果终端 / PowerShell stdout 在任何校验、扫描、浏览器验证或 git 输出中出现乱码、替换方块、`UnicodeDecodeError`、`illegal multibyte sequence`，必须先按 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md` 验证磁盘字节，不得把控制台渲染当成文件损坏事实。
 
 ## 标准执行协议
 ### 1. 先确认原型，再进入实施
