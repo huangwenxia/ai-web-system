@@ -84,7 +84,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 6. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
 7. 实现落地后做页面局部整理：页面主文件中的纯工具函数按规则抽到当前目录 `utils/index.ts`，必要类型抽到 `types/index.ts`。
 8. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
-9. 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果使用外部受控 Chrome 或真实登录态页面，按 `docs/browser-readonly-diagnostics.md` 执行只读诊断；如果终端输出疑似乱码或编码错误，先按 `docs/terminal-output-encoding-guardrail.md` 验证磁盘字节；无法刷新时说明原因。
+9. 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果使用外部受控 Chrome 或真实登录态页面，按 `docs/browser-readonly-diagnostics.md` 执行只读诊断；无法刷新时说明原因。
+   - 终端 / PowerShell stdout 出现乱码、替换方块、`UnicodeDecodeError` 或 `illegal multibyte sequence` 时，先按 `docs/terminal-output-encoding-guardrail.md` 的“控制台渲染 ≠ 磁盘事实”护栏处理：用 `Format-Hex` / `git diff` / `fs.readFileSync(...).toString('hex')` 验证磁盘字节后再判断；文件编辑必须用 `apply_patch`，禁止用 PowerShell 写命令去“修”被乱码怀疑的文件。
 10. 输出实现或修改结果，并明确边界态与风险。
 11. 判断是否需要叠加独立 `page-review-skill`。
 12. 判断本次是否值得回写到标准、案例、资产或规则。

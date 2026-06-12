@@ -85,7 +85,6 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 
 如果浏览器刷新或页面检查需要外部受控 Chrome、真实登录态页面或用户授权页面，必须按 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md` 做只读诊断，不执行任何业务写操作。
 
-如果终端 / PowerShell stdout 在任何校验、扫描、浏览器验证或 git 输出中出现乱码、替换方块、`UnicodeDecodeError`、`illegal multibyte sequence`，必须先按 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md` 验证磁盘字节，不得把控制台渲染当成文件损坏事实。
 
 ## 标准执行协议
 ### 1. 先确认原型，再进入实施

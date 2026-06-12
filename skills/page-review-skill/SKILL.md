@@ -34,6 +34,7 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 4. 若命中 project-mamba 或同构项目，读取项目 UI 规范 skill 或 `frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 中与样式、common 复用有关的部分。
 5. 若用户明确提到 AGIOne，按 AGIOne 严格视觉规则审查；若未提但任务属于本 skill，也默认以 AGIOne 作为视觉审查标尺。
 6. 如果审查真实登录态页面、外部受控 Chrome 或授权页面 DOM / 样式 / 网络状态，先读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`，并保持只读诊断。
+7. 审查过程中若 PowerShell / 终端 stdout 出现乱码、替换方块、`UnicodeDecodeError` 或 `illegal multibyte sequence`，先按 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md` 的“控制台渲染 ≠ 磁盘事实”护栏处理：用 `Format-Hex` / `git diff` 验证磁盘字节后再判断；任何文件修改必须用 `apply_patch`。
 
 ## 审查模式
 

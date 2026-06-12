@@ -76,6 +76,7 @@ If a non-frontend requester gives business wording only, translate it into the c
 8. After implementation, move page-local pure utility helpers such as empty-value display, text normalization, formatting, parsing, and fallback display into the current directory's `utils/index.ts`; move needed local types into `types/index.ts`; use explicit imports such as `./utils/index` and `./types/index`.
 9. Run validation scripts and the closest app/package typecheck command available in the target repository. Do not run build commands unless the user explicitly asks for a build in this task; frontend owners manually inspect the page and submit the build after approval.
 10. For visible UI, refresh the target route in the browser and inspect that the page renders normally and core content is not missing. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome. If this requires external controlled Chrome or a logged-in page, follow `docs/browser-readonly-diagnostics.md` and keep the browser work read-only.
+11. If PowerShell / terminal stdout shows mojibake, replacement glyphs, `UnicodeDecodeError`, or `illegal multibyte sequence`, follow `docs/terminal-output-encoding-guardrail.md`: console rendering is not disk truth; verify bytes with `Format-Hex` / `git diff` / `fs.readFileSync(...).toString('hex')` before any conclusion, and only edit files with `apply_patch`.
 
 ## Fidelity And Validation
 
