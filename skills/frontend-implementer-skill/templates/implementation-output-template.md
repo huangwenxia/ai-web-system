@@ -109,7 +109,7 @@
 - UTF-8 / 中文直写 / Unicode escape：达标 / 未达标 / 技术例外（仅 Unicode 字符范围匹配等，说明原因）
 - 复用检查证据：检索范围 / 检索关键词 / 命中候选 / 采用或未复用原因
 - 图标语义 / 图标体系复查：未涉及 / 已查原型图标体系与具体图标名、当前 app 已安装图标库、共享 UI 图标封装、当前实现图标映射、依赖来源、采用或偏离原因 / 未达标
-- 浮层表单复用检查：未涉及 / 已查现成弹窗表单、抽屉表单、Schema 表单、InstanceForm、模块封装（列出候选、采用或未复用原因）/ 未达标
+- 浮层表单复用检查：未涉及 / 已使用 `FormDialog.show` / 已查 `FormDialog.show`、现成弹窗表单、Schema 表单、InstanceForm、模块封装（列出候选、采用或例外原因）/ 未达标（存在手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`）
 - 表格复用检查：未涉及 / 已查 CurdTable、DataTable、ColumnFactory、useCurdTable、模块表格配置；导入导出场景已查 common utils 的 genericExportImport（列出候选、采用或未复用原因）/ 未达标
 - `v-for` 复用检查：未涉及 / 已查可复用组件（列出范围、候选、未复用原因）/ 未达标
 - 状态分支抽离：未涉及 / 已抽离（列出组件）/ 保留在页面（说明原因）

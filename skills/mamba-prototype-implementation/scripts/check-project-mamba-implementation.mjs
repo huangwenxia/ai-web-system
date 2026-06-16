@@ -909,8 +909,8 @@ function findVForReuseWarnings(source, lineOffset = 0) {
   return warnings;
 }
 
-function findRawElementPlusOverlayFormWarnings(source, lineOffset = 0) {
-  const warnings = [];
+function findRawElementPlusOverlayFormErrors(source, lineOffset = 0) {
+  const errors = [];
   const overlayRegex = /<(el-dialog|el-drawer|el-popover)(?=[\s>/])[\s\S]*?<\/\1>/gi;
   let match;
 
@@ -921,12 +921,12 @@ function findRawElementPlusOverlayFormWarnings(source, lineOffset = 0) {
     }
 
     const line = lineNumberAt(source, match.index, lineOffset);
-    warnings.push(
-      `${match[1]} form overlay at line ${line} uses raw Element Plus form markup; first check existing dialog/drawer/popover form components, InstanceForm/Schema form patterns, apps/common, current app commons/views/components, easybill-ui, and document reuse candidates or non-reuse reason in the final checklist`,
+    errors.push(
+      `${match[1]} form overlay at line ${line} uses raw Element Plus form markup; form overlays must use FormDialog.show. If this is not a form workflow, document why the FormDialog.show rule does not apply. If the project does not provide FormDialog.show, stop and report the missing wrapper instead of hand-writing an Element Plus form overlay`,
     );
   }
 
-  return warnings;
+  return errors;
 }
 
 function findRawTableReuseWarnings(source, lineOffset = 0) {
@@ -1436,7 +1436,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
 
   for (const block of getVueTemplateBlocks(content)) {
     warnings.push(...findVForReuseWarnings(block.code, block.startLine));
-    warnings.push(...findRawElementPlusOverlayFormWarnings(block.code, block.startLine));
+    errors.push(...findRawElementPlusOverlayFormErrors(block.code, block.startLine));
     warnings.push(...findRawTableReuseWarnings(block.code, block.startLine));
   }
 

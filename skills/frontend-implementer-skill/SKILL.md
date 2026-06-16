@@ -151,7 +151,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增，并在最终输出列出检索范围、命中候选和未复用原因。
-- 弹出层表单、抽屉表单、popover 表单不得默认手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`；先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块已有 modal/form 封装和 `easybill-ui`。确实无法复用时，才能基于 Element Plus 组合实现，并在最终输出列出命中候选和未复用原因。
+- 表单类弹出层（新建、编辑、配置、提交等带表单的 dialog / drawer / popover）严格使用项目封装的 `FormDialog.show`；不得手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`。实现前先检索 `FormDialog.show`、项目已有弹窗表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；确属非表单展示或纯确认时说明不适用；如果项目不存在 `FormDialog.show`，先阻断并说明需要补封装或请用户确认，不允许改成手写 Element Plus 表单弹层。
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
 - 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称（如 Lucide 的 rocket / route / memory-stick），再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。

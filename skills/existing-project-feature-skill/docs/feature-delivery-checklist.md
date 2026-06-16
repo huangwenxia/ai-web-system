@@ -51,7 +51,7 @@
 - 如果命中 `project-mamba`，是否已明确 bootstrap 来源是本地 / `@common` / 跨 app 复用
 - 如果命中 `project-mamba` 新功能页面，是否把最终代码校验作为交付门禁，而不是可选建议
 - 新增组件 / Hook 前，是否已检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`，并记录检索范围、命中候选和未复用原因
-- 弹出层表单、抽屉表单、popover 表单是否先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；如手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`，是否说明命中候选和未复用原因
+- 表单类弹出层是否严格使用 `FormDialog.show`；是否检索 `FormDialog.show`、项目已有弹窗表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；如出现手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`，是否已判定为未达标；非表单 / 纯确认可说明不适用，项目无 `FormDialog.show` 时必须阻断或请用户确认
 - 表格是否先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层；是否明确表格主能力不在 `apps/common/src/utils`，只有导入导出场景才查 `apps/common/src/utils/genericExportImport.ts` 等 common utils；如手写 `el-table` / `<table>`，是否说明命中候选和未复用原因
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 图标是否完成原型语义与依赖复查：原型图标体系 / 具体图标名、当前 app 已安装图标库、共享 UI 图标封装、当前实现图标映射、是否新增依赖或偏离原型，是否都已列明；不允许静默用近似图标替代明确原型图标

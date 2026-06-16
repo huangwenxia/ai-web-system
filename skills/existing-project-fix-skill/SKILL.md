@@ -104,6 +104,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 #### 组件新增判定条件
 - 新组件必须落在当前项目合适层级：页面私有放页面局部 `components/`，模块复用放模块级组件目录，app 级复用放当前 app 的 `src/components/`。
 - 组件、模板、样式与 Element Plus / Tailwind / `defineModel` 等代码层铁律，统一以下沉到 `frontend-implementer-skill` 为准。
+- 修复或优化涉及表单类弹出层时，严格沿用项目封装的 `FormDialog.show`；不得为局部修复新增手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form` 组合。若历史实现暂不整改，必须说明保留原因和后续收敛建议。
 
 ### 4. 默认质量标尺
 - 所有 A-3 任务修完后，都按产品级标准顺手检查相关链路的对齐、节奏、状态、顺滑度和可见细节问题。
