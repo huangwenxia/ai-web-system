@@ -138,7 +138,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、`FormDialog.show` 浮层表单检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、`FormDialog.show` 浮层表单检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、`:global` 全局污染禁用检查、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则

@@ -38,7 +38,7 @@ Options:
   --help                  Show this help
 
 When no files are provided, the script checks added/modified/untracked git files.
-Component/page implementation code must use Tailwind utilities or component-local <style scoped>; external style files/imports are rejected.
+Component/page implementation code must use Tailwind utilities or component-local <style scoped>; external style files/imports and :global style escapes are rejected.
 Repeated visual/interaction blocks and heavy conditional state branches should be extracted into child components, component-local hooks/types/constants/utils must live in a same-named component folder with index.vue, and icon usage must be covered by the final prototype icon semantic/dependency review.`);
 }
 
@@ -224,6 +224,25 @@ const TAILWIND_PREFERRED_CSS_PROPERTIES = new Set([
 
 function stripCssComments(source) {
   return source.replace(/\/\*[\s\S]*?\*\//g, '');
+}
+
+function stripCssCommentsPreserveLines(source) {
+  return source.replace(/\/\*[\s\S]*?\*\//g, (comment) => comment.replace(/[^\r\n]/g, ' '));
+}
+
+function findGlobalStylePollutionErrors(source, lineOffset = 0) {
+  const errors = [];
+  const cleanSource = stripCssCommentsPreserveLines(source);
+  const globalStyleRegex = /:global\b\s*(?:\(|(?=[\s.#[:{]))/g;
+  let match;
+
+  while ((match = globalStyleRegex.exec(cleanSource))) {
+    errors.push(
+      `:global style escape at line ${lineNumberAt(cleanSource, match.index, lineOffset)} can cause global style pollution; use component-local scoped classes, component props/wrapper classes, popper-class, FormDialog.show options, or an approved shared style entry instead of patching Element Plus internals or page shells globally`,
+    );
+  }
+
+  return errors;
 }
 
 function isSimpleStyleSelector(selector) {
@@ -1442,6 +1461,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
 
   for (const block of getVueStyleBlocks(content)) {
     errors.push(...findVueStyleBlockScopeErrors(block));
+    errors.push(...findGlobalStylePollutionErrors(block.code, block.startLine));
     warnings.push(...findTailwindPreferenceWarnings(block.code, block.startLine));
     warnings.push(...findViewportBreakpointWarnings(block.code, block.startLine));
   }

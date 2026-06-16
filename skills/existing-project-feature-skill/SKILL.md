@@ -217,6 +217,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 源码必须按 UTF-8 保存，目标是“不乱码且可读”；不要用 `\uXXXX` Unicode escape 作为防乱码手段。中文文案、`zh-CN` / `zh-cn` locale value、枚举 label、状态文案和业务展示常量必须直接写可读中文。正则里的单个中文字符或中文标点也优先直写（如 `/[,，]/`）；只有 Unicode 字符范围匹配等技术场景可以保留 `\uXXXX`（如 `/[\u4e00-\u9fff]/` 或 `new RegExp('[\\u4e00-\\u9fff]')`），并在最终输出说明。
 - 新增组件或 `useXxx.ts` 前，必须先检查并说明以下复用来源：`easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`。最终输出列出检索范围、检索关键词、命中候选和未复用原因；确实没有合适能力时，才允许新增。
 - 表单类弹出层（新建、编辑、配置、提交等带表单的 dialog / drawer / popover）严格使用项目封装的 `FormDialog.show`；不得手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`。实现前先检索 `FormDialog.show`、项目已有弹窗表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；确属非表单展示或纯确认时说明不适用；如果项目不存在 `FormDialog.show`，先阻断并说明需要补封装或请用户确认，不允许改成手写 Element Plus 表单弹层。
+- 新功能或页面实现中严禁新增 `:global(...)` / `:global (...)` 样式逃逸；不得为局部页面效果覆盖 Element Plus 内部类、浮层壳层或页面外层容器。需要浮层或第三方组件样式适配时，优先用组件局部类、组件 props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口，并在最终检查表记录全局污染校验结果。
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 模板中出现任何 `v-for` 前，必须先查项目已有组件或同语义封装，尤其是 tag/badge 集合、选项列表、字段 fragments、列表项、卡片列表和 `OverflowTag` 这类能力；确实没有合适封装时才允许手写循环，最终输出必须说明检索范围、命中候选和未复用原因。
 - 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称，再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
@@ -228,7 +229,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 抽离组件的 props 如果引用外部业务类型、`./types` 或相对路径导入类型，不直接使用 `defineProps<ExternalType>()`；优先使用运行时 props 对象 + `PropType`，避免 SFC 编译阶段无法解析外部类型。
 - 实现完成后必须做胶囊目录强自检：`components/` 根目录不能出现一堆同一功能前缀的平铺文件；新增模块如果有 `index.vue` 以外的 hook / type / constants，必须有同名胶囊目录；每个胶囊目录必须有清晰入口 `index.vue` 或 `index.ts`；组件胶囊入口必须是 `index.vue`，禁止 `Foo/Foo.vue`；页面根 `index.vue` 只做编排，不承载细节 UI，不直接 import 一堆兄弟组件。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，最终必须运行 `check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。实现脚本的 checked files 必须覆盖入口文件和所有本地抽离子组件；脚本如提示 local child component 未纳入检查，必须补齐文件后重跑。
-- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用（含简单 scoped 样式是否迁到 Tailwind）、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。未达标项必须说明已整改或例外原因。
+- 最终输出必须包含达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、浮层表单复用检查、表格复用检查、`v-for` 复用检查、状态分支抽离、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用（含简单 scoped 样式是否迁到 Tailwind）、`:global` 全局污染禁用检查、flex 布局 / 禁用 grid、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。未达标项必须说明已整改或例外原因。
 
 ## 回写与同步协议
 - 只有当本次任务沉淀出稳定的新功能交付模式时，才进入回写。

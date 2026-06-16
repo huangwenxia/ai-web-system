@@ -88,6 +88,7 @@
 - 布局是否使用 flex；是否避免 Tailwind grid utility 和 CSS Grid 属性
 - 响应式是否优先使用 `flex-wrap`、`flex-basis`、`min-w-*`、`max-w-*`、`gap-*`、`ml-auto` 等自然换行和收缩能力；若 `check-project-mamba-implementation.mjs` 提示 clustered viewport media breakpoints，是否已整改或说明保留的是语义断点
 - `<style>` 是否使用 `scoped`；简单 flex / gap / margin / padding / width / height / font 等样式是否写在 template Tailwind class；复杂容器自适应、hover / focus 和深层覆盖是否才进入 scoped SCSS
+- 是否不存在 `:global(...)` / `:global (...)` 逃逸 scoped 的样式；如发现用 `:global` 覆盖 Element Plus 内部类、浮层壳层或页面外层容器，必须判定未达标并改为局部类、props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口
 - 内容区宽度变化但 viewport 不变时，row / card / toolbar 是否按自身容器宽度稳定自适应，而不是只靠 `@media` 改结构
 - 页面或组件自身出现滚动容器时，是否使用 `el-scrollbar` 或项目已有内建滚动组件；是否避免原生 `overflow: auto/scroll`、Tailwind `overflow-*-auto/scroll` 和自定义 scrollbar 样式
 

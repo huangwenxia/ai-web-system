@@ -15,6 +15,7 @@
 - 禁止新增 CSS Grid 布局：不要使用 Tailwind `grid`、`inline-grid`、`grid-cols-*`、`grid-rows-*`、`col-span-*`、`row-span-*`、`grid-flow-*` 等 grid utility，也不要使用 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
 - 复杂选择器、container query、伪类 / 伪元素、第三方组件深层覆盖、浮层壳层、主题状态和复杂响应式断点，使用 scoped SCSS 或项目既有样式入口；但 scoped SCSS 里也不能新增 CSS Grid 布局。
 - `<style>` 必须 `scoped`。如果 scoped 样式只是普通布局、间距、尺寸、圆角或排版声明，优先改为 Tailwind utility；保留 scoped 样式时，应该是因为深层覆盖、伪类 / 伪元素、媒体 / container query、动画或难以表达的主题状态。
+- 严禁在组件或页面 `<style scoped>` 中使用 `:global(...)` / `:global (...)` 逃逸 scoped 边界，也不得用它覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item` 等 Element Plus 内部类或页面外层壳层；这类写法会造成全局样式污染，必须改为组件局部类、组件 props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口。
 - 响应式结构应优先按自身容器宽度稳定自适应；不要只依赖 viewport `@media` 在页面 viewport 不变、内容区变窄时切换 row / card / toolbar 结构。
 - 新增或改造页面 / 组件不得通过 `<style src>`、`import './*.scss'`、`@import`、`@use` 等方式外部引用样式；组件私有样式必须留在当前 `.vue` 的 `<style scoped>` 内。
 - 禁止为了单页面效果把布局职责转回一批自定义 CSS class。

@@ -134,6 +134,7 @@
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规 / 外部业务类型 props 使用 `PropType`
 - Tailwind / Element Plus / 原生 HTML 使用：达标 / 未达标（如保留简单 scoped 样式，说明原因）
+- `:global` 全局污染禁用检查：未涉及 / 达标（无 `:global(...)` / `:global (...)` 逃逸）/ 未达标（列出位置、整改为局部类 / props / wrapper class / `popper-class` / `FormDialog.show` 参数 / 共享样式入口）
 - flex 布局 / 禁用 grid：达标 / 未达标
 - 容器自适应：达标 / 未达标
 - 滚动容器 / scrollbar：使用 `el-scrollbar` 或项目内建滚动能力 / 未涉及 / 未达标（说明整改）

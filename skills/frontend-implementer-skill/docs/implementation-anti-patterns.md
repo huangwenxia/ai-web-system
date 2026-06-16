@@ -262,3 +262,39 @@ const chinesePattern = new RegExp('[\\u4e00-\\u9fff]')
 ```
 
 说明：`/[,，]/` 中的 `，` 是单个可读中文标点，必须直写；`[\u4e00-\u9fff]` 是 Unicode 字符范围匹配，可以保留转义，但要在最终检查表说明原因。
+
+## 14. 在组件 scoped 样式里用 `:global` 修 Element Plus 壳层
+目标：
+```md
+组件样式只影响当前组件；不得用 `:global(...)` 逃逸 scoped 边界污染全局。
+```
+
+错误：
+```vue
+<style scoped>
+:global(.deployment-config-form-dialog.el-dialog) {
+  display: flex;
+}
+
+:global(.deployment-config-form-dialog .el-dialog__body) {
+  padding: 0;
+}
+</style>
+```
+
+正确：
+```vue
+<template>
+  <section class="deploymentConfigForm">
+    <el-form class="formBody" />
+  </section>
+</template>
+
+<style scoped>
+.deploymentConfigForm :deep(.el-form-item) {
+  margin-bottom: 12px;
+}
+</style>
+```
+
+说明：弹窗表单优先走 `FormDialog.show` 参数或项目已有弹窗封装；select / popover / tooltip 等浮层优先走 `popper-class`；确实需要跨组件复用的样式能力，必须进入经批准的共享样式入口，而不是从页面组件里写 `:global` 覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item` 等内部类。

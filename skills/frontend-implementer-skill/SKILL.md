@@ -230,6 +230,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 页面、区块、表单项、工具栏、卡片列表等布局默认使用 flex；禁止新增 CSS Grid 布局，包括 Tailwind `grid` / `inline-grid` / `grid-cols-*` / `grid-rows-*` / `col-span-*` / `row-span-*` / `grid-flow-*` 等 grid utility，以及 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
 - 复杂样式再放组件内部 `<style scoped>`：container query、第三方组件深层覆盖、hover / focus 状态和复杂响应式断点可以进 scoped SCSS；但 scoped SCSS 里也不能新增 CSS Grid 布局。
 - `<style>` 必须 `scoped`；如果 scoped 样式里只是 `display`、`flex`、`gap`、`margin`、`padding`、`width`、`height`、`font-size` 等简单布局 / 间距 / 尺寸 / 排版声明，优先迁到 template Tailwind class。脚本会对这类简单 scoped 样式给 warning，最终检查表必须说明已迁移或保留原因。
+- 组件或页面 `<style scoped>` 中严禁使用 `:global(...)` / `:global (...)` 逃逸 scoped 边界；不得用它覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item` 等 Element Plus 内部类、浮层壳层或页面外层容器。这类写法视为全局样式污染，必须改为组件局部类、组件 props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口。
 - 组件结构必须按自身容器宽度稳定自适应；内容区变窄但 viewport 未变时，row / card / toolbar 应使用容器能力、flex wrap、`min-w-0`、弹性收缩和换行策略处理，不只依赖 `@media` 改结构。
 - 新增或改造页面 / 组件时，禁止外部引用样式文件；只允许 Tailwind utility class 或组件内部 `<style scoped>`，共享主题能力必须走项目既有样式入口。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。

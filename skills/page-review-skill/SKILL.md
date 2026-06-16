@@ -101,6 +101,7 @@ rg -n "bg-white|text-gray-|border-gray-|text-blue-|bg-blue-|#[0-9a-fA-F]" <targe
 
 - 页面应复用目标项目已有 Page Shell、HeaderBox、MainBox、ScrollBox、CurdTable、Card/List 组件等。
 - 不把页面级容器职责塞进子组件；不在一个页面里混用多套卡片半径、阴影、分隔线和间距节奏。
+- 审查到 `:global(...)` / `:global (...)` 逃逸 scoped 的组件样式时，按全局样式污染高风险处理；尤其是覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item`、浮层壳层或页面外层容器，必须建议改为局部类、props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口。
 - 普通业务工具页应安静、密度稳定、便于扫描；避免营销式大装饰、强渐变背景、悬浮卡片堆叠。
 
 ## Common 对照决策树
