@@ -65,6 +65,7 @@
 - 每个 `v-for` 是否已先查项目已有组件或同语义封装；原生标签上的 `v-for` 是否说明为什么不能复用 tag/badge 集合、选项渲染、字段 fragments、列表项或 `OverflowTag` 等已有能力
 - 页面模板是否堆了过多 `v-if` / `v-else-if` / `v-else` 状态分支；loading / error / empty / permission / filtered-empty / list-body 等分支超过 3 个或状态块过长时，是否抽成页面私有状态展示组件或内容区子组件
 - 首要校验：新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 是否仍保持页面编排清晰；顶部选择区、筛选面板、状态列表、卡片列表、详情区等稳定 UI 块是否已抽成同目录页面私有组件
+- 独立职责边界检查：当前只使用一次但具备清晰业务语义、`v-model` / `defineModel` 或 props / emits、`options` / `title` / `count` / `aria-label` 等输入边界、独立交互状态、稳定组件组合或成组专属样式类的 UI 区块，是否已纳入抽离候选；若保留在父组件，是否说明原因
 - 数据归属组件强校验：是否避免一个 `usePage` / `useXxx` 大 hook 管全页数据；业务容器组件的数据获取、loading、empty、error、refresh 是否在组件内部闭环；页面 `index.vue` 是否只保留 route、共享状态和跨组件事件编排
 - `index.vue` 是否避免 destructure 一长串子组件私有数据；`usePage` / `useXxx` 返回值超过 8-10 个时是否拆分或说明原因
 - 纯视觉组件是否只接收 props；`Pill` / `IconCapsule` / `MetricCell` / `CardItem` / `EmptyState` / `PlanCard` 等是否没有 import Api / router / store / mock service
@@ -105,6 +106,7 @@
 - 是否没有运行 `pnpm build`、`npm run build`、`yarn build`、`vite build`、`pnpm --filter <app> build`、`pnpm build:<app>` 等构建命令；除非用户本次明确要求，否则 build 不作为 AI 默认验证
 - 是否运行 `scripts/verify-encoding.mjs` 覆盖本次目标文件或目录；是否存在 UTF-8 BOM、常见乱码或空检查误判
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，是否运行 `scripts/check-component-structure.mjs --strict`
+- 组件结构检查是否覆盖 `.vue` 独立职责边界信号；若脚本提示 component boundary candidate，是否完成语义复查并抽离或说明保留原因
 - 是否运行 diff check（至少 `git diff --check`，并人工审视本次 diff 是否只包含目标修改）
 - 是否刷新目标页面并确认正常渲染；浏览器检查不替代自动检查，自动检查也不替代页面刷新
 - 自动检查是否覆盖本次新增 / 修改文件；空检查是否被视为失败，或是否使用 `--allow-empty` 并说明原因

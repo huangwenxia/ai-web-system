@@ -54,6 +54,7 @@
 | --- | --- | --- | --- |
 | 页面是否过重 |  |  |  |
 | 组件拆分是否合理 |  |  |  |
+| 单次使用 UI 的独立职责边界 |  |  |  |
 | 状态 / 接口 / 常量目录归属 |  |  |  |
 | `index.vue` / 同目录主 `.vue` 可扫读性 |  |  |  |
 
@@ -103,6 +104,7 @@
 - checked files：
 - `.vue <= 250`：达标 / 未达标 / 排除（locale / schema / 纯配置 / 旧文件历史超限）
 - 首要校验：页面入口结构清晰 / 冗杂抽离审视：达标 / 已抽离（列出组件）/ 保留但已说明原因
+- 独立职责边界抽离判断：单次使用但具备业务语义、输入输出、交互状态、组件组合或样式族的 UI 区块：已抽离（列出组件）/ 保留并说明原因 / 未涉及
 - 数据归属组件 / hook 拆分：业务组件自取数并闭环 loading-empty-error / 页面根只保留共享状态和流程编排 / 纯视觉组件只接 props / `usePage` 返回值和 index.vue 解构未过长：达标 / 未达标（说明整改或例外）
 - 页面纯工具函数抽离：`valueOrEmpty` / `normalizeText` / 格式化 / 解析 / 兜底展示等纯函数进入当前目录 `utils/index.ts`；必要类型进入 `types/index.ts`；本地引用使用 `./utils/index` / `./types/index`；未改变接口、字段来源和业务行为：达标 / 未涉及 / 未达标
 - 胶囊目录强校验：components 根目录同功能前缀平铺 / hook-type-constants 跟随胶囊 / 胶囊入口 index.vue 或 index.ts / 组件胶囊禁用 Foo.vue / 页面根 index.vue 只做编排：达标 / 未达标（说明整改）
@@ -117,7 +119,7 @@
 - 新增组件 / Hook 抽离预案：将抽离代码块 / 不变量 / 可变量 / 复用半径 / 目录落点 / API 契约
 - 抽离实际落地：与预案一致 / 不一致（说明原因）
 - 递归三轮抽离复查：脚本 3 轮覆盖结果；第 1 轮入口文件 / 第 2 轮一级子组件 / 第 3 轮子组件内部文件；每轮 AI 语义结论：结构清晰、复用检查、进一步抽离、Tailwind 样式、胶囊目录；未达标则列整改轮次
-- 组件结构检查：`check-component-structure.mjs --strict` 结果 / 非 strict 或 `--allow-empty` 原因
+- 组件结构检查：`check-component-structure.mjs --strict` 结果；是否出现 component boundary candidate；非 strict 或 `--allow-empty` 原因
 - 函数长度：达标 / 未达标
 - Vue 3 语法：`<script setup>` / TypeScript / `defineModel` 优先 / `computed` 优先 / `watch` 仅副作用 / `defineProps` 类型与默认值合规 / 外部业务类型 props 使用 `PropType`
 - Tailwind utility / Element Plus / 原生 HTML 使用：达标 / 未达标（如保留简单 scoped 样式，说明原因）

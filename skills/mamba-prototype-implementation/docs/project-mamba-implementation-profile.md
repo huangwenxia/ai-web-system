@@ -123,6 +123,7 @@
 - 图标必须纳入门禁复核：先识别原型使用的图标体系和具体语义名称，再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
 - 页面模板中 loading、error、empty、permission、filtered-empty、list-body 等 `v-if` / `v-else-if` / `v-else` 状态分支超过 3 个，或单个状态块超过约 30 行时，必须优先抽成页面私有状态展示组件或内容区子组件；页面保留数据和事件编排，子组件承接状态 UI。
 - 组件抽离、目录落点、胶囊目录和 API 设计以 `docs/component-extraction-policy.md` 为准；半通用半业务组件只抽稳定交互骨架，不抽业务数据和业务动作。
+- 组件抽离不只看复用次数；当前只使用一次但具备业务语义、输入输出、交互状态、稳定组件组合或成组样式类的 UI 区块，也必须按 `docs/component-extraction-policy.md` 纳入独立职责边界判断。保留在父组件时必须在最终检查表说明原因。
 - 数据获取按“数据归属组件”拆分：禁止一个 `usePage` / `useXxx` 大 hook 管全页数据；业务容器组件自己请求自己的接口或 mock，自己维护 loading / empty / error / refresh；页面 `index.vue` 只保留 route query / params、页面级主流程状态、真正跨兄弟组件共享的最小状态和跨组件事件编排；纯视觉组件只接收 props，禁止 import Api / router / store / mock service。`usePage` / `useXxx` 返回值超过 8-10 个或同时返回多组列表、loading、弹窗表单、路由跳转、多个请求、多组 options / tags / cards / table data 时，必须拆分或说明例外。
 - 页面主文件只保留数据编排、`computed`、事件处理和组件组装；`valueOrEmpty`、`normalizeText`、格式化、解析、兜底展示等无副作用工具函数必须抽到当前目录 `utils/index.ts`。工具函数必须是纯函数，不依赖 Vue 响应式状态、不直接调用接口、不操作路由、不改变后端接口调用、字段来源和业务行为。类型定义如需抽离，放到当前目录 `types/index.ts`；本地引用使用 `./utils/index`、`./types/index` 显式入口，抽离后检查所有引用点并删除旧重复函数和废弃文件。
 - 抽离前列出将抽离代码块、组件 / Hook 名称、目标目录、职责和抽离原因；涉及组件 API 时补充 `props` / `emits` / `defineModel` 边界。最终输出要说明抽离前预案与实际落地是否一致，不一致时说明原因。
@@ -138,7 +139,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、`FormDialog.show` 浮层表单检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、`:global` 全局污染禁用检查、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、独立职责边界抽离判断、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、`FormDialog.show` 浮层表单检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、`:global` 全局污染禁用检查、flex 布局 / 禁用 grid、flex 自然响应式 / 少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则
