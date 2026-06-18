@@ -11,12 +11,14 @@
 ## Tailwind 与 scoped 样式
 - 布局、间距、尺寸、对齐、普通排版优先 Tailwind utility class；布局结构默认使用 flex。
 - `flex`、`flex-wrap`、`gap-*`、`min-w-0`、`items-center`、`justify-between` 等普通 flex 布局能力优先写在 template class 里，不为它们新增自定义 CSS class。
-- 响应式布局优先用 flex 的自然换行和收缩能力解决，例如 `flex-wrap`、`flex-basis`、`min-w-*`、`max-w-*`、`gap-*` 和 `ml-auto`；断点只用于布局语义确实需要变化的少数场景，不用多个相近 viewport 断点强行控制换行。
+- 响应式布局优先由内容驱动换行：用 flex 的自然换行和收缩能力解决，例如 `flex-wrap`、`flex-basis`、`min-w-0`、`min-w-*`、`max-w-*`、`gap-*`、`ml-auto` 和可换行文本；断点只用于布局语义确实需要变化的少数场景，不用多个相近 viewport 断点强行控制换行。
+- 高度受限的 flex column 里，标题 / 摘要 / 工具条 / tabs / 底部操作等稳定高度区域必须用 `shrink-0` / `flex-shrink: 0` 保住自身高度；可滚动内容区再用 `flex-1 min-h-0` 承接剩余空间。
+- 固定宽度只用于操作区、图标按钮组、操作列等动作区域；业务文本、标题、描述、状态说明和数据内容区优先 `min-w-0 flex-1` + 换行 / 省略，不用固定宽度硬控排版。
 - 禁止新增 CSS Grid 布局：不要使用 Tailwind `grid`、`inline-grid`、`grid-cols-*`、`grid-rows-*`、`col-span-*`、`row-span-*`、`grid-flow-*` 等 grid utility，也不要使用 CSS `display: grid`、`grid-template-*`、`grid-auto-*`、`grid-column`、`grid-row` 等属性。
 - 复杂选择器、container query、伪类 / 伪元素、第三方组件深层覆盖、浮层壳层、主题状态和复杂响应式断点，使用 scoped SCSS 或项目既有样式入口；但 scoped SCSS 里也不能新增 CSS Grid 布局。
 - `<style>` 必须 `scoped`。如果 scoped 样式只是普通布局、间距、尺寸、圆角或排版声明，优先改为 Tailwind utility；保留 scoped 样式时，应该是因为深层覆盖、伪类 / 伪元素、媒体 / container query、动画或难以表达的主题状态。
 - 严禁在组件或页面 `<style scoped>` 中使用 `:global(...)` / `:global (...)` 逃逸 scoped 边界，也不得用它覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item` 等 Element Plus 内部类或页面外层壳层；这类写法会造成全局样式污染，必须改为组件局部类、组件 props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口。
-- 响应式结构应优先按自身容器宽度稳定自适应；不要只依赖 viewport `@media` 在页面 viewport 不变、内容区变窄时切换 row / card / toolbar 结构。
+- 响应式结构应优先按自身容器宽度稳定自适应；不要只依赖 viewport `@media` 在页面 viewport 不变、内容区变窄时切换 row / card / toolbar 结构，也不要用人为断点替代内容驱动换行。
 - 新增或改造页面 / 组件不得通过 `<style src>`、`import './*.scss'`、`@import`、`@use` 等方式外部引用样式；组件私有样式必须留在当前 `.vue` 的 `<style scoped>` 内。
 - 禁止为了单页面效果把布局职责转回一批自定义 CSS class。
 - 无理由禁止新增裸十六进制颜色、魔法间距、魔法高度。
