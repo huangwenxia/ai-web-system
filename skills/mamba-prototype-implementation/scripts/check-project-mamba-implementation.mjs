@@ -11,6 +11,12 @@ const FUNCTION_ERROR_LIMIT = 100;
 const RECURSIVE_EXTRACTION_AUDIT_ROUNDS = 3;
 const VIEWPORT_BREAKPOINT_MANY_THRESHOLD = 3;
 const VIEWPORT_BREAKPOINT_CLUSTER_THRESHOLD = 80;
+const FIXED_WIDTH_UTILITY_MIN_SCALE = 16;
+const FIXED_WIDTH_PX_THRESHOLD = 64;
+const FIXED_WIDTH_REM_THRESHOLD = 4;
+const FIXED_WIDTH_CH_THRESHOLD = 8;
+const FIXED_WIDTH_ALLOWED_CLASS_PATTERN = /\b(?:action|actions|operation|operations|operate|ops|toolbar|tool-bar|control|controls|command|commands|button|buttons|btn|btns|suffix|prefix|trailing|leading|footer|icon|icons|avatar)\b/i;
+const STABLE_HEIGHT_AREA_CLASS_PATTERN = /\b(?:header|toolbar|tool-bar|summary|stat|stats|tab|tabs|filter|filters|search|footer|action|actions|operation|operations)\b/i;
 const SCRIPT_EXTENSIONS = new Set(['.vue', '.ts', '.tsx', '.js', '.jsx', '.mjs', '.cjs']);
 const STYLE_EXTENSIONS = new Set(['.css', '.scss', '.sass', '.less', '.pcss', '.postcss']);
 const MOJIBAKE_TOKENS = [
@@ -316,7 +322,7 @@ function findViewportBreakpointWarnings(source, lineOffset = 0) {
   const warnings = [];
   if (breakpoints.length >= VIEWPORT_BREAKPOINT_MANY_THRESHOLD) {
     warnings.push(
-      `viewport media breakpoints at lines ${breakpoints.map((item) => item.line).join(', ')} (${breakpoints.map((item) => `${item.value}px`).join(', ')}) should be justified in the final checklist; prefer flex natural wrapping/shrinking with flex-wrap, flex-basis, min/max width, gap, and ml-auto before adding multiple viewport breakpoints`,
+      `viewport media breakpoints at lines ${breakpoints.map((item) => item.line).join(', ')} (${breakpoints.map((item) => `${item.value}px`).join(', ')}) should be justified in the final checklist; prefer content-driven flex wrapping first: min-w-0/flex-1 for content, flex-wrap/flex-basis/gap/ml-auto for flow, shrink-0 for stable-height or action areas, and fixed widths only for operation/action regions`,
     );
   }
 
@@ -331,7 +337,133 @@ function findViewportBreakpointWarnings(source, lineOffset = 0) {
 
   if (clusteredPairs.length > 0) {
     warnings.push(
-      `clustered viewport media breakpoints (${clusteredPairs.join(', ')}) suggest hand-tuned wrapping; prefer flex-wrap/flex-basis/min-w/max-w/gap/ml-auto and keep only semantic layout breakpoints`,
+      `clustered viewport media breakpoints (${clusteredPairs.join(', ')}) suggest hand-tuned wrapping; use content-driven flex wrapping/shrinking instead, keep fixed widths only for operation/action regions, and keep only semantic layout breakpoints`,
+    );
+  }
+
+  return warnings;
+}
+
+function tailwindUtilityBase(token) {
+  const raw = token.replace(/^!/, '');
+  const parts = raw.split(':');
+  return (parts[parts.length - 1] || '').replace(/^!/, '');
+}
+
+function isFixedWidthValue(value) {
+  if (!value || /^(?:0|px|auto|full|screen|fit|min|max|none)$/.test(value)) return false;
+  if (/^\d+\/\d+$/.test(value)) return false;
+  if (/^\d+$/.test(value)) return Number(value) >= FIXED_WIDTH_UTILITY_MIN_SCALE;
+
+  const arbitrary = value.match(/^\[(.+)\]$/);
+  if (!arbitrary) return false;
+
+  const raw = arbitrary[1].trim();
+  if (/^(?:0|0px|auto|100%|fit-content|min-content|max-content)$/.test(raw)) return false;
+
+  const px = raw.match(/^(\d+(?:\.\d+)?)px$/i);
+  if (px) return Number(px[1]) >= FIXED_WIDTH_PX_THRESHOLD;
+
+  const rem = raw.match(/^(\d+(?:\.\d+)?)rem$/i);
+  if (rem) return Number(rem[1]) >= FIXED_WIDTH_REM_THRESHOLD;
+
+  const ch = raw.match(/^(\d+(?:\.\d+)?)ch$/i);
+  if (ch) return Number(ch[1]) >= FIXED_WIDTH_CH_THRESHOLD;
+
+  return /\d/.test(raw) || /^calc\(/i.test(raw);
+}
+
+function isFixedWidthUtility(utility) {
+  const match = utility.match(/^(?:w|min-w)-(.+)$/);
+  return match ? isFixedWidthValue(match[1]) : false;
+}
+
+function classTokens(classValue) {
+  return classValue.split(/\s+/).map((token) => token.trim()).filter(Boolean);
+}
+
+function findFixedWidthLayoutWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const classRegex = /\bclass\s*=\s*["']([^"']+)["']/gi;
+  let match;
+
+  while ((match = classRegex.exec(source))) {
+    const classValue = match[1];
+    const fixedTokens = classTokens(classValue).filter((token) => isFixedWidthUtility(tailwindUtilityBase(token)));
+    if (fixedTokens.length === 0) continue;
+    if (FIXED_WIDTH_ALLOWED_CLASS_PATTERN.test(classValue)) continue;
+
+    warnings.push(
+      `fixed width utility ${fixedTokens.slice(0, 4).join(', ')} at line ${lineNumberAt(source, match.index, lineOffset)} must be limited to action/operation/icon areas; content and data regions should use min-w-0 flex-1 with wrapping/ellipsis instead of hard widths`,
+    );
+  }
+
+  return warnings;
+}
+
+function isStableHeightUtility(utility) {
+  return /^(?:h|min-h|max-h|py|pt|pb)-/.test(utility) || utility === 'items-center';
+}
+
+function hasShrinkProtection(tokens) {
+  return tokens.some((token) => {
+    const utility = tailwindUtilityBase(token);
+    return utility === 'shrink-0' || utility === 'flex-shrink-0' || utility === 'flex-none';
+  });
+}
+
+function findStableHeightShrinkWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const classRegex = /\bclass\s*=\s*["']([^"']+)["']/gi;
+  let match;
+
+  while ((match = classRegex.exec(source))) {
+    const classValue = match[1];
+    if (!STABLE_HEIGHT_AREA_CLASS_PATTERN.test(classValue)) continue;
+
+    const tokens = classTokens(classValue);
+    if (!tokens.some((token) => isStableHeightUtility(tailwindUtilityBase(token)))) continue;
+    if (hasShrinkProtection(tokens)) continue;
+
+    warnings.push(
+      `stable-height area near line ${lineNumberAt(source, match.index, lineOffset)} should use shrink-0/flex-shrink-0 when it lives in a constrained flex column; the scroll/content area should consume flex-1 min-h-0 instead`,
+    );
+  }
+
+  return warnings;
+}
+
+function isFixedCssLength(value, unit) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return false;
+  if (unit.toLowerCase() === 'px') return number >= FIXED_WIDTH_PX_THRESHOLD;
+  if (unit.toLowerCase() === 'rem') return number >= FIXED_WIDTH_REM_THRESHOLD;
+  if (unit.toLowerCase() === 'ch') return number >= FIXED_WIDTH_CH_THRESHOLD;
+  return false;
+}
+
+function findFixedWidthCssWarnings(source, lineOffset = 0) {
+  const warnings = [];
+  const cleanSource = stripCssCommentsPreserveLines(source);
+  const ruleRegex = /([^{}]+)\{([^{}]*)\}/g;
+  let match;
+
+  while ((match = ruleRegex.exec(cleanSource))) {
+    const selector = match[1].trim();
+    if (FIXED_WIDTH_ALLOWED_CLASS_PATTERN.test(selector)) continue;
+
+    const declarationRegex = /\b(width|min-width)\s*:\s*(\d+(?:\.\d+)?)(px|rem|ch)\b/gi;
+    let declarationMatch;
+    const declarations = [];
+    while ((declarationMatch = declarationRegex.exec(match[2]))) {
+      if (isFixedCssLength(declarationMatch[2], declarationMatch[3])) {
+        declarations.push(`${declarationMatch[1]}: ${declarationMatch[2]}${declarationMatch[3]}`);
+      }
+    }
+    if (declarations.length === 0) continue;
+
+    warnings.push(
+      `fixed CSS width near line ${lineNumberAt(cleanSource, match.index, lineOffset)} (${declarations.slice(0, 3).join(', ')}) must be limited to action/operation/icon areas; content and data regions should wrap from flex sizing instead of hard widths`,
     );
   }
 
@@ -1441,6 +1573,8 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
     errors.push(...checkRepeatedVisualInteractionBlocks(content));
+    warnings.push(...findFixedWidthLayoutWarnings(content, 0));
+    warnings.push(...findStableHeightShrinkWarnings(content, 0));
     warnings.push(...findPageEntryStructureWarnings(content, normalized));
     warnings.push(...findPageRootImportFanoutWarnings(content, normalized));
     warnings.push(...findStateBranchExtractionWarnings(content, 0));
@@ -1464,6 +1598,7 @@ function checkVueFile(content, normalized, statusCode, options, result) {
     errors.push(...findGlobalStylePollutionErrors(block.code, block.startLine));
     warnings.push(...findTailwindPreferenceWarnings(block.code, block.startLine));
     warnings.push(...findViewportBreakpointWarnings(block.code, block.startLine));
+    warnings.push(...findFixedWidthCssWarnings(block.code, block.startLine));
   }
 
   const scriptBlocks = getVueScriptBlocks(content);
@@ -1528,6 +1663,7 @@ function checkFile(file, statusCode, options) {
     errors.push(...findGridViolations(content, 0));
     errors.push(...findScrollbarViolations(content, 0));
     warnings.push(...findViewportBreakpointWarnings(content, 0));
+    warnings.push(...findFixedWidthCssWarnings(content, 0));
   }
 
   return result;

@@ -162,11 +162,18 @@ const props = defineProps({
 </el-scrollbar>
 ```
 
-## 11. 新增 CSS Grid 布局，或只靠 viewport 断点改结构
+## 11. 新增 CSS Grid 布局、固定宽度硬排版，或只靠 viewport 断点改结构
 错误：
 ```vue
 <div class="grid grid-cols-3 gap-6 rounded-xl p-6">
   <!-- 原型是紧凑 row，这里用了 grid 且被改成了大卡片 -->
+</div>
+
+<div class="model-row flex items-center gap-3">
+  <div class="w-[320px]">模型名称和说明</div>
+  <div class="w-[180px]">状态 / 版本</div>
+  <div class="w-[160px]">业务数据</div>
+  <div class="w-[120px]">操作</div>
 </div>
 
 <style scoped>
@@ -185,26 +192,20 @@ const props = defineProps({
 
 正确：
 ```vue
-<div class="model-row flex items-center gap-3">
-  <div class="min-w-0 flex-1">...</div>
-  <div class="model-row__meta shrink-0">...</div>
+<div class="page-shell flex h-full min-h-0 flex-col">
+  <div class="model-toolbar flex shrink-0 flex-wrap items-center gap-3">
+    ...
+  </div>
+
+  <el-scrollbar class="min-h-0 flex-1">
+    <div class="model-row flex flex-wrap items-center gap-3">
+      <div class="min-w-0 flex-1 basis-64">模型名称和说明</div>
+      <div class="min-w-0 flex-1 basis-40">状态 / 版本</div>
+      <div class="min-w-0 flex-1 basis-40">业务数据</div>
+      <div class="model-row__actions ml-auto shrink-0">操作</div>
+    </div>
+  </el-scrollbar>
 </div>
-
-<style scoped>
-.model-row {
-  container-type: inline-size;
-}
-
-@container (max-width: 560px) {
-  .model-row {
-    flex-wrap: wrap;
-  }
-
-  .model-row__meta {
-    flex: 0 0 100%;
-  }
-}
-</style>
 ```
 
 ## 12. 直接用原生标签 `v-for` 渲染重复视觉单元
