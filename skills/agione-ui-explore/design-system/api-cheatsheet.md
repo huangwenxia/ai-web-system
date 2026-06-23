@@ -75,7 +75,7 @@
 
 **Props**:
 - `title: String` (required)
-- `subtitle: String` (default `''`) — **explore 可填可不填**（v1.2 base spec framing 加固后说明）
+- ~~`subtitle`~~ 已移除（v2.12：所有页面不传副标题，组件层已删 prop）
 
 **Slots**:
 - `actions` — 右侧操作按钮组
@@ -101,7 +101,7 @@
 
 **Props**:
 - `title: String` (required)
-- `subtitle: String` (default `''`)
+- ~~`subtitle`~~ 已移除（v2.12：所有页面不传副标题，组件层已删 prop）
 - `eyebrow: String` (default `''`)
 - `eyebrowIcon: String`（Lucide 图标名）
 
@@ -115,7 +115,7 @@
 
 **Props**:
 - `title: String` (required)
-- `subtitle: String` (default `''`)
+- ~~`subtitle`~~ 已移除（v2.12：所有页面不传副标题，组件层已删 prop）
 - `tabs: Array` (default `[]`) — `[{ label, key }]`
 - `activeTab: String|Number`
 - `showBack: Boolean` (default `true`)

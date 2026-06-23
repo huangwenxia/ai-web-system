@@ -53,10 +53,12 @@ echo "────────────────────────�
 cp -v "$SRC/agione-console-shell-sample-v1.html" "$DST/"
 
 # scripts/（只同步 AI 用得到的；DS 维护脚本不同步）
+# v2.9: 加 audit-borders.sh + check-prototype.sh（v6.8/v6.9 新脚本，之前靠手动 cp 漏过）
 mkdir -p "$DST/scripts"
-for script in audit-typography.sh check-dom-template-safety.sh; do
+for script in audit-typography.sh audit-borders.sh audit-contrast.sh check-prototype.sh check-dom-template-safety.sh; do
   if [[ -f "$SRC/scripts/$script" ]]; then
     cp -v "$SRC/scripts/$script" "$DST/scripts/$script"
+    chmod +x "$DST/scripts/$script"
   fi
 done
 
@@ -69,6 +71,47 @@ fi
 
 echo "──────────────────────────────────────────────"
 echo "✅ Sync 完成"
+
+# ──────────────────────────────────────────────
+# Drift 检查（v2.9 加）——只提示不自动改
+# 历史教训：v6.8 的 SETUP 锚点行 explore AI-USAGE 漏镜像到 v2.8 才补；
+# explore MAINTAINING "当前 strict 基线版本" 行从 v5.2 漂到 v6.9 没人发现。
+# ──────────────────────────────────────────────
+echo
+echo "── Drift 检查（手动镜像文件是否落后）──"
+
+# 1a) shell-sample 有、锚点表没提（漏镜像）
+SHELL_ANCHORS=$(grep -oE 'AGIONE_EDIT_[A-Z_]+_START' "$DST/agione-console-shell-sample-v1.html" | sed 's/_START$//' | sort -u)
+DRIFT=0
+while IFS= read -r anchor; do
+  if ! grep -q "$anchor" "$DST/design-system/AI-USAGE.md"; then
+    echo "  ⚠️  shell-sample 有锚点 ${anchor}_* 但 explore AI-USAGE.md 锚点速查表没提它"
+    DRIFT=1
+  fi
+done <<< "$SHELL_ANCHORS"
+
+# 1b) 锚点表提了、shell-sample 已没有（幽灵行——v6.9 实测 DASHBOARD_DEMO 就这样漂过）
+TABLE_ANCHORS=$(grep -oE 'AGIONE_EDIT_[A-Z_]+_\*' "$DST/design-system/AI-USAGE.md" | sed 's/_\*$//' | sort -u)
+while IFS= read -r anchor; do
+  [[ -z "$anchor" ]] && continue
+  if ! grep -q "${anchor}_START" "$DST/agione-console-shell-sample-v1.html"; then
+    echo "  ⚠️  explore AI-USAGE.md 锚点表提了 ${anchor}_* 但 shell-sample 里已不存在（幽灵行，删掉）"
+    DRIFT=1
+  fi
+done <<< "$TABLE_ANCHORS"
+
+# 2) MAINTAINING 基线版本 vs strict 实际 version（词边界匹配，防 v6.9 被 v6.9.1 误 pass）
+STRICT_VER=$(grep -m1 '^version:' "$SRC/SKILL.md" | awk '{print $2}')
+if ! grep -qE "v${STRICT_VER}([^.0-9]|\$)" "$DST/MAINTAINING.md"; then
+  echo "  ⚠️  strict 已是 v${STRICT_VER}，但 explore MAINTAINING.md 没出现这个版本号"
+  echo "      （检查「当前 strict 基线版本」行 + 是否欠一条 changelog）"
+  DRIFT=1
+fi
+
+if [[ "$DRIFT" -eq 0 ]]; then
+  echo "  ✅ 无 drift（锚点表 + 基线版本号都跟上了）"
+fi
+
 echo
 echo "未同步（explore 独有，需手动维护）："
 echo "  · $DST/SKILL.md"

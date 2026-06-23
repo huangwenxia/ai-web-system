@@ -1,0 +1,498 @@
+<!--
+  Dashboard Page · 监控大盘骨架（v6.9）
+
+  使用：把下面 <!-- BEGIN PARTIAL --> 到 <!-- END PARTIAL --> 之间的内容
+  复制到 cp 出来的 shell-sample 的 <main class="main"> 内。
+  触发：决策树 ⑪ Dashboard 命中（brief 含 dashboard/大盘/监控/analytics，
+        或主体 ≥ 3 个 KPI/图表块 grid）。完整契约见 design-system/dashboard.md。
+
+  必备结构（§11.2 五层）：
+  - PageHeader (runtime-component) — 标题区；警示用 statusLabel/statusColor（复用，不造 alert-badge）
+  - .ds-filter-row — 4 列 KV-dropdown 筛选（可选）
+  - .ds-section × N — section 切片（dashboard 信息架构第一公民，必带 ds-section-header）
+  - KPI 两档：.ds-ov-card (44px hero) / .ds-stat-card (28px + delta) — 不混用同一 grid
+  - .ds-chart-card — 图表卡（title + ds-type-badge 必带；ds-size-badge 推荐）
+
+  Chart family 5 种（SVG 几何 / Gauge 查表见 dashboard.md §11.6）：
+  - Line/Area: viewBox="0 0 600 230" + vector-effect 防变形
+  - Bar: 纯 CSS（.ds-bar-rect 高度 + opacity 渐变档，颜色走 token）
+  - Donut: circle r=56 stroke-dasharray，rotate(-90 80 80) 起点 12 点钟
+  - Gauge: 弧心 (50,50) r=40 270°弧，针 pivot (50,70)，pct→坐标查 dashboard.md 表
+  - empty-gauge: 图表级空态（≠ EmptyState）
+
+  复用而非新造（§11.7）：
+  - header 警示 → PageHeader statusLabel（不造 alert-badge）
+  - 表格内状态 → StatusBadge（决策树 ④）
+  - 7d/30d 切换 → .tabs-segmented（不造 tab-toggle）
+
+  ⚠️ 本 partial 全部 UI 文案走 {{ t.* }}，数字/坐标是 mock 数据可硬编码。
+  ⚠️ 删减 section 时保持 ds-section 结构完整（header + grid 成对）。
+-->
+
+<!-- BEGIN PARTIAL -->
+<div class="main-box" data-component="main-box">
+
+  <PageHeader
+    :title="t.dashTitle"
+    :statusLabel="t.dashAlerts"
+    statusColor="orange"
+  >
+    <template #actions>
+      <el-button><i data-lucide="download"></i>{{ t.dashBtnExport }}</el-button>
+      <el-button type="primary"><i data-lucide="refresh-cw"></i>{{ t.dashBtnRefresh }}</el-button>
+    </template>
+  </PageHeader>
+
+  <el-scrollbar>
+    <div class="scroll-box-inner" data-scroll-box data-component="scroll-box">
+
+      <!-- Filter Row · 4 列 KV-dropdown（不需要筛选的大盘可整块删） -->
+      <div class="ds-filter-row" style="margin-bottom: var(--ui-space-section);">
+        <div class="ds-filter-col">
+          <label class="ds-filter-label">{{ t.dashFilterRange }}</label>
+          <button class="ds-filter-dropdown">
+            <span class="ds-filter-dropdown__l"><i data-lucide="calendar"></i><span>{{ t.dashFilterRangeVal }}</span></span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+        </div>
+        <div class="ds-filter-col">
+          <label class="ds-filter-label">{{ t.dashFilterGranularity }}</label>
+          <button class="ds-filter-dropdown">
+            <span class="ds-filter-dropdown__l"><span>{{ t.dashFilterGranularityVal }}</span></span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+        </div>
+        <div class="ds-filter-col">
+          <label class="ds-filter-label">{{ t.dashFilterUser }}</label>
+          <button class="ds-filter-dropdown">
+            <span class="ds-filter-dropdown__l"><span>{{ t.dashFilterUserVal }}</span></span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+        </div>
+        <div class="ds-filter-col">
+          <label class="ds-filter-label">{{ t.dashFilterModel }}</label>
+          <button class="ds-filter-dropdown">
+            <span class="ds-filter-dropdown__l"><span>{{ t.dashFilterModelVal }}</span></span>
+            <i data-lucide="chevron-down"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ════ Section 1 · Overview（巨档 KPI：44px hero 数字 ≤ 3 个） ════ -->
+      <section class="ds-section" style="margin-bottom: var(--ui-space-section);">
+        <div class="ds-section-header">
+          <div class="ds-section-header__l">
+            <div class="ds-section-icon"><i data-lucide="layout-dashboard"></i></div>
+            <h2 class="type-h3 ds-section-title">{{ t.dashSec1Title }}</h2>
+            <span class="type-caption ds-section-pill">3 Panel</span>
+          </div>
+          <div class="ds-section-header__r"><i data-lucide="chevron-up"></i></div>
+        </div>
+        <div class="ds-overview-grid">
+          <div class="ds-ov-card">
+            <div class="ds-ov-card__top">
+              <div class="ds-ov-card__top-l">
+                <div class="ds-ov-dot ds-ov-dot--success"><i data-lucide="check"></i></div>
+                <span class="type-body-sm ds-ov-title">{{ t.dashOv1Title }}</span>
+              </div>
+              <span class="ds-ov-stat-tag">Stat</span>
+            </div>
+            <div class="type-hero-data ds-ov-value ds-ov-value--success">579K</div>
+            <div class="type-caption ds-ov-hint">{{ t.dashOv1Hint }}</div>
+          </div>
+          <div class="ds-ov-card">
+            <div class="ds-ov-card__top">
+              <div class="ds-ov-card__top-l">
+                <div class="ds-ov-dot ds-ov-dot--danger"><i data-lucide="shield"></i></div>
+                <span class="type-body-sm ds-ov-title">{{ t.dashOv2Title }}</span>
+              </div>
+              <span class="ds-ov-stat-tag">Stat</span>
+            </div>
+            <div class="type-hero-data ds-ov-value ds-ov-value--danger">0</div>
+            <div class="type-caption ds-ov-hint">{{ t.dashOv2Hint }}</div>
+          </div>
+          <div class="ds-ov-card">
+            <div class="ds-ov-card__top">
+              <div class="ds-ov-card__top-l">
+                <div class="ds-ov-dot ds-ov-dot--primary"><i data-lucide="layers"></i></div>
+                <span class="type-body-sm ds-ov-title">{{ t.dashOv3Title }}</span>
+              </div>
+              <span class="ds-ov-stat-tag">Stat</span>
+            </div>
+            <div class="type-hero-data ds-ov-value ds-ov-value--primary">4.278B</div>
+            <div class="type-caption ds-ov-hint">{{ t.dashOv3Hint }}</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ Section 2 · 核心指标（小档 KPI：28px + delta 三段式，4 列） ════ -->
+      <section class="ds-section" style="margin-bottom: var(--ui-space-section);">
+        <div class="ds-section-header">
+          <div class="ds-section-header__l">
+            <div class="ds-section-icon"><i data-lucide="activity"></i></div>
+            <h2 class="type-h3 ds-section-title">{{ t.dashSec2Title }}</h2>
+            <span class="type-caption ds-section-pill">4 Panel</span>
+          </div>
+          <div class="ds-section-header__r"><i data-lucide="chevron-up"></i></div>
+        </div>
+        <div class="ds-stats-row">
+          <div class="ds-stat-card">
+            <div class="ds-stat-card__top">
+              <span class="type-caption ds-stat-title">{{ t.dashStat1Title }}</span>
+              <span class="ds-stat-icon"><i data-lucide="activity"></i></span>
+            </div>
+            <div class="type-kpi ds-stat-value">5.2M</div>
+            <div class="type-caption ds-stat-delta" style="color: var(--ui-color-success);">
+              <i data-lucide="trending-up"></i>
+              <span class="ds-stat-delta__pct">+15.3%</span>
+              <span class="ds-stat-delta__vs">{{ t.dashDeltaVs }}</span>
+            </div>
+          </div>
+          <div class="ds-stat-card">
+            <div class="ds-stat-card__top">
+              <span class="type-caption ds-stat-title">{{ t.dashStat2Title }}</span>
+              <span class="ds-stat-icon" style="background: var(--ui-color-success-subtle); color: var(--ui-color-success);"><i data-lucide="users"></i></span>
+            </div>
+            <div class="type-kpi ds-stat-value">12,348</div>
+            <div class="type-caption ds-stat-delta" style="color: var(--ui-color-success);">
+              <i data-lucide="trending-up"></i>
+              <span class="ds-stat-delta__pct">+8.4%</span>
+              <span class="ds-stat-delta__vs">{{ t.dashDeltaVs }}</span>
+            </div>
+          </div>
+          <div class="ds-stat-card">
+            <div class="ds-stat-card__top">
+              <span class="type-caption ds-stat-title">{{ t.dashStat3Title }}</span>
+              <span class="ds-stat-icon" style="background: var(--ui-color-warning-subtle); color: var(--ui-color-warning);"><i data-lucide="zap"></i></span>
+            </div>
+            <div class="type-kpi ds-stat-value">482M</div>
+            <div class="type-caption ds-stat-delta" style="color: var(--ui-color-warning);">
+              <i data-lucide="trending-up"></i>
+              <span class="ds-stat-delta__pct">+22.1%</span>
+              <span class="ds-stat-delta__vs">{{ t.dashDeltaVs }}</span>
+            </div>
+          </div>
+          <div class="ds-stat-card">
+            <div class="ds-stat-card__top">
+              <span class="type-caption ds-stat-title">{{ t.dashStat4Title }}</span>
+              <span class="ds-stat-icon" style="background: var(--ui-color-success-subtle); color: var(--ui-color-success);"><i data-lucide="timer"></i></span>
+            </div>
+            <div class="type-kpi ds-stat-value">246ms</div>
+            <div class="type-caption ds-stat-delta" style="color: var(--ui-color-success);">
+              <i data-lucide="trending-down"></i>
+              <span class="ds-stat-delta__pct">-12.3%</span>
+              <span class="ds-stat-delta__vs">{{ t.dashDeltaVs }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ════ Section 3 · 资源监控（Gauge × 2 卡 + 阈值明细卡） ════ -->
+      <section class="ds-section" style="margin-bottom: var(--ui-space-section);">
+        <div class="ds-section-header">
+          <div class="ds-section-header__l">
+            <div class="ds-section-icon"><i data-lucide="cpu"></i></div>
+            <h2 class="type-h3 ds-section-title">{{ t.dashSec3Title }}</h2>
+            <span class="type-caption ds-section-pill">3 Panel</span>
+          </div>
+          <div class="ds-section-header__r"><i data-lucide="chevron-up"></i></div>
+        </div>
+        <div class="ds-chart-grid" style="grid-template-columns: 1fr 1fr 1fr;">
+
+          <!-- Gauge 卡（94.6% warning 档示范，几何查 dashboard.md §11.6.4 表） -->
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashGauge1Title }}</span>
+                <span class="ds-type-badge">Gauge</span>
+                <span class="ds-size-badge">8 x 6</span>
+              </div>
+              <i data-lucide="refresh-cw" class="ds-chart-refresh"></i>
+            </div>
+            <div class="ds-gauges-wrap">
+              <div class="ds-gauge">
+                <div class="ds-gauge-svg">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                    <path d="M 21.72 78.28 A 40 40 0 1 1 78.28 78.28" fill="none" stroke="var(--ui-bg-muted)" stroke-width="11"/>
+                    <path d="M 21.72 78.28 A 40 40 0 1 1 84.49 70.26" fill="none" stroke="var(--ui-color-warning)" stroke-width="11"/>
+                    <line x1="50" y1="70" x2="79.75" y2="67.47" stroke="var(--ui-text-primary)" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="50" cy="70" r="5" fill="var(--ui-text-primary)"/>
+                    <circle cx="50" cy="70" r="3" fill="var(--ui-color-warning)"/>
+                  </svg>
+                </div>
+                <div class="ds-gauge-value ds-gauge-value--warning">94.6%</div>
+                <div class="ds-gauge-label">{{ t.dashGaugeAvg }}</div>
+              </div>
+              <div class="ds-gauge">
+                <div class="ds-gauge-svg">
+                  <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                    <path d="M 21.72 78.28 A 40 40 0 1 1 78.28 78.28" fill="none" stroke="var(--ui-bg-muted)" stroke-width="11"/>
+                    <path d="M 21.72 78.28 A 40 40 0 0 1 11.73 61.64" fill="none" stroke="var(--ui-color-success)" stroke-width="11"/>
+                    <line x1="50" y1="70" x2="16.99" y2="60.04" stroke="var(--ui-text-primary)" stroke-width="3" stroke-linecap="round"/>
+                    <circle cx="50" cy="70" r="5" fill="var(--ui-text-primary)"/>
+                    <circle cx="50" cy="70" r="3" fill="var(--ui-color-success)"/>
+                  </svg>
+                </div>
+                <div class="ds-gauge-value ds-gauge-value--success">10.4%</div>
+                <div class="ds-gauge-label">{{ t.dashGaugePeak }}</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 阈值明细卡（detail-row 语义底色） -->
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashDetailTitle }}</span>
+                <span class="ds-type-badge">Stat</span>
+                <span class="ds-size-badge">8 x 4</span>
+              </div>
+              <i data-lucide="refresh-cw" class="ds-chart-refresh"></i>
+            </div>
+            <div class="ds-detail-rows">
+              <div class="ds-detail-row ds-detail-row--warning"><span class="ds-detail-row__label">{{ t.dashDetail1 }}</span><span class="ds-detail-row__val">2h 5m</span></div>
+              <div class="ds-detail-row ds-detail-row--success"><span class="ds-detail-row__label">{{ t.dashDetail2 }}</span><span class="ds-detail-row__val">35s</span></div>
+              <div class="ds-detail-row ds-detail-row--danger"><span class="ds-detail-row__label">{{ t.dashDetail3 }}</span><span class="ds-detail-row__val">1s</span></div>
+            </div>
+          </div>
+
+          <!-- 空态 Gauge 卡（数据源离线 → ds-empty-gauge，不是 EmptyState） -->
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashEmptyTitle }}</span>
+                <span class="ds-type-badge">Gauge</span>
+                <span class="ds-size-badge">12 x 6</span>
+              </div>
+              <i data-lucide="refresh-cw" class="ds-chart-refresh"></i>
+            </div>
+            <div class="ds-empty-gauge">
+              <div class="ds-gauge-svg">
+                <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet">
+                  <path d="M 21.72 78.28 A 40 40 0 1 1 78.28 78.28" fill="none" stroke="var(--ui-bg-muted)" stroke-width="11"/>
+                  <line x1="50" y1="70" x2="50" y2="35.5" stroke="var(--ui-text-muted)" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+                  <circle cx="50" cy="70" r="5" fill="var(--ui-bg-card)" stroke="var(--ui-text-muted)" stroke-width="1.5" opacity="0.7"/>
+                </svg>
+              </div>
+              <div class="ds-empty-dash"></div>
+              <div class="ds-empty-caption">{{ t.dashEmptyCaption }}</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ════ Section 4 · 趋势分析（Line + Bar + Donut） ════ -->
+      <section class="ds-section">
+        <div class="ds-section-header">
+          <div class="ds-section-header__l">
+            <div class="ds-section-icon"><i data-lucide="trending-up"></i></div>
+            <h2 class="type-h3 ds-section-title">{{ t.dashSec4Title }}</h2>
+            <span class="type-caption ds-section-pill">3 Panel</span>
+          </div>
+          <div class="ds-section-header__r"><i data-lucide="chevron-up"></i></div>
+        </div>
+
+        <div class="ds-chart-grid">
+          <!-- Line/Area 双线对比（viewBox 600x230 · vector-effect 防变形） -->
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashLineTitle }}</span>
+                <span class="ds-type-badge">Time series</span>
+                <span class="ds-size-badge">12 x 8</span>
+              </div>
+              <div class="tabs-segmented">
+                <button class="tabs-segmented__item is-active">7d</button>
+                <button class="tabs-segmented__item">30d</button>
+              </div>
+            </div>
+            <div class="ds-chart-body">
+              <div class="ds-y-axis"><span>210K</span><span>140K</span><span>70K</span><span>0</span></div>
+              <div class="ds-plot">
+                <div class="ds-plot-grid-line" style="top:25%"></div>
+                <div class="ds-plot-grid-line" style="top:50%"></div>
+                <div class="ds-plot-grid-line" style="top:75%"></div>
+                <svg viewBox="0 0 600 230" preserveAspectRatio="none">
+                  <path d="M 0 105 L 85 60 L 170 75 L 255 145 L 340 188 L 425 198 L 510 165 L 600 25 L 600 230 L 0 230 Z"
+                        fill="var(--ui-color-success)" fill-opacity="0.15"/>
+                  <path d="M 0 105 L 85 60 L 170 75 L 255 145 L 340 188 L 425 198 L 510 165 L 600 25"
+                        fill="none" stroke="var(--ui-color-success)" stroke-width="2"
+                        stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+                  <path d="M 0 220 L 85 222 L 170 223 L 255 223 L 340 223 L 425 222 L 510 220 L 600 218"
+                        fill="none" stroke="var(--ui-color-warning)" stroke-width="2"
+                        stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ds-x-axis"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+            <div class="ds-legend-row">
+              <div class="ds-legend">
+                <div class="ds-leg-item"><span class="ds-leg-dot" style="background: var(--ui-color-success);"></span>{{ t.dashLineLeg1 }}</div>
+                <div class="ds-leg-item"><span class="ds-leg-dot" style="background: var(--ui-color-warning);"></span>{{ t.dashLineLeg2 }}</div>
+              </div>
+              <div class="ds-pag"><i data-lucide="chevron-left"></i><span class="ds-pag__num">1/3</span><i data-lucide="chevron-right"></i></div>
+            </div>
+          </div>
+
+          <!-- Bar 单色渐变档（纯 CSS：height + opacity，颜色走 token 不硬编码 hex） -->
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashBarTitle }}</span>
+                <span class="ds-type-badge">Bar</span>
+                <span class="ds-size-badge">12 x 8</span>
+              </div>
+              <i data-lucide="refresh-cw" class="ds-chart-refresh"></i>
+            </div>
+            <div class="ds-bar-body">
+              <div class="ds-y-axis"><span>2.5M</span><span>1.5M</span><span>0.5M</span><span>0</span></div>
+              <div class="ds-bar-area">
+                <div class="ds-bar-col"><span class="ds-bar-val">2.4M</span><div class="ds-bar-rect" style="height:150px; opacity:1;"></div></div>
+                <div class="ds-bar-col"><span class="ds-bar-val">1.8M</span><div class="ds-bar-rect" style="height:113px; opacity:0.86;"></div></div>
+                <div class="ds-bar-col"><span class="ds-bar-val">1.2M</span><div class="ds-bar-rect" style="height:75px; opacity:0.72;"></div></div>
+                <div class="ds-bar-col"><span class="ds-bar-val">0.9M</span><div class="ds-bar-rect" style="height:56px; opacity:0.58;"></div></div>
+                <div class="ds-bar-col"><span class="ds-bar-val">0.7M</span><div class="ds-bar-rect" style="height:44px; opacity:0.44;"></div></div>
+                <div class="ds-bar-col"><span class="ds-bar-val">0.5M</span><div class="ds-bar-rect" style="height:31px; opacity:0.30;"></div></div>
+                <div class="ds-bar-col"><span class="ds-bar-val">0.3M</span><div class="ds-bar-rect" style="height:19px; opacity:0.16;"></div></div>
+              </div>
+            </div>
+            <div class="ds-bar-x-axis">
+              <span class="ds-bar-x-label">GPT-5.5</span>
+              <span class="ds-bar-x-label">Claude</span>
+              <span class="ds-bar-x-label">Wan2.7</span>
+              <span class="ds-bar-x-label">MiniMax</span>
+              <span class="ds-bar-x-label">Gemini</span>
+              <span class="ds-bar-x-label">DeepSeek</span>
+              <span class="ds-bar-x-label">{{ t.dashBarOthers }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Donut 占比（r=56 周长 351.86 · rotate(-90) 12 点钟起） -->
+        <div class="ds-chart-grid" style="grid-template-columns: 360px 1fr;">
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashDonutTitle }}</span>
+                <span class="ds-type-badge">Donut</span>
+              </div>
+              <i data-lucide="refresh-cw" class="ds-chart-refresh"></i>
+            </div>
+            <div class="ds-donut-body">
+              <div class="ds-donut-svg">
+                <svg viewBox="0 0 160 160">
+                  <circle cx="80" cy="80" r="56" fill="none" stroke="var(--ui-bg-muted)" stroke-width="32"/>
+                  <circle cx="80" cy="80" r="56" fill="none" stroke="var(--ui-color-primary)" stroke-width="32"
+                    stroke-dasharray="211.12 351.86" stroke-dashoffset="0" transform="rotate(-90 80 80)"/>
+                  <circle cx="80" cy="80" r="56" fill="none" stroke="var(--ui-color-info)" stroke-width="32"
+                    stroke-dasharray="105.56 351.86" stroke-dashoffset="-211.12" transform="rotate(-90 80 80)"/>
+                  <circle cx="80" cy="80" r="56" fill="none" stroke="var(--ui-color-success)" stroke-width="32"
+                    stroke-dasharray="35.19 351.86" stroke-dashoffset="-316.68" transform="rotate(-90 80 80)"/>
+                </svg>
+                <div class="ds-donut-center">
+                  <div class="ds-donut-center__num">12.3K</div>
+                  <div class="ds-donut-center__label">{{ t.dashDonutTotal }}</div>
+                </div>
+              </div>
+              <div class="ds-donut-legend">
+                <div class="ds-donut-legend__item">
+                  <span class="ds-leg-square" style="background: var(--ui-color-primary);"></span>
+                  <div class="ds-donut-legend__text">
+                    <span class="ds-donut-legend__label">{{ t.dashDonutSeg1 }}</span>
+                    <span class="ds-donut-legend__val">60% · 7.4K</span>
+                  </div>
+                </div>
+                <div class="ds-donut-legend__item">
+                  <span class="ds-leg-square" style="background: var(--ui-color-info);"></span>
+                  <div class="ds-donut-legend__text">
+                    <span class="ds-donut-legend__label">{{ t.dashDonutSeg2 }}</span>
+                    <span class="ds-donut-legend__val">30% · 3.7K</span>
+                  </div>
+                </div>
+                <div class="ds-donut-legend__item">
+                  <span class="ds-leg-square" style="background: var(--ui-color-success);"></span>
+                  <div class="ds-donut-legend__text">
+                    <span class="ds-donut-legend__label">{{ t.dashDonutSeg3 }}</span>
+                    <span class="ds-donut-legend__val">10% · 1.2K</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 第二个 Time series（Area 填充版示范） -->
+          <div class="ds-chart-card">
+            <div class="ds-chart-header">
+              <div class="ds-chart-header__l">
+                <span class="type-body-sm ds-chart-title">{{ t.dashAreaTitle }}</span>
+                <span class="ds-type-badge">Time series</span>
+                <span class="ds-size-badge">12 x 8</span>
+              </div>
+              <i data-lucide="refresh-cw" class="ds-chart-refresh"></i>
+            </div>
+            <div class="ds-chart-body">
+              <div class="ds-y-axis"><span>1.5B</span><span>1.0B</span><span>500M</span><span>0</span></div>
+              <div class="ds-plot">
+                <div class="ds-plot-grid-line" style="top:25%"></div>
+                <div class="ds-plot-grid-line" style="top:50%"></div>
+                <div class="ds-plot-grid-line" style="top:75%"></div>
+                <svg viewBox="0 0 600 230" preserveAspectRatio="none">
+                  <path d="M 0 70 L 85 95 L 170 130 L 255 170 L 340 200 L 425 200 L 510 178 L 600 30 L 600 230 L 0 230 Z"
+                        fill="var(--ui-color-primary)" fill-opacity="0.15"/>
+                  <path d="M 0 70 L 85 95 L 170 130 L 255 170 L 340 200 L 425 200 L 510 178 L 600 30"
+                        fill="none" stroke="var(--ui-color-primary)" stroke-width="2"
+                        stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+                  <path d="M 0 220 L 85 215 L 170 217 L 255 220 L 340 223 L 425 222 L 510 220 L 600 215"
+                        fill="none" stroke="var(--ui-color-info)" stroke-width="2"
+                        stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+                </svg>
+              </div>
+            </div>
+            <div class="ds-x-axis"><span>06-01</span><span>06-02</span><span>06-03</span><span>06-04</span><span>06-05</span><span>06-06</span><span>06-07</span></div>
+            <div class="ds-legend-row">
+              <div class="ds-legend">
+                <div class="ds-leg-item"><span class="ds-leg-dot" style="background: var(--ui-color-primary);"></span>{{ t.dashAreaLeg1 }}</div>
+                <div class="ds-leg-item"><span class="ds-leg-dot" style="background: var(--ui-color-info);"></span>{{ t.dashAreaLeg2 }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </el-scrollbar>
+
+</div>
+<!-- END PARTIAL -->
+
+<!--
+  i18n keys（需在 i18n.zh / i18n.en 各加，AI 通过 AGIONE_EDIT_I18N_* 锚点增量写入）：
+
+  页头：
+  - dashTitle / dashAlerts / dashBtnExport / dashBtnRefresh
+  筛选：
+  - dashFilterRange / dashFilterRangeVal / dashFilterGranularity / dashFilterGranularityVal
+  - dashFilterUser / dashFilterUserVal / dashFilterModel / dashFilterModelVal
+  Section 标题：
+  - dashSec1Title / dashSec2Title / dashSec3Title / dashSec4Title
+  巨档 KPI：
+  - dashOv1Title / dashOv1Hint / dashOv2Title / dashOv2Hint / dashOv3Title / dashOv3Hint
+  小档 KPI：
+  - dashStat1Title / dashStat2Title / dashStat3Title / dashStat4Title / dashDeltaVs
+  Gauge / 明细 / 空态：
+  - dashGauge1Title / dashGaugeAvg / dashGaugePeak
+  - dashDetailTitle / dashDetail1 / dashDetail2 / dashDetail3
+  - dashEmptyTitle / dashEmptyCaption
+  Charts：
+  - dashLineTitle / dashLineLeg1 / dashLineLeg2
+  - dashBarTitle / dashBarOthers
+  - dashDonutTitle / dashDonutTotal / dashDonutSeg1 / dashDonutSeg2 / dashDonutSeg3
+  - dashAreaTitle / dashAreaLeg1 / dashAreaLeg2
+
+  示例 zh 块（en 对应翻译）：
+    dashTitle: '模型监控大盘', dashAlerts: '13 条告警', dashBtnExport: '导出',
+    dashBtnRefresh: '刷新', dashFilterRange: '时间范围', dashFilterRangeVal: '近 7 天',
+    dashSec1Title: '总览', dashOv1Title: '总请求数', dashOv1Hint: '近 7 天累计',
+    dashDeltaVs: '环比上周期', dashGaugeAvg: '平均利用率', ...
+-->

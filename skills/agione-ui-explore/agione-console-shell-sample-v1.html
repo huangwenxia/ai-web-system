@@ -66,12 +66,19 @@
   --ui-border-soft:          #ececf1;
   --ui-border-default:               #e4e4e7;
   --ui-border-strong:        #d4d4d8;
+  --ui-border-interactive:   #8f8f8f;  /* v6.9.4 功能性控件边界（radio/checkbox/可点卡）WCAG 1.4.11 ≥3:1 · 白底 3.23:1 */
   --ui-input:                #ffffff;
 
-  /* 状态色 */
+  /* 状态色（v6.9.6：补 hover/active 交互档，含 dark 版在 darkVars。light base=500→hover=600→active=700）*/
   --ui-color-success:        #22c55e;
+  --ui-color-success-hover:  #16a34a;
+  --ui-color-success-active: #15803d;
   --ui-color-warning:        #f59e0b;
+  --ui-color-warning-hover:  #d97706;
+  --ui-color-warning-active: #b45309;
   --ui-color-destructive:    #ef4444;
+  --ui-color-destructive-hover:  #dc2626;
+  --ui-color-destructive-active: #b91c1c;
 
   /* Badge */
   --ui-badge-purple-bg: #f2eef8;  --ui-badge-purple-fg: #6a4e9a;
@@ -88,12 +95,24 @@
   --ui-shadow-xl:  0 8px 32px rgba(0,0,0,0.16);
 
   /* 圆角 */
-  --ui-radius-sm:   4px;
-  --ui-radius-md:   6px;
-  --ui-radius-lg:   8px;
-  --ui-radius-xl:   12px;
-  --ui-radius-2xl:  16px;
-  --ui-radius-pill: 9999px;
+  /* v6.8 加固：跟 mamba-layout 0.50.0 对齐
+     mamba 实际只有 5 个 radius token: sm / control(8) / card(12) / modal(24) / pill
+     skill 之前用 size-scale 命名（sm/md/lg/xl/2xl/pill），mamba 用 semantic 命名
+     → v6.8 起两套都定义（向后兼容）：
+       - chrome 内部 CSS 继续用 sm/md/lg/xl/2xl（保护已有大量引用）
+       - AI 业务区代码**优先用 mamba semantic 命名**（card / control / modal / inline）
+         → 原型代码搬 mamba 工程时，semantic token 可直接解析；size scale 也共存 */
+  --ui-radius-sm:      4px;    /* mamba 也有 sm */
+  --ui-radius-md:      6px;    /* skill 独有（mamba 无 6px 档位）*/
+  --ui-radius-lg:      8px;    /* alias 中：跟 --ui-radius-control 同值 */
+  --ui-radius-xl:     12px;    /* alias 中：跟 --ui-radius-card 同值 */
+  --ui-radius-2xl:    16px;    /* skill 独有（mamba 无 16px）*/
+  --ui-radius-pill: 9999px;    /* mamba 也有 pill */
+
+  /* mamba 语义命名（业务区代码优先用这套，对齐生产）*/
+  --ui-radius-control: 8px;    /* 按钮 / 输入 / 小卡 = skill --ui-radius-lg */
+  --ui-radius-card:   12px;    /* 容器卡 = skill --ui-radius-xl */
+  --ui-radius-modal:  24px;    /* 弹窗 / 大容器（mamba 独有，skill 之前没这档）*/
 
   /* 字体（v6.2 对齐生产 mamba-layout 的 --ui-font-* 定义 + token 名 base→body 修正）
      mamba-layout 0.50.0 实际值：
@@ -127,14 +146,24 @@
   --ui-ring: #18181b;
 
   /* Spacing 间距（4px 基准网格，语义命名） */
-  --ui-space-xs:   4px;    /* 图标与文字间距、Badge 内边距 */
-  --ui-space-sm:   8px;    /* 行内元素间距、组件 gap */
-  --ui-space-md:   12px;   /* 组件内边距（紧凑）、按钮组 gap */
-  --ui-space-base: 16px;   /* 表格列内边距、表单行间距 */
-  --ui-space-lg:   20px;   /* 卡片内边距 */
-  --ui-space-xl:   24px;   /* 主内容区内边距、Section 间距 */
-  --ui-space-2xl:  32px;   /* 大区块间距 */
-  --ui-space-3xl:  48px;   /* 页面顶部空白 */
+  /* v6.8 加固：跟 mamba-layout 0.50.0 对齐
+     mamba 实际只有 4 个 space token: inline(8) / control(12) / card(20) / section(24)
+     skill 之前用 8 个 size-scale (xs/sm/md/base/lg/xl/2xl/3xl)，mamba 用 semantic
+     → v6.8 两套共存，业务区优先用 mamba semantic */
+  --ui-space-xs:   4px;    /* skill 独有：图标与文字间距、Badge 内边距 */
+  --ui-space-sm:   8px;    /* alias：= --ui-space-inline */
+  --ui-space-md:  12px;    /* alias：= --ui-space-control */
+  --ui-space-base: 16px;   /* skill 独有：表格列内边距、表单行间距 */
+  --ui-space-lg:  20px;    /* alias：= --ui-space-card */
+  --ui-space-xl:  24px;    /* alias：= --ui-space-section */
+  --ui-space-2xl: 32px;    /* skill 独有：大区块间距 */
+  --ui-space-3xl: 48px;    /* skill 独有：页面顶部空白 */
+
+  /* mamba 语义命名（业务区代码优先用这套，对齐生产）*/
+  --ui-space-inline:   8px;  /* 行内元素 / 图标-文字 = skill --ui-space-sm */
+  --ui-space-control: 12px;  /* 控件内边距 = skill --ui-space-md */
+  --ui-space-card:    20px;  /* 卡片内边距 = skill --ui-space-lg */
+  --ui-space-section: 24px;  /* 区段间距 = skill --ui-space-xl */
 
   /* Z-index 层级 */
   --ui-z-base:     1;
@@ -182,6 +211,13 @@
 a { text-decoration: none; color: inherit; }
 button { font-family: inherit; cursor: pointer; border: none; background: none; }
 
+/* ── 全局键盘焦点环（v6.9.5 · WCAG 2.4.7 Focus Visible）──
+   每个可交互元素键盘聚焦都有可见环；鼠标点击不显示（浏览器 :focus-visible 已区分）。
+   specificity 仅 (0,1,0)，EP 组件自身焦点态可正常覆盖。outline 现代浏览器跟随 border-radius。
+   ⚠️ 业务区别把 outline 关成 none/0 又不给替代（杀掉键盘可达性，audit 会拦）。 */
+:focus-visible { outline: 2px solid var(--ui-color-primary); outline-offset: 2px; }
+:focus:not(:focus-visible) { outline: none; }
+
 /* ── Typography Utility (v3.10 L1 强制) — 10 个 .type-* class，禁止手写 font-size/weight/line-height ── */
 /* 对应 §2.2 字型层级表；颜色与字型解耦（由 var(--*) token 独立控制） */
 /* v3.12 P3.3：新增 .type-display 系列，用于 dialog 大数字 / KPI 巨标 / 营销页 hero */
@@ -196,6 +232,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .type-data          { font-family: var(--ui-font-mono);    font-size: 13px; font-weight: 400; line-height: 1.5; font-variant-numeric: tabular-nums; }
 .type-table-header  { font-family: var(--ui-font-body);    font-size: 11px; font-weight: 600; line-height: 1.4; letter-spacing: 0.5px; text-transform: uppercase; }
 .type-kpi           { font-family: var(--ui-font-mono);    font-size: 28px; font-weight: 700; line-height: 1.2; font-variant-numeric: tabular-nums; }  /* v5.1：KPI 大数字（让 .kpi-card__value 的孤儿字号入 type 体系，L3 业务卡焦点数字可复用） */
+.type-hero-data     { font-family: var(--ui-font-mono);    font-size: 44px; font-weight: 700; line-height: 1; letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }  /* v6.9.1：dashboard ov-card 巨数字（44px hero 数字档，跟 type-kpi 28px 互补） */
 
 /* ── App Shell — §3.1 ── */
 html, body {
@@ -544,9 +581,7 @@ html, body {
   font-size: 20px; font-weight: 700; line-height: 1.2;     /* v5.0 对齐生产 TopBar 真值：20px / 700（原 24/800）*/
   color: var(--ui-text-primary);
 }
-.header-box__subtitle {
-  font-size: 13px; color: var(--ui-text-muted); margin-top: 4px;
-}
+/* v6.9.3: .header-box__subtitle 已移除——所有页面一律不传副标题（AI-USAGE §默认克制 ①）*/
 .header-box__right { display: flex; align-items: center; gap: var(--ui-space-sm); flex-shrink: 0; }
 .header-box__content {
   padding: var(--ui-space-base) 0 0;                       /* v5.2：去 card 后，content 区块只需顶部留白 */
@@ -692,9 +727,8 @@ html, body {
 /* ── DetailSection (v3.5) ── */
 .detail-section { display: flex; flex-direction: column; gap: var(--ui-space-md); }
 .detail-section__head {
+  /* v6.9.3: 去掉左色条（border-left accent）——标题强调走字重/字号，不靠色条 */
   display: flex; justify-content: space-between; align-items: center;
-  padding-left: 12px;
-  border-left: 4px solid var(--ui-color-primary);
   min-height: 20px;
 }
 .detail-section__title {
@@ -758,7 +792,7 @@ html, body {
      ③ actions flex-end baseline 对齐（不是 flex-start）
      ④ font-weight 700（不是 800，800 是 marketing/hero 字重）
      ⑤ eyebrow muted 色（不抢 CTA 戏）
-     ⑥ subtitle line-height 1.55（给 2 行业务描述呼吸）
+     ⑥ v6.9.3: 移除 subtitle（所有页面不传副标题）+ back 固定渲染在标题左侧 inline
    实战验证：REQ-20260515 EU + Provider 32 个 section 标题统一改造，JS parse OK */
 .page-header {
   padding: 24px 28px 16px;
@@ -794,12 +828,7 @@ html, body {
   color: var(--ui-text-primary);
   margin: 0;
 }
-.page-header__subtitle {
-  font-size: 13px; font-weight: 400;
-  color: var(--ui-text-muted);
-  margin: 6px 0 0;
-  line-height: 1.55;                 /* ⭐ ⑥ 1.55 而非 1.4，给 2 行业务描述呼吸 */
-}
+/* v6.9.3: .page-header__subtitle 已移除——所有页面一律不传副标题（AI-USAGE §默认克制 ①）*/
 .page-header__right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .page-header__status-pill {
   display: inline-flex; align-items: center;
@@ -813,16 +842,22 @@ html, body {
 .page-header__status-pill--red    { background: var(--ui-color-destructive-subtle); color: var(--ui-color-destructive); }
 .page-header__status-pill--purple { background: var(--ui-badge-purple-bg);          color: var(--ui-badge-purple-fg); }
 .page-header__status-pill--muted  { background: var(--ui-badge-muted-bg);           color: var(--ui-badge-muted-fg); }
+/* v6.9.3: back 固定渲染在标题左侧 inline（title-row 内首元素），不再单独占顶行。
+   返回入口位置统一 = 标题左缘，禁止散放到面包屑/右侧/独立行。 */
 .page-header__back {
-  padding: 14px 28px 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--ui-text-muted);
   text-decoration: none;
   display: inline-flex; align-items: center; gap: 4px;
+  flex-shrink: 0;
+  padding-right: 10px;
+  margin-right: 2px;
+  border-right: 1px solid var(--ui-border-soft);   /* 跟标题之间一条竖向细分隔，读作"返回 | 标题" */
+  align-self: center;
   transition: color var(--ui-duration-fast);
 }
 .page-header__back:hover { color: var(--ui-text-primary); }
-.page-header__back [data-lucide] { width: 14px; height: 14px; }
+.page-header__back [data-lucide] { width: 16px; height: 16px; }
 
 /* ── MetricsStrip (v3.8) — 等分指标条（Hero 详情/Overview 用）── */
 .metrics-strip {
@@ -1278,7 +1313,7 @@ html, body {
 .radio-circle { display: flex; flex-direction: column; gap: var(--ui-space-sm); }
 .radio-circle__item { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; padding: 4px 0; transition: color var(--ui-duration-fast); }
 .radio-circle__item:hover { color: var(--ui-color-primary); }
-.radio-circle__dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ui-border-strong); background: var(--ui-bg-card); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color var(--ui-duration-fast); position: relative; }
+.radio-circle__dot { width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ui-border-interactive); background: var(--ui-bg-card); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; transition: border-color var(--ui-duration-fast); position: relative; }  /* v6.9.4 空心圈靠边框传达"可选"→ interactive ≥3:1 */
 .radio-circle__dot::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--ui-color-primary); opacity: 0; transform: scale(0.4); transition: opacity var(--ui-duration-fast) var(--ui-ease-out), transform var(--ui-duration-fast) var(--ui-ease-spring); }
 .radio-circle__item:hover .radio-circle__dot { border-color: var(--ui-color-primary); }
 .radio-circle__item.is-active .radio-circle__dot { border-color: var(--ui-color-primary); }
@@ -1287,8 +1322,8 @@ html, body {
 
 /* .radio-pill · B 药丸（横排紧凑） */
 .radio-pill-group { display: inline-flex; gap: 6px; flex-wrap: wrap; }
-.radio-pill { padding: 7px 16px; border-radius: var(--ui-radius-pill); border: 1px solid var(--ui-border-default); background: var(--ui-bg-card); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ui-text-secondary); transition: background var(--ui-duration-fast), border-color var(--ui-duration-fast), color var(--ui-duration-fast); white-space: nowrap; }
-.radio-pill:hover { border-color: var(--ui-border-strong); color: var(--ui-text-primary); }
+.radio-pill { padding: 7px 16px; border-radius: var(--ui-radius-pill); border: 1px solid var(--ui-border-interactive); background: var(--ui-bg-card); cursor: pointer; font-size: 13px; font-weight: 500; color: var(--ui-text-secondary); transition: background var(--ui-duration-fast), border-color var(--ui-duration-fast), color var(--ui-duration-fast); white-space: nowrap; }  /* v6.9.4 可点边界 → interactive ≥3:1 */
+.radio-pill:hover { border-color: var(--ui-color-primary); color: var(--ui-text-primary); }
 .radio-pill.is-active { background: var(--ui-color-primary-subtle); border-color: var(--ui-color-primary); color: var(--ui-color-primary); font-weight: 600; }
 
 /* .radio-segmented · C 分段控制（iOS 风，2-4 互斥状态） */
@@ -1299,13 +1334,18 @@ html, body {
 
 /* .radio-card · D Card Radio（含描述的关键决策） */
 .radio-card-group { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ui-space-sm); }
-.radio-card { position: relative; padding: 12px 14px; border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-lg); background: var(--ui-bg-card); cursor: pointer; transition: border-color var(--ui-duration-fast), box-shadow var(--ui-duration-fast); }
-.radio-card:hover { border-color: var(--ui-border-strong); }
+.radio-card { position: relative; padding: 12px 14px; border: 1px solid var(--ui-border-interactive); border-radius: var(--ui-radius-lg); background: var(--ui-bg-card); cursor: pointer; transition: border-color var(--ui-duration-fast), box-shadow var(--ui-duration-fast); }  /* v6.9.4 可点卡边界 → interactive ≥3:1 */
+.radio-card:hover { border-color: var(--ui-color-primary); }
 .radio-card.is-active { border-color: var(--ui-color-primary); box-shadow: 0 0 0 1px var(--ui-color-primary), 0 0 0 4px rgba(95, 78, 207, 0.12); }
-.radio-card__dot { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ui-border-strong); background: var(--ui-bg-card); transition: background var(--ui-duration-fast), border-color var(--ui-duration-fast), box-shadow var(--ui-duration-fast); }
+.radio-card__dot { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid var(--ui-border-interactive); background: var(--ui-bg-card); transition: background var(--ui-duration-fast), border-color var(--ui-duration-fast), box-shadow var(--ui-duration-fast); }  /* v6.9.4 → interactive ≥3:1 */
 .radio-card.is-active .radio-card__dot { background: var(--ui-color-primary); border-color: var(--ui-color-primary); box-shadow: inset 0 0 0 4px var(--ui-bg-card); }
 .radio-card__name { font-size: 13px; font-weight: 600; color: var(--ui-text-primary); padding-right: 24px; line-height: 1.4; }
 .radio-card__desc { font-size: 11px; color: var(--ui-text-muted); margin-top: 4px; line-height: 1.5; padding-right: 24px; }
+
+/* v6.9.4: EP 原生 checkbox/radio 空心框靠边框传达"可选" → 用 border-interactive（≥3:1）。
+   只改 unchecked 边框色，不动 checked/focus 态（那些走 primary）。inputs/table 仍用 --el-border-color。 */
+.el-checkbox__inner,
+.el-radio__inner { border-color: var(--ui-border-interactive); }
 
 /* ────────────────────────────────────────────
  * Motion 动画库（v3.10）
@@ -1343,6 +1383,261 @@ html, body {
   .anim-scale-in, .anim-stagger > * { animation: none !important; }
 }
 
+/* ──────────────────────────────────────────────────────────────────
+   Dashboard Chapter (v6.9.1 引入 — Section + Filter + KPI 两档)
+   ──────────────────────────────────────────────────────────────────
+   适用范围：dashboard / overview / 监控大盘 类页型（决策树 ⑪ 触发）。
+   规则参考：design-system/AI-USAGE.md §11 Dashboard 大盘契约
+   字号契约：stat-card 复用 .type-kpi (28px) / ov-card 用 .type-hero-data (44px)
+   外壳协调：.ds-section-header border-bottom 是分隔器，豁免 v6.7 外壳克制
+   ────────────────────────────────────────────────────────────────── */
+
+/* ── ds-section · dashboard 信息架构第一公民 ── */
+.ds-section { display: flex; flex-direction: column; gap: var(--ui-space-card); }
+.ds-section-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-bottom: var(--ui-space-control);
+  border-bottom: 1px solid var(--ui-border-default);
+}
+.ds-section-header__l { display: flex; align-items: center; gap: var(--ui-space-inline); }
+.ds-section-icon {
+  width: 28px; height: 28px; border-radius: var(--ui-radius-control);
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ui-color-primary-subtle); color: var(--ui-color-primary);
+  flex-shrink: 0;
+}
+.ds-section-icon i[data-lucide], .ds-section-icon svg { width: 15px; height: 15px; }
+.ds-section-title  { color: var(--ui-text-primary); /* 字号复用 .type-h3；显式 color 防 dark 下 h2 继承拿到暗色（v6.9 实测修） */ }
+.ds-section-pill {
+  padding: 3px 9px; border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted); color: var(--ui-text-muted);
+  /* 复用 .type-caption（12px/500），class 体不写字号 */
+}
+.ds-section-header__r i[data-lucide], .ds-section-header__r svg {
+  width: 14px; height: 14px; color: var(--ui-text-muted); cursor: pointer;
+}
+
+/* ── ds-filter-row · 4 列 KV-dropdown 风格（区别于横排 FilterBox） ── */
+.ds-filter-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ui-space-lg);
+}
+.ds-filter-col { display: flex; flex-direction: column; gap: 6px; }
+.ds-filter-label {
+  font-size: 11px; font-weight: 600;
+  letter-spacing: 0.5px; text-transform: uppercase;
+  color: var(--ui-text-muted);
+}
+.ds-filter-dropdown {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--ui-space-inline);
+  padding: 8px 12px; border: 1px solid var(--ui-border-default);
+  border-radius: var(--ui-radius-control); background: var(--ui-bg-card);
+  color: var(--ui-text-primary); cursor: pointer; transition: border-color .15s;
+}
+.ds-filter-dropdown:hover { border-color: var(--ui-color-primary); }
+.ds-filter-dropdown__l {
+  display: flex; align-items: center; gap: var(--ui-space-inline);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ds-filter-dropdown__l i[data-lucide], .ds-filter-dropdown__l svg,
+.ds-filter-dropdown > i[data-lucide], .ds-filter-dropdown > svg {
+  width: 13px; height: 13px; color: var(--ui-text-muted); flex-shrink: 0;
+}
+
+/* ── ds-overview-grid / ds-stats-row · KPI grid 容器 ── */
+.ds-overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--ui-space-card); }
+.ds-stats-row     { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--ui-space-card); }
+
+/* ── ds-stat-card · 小档 KPI（28px Mono · icon-pill · delta 三段式） ── */
+.ds-stat-card {
+  background: var(--ui-bg-card); border: 1px solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+  padding: 20px 20px 18px;
+  display: flex; flex-direction: column; gap: 12px;
+}
+.ds-stat-card__top { display: flex; align-items: flex-start; justify-content: space-between; }
+.ds-stat-title { /* 复用 .type-caption；class 体不写字号 */ color: var(--ui-text-muted); }
+.ds-stat-icon {
+  width: 32px; height: 32px; border-radius: var(--ui-radius-lg);
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--ui-color-primary-subtle); color: var(--ui-color-primary);
+  flex-shrink: 0;
+}
+.ds-stat-icon i[data-lucide], .ds-stat-icon svg { width: 14px; height: 14px; }
+.ds-stat-value { /* 复用 .type-kpi (28px Mono 700)，class 只 hook 色 */ color: var(--ui-text-primary); }
+.ds-stat-delta {
+  display: inline-flex; align-items: center; gap: 4px;
+  /* 复用 .type-caption；class 体不写字号 */
+}
+.ds-stat-delta i[data-lucide], .ds-stat-delta svg { width: 12px; height: 12px; }
+.ds-stat-delta__pct { font-weight: 600; }
+.ds-stat-delta__vs { color: var(--ui-text-muted); font-weight: 500; }
+
+/* ── ds-ov-card · 巨档 KPI（44px hero 数字 · 简 hint） ── */
+.ds-ov-card {
+  background: var(--ui-bg-card); border: 1px solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+  padding: 18px 22px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.ds-ov-card__top   { display: flex; align-items: center; justify-content: space-between; }
+.ds-ov-card__top-l { display: flex; align-items: center; gap: var(--ui-space-inline); }
+.ds-ov-dot {
+  width: 24px; height: 24px; border-radius: var(--ui-radius-md);
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.ds-ov-dot i[data-lucide], .ds-ov-dot svg { width: 13px; height: 13px; }
+.ds-ov-dot--success { background: var(--ui-color-success-subtle); color: var(--ui-color-success); }
+.ds-ov-dot--danger  { background: var(--ui-color-destructive-subtle); color: var(--ui-color-destructive); }
+.ds-ov-dot--primary { background: var(--ui-color-primary-subtle); color: var(--ui-color-primary); }
+.ds-ov-title { color: var(--ui-text-muted); /* 复用 .type-body-sm */ }
+.ds-ov-stat-tag {
+  padding: 2px 8px; border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted); color: var(--ui-text-muted);
+  font-size: 10px; font-weight: 500;
+}
+.ds-ov-value { /* 复用 .type-hero-data (44px Mono 700)，class 只 hook 色 */ }
+.ds-ov-value--success { color: var(--ui-color-success); }
+.ds-ov-value--danger  { color: var(--ui-color-destructive); }
+.ds-ov-value--primary { color: var(--ui-color-primary); }
+.ds-ov-hint { color: var(--ui-text-muted); /* 复用 .type-caption */ }
+
+/* ── ds-chart-card · 图表卡 chrome（v6.9 · title + type/size badge + refresh） ── */
+.ds-chart-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ui-space-card); }
+.ds-chart-card {
+  background: var(--ui-bg-card); border: 1px solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+  padding: 16px 18px;
+  display: flex; flex-direction: column; gap: 12px;
+  min-width: 0;
+}
+.ds-chart-header   { display: flex; align-items: center; justify-content: space-between; gap: var(--ui-space-inline); }
+.ds-chart-header__l { display: flex; align-items: center; gap: var(--ui-space-inline); flex-wrap: wrap; min-width: 0; }
+.ds-chart-title    { font-weight: 600; color: var(--ui-text-primary); /* 字号复用 .type-body-sm（markup 加 class） */ }
+.ds-chart-refresh {
+  width: 13px; height: 13px; color: var(--ui-text-muted);
+  cursor: pointer; flex-shrink: 0;
+}
+.ds-chart-refresh:hover { color: var(--ui-text-primary); }
+
+/* type-badge：chart 类型标记（"Time series"/"Gauge"/"Stat"，≈ .tag 的 dashboard 特化 + 圆点） */
+.ds-type-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 7px; border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted); color: var(--ui-text-muted);
+  font-size: 10px; font-weight: 500; white-space: nowrap;
+}
+.ds-type-badge::before {
+  content: ""; width: 5px; height: 5px; border-radius: var(--ui-radius-pill);
+  background: currentColor; opacity: .7;
+}
+/* size-badge：Grafana 栅格尺寸标记（"12 x 8"，Mono 蓝底） */
+.ds-size-badge {
+  padding: 2px 7px; border-radius: var(--ui-radius-pill);
+  background: var(--ui-badge-blue-bg); color: var(--ui-badge-blue-fg);
+  font-family: var(--ui-font-mono); font-size: 10px; font-weight: 500; white-space: nowrap;
+}
+
+/* ── ds-chart-body · 通用图表内部骨架（y-axis 左 / plot 中 / x-axis 下 / legend 底） ── */
+.ds-chart-body { display: flex; gap: var(--ui-space-inline); flex: 1; min-height: 180px; }
+.ds-y-axis {
+  width: 50px; flex-shrink: 0;
+  display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;
+  padding-right: 4px;
+  font-family: var(--ui-font-mono); font-size: 10px; color: var(--ui-text-muted);
+}
+.ds-plot {
+  flex: 1; position: relative; min-width: 0;
+  border-left: 1px solid var(--ui-border-default);
+  border-bottom: 1px solid var(--ui-border-default);
+  overflow: hidden;
+}
+.ds-plot svg { width: 100%; height: 100%; position: absolute; inset: 0; display: block; }
+.ds-plot-grid-line { position: absolute; left: 0; right: 0; height: 1px; background: var(--ui-border-default); opacity: .4; }
+.ds-x-axis {
+  display: flex; justify-content: space-between; padding-left: 58px;
+  font-family: var(--ui-font-mono); font-size: 10px; color: var(--ui-text-muted);
+}
+.ds-legend-row { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: var(--ui-space-inline); }
+.ds-legend  { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.ds-leg-item { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; color: var(--ui-text-muted); }
+.ds-leg-dot    { width: 7px; height: 7px; border-radius: var(--ui-radius-pill); flex-shrink: 0; }
+.ds-leg-square { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+/* pag：chart 多组数据分页（Grafana "1/10"） */
+.ds-pag { display: inline-flex; align-items: center; gap: var(--ui-space-inline); }
+.ds-pag i[data-lucide], .ds-pag svg { width: 12px; height: 12px; color: var(--ui-text-muted); cursor: pointer; }
+.ds-pag__num { font-family: var(--ui-font-mono); font-size: 10px; font-weight: 500; color: var(--ui-text-muted); }
+
+/* ── ds-bar · 纯 CSS 柱状图（单色 alpha 渐变档表达排序，无需 SVG） ── */
+.ds-bar-body { display: flex; gap: var(--ui-space-inline); min-height: 180px; align-items: stretch; }
+.ds-bar-area { flex: 1; display: flex; align-items: flex-end; gap: var(--ui-space-inline); padding: 0 4px; min-width: 0; }
+.ds-bar-col  { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 4px; min-width: 0; }
+.ds-bar-val  { font-family: var(--ui-font-mono); font-size: 9px; font-weight: 600; color: var(--ui-text-muted); }
+.ds-bar-rect { width: 28px; max-width: 80%; border-radius: 4px 4px 0 0; background: var(--ui-color-primary); }
+.ds-bar-x-axis { display: flex; gap: var(--ui-space-inline); padding-left: 58px; }
+.ds-bar-x-label { flex: 1; text-align: center; font-size: 10px; font-weight: 500; color: var(--ui-text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* ── ds-donut · 环形占比（stroke-dasharray on circle，r=56 周长≈351.86） ── */
+.ds-donut-body { display: flex; align-items: center; gap: var(--ui-space-card); }
+.ds-donut-svg  { width: 160px; height: 160px; flex-shrink: 0; position: relative; }
+.ds-donut-svg svg { width: 100%; height: 100%; display: block; }
+.ds-donut-center {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; pointer-events: none;
+}
+.ds-donut-center__num   { font-family: var(--ui-font-mono); font-size: 22px; font-weight: 700; color: var(--ui-text-primary); font-variant-numeric: tabular-nums; }
+.ds-donut-center__label { font-size: 11px; font-weight: 500; color: var(--ui-text-muted); }
+.ds-donut-legend { flex: 1; display: flex; flex-direction: column; gap: var(--ui-space-control); min-width: 0; }
+.ds-donut-legend__item { display: flex; align-items: center; gap: var(--ui-space-inline); }
+.ds-donut-legend__text { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.ds-donut-legend__label { font-size: 11px; font-weight: 500; color: var(--ui-text-primary); }
+.ds-donut-legend__val   { font-family: var(--ui-font-mono); font-size: 11px; font-weight: 700; color: var(--ui-text-muted); }
+
+/* ── ds-gauge · 270° 弧仪表（弧心 (50,50) r=40 · 指针 pivot (50,70)，几何见 dashboard.md 查表） ── */
+.ds-gauges-wrap { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--ui-space-inline); flex: 1; align-items: center; justify-items: center; }
+.ds-gauge { display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; }
+.ds-gauge-svg { width: 100%; max-width: 140px; aspect-ratio: 10 / 9; height: auto; }
+.ds-gauge-svg svg { width: 100%; height: 100%; display: block; }
+.ds-gauge-value { font-family: var(--ui-font-mono); font-size: 22px; font-weight: 700; line-height: 1; font-variant-numeric: tabular-nums; }
+.ds-gauge-value--success { color: var(--ui-color-success); }
+.ds-gauge-value--warning { color: var(--ui-color-warning); }
+.ds-gauge-value--danger  { color: var(--ui-color-destructive); }
+.ds-gauge-label { font-size: 11px; font-weight: 500; color: var(--ui-text-muted); text-align: center; }
+
+/* empty-gauge：图表级空态（离线/无数据 → 虚化弧 + 灰针 + caption；区别于整块 EmptyState） */
+.ds-empty-gauge { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--ui-space-inline); flex: 1; min-height: 160px; }
+.ds-empty-gauge .ds-gauge-svg { opacity: .6; max-width: 160px; }
+.ds-empty-dash { width: 18px; height: 2px; background: var(--ui-text-muted); opacity: .6; border-radius: var(--ui-radius-pill); }
+.ds-empty-caption { font-size: 11px; font-weight: 500; color: var(--ui-text-muted); text-align: center; }
+
+/* ── ds-detail-row · 阈值停留 KV 行（语义底色，"Duration over 80%: 35s"） ── */
+.ds-detail-rows { display: flex; flex-direction: column; gap: var(--ui-space-inline); flex: 1; justify-content: center; }
+.ds-detail-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; border-radius: var(--ui-radius-control);
+}
+.ds-detail-row--warning { background: var(--ui-color-warning-subtle); color: var(--ui-color-warning); }
+.ds-detail-row--success { background: var(--ui-color-success-subtle); color: var(--ui-color-success); }
+.ds-detail-row--danger  { background: var(--ui-color-destructive-subtle); color: var(--ui-color-destructive); }
+.ds-detail-row__label { font-size: 12px; font-weight: 500; }
+.ds-detail-row__val   { font-family: var(--ui-font-mono); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ── 响应式：dashboard 不强求 1280 以上不裂 ── */
+@media (max-width: 1100px) {
+  .ds-filter-row    { grid-template-columns: repeat(2, 1fr); }
+  .ds-overview-grid { grid-template-columns: repeat(2, 1fr); }
+  .ds-stats-row     { grid-template-columns: repeat(2, 1fr); }
+  .ds-chart-grid    { grid-template-columns: 1fr; }
+}
+@media (max-width: 720px) {
+  .ds-filter-row    { grid-template-columns: 1fr; }
+  .ds-overview-grid { grid-template-columns: 1fr; }
+  .ds-stats-row     { grid-template-columns: 1fr; }
+  .ds-ov-card       { padding: 16px 18px; }
+  .ds-donut-body    { flex-direction: column; }
+  .ds-gauges-wrap   { grid-template-columns: 1fr; }
+  .ds-x-axis, .ds-bar-x-axis { padding-left: 0; }
+}
+
 </style>
 </head>
 <body>
@@ -1374,6 +1669,7 @@ const darkVars = {
   '--ui-border-soft':         '#323238',
   '--ui-border-default':               '#27272a',
   '--ui-border-strong':        '#52525b',
+  '--ui-border-interactive':   '#71717a',  /* v6.9.4 功能性控件边界 WCAG 1.4.11 ≥3:1 · vs #18181b 3.67:1（border-strong #52525b 仅 2.29 不达标）*/
   '--ui-input':                '#18181b',
   '--ui-text-primary':           '#fafafa',
   '--ui-text-secondary':       '#d4d4d8',
@@ -1381,8 +1677,14 @@ const darkVars = {
   '--ui-text-disabled':        '#71717a',
   '--ui-color-primary':        '#a89eff',
   '--ui-color-success':       '#4ade80',
+  '--ui-color-success-hover':  '#22c55e',
+  '--ui-color-success-active': '#16a34a',
   '--ui-color-warning':       '#fbbf24',
+  '--ui-color-warning-hover':  '#f59e0b',
+  '--ui-color-warning-active': '#d97706',
   '--ui-color-destructive':   '#f87171',
+  '--ui-color-destructive-hover':  '#ef4444',
+  '--ui-color-destructive-active': '#dc2626',
   '--ui-color-info':          '#7a9ac8',
   '--ui-text-on-brand':       '#f0edf5',
   '--ui-layout-shell-bg':     'linear-gradient(180deg, #09090b 0%, #111114 18%, #09090b 100%)',
@@ -1434,6 +1736,7 @@ const lightVars = {
   '--ui-border-soft':         '#ececf1',
   '--ui-border-default':               '#e4e4e7',
   '--ui-border-strong':        '#d4d4d8',
+  '--ui-border-interactive':   '#8f8f8f',  /* v6.9.4 功能性控件边界 WCAG 1.4.11 ≥3:1 · vs #fff 3.23:1 */
   '--ui-input':                '#ffffff',
   '--ui-text-primary':           '#09090b',
   '--ui-text-secondary':       '#3f3f46',
@@ -1466,6 +1769,15 @@ const lightVars = {
   '--ui-color-success-subtle':     '#ecfdf5',
   '--ui-color-warning-subtle':     '#fef3c7',
   '--ui-color-destructive-subtle': '#fef2f2',
+  '--ui-color-success':       '#22c55e',
+  '--ui-color-success-hover':  '#16a34a',
+  '--ui-color-success-active': '#15803d',
+  '--ui-color-warning':       '#f59e0b',
+  '--ui-color-warning-hover':  '#d97706',
+  '--ui-color-warning-active': '#b45309',
+  '--ui-color-destructive':   '#ef4444',
+  '--ui-color-destructive-hover':  '#dc2626',
+  '--ui-color-destructive-active': '#b91c1c',
 };
 // AGIONE_EDIT_THEME_VARS_END
 
@@ -1524,18 +1836,17 @@ const i18n = {
 // ──────────────────────────────────────────────
 const PrototypeComponents = {
 
-  // <HeaderBox title subtitle> + slot:actions + default slot（filter/extra 内容）
+  // <HeaderBox title> + slot:actions + default slot（filter/extra 内容）
+  // v6.9.3: 移除 subtitle——所有页面一律不传副标题（AI-USAGE §默认克制 ①）
   HeaderBox: {
     props: {
       title:    { type: String, required: true },
-      subtitle: { type: String, default: '' },
     },
     template: `
       <div class="header-box" data-component="header-box">
         <div class="header-box__top">
           <div style="min-width:0;">
             <h1 class="header-box__title">{{ title }}</h1>
-            <p v-if="subtitle" class="header-box__subtitle">{{ subtitle }}</p>
           </div>
           <div v-if="$slots.actions" class="header-box__right">
             <slot name="actions"></slot>
@@ -1786,7 +2097,7 @@ const PrototypeComponents = {
     `
   },
 
-  // <PageHeader title subtitle eyebrow eyebrowIcon backLabel statusLabel statusColor>
+  // <PageHeader title eyebrow eyebrowIcon backLabel statusLabel statusColor>（v6.9.3 无 subtitle；back 渲染在标题左侧）
   //   + slot:actions + slot:avatar + emit:back
   // 段级 / 页级标题（无 card 边框）。HeaderBox 是页级 card 容器；PageHeader 是无边框轻量标题。
   // v6.4 B-Pro Designer 标准（实战验证 REQ-20260515 EU + Provider 32 个 section 标题）：
@@ -1798,20 +2109,16 @@ const PrototypeComponents = {
   PageHeader: {
     props: {
       title:        { type: String, required: true },
-      subtitle:     { type: String, default: '' },
       eyebrow:      { type: String, default: '' },
       eyebrowIcon:  { type: String, default: '' },
-      backLabel:    { type: String, default: '' },
+      backLabel:    { type: String, default: '' },   // v6.9.3: 返回链接文案；back 固定渲染在标题左侧 inline
       statusLabel:  { type: String, default: '' },
       statusColor:  { type: String, default: 'muted' }, // green | orange | red | purple | muted
+      // v6.9.3 起移除 subtitle：所有页面一律不传副标题（见 AI-USAGE §默认克制 ①）
     },
     emits: ['back'],
     template: `
       <div data-component="page-header-pro">
-        <a v-if="backLabel" class="page-header__back" href="javascript:void(0)" @click="$emit('back')">
-          <i data-lucide="chevron-left"></i>
-          <span>{{ backLabel }}</span>
-        </a>
         <div class="page-header">
           <div class="page-header__left">
             <div v-if="eyebrow" class="page-header__eyebrow">
@@ -1820,11 +2127,14 @@ const PrototypeComponents = {
               <span>{{ eyebrow }}</span>
             </div>
             <div class="page-header__title-row">
+              <a v-if="backLabel" class="page-header__back" href="javascript:void(0)" :title="backLabel" @click="$emit('back')">
+                <i data-lucide="chevron-left"></i>
+                <span>{{ backLabel }}</span>
+              </a>
               <slot name="avatar"></slot>
               <h1 class="page-header__title">{{ title }}</h1>
               <span v-if="statusLabel" :class="['page-header__status-pill', 'page-header__status-pill--' + statusColor]">{{ statusLabel }}</span>
             </div>
-            <p v-if="subtitle" class="page-header__subtitle">{{ subtitle }}</p>
           </div>
           <div v-if="$slots.actions" class="page-header__right">
             <slot name="actions"></slot>
@@ -2227,13 +2537,12 @@ const PrototypeComponents = {
     `
   },
 
-  // <DetailPage title subtitle :tabs activeTab showBack> + slot:actions + default
-  // 详情页组合壳：MainBox + HeaderBox(返回+标题+actions) + 可选 Tabs + ScrollBox
-  // v3.5
+  // <DetailPage title :tabs activeTab showBack> + slot:actions + default
+  // 详情页组合壳：MainBox + HeaderBox(返回在标题左侧 + 标题 + actions) + 可选 Tabs + ScrollBox
+  // v3.5 · v6.9.3 移除 subtitle（所有页面不传副标题）；back 已在标题左侧 inline
   DetailPage: {
     props: {
       title:     { type: String, required: true },
-      subtitle:  { type: String, default: '' },
       tabs:      { type: Array, default: () => [] },
       activeTab: { type: [String, Number], default: '' },
       showBack:  { type: Boolean, default: true },
@@ -2249,7 +2558,6 @@ const PrototypeComponents = {
               </button>
               <div style="min-width:0;">
                 <h1 class="header-box__title">{{ title }}</h1>
-                <p v-if="subtitle" class="header-box__subtitle">{{ subtitle }}</p>
               </div>
             </div>
             <div v-if="$slots.actions" class="header-box__right">
@@ -2407,6 +2715,8 @@ const app = createApp({
     const isDark    = ref(false);
     const lang      = ref('en');
     const activeTab = ref(0);
+    // AGIONE_EDIT_SETUP_DATA_START · ⚠️ 业务 ref / reactive 数据写在这里（filterKeyword / tableData / formModel 等）
+    // chrome 自带的 activeNav / lang / isDark / scenarios / balance 不动，业务 ref 增量加在 activeNav 后面
     const activeNav = ref('models');
     const t = computed(() => i18n[lang.value]);
 
@@ -2451,11 +2761,15 @@ const app = createApp({
     // logo: TopNav 永远 dark 背景，用 dark logo；其余区域跟随主题
     const logoSrc = computed(() => isDark.value ? LOGO_DARK : LOGO_DARK);
     return {
+      // AGIONE_EDIT_SETUP_DATA_END · 上面 setup() 内业务 ref 区结束
+
+      // AGIONE_EDIT_SETUP_RETURN_START · ⚠️ 业务 ref / computed 暴露给 template（chrome 自带行 isDark / lang / scenarios / balance 不动，业务 key 增量加在最后）
       isDark, lang, activeTab, activeNav, t, toggleTheme, toggleLang, logoSrc,
       // §6.8
       scenarios, activeScenario, defaultScenario,
       balance,
       hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
+      // AGIONE_EDIT_SETUP_RETURN_END · 上面 setup return 结束（业务 key 增量加在 scenarioLabel 后）
     };
   },
 

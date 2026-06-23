@@ -85,6 +85,7 @@ CSS_HITS=$(awk '
       # 豁免：.type-* / .el-* / chrome class 前缀
       if (sel ~ /\.type-/)              next
       if (sel ~ /\.el-/)                next
+      if (sel ~ /\.ds-/)                next   # v6.9.1: dashboard chapter chrome（ds- 前缀全豁免）
       if (sel ~ /\.header-box__/)       next
       if (sel ~ /\.page-header__/)      next
       if (sel ~ /\.hero-band__/)        next

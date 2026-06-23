@@ -6,8 +6,8 @@
 
   必备组件：
   - MainBox (css-pattern)            — 根容器
-  - Breadcrumb (runtime-component)   — 顶部层级路径
-  - PageHeader (runtime-component)   — title + subtitle + meta + 右操作
+  - PageHeader (runtime-component)   — title + 标题左侧返回(:back-label) + 右操作（v6.9.3 无 subtitle）
+  - Breadcrumb (runtime-component)   — 可选，仅 ≥3 级深路径用；与 back-label 二选一不并存
   - MetricsStrip (runtime-component) — 5-cell 等分指标条（数据型详情页推荐，可删）
   - Tabs (runtime-component)         — 详情子模块切换（underline 变体）
   - DetailSection (runtime-component) × N — 各 Tab 下的分块单元
@@ -28,13 +28,14 @@
 <!-- BEGIN PARTIAL -->
 <div class="main-box" data-component="main-box">
 
-  <!-- Breadcrumb：顶部层级路径 -->
-  <Breadcrumb :items="detailBreadcrumb" />
+  <!-- v6.9.3: 返回唯一入口 = 标题左侧（PageHeader :back-label），不放顶部独立行。
+       Breadcrumb 仅深层级（≥3 级路径）才用，且与 back-label 二选一，不并存——否则 "返回到处放"。 -->
 
-  <!-- PageHeader：title + subtitle + 右操作 -->
+  <!-- PageHeader：title + 标题左侧返回 + 右操作（v6.9.3 无 subtitle）-->
   <PageHeader
     :title="t.detailTitle"
-    :subtitle="t.detailSubtitle"
+    :back-label="t.detailBack"
+    @back="onDetailBack"
   >
     <template #actions>
       <el-button size="small">{{ t.btnEdit }}</el-button>
@@ -101,6 +102,10 @@
 
   const detailTab = ref('overview');
 
+  // v6.9.3: 返回固定在标题左侧（PageHeader :back-label）。onDetailBack 切回列表页 v-show。
+  const onDetailBack = () => { activeNav.value = 'list'; };   // 按实际列表页 nav key 改
+
+  // 可选：仅 ≥3 级深路径才用 Breadcrumb，且不与 back-label 并存（避免返回到处放）
   const detailBreadcrumb = ref([
     { label: '控制台', href: '#' },
     { label: 'My Models', href: '#' },
@@ -129,7 +134,7 @@
   ]);
 
   对应 i18n keys（需在 i18n.zh / i18n.en 各加）：
-  - detailTitle / detailSubtitle / btnEdit / btnPrimary / btnViewAll
+  - detailTitle / detailBack / btnEdit / btnPrimary / btnViewAll（v6.9.3：detailSubtitle 已删；detailBack = 返回文案）
   - sectionMetaTitle / sectionAboutTitle / sectionMonitorTitle / sectionHistoryTitle
   - aboutPlaceholder / chartPlaceholder / tablePlaceholder
 

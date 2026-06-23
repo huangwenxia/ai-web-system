@@ -89,9 +89,9 @@
   --ui-radius-2xl:  16px;
   --ui-radius-pill: 9999px;
 
-  --ui-font-heading: 'Manrope Variable', Inter, system-ui, sans-serif;
-  --ui-font-base:    'Inter Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --ui-font-mono:    'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+  --ui-font-heading: 'Manrope Variable', Manrope, var(--el-font-family);    /* v6.2 对齐 mamba-layout */
+  --ui-font-body:    'Inter Variable', var(--el-font-family);                /* v6.2 token rename base→body + fallback 对齐 */
+  --ui-font-mono:    'IBM Plex Mono', 'SFMono-Regular', ui-monospace, monospace;
 
   --ui-duration-fast: 150ms;
   --ui-duration-base: 250ms;
@@ -152,17 +152,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ── Typography Utility (v3.10 L1 强制) — 8 个 .type-* class，禁止手写 font-size/weight/line-height ── */
 .type-h1            { font-family: var(--ui-font-heading); font-size: 30px; font-weight: 800; line-height: 1.2; }
 .type-h2            { font-family: var(--ui-font-heading); font-size: 20px; font-weight: 700; line-height: 1.4; }
-.type-h3            { font-family: var(--ui-font-base);    font-size: 16px; font-weight: 600; line-height: 1.4; }
-.type-body          { font-family: var(--ui-font-base);    font-size: 14px; font-weight: 400; line-height: 1.6; }
-.type-body-sm       { font-family: var(--ui-font-base);    font-size: 13px; font-weight: 400; line-height: 1.43; }
-.type-caption       { font-family: var(--ui-font-base);    font-size: 12px; font-weight: 500; line-height: 1.33; }
+.type-h3            { font-family: var(--ui-font-body);    font-size: 16px; font-weight: 600; line-height: 1.4; }
+.type-body          { font-family: var(--ui-font-body);    font-size: 14px; font-weight: 400; line-height: 1.6; }
+.type-body-sm       { font-family: var(--ui-font-body);    font-size: 13px; font-weight: 400; line-height: 1.43; }
+.type-caption       { font-family: var(--ui-font-body);    font-size: 12px; font-weight: 500; line-height: 1.33; }
 .type-data          { font-family: var(--ui-font-mono);    font-size: 13px; font-weight: 400; line-height: 1.5; font-variant-numeric: tabular-nums; }
-.type-table-header  { font-family: var(--ui-font-base);    font-size: 11px; font-weight: 600; line-height: 1.4; letter-spacing: 0.5px; text-transform: uppercase; }
+.type-table-header  { font-family: var(--ui-font-body);    font-size: 11px; font-weight: 600; line-height: 1.4; letter-spacing: 0.5px; text-transform: uppercase; }
 
 html, body {
   height: 100%;
   background: var(--ui-topnav-bg);
-  font-family: var(--ui-font-base);
+  font-family: var(--ui-font-body);
   -webkit-font-smoothing: antialiased;
   color: var(--ui-text-primary);
 }
@@ -1269,8 +1269,8 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                   <div style="font-size: 12px; color: var(--ui-text-secondary); margin-top: 6px;">标题专用，Variable 字重 200-800</div>
                 </div>
                 <div style="padding: var(--ui-space-base); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-md);">
-                  <div style="font-family: var(--ui-font-base); font-size: 24px; font-weight: 600; color: var(--ui-text-primary); margin-bottom: 4px;">Inter / 你好世界</div>
-                  <div style="font-size: 11px; color: var(--ui-text-muted); font-family: var(--ui-font-mono);">--ui-font-base</div>
+                  <div style="font-family: var(--ui-font-body); font-size: 24px; font-weight: 600; color: var(--ui-text-primary); margin-bottom: 4px;">Inter / 你好世界</div>
+                  <div style="font-size: 11px; color: var(--ui-text-muted); font-family: var(--ui-font-mono);">--ui-font-body</div>
                   <div style="font-size: 12px; color: var(--ui-text-secondary); margin-top: 6px;">正文，中英文混排，Variable 字重 100-900</div>
                 </div>
                 <div style="padding: var(--ui-space-base); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-md);">
@@ -1299,19 +1299,19 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                 </div>
                 <div class="type-row">
                   <div class="type-meta"><div class="type-meta-name">H3 · 卡片标题</div><div class="type-meta-spec">Inter · 16px · 600 · 1.4</div></div>
-                  <div class="type-demo" style="font-family: var(--ui-font-base); font-size: 16px; font-weight: 600; line-height: 1.4;">详情卡片 · Tab 标题</div>
+                  <div class="type-demo" style="font-family: var(--ui-font-body); font-size: 16px; font-weight: 600; line-height: 1.4;">详情卡片 · Tab 标题</div>
                 </div>
                 <div class="type-row">
                   <div class="type-meta"><div class="type-meta-name">Body · 正文</div><div class="type-meta-spec">Inter · 14px · 400 · 1.6</div></div>
-                  <div class="type-demo" style="font-family: var(--ui-font-base); font-size: 14px; font-weight: 400; line-height: 1.6;">这是一段标准正文。所有段落、说明文字、表单字段标签都使用这个字号。中英文 mixed 不缩小：keep it consistent.</div>
+                  <div class="type-demo" style="font-family: var(--ui-font-body); font-size: 14px; font-weight: 400; line-height: 1.6;">这是一段标准正文。所有段落、说明文字、表单字段标签都使用这个字号。中英文 mixed 不缩小：keep it consistent.</div>
                 </div>
                 <div class="type-row">
                   <div class="type-meta"><div class="type-meta-name">Body Small · 次要</div><div class="type-meta-spec">Inter · 13px · 400 · 1.43</div></div>
-                  <div class="type-demo" style="font-family: var(--ui-font-base); font-size: 13px; font-weight: 400; line-height: 1.43;">表格内容、次要描述、辅助说明，比正文小一档。</div>
+                  <div class="type-demo" style="font-family: var(--ui-font-body); font-size: 13px; font-weight: 400; line-height: 1.43;">表格内容、次要描述、辅助说明，比正文小一档。</div>
                 </div>
                 <div class="type-row">
                   <div class="type-meta"><div class="type-meta-name">Caption · 标注</div><div class="type-meta-spec">Inter · 12px · 500 · 1.33</div></div>
-                  <div class="type-demo" style="font-family: var(--ui-font-base); font-size: 12px; font-weight: 500; line-height: 1.33;">标签 · 辅助说明 · 错误提示文字</div>
+                  <div class="type-demo" style="font-family: var(--ui-font-body); font-size: 12px; font-weight: 500; line-height: 1.33;">标签 · 辅助说明 · 错误提示文字</div>
                 </div>
                 <div class="type-row">
                   <div class="type-meta"><div class="type-meta-name">Data · 数字 / ID</div><div class="type-meta-spec">IBM Plex Mono · 12px · 400 · tabular</div></div>
@@ -1319,7 +1319,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                 </div>
                 <div class="type-row">
                   <div class="type-meta"><div class="type-meta-name">Table Header</div><div class="type-meta-spec">Inter · 11px · 600 · 0.5px tracking</div></div>
-                  <div class="type-demo" style="font-family: var(--ui-font-base); font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--ui-text-muted);">租户名称 · 配额状态 · 创建时间</div>
+                  <div class="type-demo" style="font-family: var(--ui-font-body); font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: var(--ui-text-muted);">租户名称 · 配额状态 · 创建时间</div>
                 </div>
               </div>
             </div>

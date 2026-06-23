@@ -26,7 +26,8 @@ partial 内容是**纯 `<main>` 内层 HTML**：
 | Partial | 适用页面 | 必备组件 |
 |---------|---------|---------|
 | `standard-list-page.partial.html` | 列表 / 管理页（90% 控制台）| MainBox + HeaderBox + FilterBox + DataTable + TableActions |
-| `overview-page.partial.html` | Overview / Dashboard | HeaderBox + KpiCard × 3-4 + CardBox × N |
+| `overview-page.partial.html` | 轻量 Overview（KPI + 内容卡，无 chart 主体）| HeaderBox + KpiCard × 3-4 + CardBox × N |
 | `detail-page.partial.html` | 详情 / 配置页 | Breadcrumb + PageHeader + MetricsStrip + Tabs + DetailSection × N |
+| `dashboard.partial.html` | **监控大盘 / analytics（chart 为主，v6.9）** | PageHeader + `.ds-section` × N + KPI 两档 + chart family 5 种（契约见 `../dashboard.md`，决策树 ⑪ 命中才用）|
 
 > 向导 / 营销页暂走 L3 自由组装，未来沉淀进 partial。

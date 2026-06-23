@@ -144,20 +144,24 @@ AI 会收到下述之一：
 
 **目标预算**（**经验估算，未实测**）：3 variant 总 ~30-75k token。**取决于 Read 纪律**——如果 AI 偷懒整文件 Read，预算瞬间到 450k+（每个 variant 150k）。详见 SKILL.md §1.1 anchor-driven 协议。
 
-### 🛡️ shell-sample Edit 锚点速查（v2.2 跟随 strict v6.3）
+### 🛡️ shell-sample Edit 锚点速查（v2.2 跟随 strict v6.3 · v2.9 实测修数）
 
-每个 variant cp 之后直接 `rg -n "AGIONE_EDIT_" {slug}-vN.html` 即可定位 5 个可改区域 + 1 个 LOGO 禁读区：
+每个 variant cp 之后直接 `rg -n "AGIONE_EDIT_" {slug}-vN.html` 即可定位 7 个可改区域 + 1 个 LOGO 禁读区：
 
-| 锚点（grep with rg -n） | 用途 | 典型 partial Read 量 |
+| 锚点（grep with rg -n） | 用途 | 区段实测（v6.9·chars÷2.5）|
 |---|---|---|
-| `AGIONE_EDIT_TITLE_*` | 业务页面标题 | ~50 token |
-| `AGIONE_EDIT_THEME_VARS_*` | darkVars / lightVars 增量 | ~200 token |
-| `AGIONE_EDIT_I18N_*` | 双语 key 增量 | ~500-1000 token |
-| `AGIONE_EDIT_SIDEBAR_*` | sidebar 菜单项 | ~300-800 token |
-| `AGIONE_EDIT_MAIN_*` | 业务内容（**主战场，各 variant 在这里差异最大**） | ~500-2000 token |
-| `⛔ AGIONE_LOGO_DANGER_*` | **禁读区**：2 行 LOGO base64 共 ~18k token | ❌ 永远不 Read |
+| `AGIONE_EDIT_TITLE_*` | 业务页面标题 | ~60 token |
+| `AGIONE_EDIT_THEME_VARS_*` | darkVars / lightVars 增量 | ~2.1k token |
+| `AGIONE_EDIT_I18N_*` | 双语 key 增量 | ~0.7k token（写业务 key 后增长）|
+| `AGIONE_EDIT_SIDEBAR_*` | sidebar 菜单项 | ~1.1k token |
+| `AGIONE_EDIT_MAIN_*` | 业务内容（**主战场，各 variant 在这里差异最大**） | ~0.4k（占位态）|
+| `AGIONE_EDIT_SETUP_DATA_*` | setup() 内业务 ref / reactive（v2.8 跟随 strict v6.8）| ~0.9k token |
+| `AGIONE_EDIT_SETUP_RETURN_*` | setup return 业务 key（v2.8 跟随 strict v6.8）| ~0.2k token |
+| `⛔ AGIONE_LOGO_DANGER_*` | **禁读区**：2 行 LOGO base64 实测 **~22k token** | ❌ 永远不 Read |
 
 **协议**：每个 variant 的每次 Edit 前都 `rg -n` 找锚点 → `Read offset:<行号> limit:30-80` → `Edit`。**禁止整文件 Read**。
+
+**Dashboard variant 说明（v2.9 更新）**：explore 模式下做 dashboard 多 variant 时（如 3 个 variant 对比 SaaS analytics / Ops monitoring / 极简 hero 数字砌墙），shell-sample 已自带**全套 `.ds-*` dashboard chrome**（section/filter/KPI 两档 + chart family 5 种 + 装饰原语，含 `.type-hero-data` 44px）—— 跟 strict v6.9 完全等价。**注意 demo 参考实现不在 shell-sample 内**（strict v6.9 起在 strict 的 `partials/dashboard.partial.html`；explore 没有 partials/，需要参考时去 strict 目录看，或直接按 `.ds-*` class 自由构图——explore 本来就鼓励自己构图）。**explore variant 同样守 base spec**：`.ds-section` 必带 header / KPI 不混用两档 / 不引入 chart.js / Gauge 几何抄 strict `design-system/dashboard.md` §11.6.4 查表（弧心 (50,50) r=40，禁心算）。差异层只在构图（chart 排布、KPI 数量、section 切片 grid 比例）。
 
 ---
 
@@ -230,8 +234,11 @@ REQ 文档常用自然语言描述字号（"大号字 / 主信息 / 标题"）�
 - 间距：`--ui-space-xs`(4) / `--ui-space-sm`(8) / `--ui-space-md`(12) / `--ui-space-base`(16) / `--ui-space-lg`(20) / `--ui-space-xl`(24) / `--ui-space-2xl`(32) / `--ui-space-3xl`(48)
 - 圆角：`--ui-radius-sm`(4) / `--ui-radius-md`(6) / `--ui-radius-lg`(8) / `--ui-radius-xl`(12) / `--ui-radius-2xl`(16) / `--ui-radius-pill`(∞)
 - 阴影：`--ui-shadow-sm` / `--ui-shadow-md` / `--ui-shadow-lg` / `--ui-shadow-xl`
+- **状态色交互档（v2.15 跟随 strict v6.9.6）**：`success` / `warning` / `destructive` 各有 `base` / `-hover` / `-active`（两套主题已定义）。可点元素 hover 用 `var(--ui-color-<色>-hover)`、按下用 `-active`，别 `filter:brightness()`；交互态都往深/浓走。
 - 时长：`--ui-duration-fast`(150ms) / `--ui-duration-base`(250ms) / `--ui-duration-slow`(400ms)
 - 缓动：`--ui-ease-out`(进入/hover) / `--ui-ease-in`(退出) / `--ui-ease-in-out`(切换) / `--ui-ease-spring`(强调反馈)
+- **动效用法（v2.16 跟随 strict v6.9.7）**：默认即时,动效只在让变化更清楚时用。hover/active/focus→`--ui-duration-fast`(150) / dropdown/tooltip→`--ui-duration-base`(250) / modal/drawer→`--ui-duration-slow`(400);缓动用上面 4 档别手写。explore 多 variant 不靠花哨动画制造差异。
+- **文案与语气（v2.16）**：动作=动词+宾语(禁光秃"确定") / 错误=发生什么+怎么办 / toast 不带句号不说"成功 successfully" / 空态指向首动作 / 进行中=进行时+省略号 / 不写"请 please"+吹捧词。双语都守,完整版见 strict AI-USAGE §文案与语气。
 - 图标：`--ui-icon-xs`(12) / `--ui-icon-sm`(14) / `--ui-icon-base`(16) / `--ui-icon-md`(18) / `--ui-icon-lg`(20) / `--ui-icon-xl`(24) / `--ui-icon-2xl`(40) / `--ui-icon-3xl`(48)
 - Z-index：`--ui-z-base`(1) / `--ui-z-dropdown`(100) / `--ui-z-sticky`(200) / `--ui-z-fixed`(300) / `--ui-z-overlay`(400) / `--ui-z-modal`(500) / `--ui-z-popover`(600) / `--ui-z-toast`(700) / `--ui-z-tooltip`(800)
 
@@ -325,11 +332,11 @@ reason: 8 指标"砌墙美学"是这个 variant 的视觉主张，对比 V1 的 
 AI-NOTES-->
 ```
 
-#### ④ HeaderBox subtitle 默认**可填可不填** → **explore 可填**
+#### ④ 副标题（subtitle）**一律禁用** — explore 也守（v2.12 跟随 strict v6.9.3）
 
-strict 默认不传 subtitle（防 AI 脑补废话）。explore 里 subtitle 是**有效的视觉试错维度**——可以试"含 subtitle vs 不含 subtitle"看哪种更适合该页面气质。
+> **base spec 变更**：subtitle prop 已从 PageHeader / HeaderBox / DetailPage **组件层彻底移除**（shell-sample 同步过来时已无此 prop）。这是 base spec 红线级改动，explore **100% 守**——subtitle 不再是可探索维度，组件根本没这个能力。
 
-但同样**禁止脑补废话**（"X events stream in current scope" 这种翻译式描述还是不要写）。建议传 subtitle 时是**有信息增量的**（如"#PO-12345 · 待付款" / "5 个项目 · 12 个 API Key"）。
+所有页面（含每个 variant）都不要副标题。状态消歧走 PageHeader `statusLabel` 药丸。`bash scripts/check-prototype.sh` 第 8 项会抓任何 subtitle 残留。
 
 ### 2 个推荐模式（高频场景）
 
@@ -396,6 +403,44 @@ strict 默认不传 subtitle（防 AI 脑补废话）。explore 里 subtitle 是
 - [ ] 没有 4-column repeat KPI grid（除非 ≤ 3 个）
 - [ ] CardBox 内没有嵌套其他 CardBox / KpiCard
 - [ ] 业务对比关系有 tone 色区分（不是全 primary）
+
+### 默认克制（v2.6 跟随 strict v6.7 同步 · explore 也适用）
+
+**① 页头：只保留 Title 一行 + 返回固定标题左侧（v2.12 跟随 strict v6.9.3）**
+- **副标题彻底没有**：所有页面 / 所有 variant 一律不传 subtitle（组件已删 prop，见 §④）
+- eyebrow 只用于 hero 区且承载上下文；列表/表格/表单/设置页页头只剩 Title
+- **返回固定在标题左侧 inline**（`PageHeader :back-label` / `DetailPage :showBack` 渲染成 `‹ 返回 │ 标题`），禁止散放到面包屑/右侧/独立行——位置只有一个：标题左边
+- explore 多 variant 场景**同样守**：不能借 "variant 差异化" 为名瞎加 eyebrow 或把返回挪来挪去
+
+**② 一个区块只一层边界**
+- FilterBox / DataTable / KpiCard / MetricsStrip 自带边框，外面不要再套带 `border` 的容器
+- 沿边数 border —— 必须 ≤ 1
+- explore 鼓励视觉创新，但**双层边框不算创新**，是赘余
+
+**②.1 数据表 ⊂ 卡片：表头/外框「双线重合」防治（v2.10 跟随 strict v6.9.1）**
+- 高频 bug：表格放进卡片后表头分隔线跟卡片外框在顶部叠成两条贴一起的平行线
+- 配方：卡片 `border + border-radius + overflow:hidden`（裁方角）+ 表格 `border:none` + 手搓 `<table>` 必加 `border-collapse:collapse`（否则单元格边线翻倍）+ 表头只一条 `thead th border-bottom`
+- 从外到内只能数到：卡片 1 框 + 标题栏 1 分隔（可选）+ 表头 1 分隔；两条贴一起 = bug
+- 首选 `<DataTable>` / `.data-table`（已内置 `overflow:hidden`，零配置不出双线）；`bash scripts/audit-borders.sh` 会检测手搓 table 缺 collapse
+
+**③ 卡片 / 标题禁用「左侧色条」装饰（v2.11 引入 · v2.12 收紧到标题）**
+- ❌ 卡片 / 列表项 / KPI 卡 / **section 标题** 左缘加 `border-left: ≥2px solid <色>` 当状态/分类/强调 → 廉价告警条观感，一排色条 = 噪音
+- ✅ 状态 → `<StatusBadge>` / dot；分类 → `<Tag>`；卡片只留四边等框 + radius；section 标题靠字重/字号强调
+- **唯一例外**：`.alert` severity 条（alert 语义本身）
+- explore 多 variant 同样守；`bash scripts/audit-borders.sh` 会检测（唯一豁免 `.alert`）
+
+**④ 功能性边框 vs 装饰性边框（v2.13 跟随 strict v6.9.4 · WCAG 1.4.11）**
+- radio 空心圈 / checkbox 空心框 / 可点选择卡 / switch / input 的边——边框是"可选/可输"的唯一线索 → **`--ui-border-interactive`**（light #8f8f8f / dark #71717a，≥3:1）
+- 卡片框 / 表格行线 / divider 等装饰边 → `--ui-border-default`（低对比无妨）
+- ❌ 拿 `border-default` 画控件边 → dark 失明；`border-strong`(2.29) 也不达标
+- explore 多 variant 同样守（base spec 红线级，a11y 不放飞）；`bash scripts/audit-contrast.sh` 校验
+
+**⑤ 键盘焦点环——自动有，别杀掉（v2.14 跟随 strict v6.9.5 · WCAG 2.4.7）**
+- shell-sample 已内置全局 `:focus-visible { outline: 2px solid var(--ui-color-primary); outline-offset: 2px }`，每个 variant 自动继承，AI 零配置
+- ❌ 业务区禁 `outline: none`/`0` 不给替代；自定义可点 div/span 加 `tabindex="0"` 焦点环自动套上
+- a11y 是 base spec 红线，explore 多 variant 同样守；`bash scripts/check-prototype.sh` 第 10 项校验
+
+**自检**：跟 strict 一致。详见 strict 的 AI-USAGE.md §②.1 + §默认克制 ①/③/④/⑤。
 
 ```bash
 # Bash 辅助检查
@@ -581,7 +626,9 @@ balance.value = null;
 - [ ] 输出 **2-3 个 variant**（不是 1 个也不是 4+）
 - [ ] 每个 variant 顶部 `<!--AI-NOTES-->` 块完整（`variant:` / `approach:` / `ds-status:` / `tradeoff:`）
 - [ ] variant 之间**构图真的不同**（不是只换色、换字号、换 KPI 数量——必须改信息架构 / 主组件类型）
-- [ ] 若破了"2 推荐约束"（KpiCard ≤ 3 / subtitle 默认不传），AI-NOTES 写 `constraint-broken:` + reason
+- [ ] 副标题：所有 variant 都没有 subtitle（v2.12 base spec 已删 prop，不是探索维度）
+- [ ] 返回：详情 variant 的 back 在标题左侧（不散放）
+- [ ] 若破了推荐约束（KpiCard ≤ 3），AI-NOTES 写 `constraint-broken:` + reason
 - [ ] 命名规范：`{slug}-v1.html` / `-v2.html` / `-v3.html`（详见 SKILL.md §2.1.5）
 
 ---

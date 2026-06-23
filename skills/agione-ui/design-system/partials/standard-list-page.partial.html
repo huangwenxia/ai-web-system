@@ -20,8 +20,8 @@
 <!-- BEGIN PARTIAL -->
 <div class="main-box" data-component="main-box">
 
-  <!-- HeaderBox：title + subtitle + 右侧操作 -->
-  <HeaderBox :title="t.pageTitle" :subtitle="t.pageSubtitle">
+  <!-- HeaderBox：title + 右侧操作（v6.9.3 无 subtitle）-->
+  <HeaderBox :title="t.pageTitle">
     <template #actions>
       <el-button type="primary"><i data-lucide="plus"></i>{{ t.btnNew }}</el-button>
       <el-button><i data-lucide="download"></i>{{ t.btnExport }}</el-button>

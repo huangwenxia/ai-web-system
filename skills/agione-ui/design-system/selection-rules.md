@@ -1,9 +1,9 @@
-# Component Selection Rules — 决策树（v3.12）
+# Component Selection Rules — 决策树（v6.9.1）
 
 > AI 必读时机：catalog.md 的 `signal` 列指向 `TREE-N` 时，Read 本文件对应章节。
 > 单候选（signal=STOP）/ SKILL.md 已明文 / prototype 已指定 → 跳过本文件。
 >
-> 本文件 ~4k token，覆盖 11 个决策点（Layer 0 页面骨架 + ① 到 ⑩ 组件选型）。
+> 本文件 ~4.5k token，覆盖 12 个决策点（Layer 0 页面骨架 + ① 到 ⑩ 组件选型 + ⑪ Dashboard 页型；v6.9.1 加 ⑪）。
 > 每棵树固定结构：**决策问 → 分支表 → 默认 → 反模式**。
 
 ---
@@ -16,7 +16,8 @@
 |---------|------|---------|------|
 | 列表 / 管理（90% 控制台） | **StandardListPage** | MainBox + HeaderBox + FilterBox + DataTable + TableActions | `partials/standard-list-page.partial.html` |
 | 详情 / 配置 | **DetailPage** | Breadcrumb + PageHeader + MetricsStrip + Tabs + DetailSection × N | `partials/detail-page.partial.html` |
-| 概览 / Dashboard | **OverviewPage** | HeaderBox + KpiCard × 3-4 + CardBox × N | `partials/overview-page.partial.html` |
+| 轻量概览（KPI + 内容卡，无 chart 主体） | **OverviewPage** | HeaderBox + KpiCard × 3-4 + CardBox × N | `partials/overview-page.partial.html` |
+| **监控大盘 / analytics（chart 为主）** | **DashboardPage（v6.9）** | 先走 **决策树 ⑪** → `.ds-section` × N + KPI 两档 + chart family | `partials/dashboard.partial.html` + `dashboard.md` |
 | 向导 / 多步表单 | 组装 | HeaderBox + Stepper + FormModern × N | — |
 | 营销 / 引导 | 组装 | HeroBand + ListCardItem × N | — |
 
@@ -246,6 +247,35 @@
 - 配额超限用 Tag / StatusBadge（情况严重应整行 Alert 提示）
 - 单个状态用 Alert（占行太重，应该用 StatusBadge）
 - "状态"用 Tag（Tag 是分类不是状态，应该用 StatusBadge）
+
+---
+
+## ⑪ Dashboard 页型决策（v6.9.1 引入 · 在 Layer 0 之前先问一次）
+
+**决策问**：要生成的是**大盘 / 监控 / 概览数字砌墙**类页面吗？
+
+| 触发条件（任一命中即可） | 选 | 文件 / 章节 |
+|---|---|---|
+| 用户 brief 里有 "dashboard / 大盘 / 监控 / overview / analytics / 看板" | **Dashboard 章节** | `design-system/AI-USAGE.md §11` |
+| 主体由 ≥ 3 个 KPI / 图表块 grid 组成 | **Dashboard 章节** | 同上 |
+| 含时间范围筛选 + 多 section 切片视觉 | **Dashboard 章节** | 同上 |
+| 含 chart（line / area / bar / donut / gauge）作为主信息载体 | **Dashboard 章节** | 同上 |
+| 列表 / 详情 / 表单为主 → ❌ **不是 dashboard** | 回 Layer 0 ⓪ 走老路 | — |
+
+**默认（不确定时）**：当 ≥ 2 个触发条件命中时按 dashboard 走，否则回 Layer 0 决策。
+
+**dashboard 命中后**：**Read `design-system/dashboard.md`（完整契约 ~5k token）+ cp `partials/dashboard.partial.html` 进 `<main>`**。子流程概要：
+- §11.1 判轻量 overview（→ overview-page.partial 老路）还是监控大盘（→ 本路径）
+- §11.2-11.3 section 切片数（1-4 个 `.ds-section`，header 必带）+ filter row 取舍
+- §11.4 KPI 档位：小档 `.ds-stat-card`（28px + delta）/ 巨档 `.ds-ov-card`（44px hero），不混用
+- §11.6 chart family 5 种（line / area / bar / donut / gauge）—— Gauge 几何抄 dashboard.md 查表
+- §11.7 装饰复用：header 警示 → PageHeader statusLabel；表格状态 → StatusBadge（树 ④）；7d/30d → `.tabs-segmented`
+
+**反模式 ❌**：
+- 命中 dashboard 但仍走 Layer 0 ⓪ StandardListPage → 用错"列表 chrome" 包数字，节奏断
+- KPI 套 KPI（`.ds-stat-card` 内嵌 `.ds-ov-card`）→ 违反信息架构 ③ 禁止套娃
+- chart 区不用 `.ds-section` 包，直接平铺 → 失去 dashboard "切片" 视觉识别
+- dashboard 也按 list page "外壳克制" 处理 `.ds-section-header` 的 border-bottom → 错；section-header 的 border 是分隔器豁免
 
 ---
 

@@ -85,6 +85,7 @@ CSS_HITS=$(awk '
       # 豁免：.type-* / .el-* / chrome class 前缀
       if (sel ~ /\.type-/)              next
       if (sel ~ /\.el-/)                next
+      if (sel ~ /\.ds-/)                next   # v6.9.1: dashboard chapter chrome（ds- 前缀全豁免）
       if (sel ~ /\.header-box__/)       next
       if (sel ~ /\.page-header__/)      next
       if (sel ~ /\.hero-band__/)        next
@@ -133,7 +134,8 @@ CSS_HITS=$(awk '
       if (sel ~ /\.detail-section/)     next   # 详情页 section
       if (sel ~ /\.metrics-strip/)      next   # 指标条
       if (sel ~ /\.step-pill/)          next   # 步骤药丸
-      if (sel ~ /\.tabs-segmented/)     next   # 分段 tabs
+      if (sel ~ /\.tabs-segmented/)     next   # 分段 tabs (segmented control 灰底白胶囊)
+      if (sel ~ /\.lux-tabs-page/)      next   # 页面级 Tab 导航 (v6.5 / B-Pro v4.1 增量)
       if (sel ~ /\.avatar([^a-zA-Z0-9_-]|$)/)  next   # 头像
       if (sel ~ /\.breadcrumb/)         next   # 面包屑
       if (sel ~ /\.hero-band/)          next   # HeroBand

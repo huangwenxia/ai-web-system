@@ -1,6 +1,6 @@
 ---
 name: agione-ui-explore
-version: 2.5
+version: 2.16
 description: >
   AGIOne Console UI **探索模式** 原型生成器。当用户想"放飞"
   尝试不同视觉方案、跳出 design system 框架、看几种构图对比时使用。
@@ -11,7 +11,7 @@ description: >
   **如果用户要原型直接交付产品/PM 评审，请用 agione-ui skill（strict 模式）**。
 ---
 
-# AGIOne Console UI — Explore Skill v2.5
+# AGIOne Console UI — Explore Skill v2.16
 
 > **设计哲学**：
 > 探索是为了**在 base spec 之内**找答案，不是为了破坏一致性。
@@ -30,7 +30,7 @@ description: >
 |------|------|--------------|
 | **颜色 token** | 必须用 `var(--ui-color-*)` / `var(--ui-text-*)` / `var(--ui-bg-*)` / `var(--ui-border-*)` | ❌ **禁止** 硬编码 `#xxx` / `rgb()` |
 | **间距 / 圆角 / 阴影 token** | 必须用 `var(--ui-space-*)` / `var(--ui-radius-*)` / `var(--ui-shadow-*)` | ❌ **禁止** 硬编码 px / 数值 |
-| **Typography** | 必须用 11 个 `.type-*` class | ❌ **禁止** 手写 `font-size / font-weight / font-family / line-height` |
+| **Typography** | 必须用 12 个 `.type-*` class（v2.9: +type-hero-data 44px dashboard 巨数）| ❌ **禁止** 手写 `font-size / font-weight / font-family / line-height` |
 | **Chrome 结构** | TopNav / Sidebar / Logo / theme toggle 是 shell-sample 锁定 | ❌ **禁止** 改 chrome HTML 结构 |
 | **Scenario Switcher 位置** | chip 只在 TopNav 右侧，chrome 自动渲染 | ❌ **禁止** 自己造 `.scenario-bar` / `.demo-switcher` |
 | **BalanceBox** | chrome 常驻，AI 只能设值不能造 | ❌ **禁止** 自己写 BalanceBox / 充值按钮 / 余额显示 |
@@ -51,9 +51,9 @@ description: >
 | 输出数量 | 1 个原型 | **2-3 个 variant 并排** |
 | L2/L3 组件选型 | 严格按 DS catalog | **鼓励 DS 外组件**（但仍用 token 实现）|
 | 业务卡形状 | 守 5 条底线 | 守 **2 条 base spec**（token / `.type-*`）+ 放开 3 条构图纪律 |
-| 信息架构 | 4 硬约束 | 2 硬约束（视觉焦点 / 禁套娃）+ 2 推荐（KpiCard ≤ 3 / subtitle）|
+| 信息架构 | 4 硬约束 | 2 硬约束（视觉焦点 / 禁套娃）+ 1 推荐（KpiCard ≤ 3）·副标题已全禁 |
 | **跟生产视觉对齐** | 跟生产 100% 对齐 | 视觉构图可以漂移，**但底层 token / class 仍 100% 对齐** |
-| 文案 subtitle | 默认不传（保守）| 可填可放，看构图 |
+| 文案 subtitle | 禁用（组件已删 prop）| 禁用（base spec 红线，同 strict v6.9.3）|
 | typography audit | 强制 0 violation | **info-only**（不阻断，但 AI 心中有数；交付前应清理）|
 | 保守生成 | "REQ 没要的不加" | "REQ 没要的可以试试" |
 
@@ -124,7 +124,7 @@ prompt 含「重新设计 / redesign / from scratch / 换一种思路」时，�
 
 > **核心原则**：所有 variant 必须以 `agione-console-shell-sample-v1.html` 为起点，**通过 `cp` 文件级复制 + `Edit` 局部修改**生成，禁止 Read 整 shell-sample。
 >
-> **explore 比 strict 更敏感**：strict 单原型 Read shell-sample ≈ 浪费 150k token；**explore 3 variant 各 Read = 浪费 450k token**。**绝对禁止**。
+> **explore 比 strict 更敏感**：strict 单原型 Read shell-sample ≈ 浪费 80k token（v6.9 实测）；**explore 3 variant 各 Read = 浪费 240k token（实测口径）**。**绝对禁止**。
 
 ### 推荐工作流：`cp` × N + `Edit` × N
 
@@ -171,7 +171,7 @@ cp [skill-dir]/agione-console-shell-sample-v1.html ./{slug}-v3.html
 
 ### 🛡️ Anchor-driven 安全 cp + Edit 协议（v2.2 必读 · explore 多 variant 场景特别敏感）
 
-**核心**：`Edit` 工具要求"调用前必须有过 Read"。如果 AI 偷懒 Read 整个 cp 出来的 variant 文件（180KB ≈ 150k token），就抹掉了 `cp` 节省的全部价值。**explore 3 variant 重复 3 次 = 450k+ token 浪费**。
+**核心**：`Edit` 工具要求"调用前必须有过 Read"。如果 AI 偷懒 Read 整个 cp 出来的 variant 文件（210KB ≈ 75-85k token 实测），就抹掉了 `cp` 节省的全部价值。**explore 3 variant 重复 3 次 = 240k+ token 浪费（v6.9 实测口径）**。
 
 **协议步骤**（每个 variant 重复一遍）：
 

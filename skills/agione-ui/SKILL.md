@@ -1,15 +1,21 @@
 ---
 name: agione-ui
-version: 5.1
+version: 6.9.7
 description: >
-  AGIOne Console UI prototype generator. Produces single-file HTML prototypes that feel
-  like the real product — consistent, professional, bilingual (中/EN), Light/Dark.
-  Trigger for any request to design, prototype, or review AGIOne console pages:
-  list pages, form pages, detail pages, overview dashboards, shell/chrome-only reviews,
-  or anything referencing the AGIOne design language.
+  AGIOne Console UI prototype generator (**strict mode, v6.0+**). Produces single-file
+  HTML prototypes that feel like the real product — consistent, professional,
+  bilingual (中/EN), Light/Dark, strictly aligned with production mamba-layout.
+
+  Trigger for any **PM-review / production-aligned** prototype request: list pages,
+  form pages, detail pages, overview dashboards, shell/chrome-only reviews, anything
+  referencing the AGIOne design language.
+
+  **NOT for exploration / multi-variant / DS-外 visual experiments** —— use the
+  sibling skill `agione-ui-explore` instead. If user says "explore / 探索 / 几种方案 /
+  超出 DS / 创新视觉", politely suggest switching to `agione-ui-explore`.
 ---
 
-# AGIOne Console UI Skill — v5.1 (Production Aligned)
+# AGIOne Console UI Skill — v6.9.7 (Strict-only / Production Aligned · Dashboard chapter)
 
 > **设计哲学**
 > 本 skill 分两个层级：
@@ -19,7 +25,7 @@ description: >
 > 你是一名有审美判断力的高级前端工程师，不是像素搬运图。
 > 在锁定层之外，优先考虑"这个页面是否美观、层次是否清晰"，而不是"是否精确遵守了某个数值"。
 
-> **v3.16 结构说明**：本文件精简到 ~700 行，**重复内容**（完整 token 表 / Chrome 像素细节 / 38 个原子组件规则 / Scenario Switcher 实现 / 字型 / Badge 词汇 / token 列表等）**已迁移到 `design-system/`**。AI 主路径 → `design-system/AI-USAGE.md`，本文件作为基础铁律 + 设计原则的最小集。
+> **v3.16 结构说明 · v6.8 更新**：本文件经过 v6.3-v6.7 累积加固后约 **~900 行**（v6.7 加默认克制后增长，v6.8 加 mamba token alias 章节）。**重复内容**（完整 token 表 / Chrome 像素细节 / 38 个原子组件规则 / Scenario Switcher 实现 / 字型 / Badge 词汇 / token 列表等）**已迁移到 `design-system/`**。AI 主路径 → `design-system/AI-USAGE.md`，本文件作为基础铁律 + 设计原则的最小集。
 
 > **v4.0 Token Alignment**：全部 CSS 变量已重命名为 `--ui-*` 前缀，**与生产项目 `mamba-layout` npm 包 100% 对齐**。原型代码内的 token 引用可直接粘贴到 project-mamba 仓库，零 rename。详见 §1.5。
 
@@ -37,24 +43,39 @@ description: >
 
 **Token 提示**：同一 REQ 下有 F002/F003 等后续功能时优先用 `--edit`，不要每次重生成。Chrome / 公共组件已存在，只 Edit `<main>` 增量。
 
-## 0.2 增量修改（--edit）执行规则
+## 0.2 增量修改（--edit）执行规则（v6.3 加固 · 局部 Read 不是整文件 Read）
 
-1. **Read 目标 HTML** 识别 `activeNav` 切换逻辑 + 已有 `v-show` 区块
-2. **用 Edit 工具精准修改**，禁止 Write 整文件（破坏 cp+Edit 工作流）
-3. **只改 `<main>` 内容**：Chrome / 变量 / Logo / PrototypeComponents 不允许动
-4. **定位到对应页面的 `v-show` 区块内部**精准 Edit，不替换整块
-5. **保持原有 mock**：只新增需要的，不动已有数据
-6. **不输出整文件到对话**：用户用浏览器看效果
+1. **rg -n 找编辑锚点**：`rg -n "AGIONE_EDIT_MAIN_START" target.html` 找业务区行号；shell-sample 自带 7 个 `AGIONE_EDIT_*_START/END` 锚点（详见 §1.2）
+2. **Read 目标 HTML 局部**：`Read target.html offset:<锚点行号> limit:30-80`——**只读锚点附近**，**禁止 Read 整文件**（210KB ≈ 75-85k token 实测，会重伤 input）
+3. **⛔ 绝不 Read LOGO 区**：`rg -n "AGIONE_LOGO_DANGER" target.html` 先拿实际行号（**别信文档里的死行号，行号会随版本漂移**）——区内 2 行 base64（36k + 38k 字符单行，实测 ~22k token），Read 错窗口直接爆
+4. **用 Edit 工具精准修改**，禁止 Write 整文件（破坏 cp+Edit 工作流）
+5. **只改 `<main>` 内容**：Chrome / 变量 / Logo / PrototypeComponents 不允许动
+6. **定位到对应页面的 `v-show` 区块内部**精准 Edit，不替换整块
+7. **保持原有 mock**：只新增需要的，不动已有数据
+8. **不输出整文件到对话**：用户用浏览器看效果
 
-## 0.3 双模式
+## 0.3 本 skill 是 strict-only（v6.0 起）
 
-skill 默认 **strict 模式**：严格按 `design-system/catalog.md` + `selection-rules.md` 选组件。同事日常生成走此模式，保证视觉一致。
+> **v6.0 拆分**：原 §0.3 双模式已废弃。本 skill 现在 **100% strict**，专做生产对齐、PM 评审、产品交付级原型。
+>
+> **需要探索 / 多 variant / DS 之外尝试？→ 用 `agione-ui-explore` skill**
 
-进入 **explore 模式** 的条件（任一）：
-- prompt 以 `explore:` 或 `探索：` 开头
-- 出现"不局限于 DS / 超出 DS / DS 之外"等措辞
+如果 prompt 出现下列关键词，**应该停下来提醒用户切到 explore skill**，不要在本 skill 里硬做：
 
-explore 模式行为：给 2-3 种方案并排展示，L1 铁律仍守，L2/L3 允许放飞。每方案标 `[DS 已有] / [DS 变体] / [DS 之外·待评估]`。**模式不确定时默认 strict**。
+- "探索 / explore / 不局限于 DS / 超出 DS / DS 之外"
+- "几种方案 / 多种风格 / 看看可能性 / 创新视觉 / fresh take"
+- "试试不一样的 / 跳出框架"
+
+**推荐回复模板**：
+
+> 你这个需求像是要探索几种方向。我建议切到 `agione-ui-explore` skill（专做 2-3 variant 并排 + 鼓励 DS 之外尝试）。如果确实只要一个 strict 原型，告诉我我就在这里做。
+
+**本 skill 的契约**：
+- 每次 1 个原型
+- 严格按 `design-system/catalog.md` + `selection-rules.md` 选组件
+- 跟生产 mamba-layout 视觉对齐
+- 守所有 4 条信息架构硬约束
+- typography audit 强制 0 violation
 
 ## 0.4 Rule-gap 逃生口（v3.16 引入）
 
@@ -173,17 +194,61 @@ cp [skill-dir]/agione-console-shell-sample-v1.html ./[新原型].html
 | `<nav class="topnav">` 完整 HTML | 顶栏 DOM |
 | `<aside class="sidebar">` 完整 HTML | 侧栏 DOM（菜单项可按页面调整） |
 
-### 可改区域（Edit 工具仅修改这些位置）
+### 可改区域（Edit 工具仅修改这些位置，每个区域有 AGIONE_EDIT_*_START / _END 锚点）
 
-| 区域 | 修改方式 |
-|------|---------|
-| `<title>` | Edit 替换为双语标题 |
-| Sidebar 菜单项 + `activeNav` 初始值 | Edit 替换/新增业务菜单 |
-| `i18n` 对象 | Edit 增加 zh/en 嵌套 key，**不删原有** |
-| `<main>` 区域内容 | Edit 替换占位 → 写业务内容（**唯一需要"创作"**） |
-| `darkVars` / `lightVars` 增量 token | Edit 末尾追加业务专用色（**禁止改已有值**） |
+| 区域 | 锚点 | 修改方式 |
+|------|------|---------|
+| `<title>` | `AGIONE_EDIT_TITLE_*` | Edit 替换为双语标题 |
+| Sidebar 菜单项 + `activeNav` 初始值 | `AGIONE_EDIT_SIDEBAR_*` | Edit 替换/新增业务菜单 |
+| `i18n` 对象 | `AGIONE_EDIT_I18N_*` | Edit 增加 zh/en 嵌套 key，**不删原有** |
+| `<main>` 区域内容 | `AGIONE_EDIT_MAIN_*` | Edit 替换占位 → 写业务内容（**唯一需要"创作"**） |
+| **setup() 业务 ref / reactive** | `AGIONE_EDIT_SETUP_DATA_*` （v6.8 加）| Edit 在 chrome ref（activeNav 等）后追加业务 ref |
+| **setup return 业务 key** | `AGIONE_EDIT_SETUP_RETURN_*` （v6.8 加）| Edit 在 chrome 返回 key 后追加业务 key |
+| `darkVars` / `lightVars` 增量 token | `AGIONE_EDIT_THEME_VARS_*` | Edit 末尾追加业务专用色（**禁止改已有值**） |
+
+> **Dashboard 页型**（v6.9）：参考实现在 `design-system/partials/dashboard.partial.html`（跟 list / detail / overview 三个 partial 同机制），完整契约在 `design-system/dashboard.md`——决策树 ⑪ 命中才加载，**非 dashboard 页零负担**（shell-sample 内不再有 demo 区）。
 
 > ⚠️ 锁定区域如需调整，**先升级 shell-sample**，禁止单原型私改。
+
+### 🛡️ Anchor-driven 安全 cp + Edit 协议（v6.3 必读 · 防 Read 爆 input）
+
+**核心问题**：`Edit` 工具要求"调用前必须有过 Read"。如果 AI 偷懒 Read 整个 cp 出来的文件（180KB ≈ 150k token），就抹掉了 `cp` 节省的全部价值。
+
+**协议步骤**（每次 Edit 前严格走一遍）：
+
+```bash
+# 1. cp 起手（0 token）
+cp [skill-dir]/agione-console-shell-sample-v1.html ./target.html
+
+# 2. rg -n 找锚点行号（Bash 调用，~50 token）
+rg -n "AGIONE_EDIT_MAIN" target.html
+#   → 2430:  <!-- AGIONE_EDIT_MAIN_START · ... -->
+#   → 2452:  <!-- AGIONE_EDIT_MAIN_END -->
+
+# 3. Read offset/limit 局部（覆盖即将 Edit 的范围，~200-1500 token）
+Read target.html offset:2430 limit:25     # 只读 <main> 占位区
+# ❌ 禁止: Read target.html (无 offset → 整文件)
+
+# 4. Edit 精准修改（old_string 来自上一步 Read 的内容）
+Edit target.html old_string:<占位 HTML> new_string:<业务内容>
+```
+
+**LOGO 危险区禁读（v6.3 加固 · v6.9 去死行号）**：
+
+```bash
+# ⚠️ 行号随版本漂移（v6.3 时在 ~2248，v6.9 已在 ~2675）——永远用 rg 拿实时行号：
+rg -n "AGIONE_LOGO_DANGER" target.html
+# 区内 2 行 base64：LOGO_DARK (36,956 字符) + LOGO_LIGHT (38,608 字符)
+# 共 ≈ 22k token 单次 Read（v6.9 实测，chars÷3.5 base64 dense 比）
+```
+
+- ❌ **绝对禁止 Read 包含 LOGO_DARK / LOGO_LIGHT 行的窗口**（offset 必须 > `AGIONE_LOGO_DANGER_END` 的实际行号）
+- ❌ **绝对禁止 Edit LOGO 内容**——LOGO 由 cp 自动带来，永远不需要 Edit
+- ✅ 如需 Read LOGO 附近上下文，先 rg 拿 `AGIONE_LOGO_DANGER_END` 行号，offset 从其后开始
+
+**partial Read 必须覆盖 Edit 范围**（不依赖工具细节）：
+- Edit 的 `old_string` 必须从你**当前对话已 Read 的实际内容**里取，不要靠 SKILL.md 文档约定的"模板字符串"猜
+- 工具可能在某些情况只看 "any prior Read"，但**不要赌**——按"partial Read 覆盖 Edit 范围"的纪律走最稳
 
 ### 兜底工作流（仅当无 Bash 时）
 
@@ -322,7 +387,7 @@ cp [skill-dir]/agione-console-shell-sample-v1.html ./[新原型].html
 | 圆角 | `border-radius: 8px` | `var(--ui-radius-lg)` |
 | 间距 | `padding: 16px` | `var(--ui-space-base)` |
 | 动效时长 | `transition: .15s` | `var(--ui-duration-fast)` |
-| 字族 | `font-family: 'Inter', sans-serif` | `var(--ui-font-base)` |
+| 字族 | `font-family: 'Inter', sans-serif` | `var(--ui-font-body)` |
 | 图标尺寸 | `width: 18px` | `var(--ui-icon-lg)` |
 | z-index | `z-index: 100` | `var(--ui-z-dropdown)` |
 
@@ -535,6 +600,27 @@ Overview / 详情 hero 区的标准信息阶梯：
 
 > 库内 `<HeroBand>` `<PageHeader>` 已固化此韵律。
 
+**适用边界（重要 · 默认克制）**：
+
+- 这套四段韵律**只用于 overview / 详情的 hero 区**（有沉浸感的落地页 / 详情页头），**不是每个页面都套**。
+- **列表 / 表格 / 表单 / 设置类页面 → 页头只保留 `[Title]` 一行**：
+  - **不要 eyebrow**。eyebrow 99% 是在重复"导航已经告诉用户的分区"——在「账务」分区里再顶一个 `BILLING` 纯属噪音，直接删。
+  - **desc / 副标题可选，且仅当它给出标题之外的新信息**（口径、范围、单位、时间窗）才保留；若只是把标题换个说法复述一遍 → 删掉。
+- eyebrow 即便在 hero 区也必须**承载上下文**（如详情页标明所属实体 / 批次 / 账期），**绝不只复述当前导航分区名**。
+
+> 自检：把页头的 eyebrow 和副标题遮住，用户还能从标题 + 左侧导航判断"这是什么页"吗？能 → 这两行就是赘余，删。
+
+### 外壳克制：一个区块只一层边界，不重复套框
+
+html→code 最高频的视觉赘余是**双层边框 / 卡上套卡**。约束：
+
+- **自带边框 / 卡片底色的组件（`<FilterBox>`、表格、`<KpiCard>`、`<MetricsStrip>`）外面不要再套一层带 `border` 的容器**。
+- 一个区块**只允许一层视觉边界**：`border` 与"卡片 bg + radius"二选一，不叠加。
+- 筛选区：用 `<FilterBox>` 自带框时，外层 wrapper 保持 `background: transparent; border: 0`；反之外层做卡、`<FilterBox>` 去框——**永远只留一层**。
+- 表格区：`el-table` / 表格组件本身已是一张卡，**不要再包 `border + radius + bg` 的外层 section**。
+
+> 自检：任一筛选 / 表格区，沿边数 border —— 只能数到 **1** 条。数到 2 条就是套框，拆掉外层。
+
 ### 三态进度阈值（80/100 双断点）
 
 任何带阈值的进度（用量 / 配额 / 容量）必须遵循：
@@ -653,7 +739,7 @@ AI 选组件时严格按 4 层顺序：
 1. **Layer 0 · 页面骨架** → Read `design-system/selection-rules.md § ⓪`
 2. **Layer A · SKILL.md 硬规则**（无 IO）→ form-modern / type-* / Radio variant / I18nField / Scenario Switcher
 3. **Layer B · catalog 按意图定位** → Read `catalog.md`，12 意图桶 + signal 列（STOP / TREE-N / READ）
-4. **Layer C · selection-rules 决策树**（按 signal 路由）→ 10 棵树覆盖所有同意图多候选场景
+4. **Layer C · selection-rules 决策树**（按 signal 路由）→ 11 棵树覆盖（⓪页面骨架 + ①-⑩ 同意图多候选场景）
 
 详细流程见 `design-system/AI-USAGE.md`。
 

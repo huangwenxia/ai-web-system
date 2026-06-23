@@ -78,7 +78,7 @@ _Last build: 2026-05-15 21:44:48_
 ### `<HeaderBox>`
 **Props**:
 - `title` · `String` · **required**
-- `subtitle` · `String` · default: ``
+- ~~`subtitle`~~ 已移除（v6.9.3：所有页面不传副标题）
 **Slots**: `actions`, `default`
 
 ### `<KpiCard>`
@@ -139,7 +139,7 @@ _Last build: 2026-05-15 21:44:48_
 ### `<PageHeader>`
 **Props**:
 - `title` · `String` · **required**
-- `subtitle` · `String` · default: ``
+- ~~`subtitle`~~ 已移除（v6.9.3：所有页面不传副标题）
 - `eyebrow` · `String` · default: ``
 - `eyebrowIcon` · `String` · default: ``
 **Slots**: `actions`
@@ -214,7 +214,7 @@ _Last build: 2026-05-15 21:44:48_
 ### `<DetailPage>`
 **Props**:
 - `title` · `String` · **required**
-- `subtitle` · `String` · default: ``
+- ~~`subtitle`~~ 已移除（v6.9.3：所有页面不传副标题）
 - `tabs` · `Array` · default: `() => [...]`
 - `activeTab` · `String | Number` · default: ``
 - `showBack` · `Boolean` · default: `true`
