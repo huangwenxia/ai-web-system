@@ -132,6 +132,15 @@ function unique(values) {
   return Array.from(new Set(values));
 }
 
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function wildcardToRegExp(pattern) {
+  const parts = String(pattern).split('*').map(escapeRegExp);
+  return new RegExp(`^${parts.join('.*')}$`);
+}
+
 function normalizeTerminalList(values) {
   if (!values.length) {
     return Object.keys(TERMINAL_DEFINITIONS);
@@ -248,6 +257,7 @@ export function printUsage(options = {}) {
   console.log('  --asset=skills,rules            Filter asset types');
   console.log('  --plugin=skill                  Alias of --asset');
   console.log('  --name=existing-project-feature-skill Filter individual skill/rule names');
+  console.log('  --name=agione-*                  Filter by wildcard pattern');
   console.log('  --dry-run                       Show planned writes without touching files');
   console.log('  --list                          Print supported terminals and asset types');
   console.log('  --help                          Show this help');
@@ -389,8 +399,12 @@ function filterItems(items, itemNames) {
     return items;
   }
 
-  const accepted = new Set(itemNames.map((item) => item.trim()).filter(Boolean));
-  return items.filter((item) => item.matchingKeys.some((key) => accepted.has(key)));
+  const filters = itemNames.map((item) => item.trim()).filter(Boolean);
+  const accepted = new Set(filters.filter((item) => !item.includes('*')));
+  const wildcardPatterns = filters.filter((item) => item.includes('*')).map(wildcardToRegExp);
+  return items.filter((item) =>
+    item.matchingKeys.some((key) => accepted.has(key) || wildcardPatterns.some((pattern) => pattern.test(key))),
+  );
 }
 
 function resolveTargetBase(terminalKey, assetType) {

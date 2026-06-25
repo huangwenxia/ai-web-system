@@ -35,6 +35,7 @@
 --asset=skills,rules
 --plugin=skill
 --name=existing-project-feature-skill
+--name=agione-*
 --dry-run
 --list
 --help
@@ -46,7 +47,7 @@
 - `--asset` 或 `--plugin` 用来限制同步哪类资产
 - `skills` 支持别名 `skill`
 - `rules` 支持别名 `rule`、`project-rule`
-- `--name` 可以限制具体 skill / rule 名称
+- `--name` 可以限制具体 skill / rule 名称；支持 `*` 通配，例如 `--name=agione-*`
 - `--dry-run` 只打印计划，不写文件
 
 ## 目标路径规则
@@ -97,6 +98,12 @@ node scripts/sync-skills.mjs --terminal=claude-code,codex
 
 ```powershell
 node scripts/sync-skills.mjs --terminal=cursor --name=agione-ui
+```
+
+### 只同步一组 skill
+
+```powershell
+node scripts/sync-skills.mjs --terminal=codex --name=agione-*
 ```
 
 ### 只同步仓库内 rules 投影

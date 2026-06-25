@@ -24,6 +24,7 @@ async function main() {
         'node scripts/sync-skills.mjs',
         'node scripts/sync-skills.mjs --terminal=claude-code,codex',
         'node scripts/sync-skills.mjs --terminal=cursor --name=existing-project-feature-skill',
+        'node scripts/sync-skills.mjs --terminal=codex --name=agione-*',
       ],
     });
     return;
