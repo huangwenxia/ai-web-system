@@ -1,6 +1,6 @@
 ---
 name: agione-ui
-version: 6.9.7
+version: 6.9.8
 description: >
   AGIOne Console UI prototype generator (**strict mode, v6.0+**). Produces single-file
   HTML prototypes that feel like the real product — consistent, professional,
@@ -15,7 +15,7 @@ description: >
   超出 DS / 创新视觉", politely suggest switching to `agione-ui-explore`.
 ---
 
-# AGIOne Console UI Skill — v6.9.7 (Strict-only / Production Aligned · Dashboard chapter)
+# AGIOne Console UI Skill — v6.9.8 (Strict-only / Production Aligned · Dashboard chapter)
 
 > **设计哲学**
 > 本 skill 分两个层级：

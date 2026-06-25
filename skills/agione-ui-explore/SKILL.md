@@ -1,6 +1,6 @@
 ---
 name: agione-ui-explore
-version: 2.16
+version: 2.17
 description: >
   AGIOne Console UI **探索模式** 原型生成器。当用户想"放飞"
   尝试不同视觉方案、跳出 design system 框架、看几种构图对比时使用。
@@ -11,7 +11,7 @@ description: >
   **如果用户要原型直接交付产品/PM 评审，请用 agione-ui skill（strict 模式）**。
 ---
 
-# AGIOne Console UI — Explore Skill v2.16
+# AGIOne Console UI — Explore Skill v2.17
 
 > **设计哲学**：
 > 探索是为了**在 base spec 之内**找答案，不是为了破坏一致性。
