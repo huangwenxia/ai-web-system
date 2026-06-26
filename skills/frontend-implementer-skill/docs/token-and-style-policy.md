@@ -2,6 +2,8 @@
 
 本文件承接 `frontend-implementer-skill` 中样式、token、Tailwind、Element Plus 与 AGIOne 的细则。只在任务涉及可见 UI、样式边界、主题兼容或组件封装时读取。
 
+外层组件需要影响嵌套子组件、第三方组件内部结构或 Teleport / Popper 浮层样式时，先读取 `style-override-discipline.md`，完成 CSS 作用链定位后再修改。
+
 ## Token 分层
 - 项目语义、自定义壳层、页面结构和业务容器优先使用 `--ui-*`。
 - Element Plus 原生组件的 anatomy、fill、placeholder、disabled、overlay、border 和原生状态优先使用 `--el-*` 或既有 Element Plus 行为。

@@ -33,9 +33,10 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 2. 判断目标项目归属：例如 `apps/<name>`、目标 app 的 `src/main.ts`、`src/assets/scss/main.scss`、`src/assets/scss/tailwindcss.css`。
 3. 查目标项目的 common/shared 来源：优先看 `apps/common/src/assets/scss/vars.scss`、`tailwindcss.css`、`reset.scss`、共享组件目录和目标 app 已有 soft override。
 4. 若命中 project-mamba 或同构项目，读取项目 UI 规范 skill 或 `frontend-implementer-skill/docs/project-mamba-implementation-profile.md` 中与样式、common 复用有关的部分。
-5. 若用户明确提到 AGIOne，按 AGIOne 严格视觉规则审查；若未提但任务属于本 skill，也默认以 AGIOne 作为视觉审查标尺。
-6. 如果审查真实登录态页面、外部受控 Chrome 或授权页面 DOM / 样式 / 网络状态，先读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`，并保持只读诊断。
-7. 审查过程中若 PowerShell / 终端 stdout 出现乱码、替换方块、`UnicodeDecodeError` 或 `illegal multibyte sequence`，先按 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md` 的“控制台渲染 ≠ 磁盘事实”护栏处理：用 `Format-Hex` / `git diff` 验证磁盘字节后再判断；任何文件修改必须用 `apply_patch`。
+5. 若审查对象存在父层覆盖子组件、第三方组件深层覆盖、Element Plus 内部样式、scoped 穿透、Teleport / Popper 浮层或 computed style 异常，读取 `skills/frontend-implementer-skill/docs/style-override-discipline.md`。
+6. 若用户明确提到 AGIOne，按 AGIOne 严格视觉规则审查；若未提但任务属于本 skill，也默认以 AGIOne 作为视觉审查标尺。
+7. 如果审查真实登录态页面、外部受控 Chrome 或授权页面 DOM / 样式 / 网络状态，先读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`，并保持只读诊断。
+8. 审查过程中若 PowerShell / 终端 stdout 出现乱码、替换方块、`UnicodeDecodeError` 或 `illegal multibyte sequence`，先按 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md` 的“控制台渲染 ≠ 磁盘事实”护栏处理：用 `Format-Hex` / `git diff` 验证磁盘字节后再判断；任何文件修改必须用 `apply_patch`。
 
 ## 审查模式
 
@@ -114,6 +115,7 @@ rg -n "bg-white|text-gray-|border-gray-|text-blue-|bg-blue-|#[0-9a-fA-F]" <targe
 - 页面应复用目标项目已有 Page Shell、HeaderBox、MainBox、ScrollBox、CurdTable、Card/List 组件等。
 - 不把页面级容器职责塞进子组件；不在一个页面里混用多套卡片半径、阴影、分隔线和间距节奏。
 - 审查到 `:global(...)` / `:global (...)` 逃逸 scoped 的组件样式时，按全局样式污染高风险处理；尤其是覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item`、浮层壳层或页面外层容器，必须建议改为局部类、props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口。
+- 审查父层影响子组件或第三方组件内部样式时，必须要求先说明样式来源、cascade / specificity、scoped 边界、运行时 class、Teleport / Popper 挂载点和 computed style 证据；未完成作用链定位的覆盖应作为可维护性风险指出。
 - 普通业务工具页应安静、密度稳定、便于扫描；避免营销式大装饰、强渐变背景、悬浮卡片堆叠。
 
 ## Common 对照决策树

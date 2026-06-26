@@ -31,6 +31,7 @@ Read these files progressively from this skill directory:
 - `docs/implementation-review-checklist.md`: read before final delivery and when doing strict pre-implementation review.
 - `docs/component-extraction-policy.md`: read when creating or extracting page-local components, hooks, types, constants, or utility capsules.
 - `docs/token-and-style-policy.md`: read for visible UI, style, token, Tailwind, Element Plus, popper, scrollbar, or theme decisions.
+- `../frontend-implementer-skill/docs/style-override-discipline.md`: read before parent-to-child style overrides, third-party deep overrides, Element Plus internal styling, scoped penetration, Teleport / Popper styling, or matched rules / `getComputedStyle` tracing.
 - `docs/semantic-display-patterns.md`: read for field chips, status fragments, non-tag badges, metrics, and compact semantic displays.
 - `docs/implementation-anti-patterns.md`: read when the implementation starts drifting into custom UI, oversized pages, weak reuse evidence, or unclear validation.
 - `docs/browser-readonly-diagnostics.md`: read when authorized external Chrome, logged-in pages, or browser DOM/style/network read-only diagnostics are needed.
@@ -73,6 +74,7 @@ If a non-frontend requester gives business wording only, translate it into the c
    - Pure display components receive typed props and emit user intent.
    - Component-private hooks/types/constants stay in the same-named capsule.
 7. Match the prototype first, then adapt through project tokens and shared components. Preserve observable layout, density, labels, grouping, icon intent, and interaction behavior unless a project rule forces a specific substitution.
+   - When adaptation requires a parent layer to influence child, third-party, or overlay styles, trace the CSS chain with `../frontend-implementer-skill/docs/style-override-discipline.md` before writing overrides.
 8. After implementation, move page-local pure utility helpers such as empty-value display, text normalization, formatting, parsing, and fallback display into the current directory's `utils/index.ts`; move needed local types into `types/index.ts`; use explicit imports such as `./utils/index` and `./types/index`.
 9. Run validation scripts and the closest app/package typecheck command available in the target repository. Do not run build commands unless the user explicitly asks for a build in this task; frontend owners manually inspect the page and submit the build after approval.
 10. For visible UI, refresh the target route in the browser and inspect that the page renders normally and core content is not missing. Check relevant viewport sizes and light/dark modes when the change touches surfaces, colors, or layout chrome. If this requires external controlled Chrome or a logged-in page, follow `docs/browser-readonly-diagnostics.md` and keep the browser work read-only.

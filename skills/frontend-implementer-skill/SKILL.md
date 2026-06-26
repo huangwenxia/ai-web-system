@@ -67,6 +67,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 需要确认具体 app 特性时再读：`docs/project-mamba-app-topology-matrix.md`
 - 涉及字段值碎片、轻量规格块、局部 badge/tag 语义判断时读取：`docs/semantic-display-patterns.md`
 - 涉及 token、Tailwind、Element Plus、AGIOne 或样式边界时读取：`docs/token-and-style-policy.md`
+- 涉及父组件影响子组件、第三方组件深层覆盖、Element Plus 内部样式、scoped 穿透、Teleport / Popper 浮层或需要用 matched rules / `getComputedStyle` 追踪样式来源时读取：`docs/style-override-discipline.md`
 - handoff 链路不清楚时读取：`docs/handoff-state-machine.md`
 - 需要对照常见坏写法时读取：`docs/implementation-anti-patterns.md`
 - 新功能但原型未确认时回退 `skills/existing-project-feature-skill/SKILL.md`
@@ -233,6 +234,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 复杂样式再放组件内部 `<style scoped>`：container query、第三方组件深层覆盖、hover / focus 状态和复杂响应式断点可以进 scoped SCSS；但 scoped SCSS 里也不能新增 CSS Grid 布局。
 - `<style>` 必须 `scoped`；如果 scoped 样式里只是 `display`、`flex`、`gap`、`margin`、`padding`、`width`、`height`、`font-size` 等简单布局 / 间距 / 尺寸 / 排版声明，优先迁到 template Tailwind class。脚本会对这类简单 scoped 样式给 warning，最终检查表必须说明已迁移或保留原因。
 - 组件或页面 `<style scoped>` 中严禁使用 `:global(...)` / `:global (...)` 逃逸 scoped 边界；不得用它覆盖 `.el-dialog`、`.el-dialog__body`、`.el-form-item` 等 Element Plus 内部类、浮层壳层或页面外层容器。这类写法视为全局样式污染，必须改为组件局部类、组件 props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口。
+- 当外层组件需要影响嵌套子组件样式时，必须先按 `docs/style-override-discipline.md` 梳理样式来源、cascade、specificity、scoped 边界、运行时 class、Teleport / Popper 挂载点和最终 computed style；禁止在未定位作用链前反复加覆盖样式。
 - 组件结构必须按自身容器宽度稳定自适应；内容区变窄但 viewport 未变时，row / card / toolbar 应由内容驱动换行：内容区使用 `min-w-0`、`flex-1`、`flex-wrap` / `flex-basis` 和自然文本换行，稳定高度的标题、摘要、工具条、底部操作等用 `shrink-0` / `flex-shrink: 0` 防止被纵向压缩；固定宽度只保护操作区、图标按钮区、操作列等动作区域，不给业务文本 / 数据内容硬设宽度；不得靠多个相近 `@media` 断点硬救布局。
 - 新增或改造页面 / 组件时，禁止外部引用样式文件；只允许 Tailwind utility class 或组件内部 `<style scoped>`，共享主题能力必须走项目既有样式入口。
 - 新增组件必须符合 `Vue 3`、`TypeScript`、`<script setup>` 规范；能用 `defineModel` 的场景，必须优先使用 `defineModel`。
@@ -265,6 +267,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 回写建议必须同时说明：目标路径、解决的问题、适用场景、不适用场景或边界、证据来源等级（A/B/C/D）。
 - 所有 skill / rules / docs 的回写默认只写 `ai-web-system` 源仓库，禁止直接修改任何终端插件的用户层或项目层运行时 skill 副本。
 - 如果需要让运行时立即生效，应将同步视为回写后的独立步骤，不能把同步副本当成 source-of-truth。
+- 如果用户明确要求热修全局 / 已安装运行时副本，或已经发生运行时副本 hotfix，必须在同一轮把相同规则同步回 `ai-web-system` 源仓库；不能同步时必须列出未同步的源路径和阻塞原因。
 - 任何协议回写都要同时检查当前 skill 是否需要同步升级：
   - `执行前先读`
   - `docs/` / `templates/`

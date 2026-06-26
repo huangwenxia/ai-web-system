@@ -56,6 +56,7 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - 涉及中文文案、locale、枚举 label、状态文案或业务展示常量时，确认 `skills/frontend-implementer-skill/scripts/verify-encoding.mjs` 的 UTF-8 / BOM / 乱码检查口径
 - 终端 / PowerShell stdout 出现乱码、替换方块、`UnicodeDecodeError`、`illegal multibyte sequence`，或怀疑文件编码被破坏时，先读取 `skills/frontend-implementer-skill/docs/terminal-output-encoding-guardrail.md`
 - 涉及组件拆分、抽离、目录落点或 API 设计时，确认 `skills/frontend-implementer-skill/docs/component-extraction-policy.md` 与 `scripts/check-component-structure.mjs`
+- 涉及父组件影响子组件、第三方组件深层覆盖、Element Plus 内部样式、scoped 穿透、Teleport / Popper 浮层或需要用 matched rules / `getComputedStyle` 追踪样式来源时，先读取 `skills/frontend-implementer-skill/docs/style-override-discipline.md`
 - 必要时读取 `skills/translate-terms-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 - 需要使用外部受控 Chrome、真实登录态页面或授权页面 DOM / 样式 / 网络只读诊断时，读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`
