@@ -16,7 +16,7 @@
 |---------|------|---------|------|
 | 列表 / 管理（90% 控制台） | **StandardListPage** | MainBox + HeaderBox + FilterBox + DataTable + TableActions | `partials/standard-list-page.partial.html` |
 | 详情 / 配置 | **DetailPage** | Breadcrumb + PageHeader + MetricsStrip + Tabs + DetailSection × N | `partials/detail-page.partial.html` |
-| 轻量概览（KPI + 内容卡，无 chart 主体） | **OverviewPage** | HeaderBox + KpiCard × 3-4 + CardBox × N | `partials/overview-page.partial.html` |
+| 轻量概览（KPI + 内容卡，无 chart 主体） | **OverviewPage** | HeaderBox + KpiCard × 3 + CardBox × N | `partials/overview-page.partial.html` |
 | **监控大盘 / analytics（chart 为主）** | **DashboardPage（v6.9）** | 先走 **决策树 ⑪** → `.ds-section` × N + KPI 两档 + chart family | `partials/dashboard.partial.html` + `dashboard.md` |
 | 向导 / 多步表单 | 组装 | HeaderBox + Stepper + FormModern × N | — |
 | 营销 / 引导 | 组装 | HeroBand + ListCardItem × N | — |
@@ -75,15 +75,15 @@
 
 | 触发条件 | 选 | 文件 |
 |---------|-----|------|
-| 3-4 个核心指标 + 趋势 + 上下文（Overview / Dashboard 顶部） | **KpiCard** 网格 (L1) | `components/L1/kpi-card.html` |
+| 2-3 个核心指标 + 趋势 + 上下文（Overview 顶部） | **KpiCard** 网格 (L1) | `components/L1/kpi-card.html` |
 | 5-8 个紧凑指标横向条带 + 无趋势或极简趋势 | **MetricsStrip** (L2) | `components/L2/metrics-strip.html` |
 | 详情页内的键值对（属性值 / 配置值，无数字突出） | **KvCard** (L1) | `components/L1/kv-card.html` |
 
 **默认（不确定时）**：`KpiCard` —— 数据感最强，最常用
 
 **反模式 ❌**：
-- 1-2 个 KpiCard 独占大空间 → 显空，应合并为 MetricsStrip 或合进 HeaderBox
-- 6+ KpiCard 并排 → 视觉过载，应用 MetricsStrip
+- 1 个 KpiCard 独占大空间 → 显空，应做 Hero 数字或合进 HeaderBox
+- ≥ 4 个 KpiCard 并排 → 视觉过载，应用 MetricsStrip / KvCard / 表格；dashboard stat-card 4 列只在 §⑪ 里例外
 - 详情页用 KpiCard 展示元数据（如"创建时间"） → 数字字体不合适，应用 KvCard
 
 ---

@@ -1,6 +1,6 @@
 ---
 name: agione-ui-explore
-version: 2.17
+version: 2.20
 description: >
   AGIOne Console UI **探索模式** 原型生成器。当用户想"放飞"
   尝试不同视觉方案、跳出 design system 框架、看几种构图对比时使用。
@@ -11,7 +11,7 @@ description: >
   **如果用户要原型直接交付产品/PM 评审，请用 agione-ui skill（strict 模式）**。
 ---
 
-# AGIOne Console UI — Explore Skill v2.17
+# AGIOne Console UI — Explore Skill v2.20
 
 > **设计哲学**：
 > 探索是为了**在 base spec 之内**找答案，不是为了破坏一致性。
@@ -186,7 +186,7 @@ rg -n "AGIONE_EDIT_MAIN" {slug}-v1.html
 
 # 3. Read offset/limit 局部（覆盖即将 Edit 的范围，~200-1500 token）
 Read {slug}-v1.html offset:2430 limit:25     # 只读 <main> 占位区
-# ❌ 禁止: Read {slug}-v1.html (无 offset → 整文件 ~150k token)
+# ❌ 禁止: Read {slug}-v1.html (无 offset → 整文件 ~75-85k token)
 
 # 4. Edit 精准修改（old_string 来自上一步 Read 的内容）
 Edit {slug}-v1.html old_string:<占位 HTML> new_string:<业务内容>
@@ -234,10 +234,10 @@ shell-sample 第 2248-2254 行有 `⛔ AGIONE_LOGO_DANGER_START / END` 标记的
 
 **禁止**：硬编码 `#xxx` / `rgb(...)` / 数值 px（间距 / 圆角 / 阴影）。
 
-## 1.3 Typography（11 个 `.type-*` class）
+## 1.3 Typography（12 个 `.type-*` class）
 
 跟 strict 同套规则：
-- `.type-display` (40/800) / `.type-display-sm` (32/800) / `.type-h1` (30/800) / `.type-kpi` (28/700/mono) / `.type-h2` (20/700) / `.type-h3` (16/600) / `.type-body` (14/400) / `.type-body-sm` (13/400) / `.type-caption` (12/500) / `.type-data` (13/mono) / `.type-table-header` (11/600)
+- `.type-display` (40/800) / `.type-hero-data` (44/700/mono) / `.type-display-sm` (32/800) / `.type-h1` (30/800) / `.type-kpi` (28/700/mono) / `.type-h2` (20/700) / `.type-h3` (16/600) / `.type-body` (14/400) / `.type-body-sm` (13/400) / `.type-caption` (12/500) / `.type-data` (13/mono) / `.type-table-header` (11/600)
 - 业务区 `<main>` **禁止手写** `font-size / font-weight / font-family / line-height`
 - chrome 内置 13 个 class 豁免（详见 design-system/AI-USAGE.md）
 - **audit 跑成 info-only**：`bash scripts/audit-typography.sh variant.html` 输出违规但不阻断生成（你可以在 explore 探索阶段先看构图，后期切回 strict 再清理）
@@ -360,7 +360,7 @@ strict 4 硬约束在 explore 里降为"推荐"：
 - ❌ 硬编码间距 / 圆角 / 阴影 px 数值（必须 `var(--ui-space-*)` / `--ui-radius-*` / `--ui-shadow-*`）
 - ❌ 改 chrome（TopNav / Sidebar / Scenario Switcher / theme toggle）
 - ❌ 自己造 BalanceBox / Logo 占位 / 替代 Scenario Switcher
-- ❌ 手写 `font-size / font-weight / font-family / line-height`（必用 `.type-*`，11 个 class 已覆盖 11-40px 全梯度）
+- ❌ 手写 `font-size / font-weight / font-family / line-height`（必用 `.type-*`，12 个 class 已覆盖 11-44px 全梯度）
 - ❌ 在 `:root` 加无前缀的全局色（业务专用色必须 `--biz-<feature>-<role>-*`）
 
 **违反任一条 = variant 作废**，必须重写或修正。详见 §🚨 Base Spec 红线。
@@ -423,9 +423,9 @@ strict 4 硬约束在 explore 里降为"推荐"：
 
 | 文件 | 何时 Read | 大小 |
 |------|----------|------|
-| `design-system/AI-USAGE.md` | **每次必读** | ~3.5k |
-| `design-system/api-cheatsheet.md` | 用 chrome-mandatory 组件时（HeaderBox / FilterBox / DataTable / I18nField / DetailPage / PageHeader）| ~2k |
-| `agione-console-shell-sample-v1.html` | **永远不 Read**（用 `cp`）| 180k |
+| `design-system/AI-USAGE.md` | **每次必读** | ~13k |
+| `design-system/api-cheatsheet.md` | 用 chrome-mandatory 组件时（HeaderBox / FilterBox / DataTable / I18nField / DetailPage / PageHeader）| ~3k |
+| `agione-console-shell-sample-v1.html` | **永远不 Read**（用 `cp`）| ~210KB / ~75-85k token |
 | `design-system/foundations/**/*.html` | **不 Read**（token / typography 规则已内联在 AI-USAGE）| - |
 | `scripts/audit-typography.sh` | 生成完跑（info-only，不阻断）| - |
 | `scripts/check-explore-variants.sh` | 出完 2-3 variant 跑 | - |

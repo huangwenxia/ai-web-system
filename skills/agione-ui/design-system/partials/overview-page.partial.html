@@ -7,12 +7,12 @@
   必备组件：
   - MainBox (css-pattern)  — 根容器
   - HeaderBox (runtime-component)  — 顶部 title
-  - KpiCard (runtime-component) × 3-4  — 顶部 KPI 行
+  - KpiCard (runtime-component) × 3  — 顶部 KPI 行
   - CardBox (runtime-component) × N  — 分块面板
   - MetricsStrip (runtime-component)  — 横向指标条（可选替代 KpiCard 网格）
 
   布局原则：
-  - 顶部 KPI 行：3-4 个 KpiCard 用 grid-4 排列
+  - 顶部 KPI 行：3 个 KpiCard，用三列排列；≥4 个指标改用 MetricsStrip / KvCard / 表格
   - 中部内容：CardBox 分块，2 列或全宽
 -->
 
@@ -28,8 +28,8 @@
   <el-scrollbar>
     <div class="scroll-box-inner" data-scroll-box data-component="scroll-box">
 
-      <!-- KPI 行：3-4 个核心指标 -->
-      <div class="grid-4" style="margin-bottom: var(--ui-space-xl);">
+      <!-- KPI 行：3 个核心指标 -->
+      <div class="grid-3" style="margin-bottom: var(--ui-space-xl);">
         <KpiCard
           :title="t.kpi1Title"
           value="1,234,567"
@@ -53,14 +53,6 @@
           iconColor="warning"
           trend="-15ms"
           trendType="down"
-        />
-        <KpiCard
-          :title="t.kpi4Title"
-          value="128"
-          icon="users"
-          iconColor="primary"
-          trend="持平"
-          trendType="neutral"
         />
       </div>
 
@@ -107,8 +99,8 @@
 
 <!--
   i18n keys（需在 i18n.zh / i18n.en 各加）：
-  - pageTitle / pageSubtitle / btnRefresh
-  - kpi1Title / kpi2Title / kpi3Title / kpi4Title
+  - pageTitle / btnRefresh
+  - kpi1Title / kpi2Title / kpi3Title
   - cardLeftTitle / cardRightTitle / cardFullTitle
   - chartPlaceholder / tablePlaceholder
 -->

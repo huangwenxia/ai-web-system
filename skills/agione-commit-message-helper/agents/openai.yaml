@@ -1,0 +1,4 @@
+interface:
+  display_name: "AGIOne Commit Message Helper"
+  short_description: "Generate, validate, commit, and push AGIOne code with test-friendly messages"
+  default_prompt: "Use $agione-commit-message-helper before commit or push: inspect staged diffs, infer AGIOne scope/context, validate, and produce a test-friendly Chinese commit message."

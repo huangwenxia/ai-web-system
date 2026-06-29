@@ -14,7 +14,7 @@
 | 颜色 | `var(--ui-color-*)` / `var(--ui-text-*)` / `var(--ui-bg-*)` / `var(--ui-border-*)` | 硬编码 `#xxx` / `rgb()` |
 | 间距 | `var(--ui-space-*)` | 硬编码 px / 数值 |
 | 圆角 / 阴影 / 动效 | `var(--ui-radius-*)` / `var(--ui-shadow-*)` / `var(--ui-motion-*)` | 硬编码 |
-| 字号 / 字重 / 字族 / 行高 | 11 个 `.type-*` class | 手写 `font-size` / `font-weight` / `font-family` / `line-height` |
+| 字号 / 字重 / 字族 / 行高 | 12 个 `.type-*` class | 手写 `font-size` / `font-weight` / `font-family` / `line-height` |
 | Chrome 结构 | shell-sample cp 锁定 | 改 TopNav / Sidebar / Logo / theme toggle 结构 |
 | Scenario Switcher | chrome 自动渲染 chip 在 TopNav 右侧 | 自己造 `.scenario-bar` / `.demo-switcher` |
 | BalanceBox | chrome 常驻，AI 只能设 `balance.value` | 自己写 BalanceBox / 充值按钮 / 余额显示 |
@@ -88,7 +88,7 @@ AI 会收到下述之一：
 │ 2. 所有 <el-form> 必须用 <div class="form-modern"> 包裹       │
 │ 3. 所有 Radio 必须用 4 variant 之一，禁止裸用 <el-radio>      │
 │ 4. 多语言字段必须用 <I18nField>                              │
-│ 5. 字号必须用 .type-* class（11 个），禁止手写 font-size      │
+│ 5. 字号必须用 .type-* class（12 个），禁止手写 font-size      │
 │ 6. 颜色 / 圆角 / 阴影 / 间距 / 动效 必须用 var(--ui-*) token │
 │ 7. 多状态页面必须实现 Scenario Switcher（chrome 自动渲染）    │
 │ 8. BalanceBox chrome 常驻（AI 只设 balance.value）            │
@@ -127,9 +127,9 @@ AI 会收到下述之一：
 | 文件 | AI 何时 Read | 状态 |
 |------|------------|------|
 | `SKILL.md` | skill 加载时自动加载主体 | 已在上下文 |
-| `design-system/AI-USAGE.md`（本文件） | 一次性 | ~3.5k token |
-| `design-system/api-cheatsheet.md` | 用 chrome-mandatory 组件时（HeaderBox / FilterBox / DataTable / I18nField / DetailPage / PageHeader） | ~2k token |
-| `agione-console-shell-sample-v1.html` | **不整文件 Read**；cp 起手 → rg 找 `AGIONE_EDIT_*` 锚点 → Read offset/limit 局部 | 180KB / 局部 ~200-1500 token |
+| `design-system/AI-USAGE.md`（本文件） | 一次性 | ~13k token |
+| `design-system/api-cheatsheet.md` | 用 chrome-mandatory 组件时（HeaderBox / FilterBox / DataTable / I18nField / DetailPage / PageHeader） | ~3k token |
+| `agione-console-shell-sample-v1.html` | **不整文件 Read**；cp 起手 → rg 找 `AGIONE_EDIT_*` 锚点 → Read offset/limit 局部 | ~210KB / ~75-85k token；局部 ~200-1500 token |
 | `design-system/foundations/**/*.html` | 不 Read，规则已内联在本文件 | — |
 
 **explore v2.0 故意没有的文件**（跟 strict 关键差异）：
@@ -142,7 +142,7 @@ AI 会收到下述之一：
 | `components/templates/` | ❌ | 4 个 page partial，引导布局复制 |
 | `agione-design-system.html` | ❌ | 458KB DS 全景，引导整体复制 |
 
-**目标预算**（**经验估算，未实测**）：3 variant 总 ~30-75k token。**取决于 Read 纪律**——如果 AI 偷懒整文件 Read，预算瞬间到 450k+（每个 variant 150k）。详见 SKILL.md §1.1 anchor-driven 协议。
+**目标预算**（**经验估算，未实测**）：3 variant 总 ~30-75k token。**取决于 Read 纪律**——如果 AI 偷懒整文件 Read，预算瞬间到 225-255k+（每个 variant 75-85k）。详见 SKILL.md §1.1 anchor-driven 协议。
 
 ### 🛡️ shell-sample Edit 锚点速查（v2.2 跟随 strict v6.3 · v2.9 实测修数）
 
@@ -167,11 +167,12 @@ AI 会收到下述之一：
 
 ## 🎨 Foundations 内联规则（避免 AI Read 11 个 foundation 文件）
 
-### Typography · 11 个 `.type-*` class（v3.12 P3.3 + v5.1 新增 .type-kpi）
+### Typography · 12 个 `.type-*` class（v3.12 P3.3 + v5.1 新增 .type-kpi + v6.9.1 新增 .type-hero-data）
 
 | Class | 字族 | 字号 / 字重 / 行高 | 用途 |
 |-------|------|-------------------|------|
 | `.type-display` | Manrope | **40 / 800 / 1.15** / -0.5px tracking | dialog 价格 / 营销页 hero / 最大数字展示 |
+| `.type-hero-data` | IBM Plex Mono | **44 / 700 / 1** / -0.04em tracking / tabular-nums | Dashboard `.ds-ov-card` 巨数字，非 dashboard 少用 |
 | `.type-display-sm` | Manrope | **32 / 800 / 1.15** / -0.3px tracking | 较大数字 / 详情页主指标 |
 | `.type-h1` | Manrope | 30 / 800 / 1.2 | 页面主标题 |
 | `.type-kpi` | IBM Plex Mono | **28 / 700 / 1.2** / tabular-nums | **KPI 大数字 / 业务卡焦点数字（v5.1 新增，跟 .kpi-card__value 同值）** |
@@ -183,7 +184,7 @@ AI 会收到下述之一：
 | `.type-data` | IBM Plex Mono | 13 / 400 / 1.5 / tabular-nums | 数字 / 时间 / ID |
 | `.type-table-header` | Inter | 11 / 600 / 1.4 / uppercase / 0.5px tracking | 表头 |
 
-**禁止**：手写 `font-size` / `font-weight` / `line-height` / `font-family`。11 个 class 已覆盖 11-40px 全梯度，**业务区应该没有需要硬编码的场景**。
+**禁止**：手写 `font-size` / `font-weight` / `line-height` / `font-family`。12 个 class 已覆盖 11-44px 全梯度，**业务区应该没有需要硬编码的场景**。
 
 **例外**：仅 shell-sample 内置的 chrome class 豁免（见下节「Chrome 自带 class 字号豁免」完整清单）。
 
@@ -569,9 +570,10 @@ Chrome（shell-sample）会**自动**：
 
 **生成后自检**（Bash）：
 ```bash
-grep -c "demo-mode-chip" prototype.html   # 应得 1（仅 chrome 自带）
-grep -c "demo-banner" prototype.html      # 应得 1（仅 chrome 自带）
-# 若 ≥ 2 或检出其他 .scenario-* / .demo-switcher 类，说明 AI 自己重复造了，必须删除
+grep -c "demo-mode-chip" prototype.html   # 应 ≥ 5（shell-sample chrome baseline）
+grep -c "demo-banner" prototype.html      # 应 ≥ 3（shell-sample chrome baseline）
+# 以 check-prototype.sh 的 baseline 为准：≥ 说明 chrome 机制未被删
+# 如检出自造 .scenario-bar / .demo-switcher / .mode-tabs 类，说明 AI 重复造了切换 UI，必须删除
 ```
 
 **业务语义 banner 例外**：与 scenario 无关的页面级提示（如"普通成员只能看自己的数据"）可以自己做一个**蓝色业务 banner**（区别于 chrome 自带橙色 scenario banner），二者可并存。
@@ -621,7 +623,7 @@ balance.value = null;
 
 ---
 
-## ✅ 输出前 7 项自检（精简版）
+## ✅ 输出前评测（check-prototype.sh 10 项 + explore variant 检查）
 
 **每个 variant 必须过**：
 
@@ -654,9 +656,9 @@ balance.value = null;
 3. cp [skill-dir]/agione-console-shell-sample-v1.html ./{slug}-v3.html
    （[skill-dir] = ~/.claude/skills/agione-ui-explore/）
 
-─── Phase 2: 读规则文档（~5k token）───
-4. Read AI-USAGE.md  (本文件，~3.5k)
-5. [若需 chrome 组件] Read api-cheatsheet.md  (~2k)
+─── Phase 2: 读规则文档（~16k token）───
+4. Read AI-USAGE.md  (本文件，~13k)
+5. [若需 chrome 组件] Read api-cheatsheet.md  (~3k)
 
 ─── ⚠️ explore 故意没有 catalog.md / selection-rules.md / components/ ───
 ─── 因为 explore 是 "自创构图"，不是 "按 DS 选组件" ───
@@ -673,19 +675,19 @@ balance.value = null;
 12. bash scripts/audit-typography.sh {slug}-vN.html   (info-only)
 ```
 
-🔚 **绝对禁止 Read shell-sample-v1.html 整文件**（180KB / ~150k token）。所有 variant 都 cp 自同一份 shell。
+🔚 **绝对禁止 Read shell-sample-v1.html 整文件**（~210KB / ~75-85k token）。所有 variant 都 cp 自同一份 shell。
 
-🔚 **绝对禁止 Write 整个 variant 文件**——只能 Edit 局部。Write 整文件 = output token 浪费 150k+。
+🔚 **绝对禁止 Write 整个 variant 文件**——只能 Edit 局部。Write 整文件 = output token 浪费 75-85k+。
 
 ### Token 成本对照
 
 | 工作流 | 1 variant | 3 variant |
 |---|---|---|
-| ❌ Read shell + Write 整文件 | 300k token | **900k token** |
-| ❌ cp + Write 整文件 | 150k token | 450k token |
+| ❌ Read shell + Write 整文件 | ~150-170k token | **~450-510k token** |
+| ❌ cp + Write 整文件 | ~75-85k token | ~225-255k token |
 | ✅ cp + Edit `<main>` only | ~3k token | **~9k token** |
 
-差异：**100×**。所以 cp + Edit 是 explore L1 铁律。详见 SKILL.md §1.1。
+差异：**25-50×**。所以 cp + Edit 是 explore L1 铁律。详见 SKILL.md §1.1。
 
 ---
 

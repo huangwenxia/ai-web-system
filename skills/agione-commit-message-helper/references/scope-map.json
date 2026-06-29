@@ -1,0 +1,82 @@
+{
+  "repository_fallback_scopes": {
+    "huyijin/project-mamba": {
+      "scope": "mamba",
+      "role": "frontend"
+    },
+    "prod/metis": {
+      "scope": "metis",
+      "role": "backend-core"
+    },
+    "prod/metis-gnosis": {
+      "scope": "gnosis",
+      "role": "backend"
+    },
+    "prod/metis-xcloud": {
+      "scope": "xcloud",
+      "role": "backend"
+    },
+    "prod/metis-hashrate": {
+      "scope": "hashrate",
+      "role": "backend"
+    },
+    "prod/metis-wanmore": {
+      "scope": "wanmore",
+      "role": "backend"
+    },
+    "prod/metis-cbdp": {
+      "scope": "cbdp",
+      "role": "backend"
+    },
+    "prod/metis-influx-sync": {
+      "scope": "influx",
+      "role": "backend"
+    }
+  },
+  "path_scope_rules": [
+    {
+      "scope": "billing",
+      "patterns": ["billing", "bill", "charge", "invoice", "quota", "credit", "balance", "wallet", "order"]
+    },
+    {
+      "scope": "auth",
+      "patterns": ["auth", "login", "logout", "token", "session", "password", "account-recovery", "oauth"]
+    },
+    {
+      "scope": "permission",
+      "patterns": ["permission", "role", "policy", "acl", "access-control", "menu-permission", "rbac"]
+    },
+    {
+      "scope": "dashboard",
+      "patterns": ["dashboard", "chart", "report", "overview", "statistics", "analytics"]
+    },
+    {
+      "scope": "model-service",
+      "patterns": ["model", "provider", "chat-completions", "chatcompletions", "completion", "proxy", "image", "video"]
+    },
+    {
+      "scope": "deployment",
+      "patterns": ["dockerfile", "docker-compose", ".gitlab-ci", "helm", "k8s", "kubernetes", "deploy", "install", "installer"]
+    },
+    {
+      "scope": "config",
+      "patterns": ["config", "configuration", "application.yml", "application.yaml", "application.properties", ".env", "feature-flag"]
+    },
+    {
+      "scope": "test",
+      "patterns": ["test", "spec", "__tests__", "mock", "fixture"]
+    },
+    {
+      "scope": "docs",
+      "patterns": ["docs", "readme", ".md"]
+    }
+  ],
+  "evidence_patterns": {
+    "api": ["api", "controller", "route", "endpoint", "request", "response", "dto"],
+    "config": ["config", "application.yml", "application.yaml", "application.properties", ".env"],
+    "page": ["views", "pages", "router", "components", "layout"],
+    "test": ["test", "spec", "__tests__", "mock", "fixture"],
+    "database": ["migration", "schema", "mapper", "entity", "repository", "sql"],
+    "deployment": ["docker", "helm", "k8s", "kubernetes", "deploy", ".gitlab-ci"]
+  }
+}

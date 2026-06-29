@@ -1,6 +1,6 @@
 # AGIOne UI Skill · AI Usage Protocol
 
-> **AI 必读**：本文件是 agione-ui skill 的简明使用契约。读完它（~8-10k token，v6.8 重新估算）+ catalog.md（~2k）+ api-cheatsheet.md（~1.5k）= 完整生成原型所需上下文。
+> **AI 必读**：本文件是 agione-ui skill 的简明使用契约。具体体积和读取预算以下方「文件加载硬规则」表为准；不要沿用旧版 `~1.5k` / `~8-10k` 估算。
 > 
 > 之所以独立成文：SKILL.md 主体 ~900 行（v6.8），是给设计师/PM/Skill 维护者看的设计原理，AI 不需要读完。
 
@@ -76,7 +76,7 @@ AI 会收到下述之一：
 ┌─ Layer C · selection-rules 决策树 ──────────────────────────┐
 │ 触发：catalog signal = TREE-N                                │
 │ Read design-system/selection-rules.md § N                     │
-│ 11 棵树覆盖 ⓪页面骨架 + ①-⑩ 组件多候选场景                  │
+│ 12 个决策点覆盖 ⓪页面骨架 + ①-⑩ 组件多候选场景 + ⑪ Dashboard │
 │ 走完树 → 终点组件 → 看 api-cheatsheet.md → 用                │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -129,7 +129,7 @@ cp 之后直接 `rg -n "AGIONE_EDIT_" target.html` 即可定位 5 个可改区�
 
 ## 🎨 Foundations 内联规则（避免 AI Read 11 个 foundation 文件）
 
-### Typography · 11 个 `.type-*` class（v3.12 P3.3 + v5.1 新增 .type-kpi）
+### Typography · 12 个 `.type-*` class（v3.12 P3.3 + v5.1 新增 .type-kpi + v6.9.1 新增 .type-hero-data）
 
 | Class | 字族 | 字号 / 字重 / 行高 | 用途 |
 |-------|------|-------------------|------|
@@ -137,6 +137,7 @@ cp 之后直接 `rg -n "AGIONE_EDIT_" target.html` 即可定位 5 个可改区�
 | `.type-display-sm` | Manrope | **32 / 800 / 1.15** / -0.3px tracking | 较大数字 / 详情页主指标 |
 | `.type-h1` | Manrope | 30 / 800 / 1.2 | 页面主标题 |
 | `.type-kpi` | IBM Plex Mono | **28 / 700 / 1.2** / tabular-nums | **KPI 大数字 / 业务卡焦点数字（v5.1 新增，跟 .kpi-card__value 同值）** |
+| `.type-hero-data` | IBM Plex Mono | **44 / 700 / 1** / -0.04em tracking / tabular-nums | Dashboard `.ds-ov-card` 巨数字，非 dashboard 少用 |
 | `.type-h2` | Manrope | 20 / 700 / 1.4 | Section 标题 |
 | `.type-h3` | Inter | 16 / 600 / 1.4 | 卡片 / 弹窗标题 |
 | `.type-body` | Inter | 14 / 400 / 1.6 | 正文（默认） |
@@ -145,7 +146,7 @@ cp 之后直接 `rg -n "AGIONE_EDIT_" target.html` 即可定位 5 个可改区�
 | `.type-data` | IBM Plex Mono | 13 / 400 / 1.5 / tabular-nums | 数字 / 时间 / ID |
 | `.type-table-header` | Inter | 11 / 600 / 1.4 / uppercase / 0.5px tracking | 表头 |
 
-**禁止**：手写 `font-size` / `font-weight` / `line-height` / `font-family`。11 个 class 已覆盖 11-40px 全梯度，**业务区应该没有需要硬编码的场景**。
+**禁止**：手写 `font-size` / `font-weight` / `line-height` / `font-family`。12 个 class 已覆盖 11-44px 全梯度，**业务区应该没有需要硬编码的场景**。
 
 **例外**：仅 shell-sample 内置的 chrome class 豁免（见下节「Chrome 自带 class 字号豁免」完整清单）。
 
@@ -218,7 +219,8 @@ REQ 文档常用自然语言描述字号（"大号字 / 主信息 / 标题"）�
 - 写**纯间距调整 / gap / 一次性 margin** → 用 size scale 也行
 - chrome 内部 CSS 已大量用 size scale，**不要去 rename**（向后兼容）
 
-- 阴影：`--ui-shadow-sm` / `--ui-shadow-md` / `--ui-shadow-lg` / `--ui-shadow-xl`
+- 阴影（对齐 mamba 0.51.8 三档语义）：`--ui-shadow-xs`（输入 / hover 微浮）/ `--ui-shadow-card`（卡片）/ `--ui-shadow-pop`（弹层 · 模态）。旧 `-sm/-md/-lg/-xl` 已映射到这三档、仍可用，**新代码请用语义档**。
+- 信息弱底：`--ui-color-info-subtle`（v6.9.9 补齐，对齐 mamba）——info 蓝灰系的浅底（info banner / tag 底），随主题自动适配；跟 `primary/success/warning/destructive-subtle` 同级。
 - **状态色交互档（v6.9.6 新增 hover/active）**：`success` / `warning` / `destructive` 现在各有 `base` / `-hover` / `-active` 三档（primary 早有），两套主题都定义好了。**做这些色的可点元素（按钮 / 可点行）时，hover 用 `var(--ui-color-<色>-hover)`、按下用 `-active`，别再 `filter:brightness()` 或硬编码**。约定：交互态都往深/浓走（light + dark 一致方向）。`-subtle` 仍是弱底（卡片浅底 / tag 底），不是交互态。
 - 时长：`--ui-duration-fast`(150ms) / `--ui-duration-base`(250ms) / `--ui-duration-slow`(400ms)
 - 缓动：`--ui-ease-out`(进入/hover) / `--ui-ease-in`(退出) / `--ui-ease-in-out`(切换) / `--ui-ease-spring`(强调反馈)
@@ -719,9 +721,10 @@ Chrome（shell-sample）会**自动**：
 
 **生成后自检**（Bash）：
 ```bash
-grep -c "demo-mode-chip" prototype.html   # 应得 1（仅 chrome 自带）
-grep -c "demo-banner" prototype.html      # 应得 1（仅 chrome 自带）
-# 若 ≥ 2 或检出其他 .scenario-* / .demo-switcher 类，说明 AI 自己重复造了，必须删除
+grep -c "demo-mode-chip" prototype.html   # 应 ≥ 5（shell-sample chrome baseline）
+grep -c "demo-banner" prototype.html      # 应 ≥ 3（shell-sample chrome baseline）
+# 以 check-prototype.sh 的 baseline 为准：≥ 说明 chrome 机制未被删
+# 如检出自造 .scenario-bar / .demo-switcher / .mode-tabs 类，说明 AI 重复造了切换 UI，必须删除
 ```
 
 **业务语义 banner 例外**：与 scenario 无关的页面级提示（如"普通成员只能看自己的数据"）可以自己做一个**蓝色业务 banner**（区别于 chrome 自带橙色 scenario banner），二者可并存。
@@ -978,13 +981,21 @@ balance.value = null;
 
 ---
 
-## ✅ 输出前 7 项自检（v6.9 起一条命令跑全部）
+## ✅ 输出前评测（v6.10 起）
 
 ```bash
-bash <skill-dir>/scripts/check-prototype.sh target.html   # 7 项全检，期望 7 pass / 0 fail
+python3 <skill-dir>/scripts/evaluate-prototype.py target.html
 ```
 
-脚本覆盖（人工只需看输出，不用挨条 grep）：
+`evaluate-prototype.py` 会先调用 `check-prototype.sh` 的 10 项硬门槛，再补结构漂移检查：
+
+- 无 `pageSubtitle` / `subtitle` 残留
+- 无自造 `.scenario-bar` / `.demo-switcher` / `.mode-tabs` 等 scenario UI
+- 普通页无 4 个以上 `<KpiCard>` 砌墙（dashboard `.ds-stat-card` 例外）
+- 无 `<CardBox>` 包 `<FilterBox>` / `<KpiCard>` / `<CardBox>`
+- 无裸 `<el-radio>`
+
+底层 `check-prototype.sh` 覆盖（人工只需看输出，不用挨条 grep）：
 
 - [ ] 1 语法纯净：无 React/JSX 残留 / 无 `${...}` / 无 className
 - [ ] 2 Logo 完整：`LOGO_DARK` / `LOGO_LIGHT` 两段 base64 各 ≥ 20000 字符
@@ -993,6 +1004,9 @@ bash <skill-dir>/scripts/check-prototype.sh target.html   # 7 项全检，期望
 - [ ] 5 业务区无硬编码 hex 色（含 SVG fill/stroke 必须走 `var(--ui-color-*)`）
 - [ ] 6 字号走 `.type-*`（委托 audit-typography.sh）
 - [ ] 7 外壳克制（委托 audit-borders.sh）
+- [ ] 8 无副标题（PageHeader / HeaderBox subtitle 已禁）
+- [ ] 9 功能性边框 ≥ 3:1（委托 audit-contrast.sh；文件含 `--ui-border-interactive` 时检查）
+- [ ] 10 键盘焦点环（`:focus-visible` 在 + 无裸 `outline:none`）
 
 脚本测不了、靠人眼/浏览器的 3 条：
 - [ ] 字符串闭合：`:style` 对象引号正确（浏览器 console 无报错即过）
@@ -1005,15 +1019,16 @@ bash <skill-dir>/scripts/check-prototype.sh target.html   # 7 项全检，期望
 
 ```
 1. cp shell-sample-v1.html → target.html
-2. Read AI-USAGE.md  (本文件，~1.5k)
-3. Read catalog.md   (~2.5k)
-4. [若需] Read selection-rules.md § N  (~1k 单棵树)
-5. [若需] Read api-cheatsheet.md  (~1.5k)
+2. Read AI-USAGE.md  (本文件，~21k)
+3. Read catalog.md   (~4.3k)
+4. [若需] Read selection-rules.md § N  (全文件约 ~6k，按章节更少)
+5. [若需] Read api-cheatsheet.md  (~8.3k)
 6. Edit target.html 的 <title>
 7. Edit target.html 的 sidebar 菜单
 8. Edit target.html 的 i18n 对象
 9. Edit target.html 的 <main> 内容（最大工作量）
 10. Edit target.html 的 darkVars / lightVars（仅当需新增 token）
+11. 运行 `python3 <skill-dir>/scripts/evaluate-prototype.py target.html`
 ```
 
 🔚 **不要 Read shell-sample-v1.html 整文件**（约 171KB）。组件 API 看 api-cheatsheet.md，Logo / chrome / theme 由 cp 自动带过来。
@@ -1026,4 +1041,4 @@ bash <skill-dir>/scripts/check-prototype.sh target.html   # 7 项全检，期望
 - **agione-design-system.html** 是给设计师评审的视觉画廊（6544 行 / 458KB）。**AI 永远不该 Read 它**——所有规则已抽取到本目录其他文件
 - **design-system/** 是 AI 选型素材：catalog / selection-rules / api-cheatsheet / foundations / components
 
-完整版规则在 `/SKILL.md`（约 686 行），仅在本文件未覆盖的极少数边界场景时才查阅。
+完整版规则在 `/SKILL.md`（约 886 行），仅在本文件未覆盖的极少数边界场景时才查阅。

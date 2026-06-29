@@ -8,8 +8,8 @@
 <!-- Vue 3 -->
 <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
 <!-- Element Plus -->
-<link rel="stylesheet" href="https://unpkg.com/element-plus@2.9.1/dist/index.css" />
-<script src="https://unpkg.com/element-plus@2.9.1/dist/index.full.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-plus@2.11.5/dist/index.css" />
+<script src="https://unpkg.com/element-plus@2.11.5/dist/index.full.min.js"></script>
 <script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
 <!-- Fonts — jsdelivr (Google Fonts blocked in CN) -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css" />
@@ -49,6 +49,7 @@
   --ui-color-primary-active: #4e36c2;
   --ui-color-primary-subtle: #ece9f9;
   --ui-color-info:        #4a6298;
+  --ui-color-info-subtle: color-mix(in srgb, var(--ui-color-info) 14%, transparent);  /* mamba 0.51.8：随 --ui-color-info 自动适配明暗，无需在 darkVars 重定义 */
   --ui-layout-shell-bg:   linear-gradient(133deg, #daeeff 0%, #f5faff 10%, #f9faff 58%, #fcfcff 100%);
   --ui-bg-disabled:       #fafafb;
   --ui-text-on-brand:   #ffffff;
@@ -88,11 +89,14 @@
   --ui-badge-yellow-bg: #f7f4ea;  --ui-badge-yellow-fg: #7a6228;
   --ui-badge-muted-bg:  var(--ui-bg-muted); --ui-badge-muted-fg: var(--ui-text-muted);
 
-  /* 阴影 */
-  --ui-shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
-  --ui-shadow-md:  0 2px 8px rgba(0,0,0,0.08);
-  --ui-shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
-  --ui-shadow-xl:  0 8px 32px rgba(0,0,0,0.16);
+  /* 阴影 — 对齐 mamba 0.51.8 三档语义（xs 微浮·输入 / card 卡片 / pop 弹层·模态）；旧 sm/md/lg/xl 留作兼容 alias，新代码用语义档 */
+  --ui-shadow-xs:   0 1px 2px rgb(0 0 0 / 4%);
+  --ui-shadow-card: 0 4px 10px rgba(9, 9, 11, .08);
+  --ui-shadow-pop:  0 8px 24px rgba(9, 9, 11, .12);
+  --ui-shadow-sm:  var(--ui-shadow-xs);
+  --ui-shadow-md:  var(--ui-shadow-card);
+  --ui-shadow-lg:  var(--ui-shadow-pop);
+  --ui-shadow-xl:  var(--ui-shadow-pop);
 
   /* 圆角 */
   /* v6.8 加固：跟 mamba-layout 0.50.0 对齐
@@ -201,6 +205,10 @@
   --el-fill-color-light:       var(--ui-accent);
   --el-fill-color:             #f0f0f0;
   --el-color-primary:          var(--ui-color-primary);
+  --el-color-success:          var(--ui-color-success);
+  --el-color-warning:          var(--ui-color-warning);
+  --el-color-danger:           var(--ui-color-destructive);
+  --el-color-info:             var(--ui-color-info);
   --el-disabled-bg-color:      var(--ui-bg-muted);
   --el-disabled-border-color:  var(--ui-border-default);
   --el-mask-color:             rgba(255,255,255,0.9);
@@ -217,6 +225,22 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    ⚠️ 业务区别把 outline 关成 none/0 又不给替代（杀掉键盘可达性，audit 会拦）。 */
 :focus-visible { outline: 2px solid var(--ui-color-primary); outline-offset: 2px; }
 :focus:not(:focus-visible) { outline: none; }
+
+/* ── 实心彩色按钮 dark 深字（方案 A · 字节对齐 project-mamba reset.scss）──
+   dark 模式强调色调亮当填充、白字压不住 → 实心 primary/success/danger 文字翻 #000；
+   plain/link/text 变体仍用强调色。靠 toggleTheme 给 <html> 加的 .dark class 生效，light 不变。 */
+html.dark .el-button.el-button--primary { --el-button-text-color: #000; --el-button-hover-text-color: #000; }
+html.dark .el-button.el-button--primary.is-text,
+html.dark .el-button.el-button--primary.is-link,
+html.dark .el-button.el-button--primary.is-plain { --el-button-text-color: var(--el-color-primary); }
+html.dark .el-button.el-button--success { --el-button-text-color: #000; --el-button-hover-text-color: #000; }
+html.dark .el-button.el-button--success.is-text,
+html.dark .el-button.el-button--success.is-link,
+html.dark .el-button.el-button--success.is-plain { --el-button-text-color: var(--el-color-success); }
+html.dark .el-button.el-button--danger { --el-button-text-color: #000; --el-button-hover-text-color: #000; }
+html.dark .el-button.el-button--danger.is-text,
+html.dark .el-button.el-button--danger.is-link,
+html.dark .el-button.el-button--danger.is-plain { --el-button-text-color: var(--el-color-danger); }
 
 /* ── Typography Utility (v3.10 L1 强制) — 10 个 .type-* class，禁止手写 font-size/weight/line-height ── */
 /* 对应 §2.2 字型层级表；颜色与字型解耦（由 var(--*) token 独立控制） */
@@ -1666,8 +1690,8 @@ const darkVars = {
   '--ui-accent':               '#27272a',
   '--ui-bg-muted':                '#27272a',
   '--ui-text-muted':     '#8b93a5',
-  '--ui-border-soft':         '#323238',
-  '--ui-border-default':               '#27272a',
+  '--ui-border-soft':         '#27272a',
+  '--ui-border-default':               '#323238',
   '--ui-border-strong':        '#52525b',
   '--ui-border-interactive':   '#71717a',  /* v6.9.4 功能性控件边界 WCAG 1.4.11 ≥3:1 · vs #18181b 3.67:1（border-strong #52525b 仅 2.29 不达标）*/
   '--ui-input':                '#18181b',
@@ -1675,7 +1699,7 @@ const darkVars = {
   '--ui-text-secondary':       '#d4d4d8',
   '--ui-text-placeholder':     '#71717a',
   '--ui-text-disabled':        '#71717a',
-  '--ui-color-primary':        '#a89eff',
+  '--ui-color-primary':        '#a99aff',
   '--ui-color-success':       '#4ade80',
   '--ui-color-success-hover':  '#22c55e',
   '--ui-color-success-active': '#16a34a',
@@ -1689,7 +1713,6 @@ const darkVars = {
   '--ui-text-on-brand':       '#f0edf5',
   '--ui-layout-shell-bg':     'linear-gradient(180deg, #09090b 0%, #111114 18%, #09090b 100%)',
   '--ui-bg-disabled':         '#202024',
-  '--el-button-text-color':   '#000',
   '--ui-color-primary-subtle': '#221838',
   '--ui-badge-purple-bg':      '#221838', '--ui-badge-purple-fg': '#9878c8',
   '--ui-badge-blue-bg':        '#1c2438', '--ui-badge-blue-fg':   '#7a9ac8',
@@ -1705,7 +1728,7 @@ const darkVars = {
   '--el-fill-color-light':      '#27272a',
   '--el-fill-color':            '#303030',
   '--el-fill-color-darker':     '#424243',
-  '--el-color-primary':         '#a89eff',
+  '--el-color-primary':         '#a99aff',
   '--el-bg-color-overlay':      '#18181b',
   '--el-disabled-bg-color':     '#1c1c1e',
   '--el-disabled-border-color': '#414243',
@@ -2741,6 +2764,7 @@ const app = createApp({
 
     function toggleTheme() {
       isDark.value = !isDark.value;
+      document.documentElement.classList.toggle('dark', isDark.value);  // 方案 A：实心彩色按钮的 dark 深字规则靠 html.dark 选择器（对齐 project-mamba reset.scss）
       const vars = isDark.value ? darkVars : lightVars;
       Object.entries(vars).forEach(([k, v]) =>
         document.documentElement.style.setProperty(k, v)

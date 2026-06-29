@@ -1,6 +1,6 @@
 ---
 name: agione-ui
-version: 6.9.8
+version: 6.10.1
 description: >
   AGIOne Console UI prototype generator (**strict mode, v6.0+**). Produces single-file
   HTML prototypes that feel like the real product — consistent, professional,
@@ -15,7 +15,7 @@ description: >
   超出 DS / 创新视觉", politely suggest switching to `agione-ui-explore`.
 ---
 
-# AGIOne Console UI Skill — v6.9.8 (Strict-only / Production Aligned · Dashboard chapter)
+# AGIOne Console UI Skill — v6.10.1 (Strict-only / Production Aligned · mamba 0.51.9)
 
 > **设计哲学**
 > 本 skill 分两个层级：
@@ -260,20 +260,20 @@ rg -n "AGIONE_LOGO_DANGER" target.html
 
 ## 1.3 AI 文件加载（Token 关键）
 
-> 🆕 **AI 主路径**：Read `design-system/AI-USAGE.md`（~3.5k token，含 4 层决策流 + Foundations 内联规则 + Scenario 契约 + 自检清单）。**不必读完整 SKILL.md 主体**。本文件主要给 skill 维护者看。
+> 🆕 **AI 主路径**：Read `design-system/AI-USAGE.md`（v6.9 实测约 21k token，含 4 层决策流 + Foundations 内联规则 + Scenario 契约 + 自检清单）。**不必读完整 SKILL.md 主体**。本文件主要给 skill 维护者看。
 
 | 文件 | AI 何时 Read |
 |------|------------|
-| `design-system/AI-USAGE.md` | **每次必读**（~3.5k） |
-| `design-system/catalog.md` | 组件选型时（~2.5k） |
-| `design-system/selection-rules.md § N` | signal=TREE-N 时（~1k / 棵）|
-| `design-system/api-cheatsheet.md` | 选定组件后查 props（~2.5k）|
+| `design-system/AI-USAGE.md` | **每次必读**（~21k） |
+| `design-system/catalog.md` | 组件选型时（~4.3k） |
+| `design-system/selection-rules.md § N` | signal=TREE-N 时（全文件约 ~6k，按章节读更少）|
+| `design-system/api-cheatsheet.md` | 选定组件后查 props（~8.3k）|
 | `agione-console-shell-sample-v1.html` | **永远不 Read**（用 `cp`）|
 | `agione-design-system.html` | **绝对禁读**（458KB / ~150k token） |
 | `design-system/components/**/*.html` | 仅 signal=READ 时（~1-3k / 个）|
 | `design-system/foundations/**/*.html` | 不 Read（已内联 AI-USAGE）|
 
-**单次原型 input 预算**：~15-25k token（vs 旧方案 150k，降 6-10×）。
+**单次原型 input 预算**：典型单页约 45-60k token；dashboard 页型再增加约 17k（`dashboard.md` + `dashboard.partial.html`）。`cp` shell-sample 不进上下文，禁止整文件 Read 仍是节省 token 的关键。
 
 ## 1.4 工程铁律（11 条核心）
 
@@ -308,7 +308,7 @@ rg -n "AGIONE_LOGO_DANGER" target.html
    - ❌ 自己写一个新的 `.scenario-bar` / `.demo-switcher` CSS class
    - ✅ **唯一正确**：`const scenarios = reactive({ normal: {...}, empty: {...}, ... })` —— chrome 自动出 chip + banner
 
-   **可视化验证**：生成完原型后，用 Bash 跑 `grep -c "demo-mode-chip" prototype.html` 应得 1（仅 chrome 自带）；若 ≥ 2 说明 AI 自己重复造了。
+   **可视化验证**：生成完原型后，用评测入口 `python3 scripts/evaluate-prototype.py prototype.html`。底层 shell-sample chrome baseline 为 `demo-mode-chip ≥ 5` / `demo-banner ≥ 3`；这是机制未被删的信号。不要按旧口径 `= 1` 去删 chrome 自带代码。
 
    - **Rule-gap 出口**：如果触发条件满足、但 AI 判断本页 demo Switcher 实际价值低（如 PM 只评审默认态、多状态散焦），可走 §0.4 输出 `rule-gap: §1.4-6` 跳过，但**必须在 AI-NOTES 里说明为什么没价值**。默认行为仍是实现 Switcher，不要因为难就放弃
 7. **真实组件对齐 + data-component 标记** ⚠️
@@ -327,7 +327,7 @@ rg -n "AGIONE_LOGO_DANGER" target.html
     - 详见 `design-system/selection-rules.md § ⑥`
 11. **字体走 `.type-*` utility class** ⚠️（v5.1 加固）
     - **禁止在 `<main>` 业务区手写 `font-size / font-weight / line-height / font-family`**（包括 inline `style="..."` 和自定义 CSS class）
-    - 11 个 class 覆盖 11-40px：`.type-display / display-sm / h1 / kpi / h2 / h3 / body / body-sm / caption / data / table-header`
+    - 12 个 class 覆盖 11-44px：`.type-display / display-sm / h1 / kpi / hero-data / h2 / h3 / body / body-sm / caption / data / table-header`
     - **`.type-kpi`（v5.1 新增，28/700/mono/tabular-nums）** 用于业务卡焦点数字 / KPI 大数字，跟 `.kpi-card__value` 等价
     - 详表见 `design-system/AI-USAGE.md § Typography`
     - **REQ 描述词 → class 映射**（"大号字" / "主信息" / "灰色小字" 等）：见 AI-USAGE.md § Typography 触发词映射表
@@ -512,7 +512,7 @@ const i18n = {
 - 默认用静态 mock（`ref([...])` 硬编码数组），不用 `Math.random()` 作主展示值
 - 复杂格式化（日期 / 金额 / 百分比）提取为 `setup()` 内纯函数，不内联模板
 
-## 1.10 输出前自检清单（7 项，缺一不可）
+## 1.10 输出前评测清单（以 `evaluate-prototype.py` 为入口）
 
 - [ ] **1. 语法纯净**：无 React / JSX 残留
 - [ ] **2. 无 `${...}`** 模板字符串污染
@@ -521,7 +521,7 @@ const i18n = {
 - [ ] **5. Token 覆盖**：颜色 / 间距 / 圆角 / 阴影 / 动效 / 字族 / 图标尺寸 / z-index 全 `var(--*)`，无硬编码
 - [ ] **6. i18n 闭合**：每个语言块 `},` 收尾
 - [ ] **7. Logo 完整**：`LOGO_DARK` / `LOGO_LIGHT` base64 长度均 ≥ 20000
-- [ ] **8. Scenario Switcher**：满足 §1.4-6 触发条件已实现，**且 chip 在 TopNav 右侧（chrome 自动渲染，不在 sidebar / main / page-header）**，Bash 验证：`grep -c demo-mode-chip` 应为 1，`grep -c demo-banner` 应为 1
+- [ ] **8. Scenario Switcher**：满足 §1.4-6 触发条件已实现，**且 chip 在 TopNav 右侧（chrome 自动渲染，不在 sidebar / main / page-header）**。脚本验证：`demo-mode-chip ≥ 5`、`demo-banner ≥ 3`（shell-sample baseline；不要按旧口径 `= 1` 清理 chrome）
 - [ ] **9. 组件按等级使用**：DS catalog 内有的标准组件（`<HeaderBox>` `<KpiCard>` `<DataTable>` `<KvCard>` 等）必用对应标签，禁止重新发明；**但 L3 业务卡自由场景（§1.4-14）豁免** —— catalog 没有的视觉（Sankey / 双轨 Hero / event-stream / quota grid 等）属于合法 L3，**不要为此走 rule-gap**
 - [ ] **10. 多语言字段已用 `<I18nField>`**（v3.10）
 - [ ] **11. Form 已用 `.form-modern` 包裹**（v3.10，无 `<el-form>` 豁免）
@@ -531,6 +531,9 @@ const i18n = {
 **快速验证**：
 
 ```bash
+# 单原型总评测：先跑 check-prototype.sh 10 项，再跑结构漂移检查
+python3 scripts/evaluate-prototype.py file.html
+
 # JS 语法
 sed -n '/<script>/,/<\/script>/p' file.html | sed '1d;$d' | node --check
 
@@ -541,8 +544,9 @@ grep -E "^const LOGO_(DARK|LIGHT)" file.html | awk -F"'" '{print length($2)}'
 # Typography 漂移检测（v5.1 加固）—— 应输出 0 violations
 bash scripts/audit-typography.sh file.html
 
-# Scenario Switcher 唯一性（v3.16）
-grep -c "demo-mode-chip" file.html   # 应为 1（仅 chrome 自带）
+# Scenario Switcher 机制完整性（v6.9 baseline）
+grep -c "demo-mode-chip" file.html   # 应 ≥ 5（shell-sample chrome 自带）
+grep -c "demo-banner" file.html      # 应 ≥ 3（shell-sample chrome 自带）
 ```
 
 ---
@@ -883,4 +887,4 @@ const activeNav = ref('overview');  // 默认页面 key
 
 ---
 
-> **版本**：v3.16 (Rule-gap) · **维护**：所有原型生成相关 AI rules 都在本文 + design-system/。skill 自身维护工作流为 owner 私有，不在仓库内。
+> **版本**：v6.10.0 · **维护**：所有原型生成相关 AI rules 都在本文 + design-system/。skill 自身维护工作流为 owner 私有，不在仓库内。

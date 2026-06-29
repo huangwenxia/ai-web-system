@@ -1,0 +1,4 @@
+interface:
+  display_name: "Call Claude"
+  short_description: "Use Claude CLI for review or explicit fixes"
+  default_prompt: "Use $call-claude to call Claude for adversarial review, or full fix mode only when I explicitly ask Claude to modify files."

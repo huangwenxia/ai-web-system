@@ -291,7 +291,7 @@ cp <skill-dir>/agione-console-shell-sample-v1.html target.html
 # 6. 自检（见下）
 ```
 
-**Dashboard 5 项自检**（在全局 7 项自检之外加测）：
+**Dashboard 5 项自检**（在全局评测（`evaluate-prototype.py`）之外加测）：
 - [ ] 每个 section 有完整 `.ds-section-header`（icon + title + pill）
 - [ ] 每张 chart-card 有 `.ds-type-badge`
 - [ ] KPI 两档未混用；ov-card ≤ 3

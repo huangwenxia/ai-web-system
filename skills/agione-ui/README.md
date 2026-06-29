@@ -1,6 +1,6 @@
 # agione-ui · AGIOne Console UI 原型生成器
 
-> 单文件 HTML 原型生成器：自带 chrome / 双语 (中/EN) / Light&Dark / 38 组件 + 11 设计 token 基础。
+> 单文件 HTML 原型生成器：自带 chrome / 双语 (中/EN) / Light&Dark / 23 个 runtime 组件 + 11 组设计 token 基础。
 > 喂一段需求描述 → 输出可在浏览器直接打开的高保真原型。
 >
 > **v4.0 起 token 命名（`--ui-*`）与生产项目 `mamba-layout` 完全对齐**：原型代码可直接粘贴到 project-mamba 仓库，零 token rename。
@@ -67,7 +67,7 @@ npx skills add http://192.168.31.254:9998/agione/agione-skill.git -g --all -y
                           ↓
 ┌─ Layer C · selection-rules 决策树 ─────────────────────┐
 │ catalog signal=TREE-N 时 Read 对应章节                  │
-│ 10 棵树覆盖所有"同类多候选"场景                          │
+│ 12 个决策点覆盖页面骨架 / 组件多候选 / Dashboard 场景       │
 └─────────────────────────────────────────────────────────┘
                           ↓
        Edit shell-sample.html 的 <main> 区域 + i18n + sidebar
@@ -78,7 +78,7 @@ npx skills add http://192.168.31.254:9998/agione/agione-skill.git -g --all -y
 **关键设计**：
 
 - **Chrome 锁定**：TopBar / Sidebar / Logo / 主题切换 / 双语切换从 shell-sample 字节级复制，零漂移
-- **38 个原子组件**：每个有 frontmatter + CSS + demo + props 签名（AI 不读组件文件，从 catalog + cheatsheet 拿信号就够）
+- **23 个 runtime 组件 + css/EP/partial 索引**：AI 不读组件文件，从 catalog + cheatsheet 拿信号就够
 - **决策机制**：信号 + 决策树 + 反指针（confusable）三层防止 AI 选错
 
 ---
@@ -93,13 +93,14 @@ agione-ui/
 ├── agione-design-system.html         视觉画廊（人看 / AI 禁读）
 ├── design-system/                    AI 选型素材
 │   ├── AI-USAGE.md                   AI 主入口（替代读完整 SKILL.md）
-│   ├── catalog.md                    12 意图桶 × 38 组件索引
-│   ├── selection-rules.md            10 棵决策树
+│   ├── catalog.md                    12 意图桶 × 组件索引
+│   ├── selection-rules.md            12 个决策点
 │   ├── api-cheatsheet.md             23 PrototypeComponents + EP 高频组件签名
 │   ├── index.html                    人类预览导航
 │   ├── foundations/ (11)             token / 字型 / 韵律
 │   └── components/                   L1 (17) · L2 (19) · templates (2)
-└── scripts/                          仅 owner 用，AI 不调用
+├── benchmarks/prompts/               固定回归 prompt（列表/详情/dashboard/表单/多状态/overview/edit）
+└── scripts/                          evaluate-prototype.py 是输出评测入口；check-prototype.sh 是底层总检
 ```
 
 ---
@@ -108,18 +109,18 @@ agione-ui/
 
 ### 单次原型生成消耗多少 token？
 
-**实测 ~15-25k input token / 原型**。
+**典型单页约 45-60k input token / 原型**；dashboard 页型再增加约 17k（`dashboard.md` + `dashboard.partial.html`）。
 
 对比：
 - 旧方案（AI Read 整个 458KB 设计系统）：~150k token
-- v3.12 新方案：~15-25k token
-- **降幅 6-10×**
+- v6.9 新方案：典型 ~45-60k token
+- 关键收益：避免整读设计系统和 shell-sample，尤其避开 75-85k 的 shell-sample 与 150k 的视觉画廊
 
 具体分布：
-- AI-USAGE.md：~3.5k
-- catalog.md：~2.5k
-- api-cheatsheet.md：~2.5k（按需读）
-- selection-rules § N：~1k / 棵树（按需）
+- AI-USAGE.md：~21k
+- catalog.md：~4.3k
+- api-cheatsheet.md：~8.3k（按需读）
+- selection-rules.md：全文件 ~6k，按章节读更少
 - 需求文档（prototype-X.md）：~5-15k（业务文档占比最大）
 - cp shell-sample：**0**（用 bash 命令，不进 AI 上下文）
 
@@ -127,7 +128,7 @@ agione-ui/
 
 那个文件是 6544 行 / 458KB / **~150k token**，是给设计师在浏览器里看的视觉画廊。
 
-AI 真正需要的信息（组件 props / 选型决策 / 设计 token / Badge 词汇）已经全部抽取到 `design-system/` 下的小文件，单次只读相关的几 k 就够。读整个 DS 文件 = 单次烧 150k token 干等同的事。
+AI 真正需要的信息（组件 props / 选型决策 / 设计 token / Badge 词汇）已经抽取到 `design-system/` 下，按任务读取相关文件即可。读整个 DS 文件 = 单次烧 150k token 干等同的事。
 
 ### Skill 怎么保证多原型视觉一致？
 
@@ -140,14 +141,28 @@ AI 真正需要的信息（组件 props / 选型决策 / 设计 token / Badge �
 
 ### 怎么知道生成质量好不好？
 
-3 轮 subagent 实测，对比 10 个历史 prototype baseline：
+先跑可执行评测，不靠人眼审美：
 
-| 指标 | 数据 |
-|------|------|
-| Baseline 历史 prototype 质量分均值 | 64.8 / 100 |
-| v3.12 新流程 3 次实测 | 85.1 / 86.5 / 86.9 |
+```bash
+python3 skills/agione-ui/scripts/evaluate-prototype.py /path/to/prototype.html
+```
 
-**新流程稳定高出 baseline 20 分以上**，6 维客观指标（token 一致性 / class 组合 / chrome 完整 / 禁用图案 / 双语 / Vue 挂载）全过。
+它会先调用 `check-prototype.sh` 的 10 项硬门槛，再额外拦截高频结构漂移：副标题残留、自造 scenario UI、4 个 KpiCard 砌墙、CardBox 包 FilterBox、裸 `<el-radio>` 等。
+
+脚本 `PASS` 后，人只需要确认业务清单：页面/字段/操作/状态/场景/金额单位是否符合需求。批量回归用：
+
+```bash
+bash skills/agione-ui/scripts/evaluate-benchmark-set.sh /tmp/agione-ui-benchmark
+```
+
+固定输入在 `benchmarks/prompts/`，用于每次优化 skill 后复测 7 类典型页面。注意：prompt 只是固定输入，生成 HTML 仍是半自动步骤；先让目标 AI 按 prompt 生成到同一个输出目录，再批量评测。
+
+接受一轮 benchmark 输出后，可以记录 baseline，后续只看新增 findings：
+
+```bash
+bash skills/agione-ui/scripts/evaluate-benchmark-set.sh /tmp/agione-ui-benchmark --write-baseline /tmp/agione-ui-baseline.json
+bash skills/agione-ui/scripts/evaluate-benchmark-set.sh /tmp/agione-ui-benchmark --baseline /tmp/agione-ui-baseline.json
+```
 
 ### 如果生成的 HTML 看着不对？
 
@@ -187,10 +202,11 @@ AI 真正需要的信息（组件 props / 选型决策 / 设计 token / Badge �
 
 ### Skill 多大？AI 加载会卡吗？
 
-skill 本体 ~600KB（含 38 个组件文件 + foundations + 设计系统画廊）。但 AI **每次只加载几 k token**：
+skill 本体约 1.9MB（含组件文件 + foundations + 设计系统画廊）。AI 按需加载运行路径，不应整读视觉画廊或 shell-sample：
 
-- `SKILL.md` ~ 30KB / 686 行（设计哲学 + 铁律，全文加载）
-- 其他都是按需 Read，单次原型一般触发 ~15-25k
+- `SKILL.md` ~ 47KB / 886 行（设计哲学 + 铁律，触发 skill 后加载）
+- `AI-USAGE.md` ~ 66KB / 1030 行（AI 主路径）
+- 单次原型典型输入约 45-60k；dashboard 页型更高
 
 实际感受：触发 skill 后 1-2 秒就开始干活，跟其他 skill 体验一致。
 
@@ -232,4 +248,4 @@ const scenarios = reactive({
 
 - [`SKILL.md`](./SKILL.md) — 完整设计哲学（设计师 / skill 维护者用）
 - [`design-system/AI-USAGE.md`](./design-system/AI-USAGE.md) — AI 主入口（理解 AI 怎么走流程）
-- [`design-system/index.html`](./design-system/index.html) — 浏览器打开看 38 组件画廊
+- [`design-system/index.html`](./design-system/index.html) — 浏览器打开看组件画廊
