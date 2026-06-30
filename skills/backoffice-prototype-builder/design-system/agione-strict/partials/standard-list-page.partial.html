@@ -1,0 +1,95 @@
+<!--
+  Standard List Page · 列表/管理页骨架（v3.14）
+
+  使用：把下面 <!-- BEGIN PARTIAL --> 到 <!-- END PARTIAL --> 之间的内容
+  复制到 cp 出来的 shell-sample 的 <main class="main"> 内。
+
+  必备组件：
+  - MainBox (css-pattern)  — 根容器
+  - HeaderBox (runtime-component)  — 顶部 title + 操作
+  - FilterBox (runtime-component)  — 筛选条
+  - DataTable (runtime-component)  — 表格主体
+  - TableActions (runtime-component)  — 操作列
+  - StatusBadge (runtime-component) / Tag (runtime-component)  — 行内状态
+
+  必需 Vue state（已在 shell-sample setup 内提供）：
+  - dsTableData (Array)  — mock 数据（也可换成业务自己的 ref）
+  - listPage / listPageSize / listTotal  — 分页（自行加 ref）
+-->
+
+<!-- BEGIN PARTIAL -->
+<div class="main-box" data-component="main-box">
+
+  <!-- HeaderBox：title + 右侧操作（v6.9.3 无 subtitle）-->
+  <HeaderBox :title="t.pageTitle">
+    <template #actions>
+      <el-button type="primary"><i data-lucide="plus"></i>{{ t.btnNew }}</el-button>
+      <el-button><i data-lucide="download"></i>{{ t.btnExport }}</el-button>
+    </template>
+
+    <!-- 嵌入 FilterBox -->
+    <FilterBox>
+      <el-input v-model="filterKeyword" :placeholder="t.searchPlaceholder" clearable size="default" style="width: 240px;">
+        <template #prefix><i data-lucide="search"></i></template>
+      </el-input>
+      <el-select v-model="filterStatus" :placeholder="t.statusPlaceholder" clearable size="default" style="width: 160px;">
+        <el-option label="Active" value="active"></el-option>
+        <el-option label="Pending" value="pending"></el-option>
+        <el-option label="Inactive" value="inactive"></el-option>
+      </el-select>
+      <el-button>{{ t.btnReset }}</el-button>
+      <el-button type="primary">{{ t.btnApply }}</el-button>
+    </FilterBox>
+  </HeaderBox>
+
+  <!-- 内容滚动区 -->
+  <el-scrollbar>
+    <div class="scroll-box-inner" data-scroll-box data-component="scroll-box">
+
+      <DataTable
+        :data="dsTableData"
+        :columns="listColumns"
+        :total="dsTableData.length"
+        v-model:page="listPage"
+        :page-size="listPageSize"
+      >
+        <template #status="{ row }">
+          <StatusBadge :status="row.status" />
+        </template>
+        <template #operations="{ row }">
+          <TableActions :actions="rowActions(row)" />
+        </template>
+      </DataTable>
+
+    </div>
+  </el-scrollbar>
+
+</div>
+<!-- END PARTIAL -->
+
+<!--
+  对应 setup() 内补充（已在 shell-sample 内或自行扩展）：
+
+  const listColumns = [
+    { prop: 'name',    label: '租户名称', minWidth: 180 },
+    { prop: 'plan',    label: '套餐',    width: 100 },
+    { prop: 'status',  label: '状态',    width: 100, slot: 'status' },
+    { prop: 'expire',  label: '到期日',  width: 120 },
+    { prop: '_ops',    label: '操作',    width: 160, fixed: 'right', slot: 'operations' },
+  ];
+  const listPage = ref(1);
+  const listPageSize = ref(10);
+  const filterKeyword = ref('');
+  const filterStatus = ref('');
+
+  function rowActions(row) {
+    return [
+      { label: t.value.btnView,   onClick: () => view(row) },
+      { label: t.value.btnDelete, onClick: () => del(row), danger: true },
+    ];
+  }
+
+  对应 i18n keys（需在 i18n.zh / i18n.en 各加）：
+  - pageTitle / btnNew / btnExport / btnReset / btnApply
+  - searchPlaceholder / statusPlaceholder / btnView / btnDelete
+-->

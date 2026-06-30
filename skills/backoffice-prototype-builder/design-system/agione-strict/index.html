@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>AGIOne Design System · 原子化组件画廊</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css">
+<style>
+:root {
+  --ui-bg-page: #fafafa;
+  --ui-sidebar-bg: #ffffff;
+  --ui-text-primary: #09090b;
+  --ui-text-muted: #71717a;
+  --ui-border-default: #e4e4e7;
+  --ui-color-primary: #5f4ecf;
+  --ui-color-primary-subtle: #ece9f9;
+  --ui-accent: #f4f4f5;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: 'Inter Variable', 'PingFang SC', sans-serif;
+  color: var(--ui-text-primary);
+  background: var(--ui-bg-page);
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+aside {
+  width: 280px;
+  background: var(--ui-sidebar-bg);
+  border-right: 1px solid var(--ui-border-default);
+  display: flex;
+  flex-direction: column;
+}
+aside header {
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid var(--ui-border-default);
+}
+aside header h1 {
+  font-family: 'Manrope Variable', Inter, sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  margin: 0 0 4px;
+}
+aside header p {
+  font-size: 11px;
+  color: var(--ui-text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+aside nav {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 0;
+}
+aside nav .group {
+  margin-bottom: 14px;
+}
+aside nav .group-title {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ui-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 20px;
+}
+aside nav .item {
+  display: block;
+  padding: 7px 20px;
+  font-size: 13px;
+  color: var(--ui-text-primary);
+  cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+aside nav .item:hover { background: var(--ui-accent); }
+aside nav .item.is-active {
+  background: var(--ui-color-primary-subtle);
+  color: var(--ui-color-primary);
+  border-left-color: var(--ui-color-primary);
+  font-weight: 600;
+}
+aside nav .item .meta {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  margin-left: 6px;
+  font-weight: 400;
+}
+aside nav .item.is-active .meta { color: var(--ui-color-primary); opacity: 0.7; }
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--ui-bg-page);
+}
+main header {
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--ui-border-default);
+  background: var(--ui-sidebar-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+main header .title {
+  font-size: 14px;
+  font-weight: 600;
+}
+main header .file {
+  font-size: 12px;
+  color: var(--ui-text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+}
+main header a {
+  font-size: 12px;
+  color: var(--ui-color-primary);
+  text-decoration: none;
+  padding: 4px 10px;
+  border: 1px solid var(--ui-border-default);
+  border-radius: 6px;
+  transition: all 120ms;
+}
+main header a:hover { background: var(--ui-color-primary-subtle); border-color: var(--ui-color-primary); }
+iframe {
+  flex: 1;
+  width: 100%;
+  border: none;
+  background: white;
+}
+.empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  gap: 8px;
+}
+.empty .big { font-size: 22px; }
+</style>
+</head>
+<body>
+<aside>
+  <header>
+    <h1>AGIOne Design System</h1>
+    <p>原子化组件画廊 · 仅供人类设计师 / 工程师在浏览器中预览</p>
+  </header>
+  <nav id="nav"></nav>
+</aside>
+<main>
+  <header>
+    <div>
+      <div class="title" id="title">选择左侧组件查看</div>
+      <div class="file" id="file"></div>
+    </div>
+    <a id="raw-link" target="_blank" style="display:none;">查看源文件 ↗</a>
+  </header>
+  <div class="empty" id="empty">
+    <div class="big">👈</div>
+    <div>从左侧选择组件 / 模板查看实际渲染</div>
+    <div style="font-size:11px;margin-top:8px;">原子化目录：<code>design-system/components/{L1,L2,templates}/*.html</code></div>
+  </div>
+  <iframe id="frame" style="display:none;"></iframe>
+</main>
+
+<script>
+// ── file:// 协议探测 ──
+// Chrome / Edge 在 file:// 下禁止 iframe 加载兄弟文件（CORS 安全策略）。
+// 此时降级为「新窗口打开」模式 + 顶部 banner 提示。
+const IS_FILE_PROTOCOL = location.protocol === 'file:';
+if (IS_FILE_PROTOCOL) {
+  const banner = document.createElement('div');
+  banner.style.cssText = 'background: #fef3c7; border-bottom: 1px solid #f59e0b; padding: 10px 20px; font-size: 12px; color: #78350f; line-height: 1.5; flex-shrink: 0;';
+  // 推算 skill 目录路径（去掉 /design-system/index.html 后缀）
+  const skillDir = location.pathname.split('/design-system/')[0] || '.';
+  banner.innerHTML = '<strong>⚠ file:// 模式</strong> · 浏览器禁止 iframe 加载本地兄弟文件，已自动切换为「新窗口打开」模式。<br>'
+    + '想用 iframe 侧栏预览？终端跑：'
+    + '<code style="background:#fde68a;padding:1px 6px;border-radius:3px;font-family:monospace;">python3 -m http.server 5173 --directory ' + skillDir + '</code>'
+    + ' 然后访问 <code>http://localhost:5173/design-system/index.html</code>';
+  document.querySelector('main').prepend(banner);
+}
+
+const COMPONENTS = {
+  '🎨 Foundations · 视觉基础': [
+    ['Colors · 颜色系统', 'foundations/colors.html'],
+    ['Typography · 字型层级', 'foundations/typography.html'],
+    ['Spacing · 间距', 'foundations/spacing.html'],
+    ['Radius · 圆角', 'foundations/radius.html'],
+    ['Shadow · 阴影', 'foundations/shadow.html'],
+    ['Motion · 动效', 'foundations/motion.html'],
+    ['Motion Library · 动画库', 'foundations/motion-library.html'],
+    ['Icons · 图标系统', 'foundations/icons.html'],
+    ['Z-index · 层级', 'foundations/z-index.html'],
+    ['Badge Vocabulary · 语义词汇', 'foundations/badge-vocab.html'],
+    ['Rhythm · 页面韵律', 'foundations/rhythm.html'],
+  ],
+  'L1 · 铁律组件': [
+    ['Alert · 警示条', 'components/L1/alert.html'],
+    ['Avatar · 用户头像', 'components/L1/avatar.html'],
+    ['Breadcrumb · 面包屑', 'components/L1/breadcrumb.html'],
+    ['Button · 按钮', 'components/L1/button.html'],
+    ['CardBox · 通用卡片', 'components/L1/card-box.html'],
+    ['DataTable · 数据表格', 'components/L1/data-table.html'],
+    ['DetailSection · 详情小节', 'components/L1/detail-section.html'],
+    ['EmptyState · 空状态', 'components/L1/empty-state.html'],
+    ['FilterBox · 筛选条', 'components/L1/filter-box.html'],
+    ['HeaderBox · 页面头部', 'components/L1/header-box.html'],
+    ['KpiCard · 数据指标卡', 'components/L1/kpi-card.html'],
+    ['KvCard · 键值描述卡', 'components/L1/kv-card.html'],
+    ['StatusBadge · 状态徽章', 'components/L1/status-badge.html'],
+    ['TableActions · 表格操作列', 'components/L1/table-actions.html'],
+    ['Tabs · 选项卡', 'components/L1/tabs.html'],
+    ['Tag · 标签', 'components/L1/tag.html'],
+    ['UsageBar · 用量进度条', 'components/L1/usage-bar.html'],
+  ],
+  'L2 · 推荐组件': [
+    ['DetailPage · 详情页模板', 'components/L2/detail-page.html'],
+    ['Drawer · 侧抽屉', 'components/L2/drawer.html'],
+    ['Form · 基础表单', 'components/L2/form.html'],
+    ['FormControls · 表单控件', 'components/L2/form-controls.html'],
+    ['FormModern · 现代化表单', 'components/L2/form-modern.html'],
+    ['HeroBand · 营销首屏', 'components/L2/hero-band.html'],
+    ['I18nField · 多语言字段', 'components/L2/i18n-field.html'],
+    ['ListCardItem · 卡片列表项', 'components/L2/list-card-item.html'],
+    ['Loading · 加载', 'components/L2/loading.html'],
+    ['MainBox · 列表页根容器', 'components/L2/main-box.html'],
+    ['MetricsStrip · 指标条带', 'components/L2/metrics-strip.html'],
+    ['Modal · 居中对话框', 'components/L2/modal.html'],
+    ['PageHeader · 详情页顶部', 'components/L2/page-header.html'],
+    ['Popconfirm · 简易确认', 'components/L2/popconfirm.html'],
+    ['RadioVariants · 单选 4 种', 'components/L2/radio-variants.html'],
+    ['StepPills · 紧凑步骤药丸', 'components/L2/step-pills.html'],
+    ['Stepper · 向导步骤', 'components/L2/stepper.html'],
+    ['Tooltip · 悬浮提示', 'components/L2/tooltip.html'],
+    ['Upload · 文件上传', 'components/L2/upload.html'],
+  ],
+  'Templates · 模板': [
+    ['StandardListPage · 标准列表页', 'components/templates/pattern-list.html'],
+    ['OverviewPage · Overview / 仪表盘', 'components/templates/pattern-overview.html'],
+  ],
+  '📋 AI 文档（v3.12）': [
+    ['AI Usage Protocol · AI 入口', 'AI-USAGE.md'],
+    ['Component Catalog · 组件索引', 'catalog.md'],
+    ['Selection Rules · 决策树', 'selection-rules.md'],
+    ['API Cheatsheet · 组件签名表', 'api-cheatsheet.md'],
+  ],
+};
+
+const nav = document.getElementById('nav');
+const frame = document.getElementById('frame');
+const empty = document.getElementById('empty');
+const title = document.getElementById('title');
+const file = document.getElementById('file');
+const rawLink = document.getElementById('raw-link');
+
+let activeEl = null;
+function load(name, path, el) {
+  if (activeEl) activeEl.classList.remove('is-active');
+  el.classList.add('is-active');
+  activeEl = el;
+
+  if (IS_FILE_PROTOCOL) {
+    // file:// 下 iframe 被禁，直接开新窗口
+    window.open(path, '_blank');
+    title.textContent = name + '（已在新窗口打开）';
+    file.textContent = path;
+    rawLink.href = path;
+    rawLink.style.display = 'inline-block';
+    rawLink.textContent = '再次打开 ↗';
+    return;
+  }
+
+  empty.style.display = 'none';
+  frame.style.display = 'block';
+  frame.src = path;
+
+  title.textContent = name;
+  file.textContent = path;
+  rawLink.href = path;
+  rawLink.style.display = 'inline-block';
+  rawLink.textContent = '查看源文件 ↗';
+
+  history.replaceState(null, '', '#' + path);
+}
+
+for (const [group, items] of Object.entries(COMPONENTS)) {
+  const g = document.createElement('div');
+  g.className = 'group';
+  const t = document.createElement('div');
+  t.className = 'group-title';
+  t.textContent = group;
+  g.appendChild(t);
+  for (const [name, path] of items) {
+    const a = document.createElement('div');
+    a.className = 'item';
+    a.innerHTML = `${name}<span class="meta">${path.split('/').pop()}</span>`;
+    a.onclick = () => load(name, path, a);
+    g.appendChild(a);
+  }
+  nav.appendChild(g);
+}
+
+// Restore from hash
+const hash = location.hash.slice(1);
+if (hash) {
+  const items = nav.querySelectorAll('.item');
+  for (const it of items) {
+    if (it.querySelector('.meta').textContent === hash.split('/').pop()) {
+      it.click();
+      break;
+    }
+  }
+}
+</script>
+</body>
+</html>

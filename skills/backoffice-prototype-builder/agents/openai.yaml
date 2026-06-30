@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backoffice Prototype Builder"
+  short_description: "Build generic or AGIOne-strict admin prototypes."
+  default_prompt: "Use $backoffice-prototype-builder with profile=generic-backoffice for a generic admin prototype, or profile=agione-strict for strict AGIOne shell, logo, and PM-review parity."

@@ -1,0 +1,518 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- BACKOFFICE_EDIT_TITLE_START -->
+  <title>Backoffice Prototype</title>
+  <!-- BACKOFFICE_EDIT_TITLE_END -->
+  <!-- BACKOFFICE_EDIT_NOTES_START -->
+  <!--AI-NOTES
+  evidence-status: assumption-based
+  evidence-used:
+    - Shell sample only; replace with real user request, files, screenshots, routes, or APIs.
+  assumptions:
+    - Demo page assumes an API client management list only to illustrate the shell.
+  blocking-questions:
+    - none for shell sample; real prototypes must ask when missing information changes page direction.
+  ia-readiness: ready
+  strong-expression-decision:
+    needed: false
+    reason: Shell sample is a collection management page; it should confirm object state, not infer risk or business health.
+  selected-design-system:
+    name: generic-backoffice
+    mode: bundled-generic
+    switchable: true
+  design-profile:
+    name: generic-backoffice
+    source: assets/backoffice-shell-template.html
+  product-identity:
+    name: generic-backoffice
+    agione-product-shell: false
+  page-subject:
+    type: collection management
+    primary-subject: API clients
+    user-task: Review client access state and open the client that needs action.
+  api-responsibilities:
+    - endpoint: GET /api/clients
+      role: collection/list
+      fields: id, name, owner, status, last_used_at, key_count
+    - endpoint: GET /api/client-summary
+      role: aggregate/metric
+      fields: total, active, expiring_soon, disabled
+  data-assumptions:
+    - Demo values are placeholders in the shell and must be replaced with real or explicitly marked data.
+  project-alignment:
+    - Generic back-office shell tokens are used because no target project design system is provided.
+  AI-NOTES-->
+  <!-- BACKOFFICE_EDIT_NOTES_END -->
+  <style>
+    :root {
+      color-scheme: light;
+      --ui-bg: #f6f7f9;
+      --ui-surface: #ffffff;
+      --ui-surface-soft: #f9fafb;
+      --ui-border: #e2e6ec;
+      --ui-border-strong: #cdd5df;
+      --ui-text: #1f2937;
+      --ui-text-muted: #667085;
+      --ui-text-faint: #98a2b3;
+      --ui-primary: #2563eb;
+      --ui-primary-soft: #eff6ff;
+      --ui-success: #12805c;
+      --ui-success-soft: #eafaf4;
+      --ui-warning: #b54708;
+      --ui-warning-soft: #fff7ed;
+      --ui-danger: #b42318;
+      --ui-danger-soft: #fff1f0;
+      --ui-radius-control: 8px;
+      --ui-radius-card: 10px;
+      --ui-shadow-pop: 0 18px 50px rgba(15, 23, 42, 0.12);
+      --ui-space-inline: 8px;
+      --ui-space-control: 12px;
+      --ui-space-card: 20px;
+      --ui-space-section: 24px;
+      --ui-font-body: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ui-font-heading: Manrope, Inter, ui-sans-serif, system-ui, sans-serif;
+      --ui-font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+      --ui-ease: 150ms ease;
+      --ui-focus: 0 0 0 3px rgba(37, 99, 235, 0.18);
+    }
+
+    [data-theme="dark"] {
+      color-scheme: dark;
+      --ui-bg: #101418;
+      --ui-surface: #171c22;
+      --ui-surface-soft: #1d232b;
+      --ui-border: #2b3440;
+      --ui-border-strong: #3a4553;
+      --ui-text: #eef2f7;
+      --ui-text-muted: #aab4c0;
+      --ui-text-faint: #798491;
+      --ui-primary: #72a7ff;
+      --ui-primary-soft: #152945;
+      --ui-success: #5ed6a3;
+      --ui-success-soft: #122c23;
+      --ui-warning: #f7b267;
+      --ui-warning-soft: #37240f;
+      --ui-danger: #ff8a80;
+      --ui-danger-soft: #3b1817;
+      --ui-shadow-pop: 0 18px 50px rgba(0, 0, 0, 0.36);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      font-family: var(--ui-font-body);
+      background: var(--ui-bg);
+      color: var(--ui-text);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    button, input, select { font: inherit; }
+    button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible {
+      outline: none;
+      box-shadow: var(--ui-focus);
+    }
+    .app {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 248px minmax(0, 1fr);
+    }
+    .sidebar {
+      border-right: 1px solid var(--ui-border);
+      background: var(--ui-surface);
+      padding: var(--ui-space-card);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: var(--ui-space-control);
+      height: 40px;
+      font-family: var(--ui-font-heading);
+      font-weight: 750;
+    }
+    .brand-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--ui-radius-control);
+      background: var(--ui-primary);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+    .nav {
+      margin-top: var(--ui-space-section);
+      display: grid;
+      gap: 4px;
+    }
+    .nav a {
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0 10px;
+      color: var(--ui-text-muted);
+      text-decoration: none;
+      border-radius: var(--ui-radius-control);
+      transition: background var(--ui-ease), color var(--ui-ease);
+    }
+    .nav a[aria-current="page"] {
+      color: var(--ui-text);
+      background: var(--ui-primary-soft);
+    }
+    .content {
+      min-width: 0;
+      display: grid;
+      grid-template-rows: 56px minmax(0, 1fr);
+    }
+    .topbar {
+      border-bottom: 1px solid var(--ui-border);
+      background: color-mix(in srgb, var(--ui-surface) 92%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--ui-space-section);
+    }
+    .topbar-title {
+      color: var(--ui-text-muted);
+      font-size: 13px;
+    }
+    .main {
+      min-width: 0;
+      padding: var(--ui-space-section);
+      overflow: auto;
+    }
+    .page-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--ui-space-card);
+      margin-bottom: var(--ui-space-section);
+    }
+    .eyebrow {
+      color: var(--ui-text-muted);
+      font-size: 12px;
+      font-weight: 650;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    h1 {
+      margin: 4px 0 0;
+      font-family: var(--ui-font-heading);
+      font-size: 24px;
+      line-height: 1.2;
+      letter-spacing: 0;
+    }
+    .actions {
+      display: flex;
+      gap: var(--ui-space-inline);
+      align-items: center;
+    }
+    .button {
+      min-height: 36px;
+      border: 1px solid var(--ui-border-strong);
+      border-radius: var(--ui-radius-control);
+      background: var(--ui-surface);
+      color: var(--ui-text);
+      padding: 0 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: border-color var(--ui-ease), background var(--ui-ease), color var(--ui-ease);
+    }
+    .button.primary {
+      border-color: var(--ui-primary);
+      background: var(--ui-primary);
+      color: white;
+    }
+    .grid {
+      display: grid;
+      gap: var(--ui-space-section);
+    }
+    .summary-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .metric, .panel {
+      background: var(--ui-surface);
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-card);
+    }
+    .metric {
+      padding: 16px;
+      min-height: 108px;
+    }
+    .metric-label {
+      color: var(--ui-text-muted);
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .metric-value {
+      margin-top: 12px;
+      font-family: var(--ui-font-mono);
+      font-size: 28px;
+      font-weight: 750;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .metric-note {
+      margin-top: 10px;
+      color: var(--ui-text-muted);
+      font-size: 12px;
+    }
+    .work-layout {
+      grid-template-columns: minmax(0, 1fr) 320px;
+      align-items: start;
+    }
+    .panel-header {
+      min-height: 52px;
+      padding: 0 var(--ui-space-card);
+      border-bottom: 1px solid var(--ui-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--ui-space-card);
+    }
+    .panel-title {
+      font-family: var(--ui-font-heading);
+      font-weight: 720;
+    }
+    .panel-body { padding: var(--ui-space-card); }
+    .filters {
+      display: flex;
+      gap: var(--ui-space-inline);
+      align-items: center;
+    }
+    .input, .select {
+      min-height: 34px;
+      border: 1px solid var(--ui-border);
+      border-radius: var(--ui-radius-control);
+      background: var(--ui-surface);
+      color: var(--ui-text);
+      padding: 0 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+    th {
+      color: var(--ui-text-muted);
+      font-size: 11px;
+      font-weight: 700;
+      text-align: left;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      padding: 0 14px 10px;
+    }
+    td {
+      border-top: 1px solid var(--ui-border);
+      padding: 13px 14px;
+      vertical-align: middle;
+    }
+    .mono {
+      font-family: var(--ui-font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    .muted { color: var(--ui-text-muted); }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 24px;
+      border-radius: 999px;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 650;
+    }
+    .status.success { color: var(--ui-success); background: var(--ui-success-soft); }
+    .status.warning { color: var(--ui-warning); background: var(--ui-warning-soft); }
+    .status.muted { color: var(--ui-text-muted); background: var(--ui-surface-soft); }
+    .side-list {
+      display: grid;
+      gap: 14px;
+    }
+    .kv {
+      display: grid;
+      gap: 4px;
+    }
+    .kv-label {
+      color: var(--ui-text-muted);
+      font-size: 12px;
+    }
+    .kv-value {
+      font-weight: 650;
+      word-break: break-word;
+    }
+    [data-lucide] {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+    }
+    @media (max-width: 1120px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .summary-grid, .work-layout { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body data-prototype="backoffice" data-design-system="generic-backoffice" data-design-profile="generic-backoffice" data-product-identity="generic-backoffice" data-theme="light">
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">BO</div>
+        <div>Backoffice</div>
+      </div>
+      <!-- BACKOFFICE_EDIT_NAV_START -->
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#" aria-current="page"><i data-lucide="layout-list"></i><span>API Clients</span></a>
+        <a href="#"><i data-lucide="shield-check"></i><span>Policies</span></a>
+        <a href="#"><i data-lucide="activity"></i><span>Audit Events</span></a>
+        <a href="#"><i data-lucide="settings"></i><span>Settings</span></a>
+      </nav>
+      <!-- BACKOFFICE_EDIT_NAV_END -->
+    </aside>
+    <section class="content">
+      <header class="topbar">
+        <div class="topbar-title">Prototype shell · replace demo data before review</div>
+        <div class="actions">
+          <button class="button" type="button" id="themeToggle" aria-label="Toggle theme"><i data-lucide="moon"></i><span>Theme</span></button>
+        </div>
+      </header>
+      <main class="main" data-page-type="collection-management">
+        <!-- BACKOFFICE_EDIT_MAIN_START -->
+        <section class="page-header" data-component="PageHeader">
+          <div>
+            <div class="eyebrow">Access Management</div>
+            <h1>API Clients</h1>
+          </div>
+          <div class="actions">
+            <button class="button" type="button"><i data-lucide="download"></i><span>Export</span></button>
+            <button class="button primary" type="button"><i data-lucide="plus"></i><span>Create Client</span></button>
+          </div>
+        </section>
+
+        <section class="grid summary-grid" aria-label="Client summary">
+          <article class="metric" data-component="MetricsStrip.Item" data-source="GET /api/client-summary.total">
+            <div class="metric-label">Total clients</div>
+            <div class="metric-value" data-source="GET /api/client-summary.total">24</div>
+            <div class="metric-note">Placeholder shell value</div>
+          </article>
+          <article class="metric" data-component="MetricsStrip.Item" data-source="GET /api/client-summary.active">
+            <div class="metric-label">Active</div>
+            <div class="metric-value" data-source="GET /api/client-summary.active">18</div>
+            <div class="metric-note">Operational clients</div>
+          </article>
+          <article class="metric" data-component="MetricsStrip.Item" data-source="GET /api/client-summary.expiring_soon">
+            <div class="metric-label">Expiring soon</div>
+            <div class="metric-value" data-source="GET /api/client-summary.expiring_soon">3</div>
+            <div class="metric-note">Derived by expires_at within 14 days</div>
+          </article>
+          <article class="metric" data-component="MetricsStrip.Item" data-source="GET /api/client-summary.disabled">
+            <div class="metric-label">Disabled</div>
+            <div class="metric-value" data-source="GET /api/client-summary.disabled">3</div>
+            <div class="metric-note">Requires owner review</div>
+          </article>
+        </section>
+
+        <section class="grid work-layout" style="margin-top: var(--ui-space-section);">
+          <article class="panel" data-component="DataTable.Surface" data-source="GET /api/clients">
+            <div class="panel-header">
+              <div class="panel-title">Client list</div>
+              <div class="filters">
+                <input class="input" aria-label="Search clients" placeholder="Search name or owner">
+                <select class="select" aria-label="Status filter">
+                  <option>All status</option>
+                  <option>Active</option>
+                  <option>Expiring soon</option>
+                  <option>Disabled</option>
+                </select>
+              </div>
+            </div>
+            <div class="panel-body" style="padding-left: 0; padding-right: 0;">
+              <table>
+                <thead>
+                  <tr>
+                    <th style="width: 28%;">Client</th>
+                    <th style="width: 18%;">Owner</th>
+                    <th style="width: 18%;">Status</th>
+                    <th style="width: 18%;">Last Used</th>
+                    <th style="width: 18%;">Keys</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr data-source="GET /api/clients[0]">
+                    <td><strong>billing-service</strong><div class="muted mono">cli_10028</div></td>
+                    <td>Finance Ops</td>
+                    <td><span class="status success">Active</span></td>
+                    <td class="mono">2026-06-28</td>
+                    <td class="mono">4</td>
+                  </tr>
+                  <tr data-source="GET /api/clients[1]">
+                    <td><strong>partner-sync</strong><div class="muted mono">cli_10031</div></td>
+                    <td>Integrations</td>
+                    <td><span class="status warning">Expiring soon</span></td>
+                    <td class="mono">2026-06-24</td>
+                    <td class="mono">2</td>
+                  </tr>
+                  <tr data-source="GET /api/clients[2]">
+                    <td><strong>legacy-report</strong><div class="muted mono">cli_10002</div></td>
+                    <td>Data Team</td>
+                    <td><span class="status muted">Disabled</span></td>
+                    <td class="mono">2026-04-11</td>
+                    <td class="mono">1</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </article>
+
+          <aside class="panel" data-component="DetailSection" data-source="GET /api/client-summary">
+            <div class="panel-header">
+              <div class="panel-title">Review focus</div>
+            </div>
+            <div class="panel-body side-list">
+              <div class="kv">
+                <div class="kv-label">Page subject</div>
+                <div class="kv-value">Collection of API clients</div>
+              </div>
+              <div class="kv">
+                <div class="kv-label">Primary task</div>
+                <div class="kv-value">Find clients that need owner action</div>
+              </div>
+              <div class="kv">
+                <div class="kv-label">Strong expression</div>
+                <div class="kv-value">Not required unless risk/impact is returned by an API</div>
+              </div>
+              <div class="kv">
+                <div class="kv-label">Low-frequency detail</div>
+                <div class="kv-value">Raw keys, environment variables, and audit payloads belong in row expansion or drawers</div>
+              </div>
+            </div>
+          </aside>
+        </section>
+        <!-- BACKOFFICE_EDIT_MAIN_END -->
+      </main>
+    </section>
+  </div>
+
+  <!-- BACKOFFICE_EDIT_DATA_START -->
+  <script>
+    const themeToggle = document.getElementById('themeToggle');
+    themeToggle.addEventListener('click', () => {
+      const next = document.body.dataset.theme === 'dark' ? 'light' : 'dark';
+      document.body.dataset.theme = next;
+    });
+  </script>
+  <!-- BACKOFFICE_EDIT_DATA_END -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script>
+    if (window.lucide) {
+      window.lucide.createIcons({ attrs: { 'stroke-width': 1.8 } });
+    }
+  </script>
+</body>
+</html>

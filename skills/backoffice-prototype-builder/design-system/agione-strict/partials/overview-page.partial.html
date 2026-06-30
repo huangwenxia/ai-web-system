@@ -1,0 +1,106 @@
+<!--
+  Overview Page · Dashboard 骨架（v3.14）
+
+  使用：把下面 <!-- BEGIN PARTIAL --> 到 <!-- END PARTIAL --> 之间的内容
+  复制到 cp 出来的 shell-sample 的 <main class="main"> 内。
+
+  必备组件：
+  - MainBox (css-pattern)  — 根容器
+  - HeaderBox (runtime-component)  — 顶部 title
+  - KpiCard (runtime-component) × 3  — 顶部 KPI 行
+  - CardBox (runtime-component) × N  — 分块面板
+  - MetricsStrip (runtime-component)  — 横向指标条（可选替代 KpiCard 网格）
+
+  布局原则：
+  - 顶部 KPI 行：3 个 KpiCard，用三列排列；≥4 个指标改用 MetricsStrip / KvCard / 表格
+  - 中部内容：CardBox 分块，2 列或全宽
+-->
+
+<!-- BEGIN PARTIAL -->
+<div class="main-box" data-component="main-box">
+
+  <HeaderBox :title="t.pageTitle">
+    <template #actions>
+      <el-button><i data-lucide="refresh-cw"></i>{{ t.btnRefresh }}</el-button>
+    </template>
+  </HeaderBox>
+
+  <el-scrollbar>
+    <div class="scroll-box-inner" data-scroll-box data-component="scroll-box">
+
+      <!-- KPI 行：3 个核心指标 -->
+      <div class="grid-3" style="margin-bottom: var(--ui-space-xl);">
+        <KpiCard
+          :title="t.kpi1Title"
+          value="1,234,567"
+          icon="zap"
+          iconColor="primary"
+          trend="+12.5% vs 上周"
+          trendType="up"
+        />
+        <KpiCard
+          :title="t.kpi2Title"
+          value="99.85%"
+          icon="check-circle-2"
+          iconColor="success"
+          trend="+0.12pp"
+          trendType="up"
+        />
+        <KpiCard
+          :title="t.kpi3Title"
+          value="238ms"
+          icon="timer"
+          iconColor="warning"
+          trend="-15ms"
+          trendType="down"
+        />
+      </div>
+
+      <!-- 内容分块：grid-2 两列 -->
+      <div class="grid-2" style="margin-bottom: var(--ui-space-xl);">
+        <CardBox :title="t.cardLeftTitle">
+          <!-- 左侧卡片内容：可放折线图占位 / 列表 / KvCard 等 -->
+          <div style="height: 240px; display: flex; align-items: center; justify-content: center; color: var(--ui-text-muted);">
+            <span>{{ t.chartPlaceholder }}</span>
+          </div>
+        </CardBox>
+
+        <CardBox :title="t.cardRightTitle">
+          <!-- 右侧卡片内容：最近活动列表占位 -->
+          <div class="flex-col" style="gap: var(--ui-space-md);">
+            <div class="flex-row" style="justify-content: space-between;">
+              <span class="type-body-sm">活动占位 1</span>
+              <span class="type-caption" style="color: var(--ui-text-muted);">2 分钟前</span>
+            </div>
+            <div class="flex-row" style="justify-content: space-between;">
+              <span class="type-body-sm">活动占位 2</span>
+              <span class="type-caption" style="color: var(--ui-text-muted);">15 分钟前</span>
+            </div>
+            <div class="flex-row" style="justify-content: space-between;">
+              <span class="type-body-sm">活动占位 3</span>
+              <span class="type-caption" style="color: var(--ui-text-muted);">1 小时前</span>
+            </div>
+          </div>
+        </CardBox>
+      </div>
+
+      <!-- 全宽分块（可选）：复杂表格 / 大图表 -->
+      <CardBox :title="t.cardFullTitle">
+        <div style="height: 320px; display: flex; align-items: center; justify-content: center; color: var(--ui-text-muted);">
+          <span>{{ t.tablePlaceholder }}</span>
+        </div>
+      </CardBox>
+
+    </div>
+  </el-scrollbar>
+
+</div>
+<!-- END PARTIAL -->
+
+<!--
+  i18n keys（需在 i18n.zh / i18n.en 各加）：
+  - pageTitle / btnRefresh
+  - kpi1Title / kpi2Title / kpi3Title
+  - cardLeftTitle / cardRightTitle / cardFullTitle
+  - chartPlaceholder / tablePlaceholder
+-->
