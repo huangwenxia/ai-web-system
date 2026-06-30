@@ -1,0 +1,653 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AGIOne Console - 镜像</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <link rel="stylesheet" href="https://unpkg.com/element-plus@2.9.1/dist/index.css" />
+  <script src="https://unpkg.com/element-plus@2.9.1/dist/index.full.min.js"></script>
+  <script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/400.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <style>
+    :root {
+      --topnav-bg: #1a1025;
+      --topnav-accent: #2d2240;
+      --topnav-fg: #f0edf5;
+      --topnav-muted: #8b7fa0;
+      --topnav-active-bg: #312870;
+      --topnav-active-fg: #c4bdff;
+      --topnav-height: 56px;
+      --sidebar-bg: #fafafa;
+      --sidebar-border: #e4e4e7;
+      --sidebar-fg: #09090b;
+      --sidebar-muted: #71717a;
+      --sidebar-active-bg: #e4e4e7;
+      --sidebar-active-fg: #18181b;
+      --sidebar-width: 256px;
+      --body-bg: #ffffff;
+      --body-radius: 16px 16px 0 0;
+      --color-primary: #5f4ecf;
+      --color-primary-hover: #4a3eb0;
+      --color-primary-active: #3d3399;
+      --color-primary-subtle: #ece9f9;
+      --primary-foreground: #ffffff;
+      --foreground: #09090b;
+      --background: #ffffff;
+      --card: #ffffff;
+      --accent: #f4f4f5;
+      --muted: #f4f4f5;
+      --muted-foreground: #71717a;
+      --border: #e4e4e7;
+      --input: #ffffff;
+      --color-success: #22c55e;
+      --color-warning: #e6a23c;
+      --color-destructive: #ef4444;
+      --color-success-subtle: #ecfdf5;
+      --color-warning-subtle: #fef3c7;
+      --color-destructive-subtle: #fef2f2;
+      --badge-purple-bg: #f2eef8;
+      --badge-purple-fg: #6a4e9a;
+      --badge-blue-bg: #eef1f8;
+      --badge-blue-fg: #4a6298;
+      --badge-green-bg: #eef5f0;
+      --badge-green-fg: #3a7252;
+      --badge-orange-bg: #f8f1ec;
+      --badge-orange-fg: #8a5e38;
+      --badge-muted-bg: var(--muted);
+      --badge-muted-fg: var(--muted-foreground);
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+      --shadow-lg: 0 4px 16px rgba(0,0,0,0.12);
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --radius-2xl: 16px;
+      --radius-pill: 9999px;
+      --font-heading: 'Manrope Variable', Inter, system-ui, sans-serif;
+      --font-base: 'Inter Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+      --duration-fast: 150ms;
+      --duration-base: 250ms;
+      --duration-slow: 400ms;
+      --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+      --avatar-bg: #7c3aed;
+      --ring: #18181b;
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-base: 16px;
+      --space-lg: 20px;
+      --space-xl: 24px;
+      --space-2xl: 32px;
+      --space-3xl: 48px;
+      --z-base: 1;
+      --z-dropdown: 100;
+      --z-sticky: 200;
+      --z-fixed: 300;
+      --z-overlay: 400;
+      --z-modal: 500;
+      --icon-xs: 12px;
+      --icon-sm: 14px;
+      --icon-md: 16px;
+      --icon-lg: 18px;
+      --icon-xl: 20px;
+      --el-border-radius-base: 6px;
+      --el-border-color: var(--border);
+      --el-bg-color: var(--background);
+      --el-bg-color-page: var(--accent);
+      --el-bg-color-overlay: #ffffff;
+      --el-text-color-primary: var(--foreground);
+      --el-text-color-regular: var(--muted-foreground);
+      --el-text-color-secondary: var(--muted-foreground);
+      --el-text-color-placeholder: #a1a1aa;
+      --el-fill-color-blank: var(--input);
+      --el-fill-color-light: var(--accent);
+      --el-fill-color-lighter: #fafafa;
+      --el-color-primary: var(--color-primary);
+      --el-disabled-bg-color: #f5f5f5;
+      --el-disabled-border-color: #e4e4e7;
+      --el-mask-color: rgba(255,255,255,0.9);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body, #app { height: 100%; }
+    body {
+      min-width: 1280px;
+      background: var(--topnav-bg);
+      color: var(--foreground);
+      font-family: var(--font-base);
+      -webkit-font-smoothing: antialiased;
+    }
+    button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+    .app { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    .topnav {
+      height: var(--topnav-height);
+      min-height: var(--topnav-height);
+      background: var(--topnav-bg);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 var(--space-base);
+      gap: var(--space-sm);
+      z-index: var(--z-fixed);
+    }
+    .topnav-left { display: flex; align-items: center; gap: var(--space-md); min-width: 0; }
+    .topnav-right { display: flex; align-items: center; gap: var(--space-sm); flex-shrink: 0; }
+    .nav-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-lg);
+      background: var(--color-primary);
+      color: var(--primary-foreground);
+      display: grid;
+      place-items: center;
+      font-family: var(--font-heading);
+      font-size: 13px;
+      font-weight: 800;
+    }
+    .nav-brand-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--topnav-fg);
+      white-space: nowrap;
+    }
+    .nav-divider { width: 1px; height: 20px; background: var(--topnav-accent); flex-shrink: 0; }
+    .nav-tabs { display: flex; align-items: center; gap: var(--space-xs); }
+    .nav-tab {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--topnav-muted);
+      white-space: nowrap;
+      transition: background var(--duration-fast), color var(--duration-fast);
+    }
+    .nav-tab.active { background: var(--topnav-active-bg); color: var(--topnav-active-fg); }
+    .nav-tab:not(.active):hover { background: rgba(255,255,255,0.06); color: var(--topnav-fg); }
+    .nav-search {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      background: var(--topnav-accent);
+      color: var(--topnav-muted);
+      transition: opacity var(--duration-fast);
+    }
+    .nav-search [data-lucide],
+    .nav-icon-btn [data-lucide] { width: var(--icon-md); height: var(--icon-md); }
+    .nav-search-text { font-size: 13px; }
+    .nav-icon-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--topnav-muted);
+      transition: background var(--duration-fast), color var(--duration-fast);
+    }
+    .nav-icon-btn:hover { background: var(--topnav-accent); color: var(--topnav-fg); }
+    .nav-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-pill);
+      background: var(--avatar-bg);
+      color: var(--primary-foreground);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .body {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      border-radius: var(--body-radius);
+      background: var(--body-bg);
+    }
+    .sidebar {
+      width: var(--sidebar-width);
+      min-width: var(--sidebar-width);
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      padding: var(--space-md);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+    .sidebar-section { margin-bottom: var(--space-xs); }
+    .sidebar-section-title {
+      padding: var(--space-sm) var(--space-sm) var(--space-xs);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--sidebar-muted);
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      width: 100%;
+      padding: 10px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--sidebar-fg);
+      transition: background var(--duration-fast), color var(--duration-fast);
+      white-space: nowrap;
+    }
+    .nav-item [data-lucide] {
+      width: var(--icon-lg);
+      height: var(--icon-lg);
+      color: var(--sidebar-muted);
+      flex-shrink: 0;
+    }
+    .nav-item.active {
+      background: var(--sidebar-active-bg);
+      color: var(--sidebar-active-fg);
+      font-weight: 500;
+    }
+    .nav-item.active [data-lucide] { color: var(--sidebar-active-fg); }
+    .nav-item:not(.active):hover { background: var(--accent); }
+    .main {
+      flex: 1;
+      overflow: auto;
+      background: var(--body-bg);
+    }
+
+    .image-page {
+      min-height: 100%;
+      padding: var(--space-xl);
+      background: linear-gradient(180deg, var(--accent) 0%, var(--background) 54%);
+    }
+    .image-card {
+      min-height: calc(100vh - var(--topnav-height) - var(--space-xl) * 2);
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: var(--card);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    .image-header {
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      background: color-mix(in srgb, var(--card) 94%, var(--color-primary-subtle));
+    }
+    .page-alert {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-base);
+      padding: var(--space-md) var(--space-base);
+      border: 1px solid color-mix(in srgb, var(--color-primary) 16%, var(--border));
+      border-left: 4px solid var(--color-primary);
+      border-radius: var(--radius-lg);
+      background: var(--color-primary-subtle);
+      color: var(--foreground);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    .page-alert [data-lucide] {
+      width: var(--icon-lg);
+      height: var(--icon-lg);
+      margin-top: 1px;
+      color: var(--color-primary);
+      flex-shrink: 0;
+    }
+    .header-main {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-base);
+    }
+    .filter-box {
+      min-width: 0;
+      flex: 1;
+    }
+    .filter-form {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+    .cloud-radio {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 2px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      background: var(--background);
+    }
+    .cloud-radio button {
+      height: 26px;
+      padding: 0 var(--space-md);
+      border-radius: var(--radius-sm);
+      color: var(--muted-foreground);
+      font-size: 13px;
+    }
+    .cloud-radio button.active {
+      background: var(--color-primary);
+      color: var(--primary-foreground);
+      box-shadow: var(--shadow-sm);
+    }
+    .filter-actions,
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+    .header-actions {
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+    .table-area {
+      flex: 1;
+      min-height: 0;
+      padding: var(--space-base);
+    }
+    .table-panel {
+      height: 100%;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      background: var(--card);
+      overflow: hidden;
+    }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      font-size: 13px;
+    }
+    .data-table th {
+      height: 44px;
+      padding: 0 var(--space-base);
+      border-bottom: 1px solid var(--border);
+      background: var(--accent);
+      color: var(--muted-foreground);
+      text-align: left;
+      font-weight: 600;
+    }
+    .data-table td {
+      height: 56px;
+      padding: 0 var(--space-base);
+      border-bottom: 1px solid var(--border);
+      color: var(--foreground);
+      vertical-align: middle;
+    }
+    .data-table tbody tr:nth-child(even) td {
+      background: color-mix(in srgb, var(--accent) 50%, transparent);
+    }
+    .data-table tbody tr:hover td {
+      background: var(--accent);
+    }
+    .mono {
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+    .truncate {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-blue { background: var(--badge-blue-bg); color: var(--badge-blue-fg); }
+    .badge-purple { background: var(--badge-purple-bg); color: var(--badge-purple-fg); }
+    .cloud-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+    .cloud-mark {
+      display: grid;
+      place-items: center;
+      width: 20px;
+      height: 20px;
+      border-radius: var(--radius-md);
+      background: var(--color-primary-subtle);
+      color: var(--color-primary);
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .row-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+    .row-link {
+      color: var(--color-primary);
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .row-link.danger { color: var(--color-destructive); }
+    .pager {
+      display: flex;
+      justify-content: flex-end;
+      padding: 0 var(--space-base) var(--space-base);
+    }
+    .el-button {
+      border-radius: var(--radius-lg);
+      font-weight: 500;
+    }
+    .el-input,
+    .el-select { width: 180px; }
+    .name-input { width: 220px; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const { createApp, nextTick } = Vue;
+
+    const rows = [
+      {
+        name: "vllm:v0.9.1-cuda12.1",
+        category: "公共镜像",
+        categoryClass: "badge-blue",
+        size: "28 GB",
+        path: "eas-registry-vpc.cn-shanghai.cr.aliyuncs.com/pai-eas/vllm:v0.9.1",
+        cloudType: "阿里云",
+        description: "vLLM 推理镜像",
+        createTime: "2026-05-08 14:22:10",
+      },
+      {
+        name: "sglang:v0.4.6-cu124",
+        category: "公共镜像",
+        categoryClass: "badge-blue",
+        size: "31 GB",
+        path: "registry.cn-hangzhou.aliyuncs.com/model-system/sglang:v0.4.6-cu124",
+        cloudType: "阿里云",
+        description: "SGLang 服务镜像",
+        createTime: "2026-05-06 09:18:35",
+      },
+      {
+        name: "llama-factory:latest",
+        category: "私有镜像",
+        categoryClass: "badge-purple",
+        size: "22 GB",
+        path: "swr.cn-east-3.myhuaweicloud.com/model/lm-factory:latest",
+        cloudType: "华为云",
+        description: "训练与微调镜像",
+        createTime: "2026-05-03 18:44:59",
+      },
+      {
+        name: "torchserve:2.4.0",
+        category: "公共镜像",
+        categoryClass: "badge-blue",
+        size: "18 GB",
+        path: "ccr.ccs.tencentyun.com/model-system/torchserve:2.4.0",
+        cloudType: "腾讯云",
+        description: "TorchServe 推理镜像",
+        createTime: "2026-04-29 11:26:41",
+      },
+    ];
+
+    const app = createApp({
+      setup() {
+        nextTick(() => lucide.createIcons());
+        return { rows };
+      },
+      template: `
+        <div class="app">
+          <nav class="topnav" role="navigation" aria-label="Main navigation">
+            <div class="topnav-left">
+              <div class="nav-logo">A</div>
+              <span class="nav-brand-name">AGIOne</span>
+              <div class="nav-divider"></div>
+              <div class="nav-tabs">
+                <button class="nav-tab active">算力服务</button>
+                <button class="nav-tab">资源管理</button>
+                <button class="nav-tab">账单管理</button>
+                <button class="nav-tab">系统管理</button>
+              </div>
+            </div>
+            <div class="topnav-right">
+              <div class="nav-search"><i data-lucide="search"></i><span class="nav-search-text">搜索</span></div>
+              <button class="nav-icon-btn"><i data-lucide="book-open"></i></button>
+              <button class="nav-icon-btn"><i data-lucide="globe"></i></button>
+              <button class="nav-icon-btn"><i data-lucide="sun"></i></button>
+              <div class="nav-avatar">U</div>
+            </div>
+          </nav>
+
+          <div class="body">
+            <aside class="sidebar" role="navigation" aria-label="Sidebar navigation">
+              <div class="sidebar-section">
+                <div class="sidebar-section-title">接入管理</div>
+                <button class="nav-item"><i data-lucide="map"></i>接入地域</button>
+                <button class="nav-item"><i data-lucide="key-round"></i>接入平台账号</button>
+                <button class="nav-item"><i data-lucide="cloud"></i>接入平台</button>
+              </div>
+              <div class="sidebar-section">
+                <div class="sidebar-section-title">模型管理</div>
+                <button class="nav-item"><i data-lucide="box"></i>模型</button>
+                <button class="nav-item"><i data-lucide="layers"></i>框架</button>
+                <button class="nav-item active"><i data-lucide="container"></i>镜像</button>
+                <button class="nav-item"><i data-lucide="tags"></i>标签</button>
+                <button class="nav-item"><i data-lucide="route"></i>策略</button>
+              </div>
+            </aside>
+
+            <main class="main" role="main">
+              <div class="image-page">
+                <section class="image-card">
+                  <header class="image-header">
+                    <div class="page-alert">
+                      <i data-lucide="info"></i>
+                      <span>提供常用多云多地域原生容器镜像资源，可添加后用于推理框架。</span>
+                    </div>
+                    <div class="header-main">
+                      <div class="filter-box">
+                        <div class="filter-form">
+                          <div class="cloud-radio">
+                            <button class="active">全部</button>
+                            <button>阿里云</button>
+                            <button>华为云</button>
+                            <button>腾讯云</button>
+                          </div>
+                          <el-select model-value="" placeholder="地域" clearable>
+                            <el-option label="全部" value=""></el-option>
+                            <el-option label="cn-shanghai" value="cn-shanghai"></el-option>
+                            <el-option label="cn-hangzhou" value="cn-hangzhou"></el-option>
+                          </el-select>
+                          <el-input class="name-input" model-value="" placeholder="名称" clearable></el-input>
+                          <el-select model-value="" placeholder="类型" clearable>
+                            <el-option label="公共镜像" value="public"></el-option>
+                            <el-option label="私有镜像" value="private"></el-option>
+                          </el-select>
+                          <div class="filter-actions">
+                            <el-button>重置</el-button>
+                            <el-button type="primary">搜索</el-button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="header-actions">
+                        <el-button plain type="primary"><i data-lucide="upload" style="width: var(--icon-sm); height: var(--icon-sm); margin-right: var(--space-xs);"></i>导出</el-button>
+                        <el-button plain type="primary"><i data-lucide="download" style="width: var(--icon-sm); height: var(--icon-sm); margin-right: var(--space-xs);"></i>导入</el-button>
+                        <el-button type="primary"><i data-lucide="plus" style="width: var(--icon-sm); height: var(--icon-sm); margin-right: var(--space-xs);"></i>新增</el-button>
+                      </div>
+                    </div>
+                  </header>
+
+                  <div class="table-area">
+                    <div class="table-panel">
+                      <table class="data-table">
+                        <thead>
+                          <tr>
+                            <th style="width: 17%;">名称</th>
+                            <th style="width: 9%;">类型</th>
+                            <th style="width: 8%;">大小</th>
+                            <th style="width: 25%;">路径信息</th>
+                            <th style="width: 10%;">云厂商</th>
+                            <th style="width: 14%;">描述</th>
+                            <th style="width: 12%;">创建时间</th>
+                            <th style="width: 8%;">操作</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr v-for="row in rows" :key="row.name">
+                            <td class="mono truncate">{{ row.name }}</td>
+                            <td><span class="badge" :class="row.categoryClass">{{ row.category }}</span></td>
+                            <td class="mono">{{ row.size }}</td>
+                            <td class="mono truncate">{{ row.path }}</td>
+                            <td>
+                              <span class="cloud-cell"><span class="cloud-mark">{{ row.cloudType.slice(0, 1) }}</span>{{ row.cloudType }}</span>
+                            </td>
+                            <td class="truncate">{{ row.description }}</td>
+                            <td class="mono">{{ row.createTime }}</td>
+                            <td>
+                              <span class="row-actions">
+                                <button class="row-link">编辑</button>
+                                <button class="row-link danger">删除</button>
+                              </span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="pager">
+                    <el-pagination layout="prev, pager, next" :page-size="10" :total="40"></el-pagination>
+                  </div>
+                </section>
+              </div>
+            </main>
+          </div>
+        </div>
+      `,
+    });
+
+    for (const [key, comp] of Object.entries(ElementPlusIconsVue)) {
+      app.component(key, comp);
+    }
+    app.use(ElementPlus);
+    app.mount("#app");
+    lucide.createIcons();
+  </script>
+</body>
+</html>

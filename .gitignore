@@ -35,3 +35,7 @@ Thumbs.db
 /docs/
 .playwright-capture/
 
+# Keep copied prototype/archive artifacts trackable
+!/agione_web_psd/
+!/agione_web_psd/**
+

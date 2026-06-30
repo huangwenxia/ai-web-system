@@ -1,0 +1,1233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>推理框架 - 横向密集行布局</title>
+
+<!-- Vue 3 -->
+<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<!-- Element Plus -->
+<link rel="stylesheet" href="https://unpkg.com/element-plus@2.9.1/dist/index.css" />
+<script src="https://unpkg.com/element-plus@2.9.1/dist/index.full.min.js"></script>
+<script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
+<!-- Fonts -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/400.css" />
+<!-- TailwindCSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Lucide Icons -->
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+<style>
+/* ── Design DNA — §2.1 完整 CSS 变量 ── */
+:root {
+  /* TopBar（永不随主题变化） */
+  --topnav-bg:          #1a1025;
+  --topnav-accent:      #2d2240;
+  --topnav-fg:          #f0edf5;
+  --topnav-muted:       #8b7fa0;
+  --topnav-active-bg:   #312870;
+  --topnav-active-fg:   #c4bdff;
+  --topnav-height:      56px;
+
+  /* Sidebar & Body（Light 默认） */
+  --sidebar-bg:         #fafafa;
+  --sidebar-border:     #e4e4e7;
+  --sidebar-fg:         #09090b;
+  --sidebar-muted:      #71717a;
+  --sidebar-active-bg:  #e4e4e7;
+  --sidebar-active-fg:  #18181b;
+  --sidebar-width:      256px;
+  --body-bg:            #ffffff;
+  --body-radius:        16px 16px 0 0;
+
+  /* 主色 */
+  --color-primary:        #5f4ecf;
+  --color-primary-hover:  #4a3eb0;
+  --color-primary-active: #3d3399;
+  --color-primary-subtle: #ece9f9;
+  --primary-foreground:   #ffffff;
+
+  /* 中性色 */
+  --foreground:           #09090b;
+  --background:           #ffffff;
+  --card:                 #ffffff;
+  --accent:               #f4f4f5;
+  --muted:                #f4f4f5;
+  --muted-foreground:     #71717a;
+  --border:               #e4e4e7;
+  --input:                #ffffff;
+
+  /* 状态色 */
+  --color-success:        #22c55e;
+  --color-warning:        #e6a23c;
+  --color-destructive:    #ef4444;
+
+  /* Badge */
+  --badge-purple-bg: #f2eef8;  --badge-purple-fg: #6a4e9a;
+  --badge-blue-bg:   #eef1f8;  --badge-blue-fg:   #4a6298;
+  --badge-green-bg:  #eef5f0;  --badge-green-fg:  #3a7252;
+  --badge-orange-bg: #f8f1ec;  --badge-orange-fg: #8a5e38;
+  --badge-yellow-bg: #f7f4ea;  --badge-yellow-fg: #7a6228;
+  --badge-muted-bg:  var(--muted); --badge-muted-fg: var(--muted-foreground);
+
+  /* 阴影 */
+  --shadow-sm:  0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md:  0 2px 8px rgba(0,0,0,0.08);
+  --shadow-lg:  0 4px 16px rgba(0,0,0,0.12);
+  --shadow-xl:  0 8px 32px rgba(0,0,0,0.16);
+
+  /* 圆角 */
+  --radius-sm:   4px;
+  --radius-md:   6px;
+  --radius-lg:   8px;
+  --radius-xl:   12px;
+  --radius-2xl:  16px;
+  --radius-pill: 9999px;
+
+  /* 字体 */
+  --font-heading: 'Manrope Variable', Inter, system-ui, sans-serif;
+  --font-base:    'Inter Variable', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono:    'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+  /* 动效 */
+  --duration-fast: 150ms;   /* hover / focus / state */
+  --duration-base: 250ms;   /* card hover / tooltip */
+  --duration-slow: 400ms;   /* drawer / dialog */
+  --ease-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Avatar */
+  --avatar-bg: #7c3aed;
+
+  /* 状态色 Subtle */
+  --color-success-subtle:      #ecfdf5;
+  --color-warning-subtle:      #fef3c7;
+  --color-destructive-subtle:  #fef2f2;
+
+  /* Focus ring */
+  --ring: #18181b;
+
+  /* Spacing 间距（4px 基准网格，语义命名） */
+  --space-xs:   4px;    /* 图标与文字间距、Badge 内边距 */
+  --space-sm:   8px;    /* 行内元素间距、组件 gap */
+  --space-md:   12px;   /* 组件内边距（紧凑）、按钮组 gap */
+  --space-base: 16px;   /* 表格列内边距、表单行间距 */
+  --space-lg:   20px;   /* 卡片内边距 */
+  --space-xl:   24px;   /* 主内容区内边距、Section 间距 */
+  --space-2xl:  32px;   /* 大区块间距 */
+  --space-3xl:  48px;   /* 页面顶部空白 */
+
+  /* Z-index 层级 */
+  --z-base:     1;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-fixed:    300;
+  --z-overlay:  400;
+  --z-modal:    500;
+  --z-popover:  600;
+  --z-toast:    700;
+  --z-tooltip:  800;
+  --z-message:  900;
+
+  /* Icon sizes 图标尺寸 */
+  --icon-xs:   12px;
+  --icon-sm:   14px;
+  --icon-md:   16px;
+  --icon-lg:   18px;
+  --icon-xl:   20px;
+  --icon-2xl:  24px;
+  --icon-3xl:  32px;
+
+  /* Element Plus 兼容 */
+  --el-border-radius-base:     6px;
+  --el-border-color:           var(--border);
+  --el-bg-color:               var(--background);
+  --el-bg-color-page:          var(--accent);
+  --el-bg-color-overlay:       #ffffff;
+  --el-text-color-primary:     var(--foreground);
+  --el-text-color-regular:     var(--muted-foreground);
+  --el-text-color-secondary:   var(--muted-foreground);
+  --el-text-color-placeholder: #a1a1aa;
+  --el-fill-color-blank:       var(--input);
+  --el-fill-color-light:       var(--accent);
+  --el-fill-color:             #f0f0f0;
+  --el-color-primary:          var(--color-primary);
+  --el-disabled-bg-color:      #f5f5f5;
+  --el-disabled-border-color:  #e4e4e7;
+  --el-mask-color:             rgba(255,255,255,0.9);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+a { text-decoration: none; color: inherit; }
+button { font-family: inherit; cursor: pointer; border: none; background: none; }
+
+/* ── App Shell — §3.1 ── */
+html, body {
+  height: 100%;
+  background: var(--topnav-bg);
+  font-family: var(--font-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  border-radius: var(--body-radius);
+  background: var(--body-bg);
+}
+
+.main {
+  flex: 1;
+  overflow: auto;
+  background: var(--body-bg);
+}
+
+/* ── TopBar — §3.2 ── */
+.topnav {
+  height: var(--topnav-height);
+  min-height: var(--topnav-height);
+  background: var(--topnav-bg);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  gap: 8px;
+  z-index: 100;
+}
+.topnav-left  { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.topnav-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+.nav-logo {
+  height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-logo img { height: 28px; width: auto; display: block; }
+
+.nav-brand-name {
+  font-size: 15px; font-weight: 700;
+  color: var(--topnav-fg);
+  white-space: nowrap;
+}
+
+.nav-divider { width: 1px; height: 20px; background: var(--topnav-accent); flex-shrink: 0; }
+
+.nav-tabs { display: flex; align-items: center; gap: 4px; }
+
+.nav-tab {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px; font-weight: 600;
+  color: var(--topnav-muted);
+  white-space: nowrap;
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.nav-tab.active { background: var(--topnav-active-bg); color: var(--topnav-active-fg); }
+.nav-tab:not(.active):hover { background: rgba(255,255,255,0.06); color: var(--topnav-fg); }
+
+.nav-search {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: var(--topnav-accent);
+  cursor: pointer;
+  transition: opacity var(--duration-fast);
+}
+.nav-search:hover { opacity: 0.8; }
+.nav-search [data-lucide] { width: 14px; height: 14px; color: var(--topnav-muted); flex-shrink: 0; }
+.nav-search-text { font-size: 13px; color: var(--topnav-muted); }
+.nav-search-kbd {
+  padding: 2px 6px; border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.1);
+  font-size: 11px; color: var(--topnav-muted);
+}
+
+.nav-icon-btn {
+  width: 30px; height: 30px;
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--topnav-muted);
+  transition: background var(--duration-fast), color var(--duration-fast);
+  flex-shrink: 0;
+}
+.nav-icon-btn:hover { background: var(--topnav-accent); color: var(--topnav-fg); }
+.nav-icon-btn [data-lucide] { width: 16px; height: 16px; }
+
+.nav-avatar {
+  width: 28px; height: 28px;
+  border-radius: var(--radius-pill);
+  background: var(--avatar-bg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: #fff;
+  cursor: pointer; flex-shrink: 0; user-select: none;
+}
+
+/* ── Sidebar — §3.3 ── */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  padding: 12px 12px 16px;
+  display: flex; flex-direction: column; gap: 4px;
+  overflow-y: auto; overflow-x: hidden;
+}
+/* ── Scrollbar（全局） ── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: var(--radius-pill);
+}
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+::-webkit-scrollbar-corner { background: transparent; }
+
+.sidebar-section { margin-bottom: 4px; }
+
+.sidebar-section-title {
+  padding: 8px 8px 4px;
+  font-size: 12px; font-weight: 500;
+  color: var(--sidebar-muted);
+  letter-spacing: 0.01em;
+}
+.sidebar-section + .sidebar-section .sidebar-section-title { padding-top: 12px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 14px; font-weight: 400;
+  color: var(--sidebar-fg);
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+  width: 100%;
+}
+.nav-item [data-lucide] { width: 18px; height: 18px; flex-shrink: 0; color: var(--sidebar-muted); }
+.nav-item.active { background: var(--sidebar-active-bg); font-weight: 500; color: var(--sidebar-active-fg); }
+.nav-item.active [data-lucide] { color: var(--sidebar-active-fg); }
+.nav-item:not(.active):hover { background: var(--accent); }
+
+/* ── Stage（shell-only 空舞台） ── */
+.stage-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+}
+.stage-card {
+  max-width: 480px; width: 100%;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+}
+.stage-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 28px; padding: 0 12px;
+  border-radius: var(--radius-pill);
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  font-size: 12px; font-weight: 600;
+}
+.stage-title {
+  font-family: var(--font-heading);
+  font-size: 26px; font-weight: 800;
+  color: var(--foreground); line-height: 1.2;
+}
+.stage-desc {
+  font-size: 14px; line-height: 1.7;
+  color: var(--muted-foreground);
+}
+.stage-badges {
+  display: flex; flex-wrap: wrap; gap: 8px;
+  justify-content: center; margin-top: 4px;
+}
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 22px; padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 11px; font-weight: 500; letter-spacing: 0.2px;
+}
+.badge-green  { background: var(--badge-green-bg);  color: var(--badge-green-fg); }
+.badge-blue   { background: var(--badge-blue-bg);   color: var(--badge-blue-fg); }
+.badge-purple { background: var(--badge-purple-bg); color: var(--badge-purple-fg); }
+.badge-orange { background: var(--badge-orange-bg); color: var(--badge-orange-fg); }
+
+
+/* Business content: inference framework list prototypes */
+.page {
+  min-height: 100%;
+  padding: var(--space-xl);
+  background: var(--body-bg);
+  color: var(--foreground);
+}
+.page-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+  min-width: 0;
+}
+.notice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  padding: var(--space-md) var(--space-base);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-subtle);
+  color: var(--foreground);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.notice [data-lucide] {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  color: var(--color-primary);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-base);
+  flex-wrap: wrap;
+}
+.filters {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-wrap: wrap;
+}
+.filter-pill {
+  height: 36px;
+  min-width: 132px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--input);
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.filter-pill.search {
+  width: 220px;
+}
+.filter-pill [data-lucide] {
+  width: var(--icon-md);
+  height: var(--icon-md);
+  flex-shrink: 0;
+}
+.btn {
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  background: var(--card);
+  font-size: 13px;
+  font-weight: 500;
+  transition: background var(--duration-fast), color var(--duration-fast), border-color var(--duration-fast);
+}
+.btn.primary {
+  background: var(--color-primary);
+  color: var(--primary-foreground);
+}
+.btn:hover {
+  border-color: var(--color-primary-hover);
+  color: var(--color-primary-hover);
+}
+.btn.primary:hover {
+  background: var(--color-primary-hover);
+  color: var(--primary-foreground);
+}
+.btn [data-lucide] {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+.content-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  overflow: hidden;
+}
+.framework-name {
+  color: var(--foreground);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  min-width: 0;
+}
+.framework-desc {
+  color: var(--muted-foreground);
+  font-size: 13px;
+  line-height: 1.5;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.avatar-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-primary-subtle);
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+.avatar-box [data-lucide] {
+  width: var(--icon-xl);
+  height: var(--icon-xl);
+}
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(138px, 1fr));
+  grid-auto-flow: row dense;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.field {
+  min-width: 0;
+}
+.field-label {
+  color: var(--muted-foreground);
+  font-size: 12px;
+  line-height: 1.35;
+  margin-bottom: var(--space-xs);
+}
+.field-value {
+  color: var(--foreground);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.field-value.mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+.cloud-tag,
+.type-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  max-width: 100%;
+  height: 24px;
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-pill);
+  background: var(--badge-blue-bg);
+  color: var(--badge-blue-fg);
+  font-size: 12px;
+  font-weight: 500;
+}
+.type-tag {
+  background: var(--badge-purple-bg);
+  color: var(--badge-purple-fg);
+}
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: currentColor;
+  flex-shrink: 0;
+}
+.more-btn {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  color: var(--muted-foreground);
+  transition: background var(--duration-fast), color var(--duration-fast);
+}
+.more-btn:hover {
+  background: var(--accent);
+  color: var(--foreground);
+}
+.more-btn [data-lucide] {
+  width: var(--icon-md);
+  height: var(--icon-md);
+}
+.action-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  flex-wrap: wrap;
+}
+.action-link {
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-sm);
+  border-radius: var(--radius-md);
+  color: var(--muted-foreground);
+  font-size: 12px;
+}
+.action-link:hover {
+  background: var(--accent);
+  color: var(--color-primary);
+}
+.action-link.danger:hover {
+  color: var(--color-destructive);
+}
+.action-link [data-lucide] {
+  width: var(--icon-sm);
+  height: var(--icon-sm);
+}
+.pagination {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: 0 var(--space-base);
+  border-top: 1px solid var(--border);
+  color: var(--muted-foreground);
+  font-size: 13px;
+}
+.pager {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+.page-no {
+  min-width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--foreground);
+  font-size: 13px;
+}
+.page-no.active {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--primary-foreground);
+}
+
+.layout-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  grid-auto-flow: row dense;
+  gap: var(--space-base);
+  padding: var(--space-base);
+}
+.framework-card {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-base);
+  padding: var(--space-lg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--card);
+  transition: border-color var(--duration-fast), box-shadow var(--duration-fast);
+}
+.framework-card:hover {
+  border-color: var(--color-primary);
+  box-shadow: var(--shadow-md);
+}
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.card-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+
+.layout-rows {
+  display: flex;
+  flex-direction: column;
+}
+.framework-row {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(420px, 2fr) auto;
+  gap: var(--space-base);
+  align-items: center;
+  padding: var(--space-base);
+  border-bottom: 1px solid var(--border);
+}
+.framework-row:last-child {
+  border-bottom: none;
+}
+.row-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.row-fields {
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+}
+
+.layout-matrix {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-auto-flow: row dense;
+  gap: var(--space-base);
+  padding: var(--space-base);
+}
+.matrix-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-base);
+  padding: var(--space-lg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(0deg, var(--card), var(--card));
+}
+.matrix-top {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-md);
+  align-items: flex-start;
+}
+.matrix-fields {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  padding-top: var(--space-base);
+  border-top: 1px solid var(--border);
+}
+
+.layout-table {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.1fr) repeat(5, minmax(128px, 1fr)) minmax(126px, auto);
+  min-width: 1080px;
+}
+.table-scroll {
+  overflow: auto;
+}
+.table-head,
+.table-cell {
+  padding: var(--space-md) var(--space-base);
+  border-bottom: 1px solid var(--border);
+  min-width: 0;
+}
+.table-head {
+  background: var(--accent);
+  color: var(--muted-foreground);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+.table-cell {
+  display: flex;
+  align-items: center;
+  min-height: 64px;
+  color: var(--foreground);
+  font-size: 13px;
+}
+.table-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  min-width: 0;
+}
+.table-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 1280px) {
+  .sidebar {
+    display: none;
+  }
+  .framework-row {
+    grid-template-columns: 1fr;
+  }
+  .action-menu {
+    justify-content: flex-start;
+  }
+}
+
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const { createApp, ref, computed, nextTick } = Vue;
+
+const darkVars = {
+  '--sidebar-bg':           '#18181b',
+  '--sidebar-border':       '#27272a',
+  '--sidebar-fg':           '#fafafa',
+  '--sidebar-muted':        '#a1a1aa',
+  '--sidebar-active-bg':    '#27272a',
+  '--sidebar-active-fg':    '#fafafa',
+  '--body-bg':              '#09090b',
+  '--background':           '#09090b',
+  '--card':                 '#18181b',
+  '--accent':               '#27272a',
+  '--muted':                '#27272a',
+  '--muted-foreground':     '#a1a1aa',
+  '--border':               '#27272a',
+  '--input':                '#18181b',
+  '--foreground':           '#fafafa',
+  '--color-primary':        '#7c6ff7',
+  '--color-primary-subtle': '#221838',
+  '--badge-purple-bg':      '#221838', '--badge-purple-fg': '#9878c8',
+  '--badge-blue-bg':        '#1c2438', '--badge-blue-fg':   '#7a9ac8',
+  '--badge-green-bg':       '#1a2820', '--badge-green-fg':  '#5a9272',
+  '--badge-orange-bg':      '#2a1c12', '--badge-orange-fg': '#b07848',
+  '--badge-yellow-bg':      '#261e0c', '--badge-yellow-fg': '#a08838',
+  '--el-border-color':      '#27272a',
+  '--el-bg-color':          '#09090b',
+  '--el-bg-color-page':     '#27272a',
+  '--el-text-color-primary':  '#fafafa',
+  '--el-text-color-regular':  '#a1a1aa',
+  '--el-fill-color-blank':      '#18181b',
+  '--el-fill-color-light':      '#27272a',
+  '--el-fill-color':            '#303030',
+  '--el-fill-color-darker':     '#424243',
+  '--el-color-primary':         '#7c6ff7',
+  '--el-bg-color-overlay':      '#1d1d1f',
+  '--el-disabled-bg-color':     '#1c1c1e',
+  '--el-disabled-border-color': '#414243',
+  '--el-mask-color':            'rgba(0,0,0,0.8)',
+  '--ring':                     '#d4d4d8',
+  '--color-success-subtle':     '#052e16',
+  '--color-warning-subtle':     '#2a1a00',
+  '--color-destructive-subtle': '#2a0a0a',
+};
+const lightVars = {
+  '--sidebar-bg':           '#fafafa',
+  '--sidebar-border':       '#e4e4e7',
+  '--sidebar-fg':           '#09090b',
+  '--sidebar-muted':        '#71717a',
+  '--sidebar-active-bg':    '#e4e4e7',
+  '--sidebar-active-fg':    '#18181b',
+  '--body-bg':              '#ffffff',
+  '--background':           '#ffffff',
+  '--card':                 '#ffffff',
+  '--accent':               '#f4f4f5',
+  '--muted':                '#f4f4f5',
+  '--muted-foreground':     '#71717a',
+  '--border':               '#e4e4e7',
+  '--input':                '#ffffff',
+  '--foreground':           '#09090b',
+  '--color-primary':        '#5f4ecf',
+  '--color-primary-subtle': '#ece9f9',
+  '--badge-purple-bg':      '#f2eef8', '--badge-purple-fg': '#6a4e9a',
+  '--badge-blue-bg':        '#eef1f8', '--badge-blue-fg':   '#4a6298',
+  '--badge-green-bg':       '#eef5f0', '--badge-green-fg':  '#3a7252',
+  '--badge-orange-bg':      '#f8f1ec', '--badge-orange-fg': '#8a5e38',
+  '--badge-yellow-bg':      '#f7f4ea', '--badge-yellow-fg': '#7a6228',
+  '--el-border-color':      '#e4e4e7',
+  '--el-bg-color':          '#ffffff',
+  '--el-bg-color-page':     '#f4f4f5',
+  '--el-text-color-primary':  '#09090b',
+  '--el-text-color-regular':  '#71717a',
+  '--el-fill-color-blank':      '#ffffff',
+  '--el-fill-color-light':      '#f4f4f5',
+  '--el-fill-color':            '#f0f0f0',
+  '--el-color-primary':         '#5f4ecf',
+  '--el-bg-color-overlay':      '#ffffff',
+  '--el-disabled-bg-color':     '#f5f5f5',
+  '--el-disabled-border-color': '#e4e4e7',
+  '--el-mask-color':            'rgba(255,255,255,0.9)',
+  '--ring':                     '#18181b',
+  '--color-success-subtle':     '#ecfdf5',
+  '--color-warning-subtle':     '#fef3c7',
+  '--color-destructive-subtle': '#fef2f2',
+};
+
+const i18n = {
+  zh: {
+    tabs: ['模型服务', 'AI 基础设施', '财务', '用户空间'],
+    search: '搜索',
+    discover: '发现',
+    models: '模型广场',
+    playground: 'Playground',
+    apiKeys: 'API 密钥',
+    docs: '文档',
+    appLabel: '应用',
+    text: '文本',
+    images: '图像',
+    video: '视频',
+    audio: '音频',
+    management: '管理',
+    myModels: '我的模型',
+    knowledge: '知识库',
+    tools: '工具',
+    alert: '支持多云商镜像上架、主/子节点启动命令等灵活配置，可在模型库-添加模型时进行添加使用。',
+    export: '导出',
+    import: '导入',
+    addFramework: '添加框架',
+    cloudPlatform: '云平台',
+    all: '全部',
+    region: '地域',
+    frameworkName: '框架名称',
+    frameworkType: '框架类型',
+    latestVersion: '最新版本',
+    cloudProvider: '云厂商',
+    creationTime: '创建时间',
+    addVersion: '新增版本',
+    edit: '编辑',
+    uninstall: '卸载',
+    pageSummary: '共 6 项，当前 1-6',
+  },
+  en: {
+    tabs: ['Model Services', 'AI Infrastructure', 'Finance', 'User Space'],
+    search: 'Search',
+    discover: 'Discover',
+    models: 'Models',
+    playground: 'Playground',
+    apiKeys: 'API Keys',
+    docs: 'Documentation',
+    appLabel: 'Playground',
+    text: 'Text',
+    images: 'Images',
+    video: 'Video',
+    audio: 'Audio',
+    management: 'Management',
+    myModels: 'My Models',
+    knowledge: 'Knowledge Bases',
+    tools: 'Tools',
+    alert: 'Supports flexible configurations such as multi-cloud image deployment, master/worker node startup commands, etc., which can be added and used when adding models in the model library.',
+    export: 'Export',
+    import: 'Import',
+    addFramework: 'Add Framework',
+    cloudPlatform: 'Cloud Platform',
+    all: 'All',
+    region: 'Region',
+    frameworkName: 'Framework Name',
+    frameworkType: 'Framework Type',
+    latestVersion: 'Latest Version',
+    cloudProvider: 'Cloud Provider',
+    creationTime: 'Creation Time',
+    addVersion: 'Add Version',
+    edit: 'Edit',
+    uninstall: 'Uninstall',
+    pageSummary: 'Showing 1-6 of 6 items',
+  },
+};
+
+const LOGO_DARK  = 'data:image/png;base64,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';
+
+const variant = 'rows';
+
+const frameworks = [
+  { name: 'vLLM', description: 'OpenAI-compatible high-throughput inference server', latestVersion: 'v0.9.1', cloudType: 'Aliyun', regionId: 'cn-shanghai', frameworkType: 'LLM', createTime: '2026-04-22 10:18:36' },
+  { name: 'Triton Inference Server', description: 'Multi-framework GPU inference serving runtime', latestVersion: '24.12', cloudType: 'AWS', regionId: 'us-east-1', frameworkType: 'Triton', createTime: '2026-04-19 15:42:08' },
+  { name: 'TensorRT-LLM', description: 'Optimized NVIDIA inference runtime for transformer models', latestVersion: '0.18.0', cloudType: 'Huawei Cloud', regionId: 'cn-north-4', frameworkType: 'LLM', createTime: '2026-04-12 09:31:27' },
+  { name: 'SGLang', description: 'Structured generation serving framework for large language models', latestVersion: '0.4.6', cloudType: 'Tencent Cloud', regionId: 'ap-guangzhou', frameworkType: 'LLM', createTime: '2026-03-30 18:06:11' },
+  { name: 'Ray Serve', description: 'Scalable model serving framework for distributed workloads', latestVersion: '2.44.1', cloudType: 'Aliyun', regionId: 'cn-beijing', frameworkType: 'Distributed', createTime: '2026-03-24 11:55:49' },
+  { name: 'TorchServe', description: 'PyTorch model serving with versioned handlers and metrics', latestVersion: '0.12.0', cloudType: 'AWS', regionId: 'ap-southeast-1', frameworkType: 'PyTorch', createTime: '2026-03-16 13:24:02' },
+];
+
+const app = createApp({
+  setup() {
+    const isDark = ref(false);
+    const lang = ref('zh');
+    const activeTab = ref(0);
+    const activeNav = ref('models');
+    const t = computed(() => i18n[lang.value]);
+    const logoSrc = computed(() => LOGO_DARK);
+    const fieldList = computed(() => [
+      { label: t.value.latestVersion, key: 'latestVersion', mono: true },
+      { label: t.value.cloudProvider, key: 'cloudType', cloud: true },
+      { label: t.value.region, key: 'regionId', mono: true },
+      { label: t.value.frameworkType, key: 'frameworkType', type: true },
+      { label: t.value.creationTime, key: 'createTime', mono: true },
+    ]);
+
+    function toggleTheme() {
+      isDark.value = !isDark.value;
+      const vars = isDark.value ? darkVars : lightVars;
+      Object.entries(vars).forEach(([k, v]) => document.documentElement.style.setProperty(k, v));
+      nextTick(() => lucide.createIcons());
+    }
+
+    function toggleLang() {
+      lang.value = lang.value === 'en' ? 'zh' : 'en';
+      nextTick(() => lucide.createIcons());
+    }
+
+    return { isDark, lang, activeTab, activeNav, t, logoSrc, frameworks, fieldList, variant, toggleTheme, toggleLang };
+  },
+
+  template: `
+    <div class="app">
+      <nav class="topnav" role="navigation" aria-label="Main navigation">
+        <div class="topnav-left">
+          <a class="nav-logo" href="#" aria-label="AGIOne">
+            <img :src="logoSrc" alt="AGIOne" />
+          </a>
+          <span class="nav-brand-name">AGIOne</span>
+          <div class="nav-divider" aria-hidden="true"></div>
+          <div class="nav-tabs" role="tablist">
+            <button
+              v-for="(tab, i) in t.tabs" :key="i"
+              class="nav-tab" :class="{ active: activeTab === i }"
+              role="tab" :aria-selected="String(activeTab === i)"
+              @click="activeTab = i"
+            >{{ tab }}</button>
+          </div>
+        </div>
+        <div class="topnav-right">
+          <div class="nav-search" role="search" tabindex="0">
+            <i data-lucide="search"></i>
+            <span class="nav-search-text">{{ t.search }}</span>
+            <span class="nav-search-kbd">Ctrl+K</span>
+          </div>
+          <button class="nav-icon-btn" :title="t.docs">
+            <i data-lucide="book-open"></i>
+          </button>
+          <button class="nav-icon-btn" title="Language" @click="toggleLang">
+            <i data-lucide="globe"></i>
+          </button>
+          <button class="nav-icon-btn" title="Toggle theme" @click="toggleTheme" aria-label="Toggle color theme">
+            <i :data-lucide="isDark ? 'moon' : 'sun'"></i>
+          </button>
+          <div class="nav-avatar" role="button" tabindex="0" aria-label="User menu">U</div>
+        </div>
+      </nav>
+
+      <div class="body">
+        <aside class="sidebar" role="navigation" aria-label="Sidebar navigation">
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">{{ t.discover }}</div>
+            <button class="nav-item" :class="{ active: activeNav === 'models' }" @click="activeNav = 'models'">
+              <i data-lucide="compass"></i>{{ t.models }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'playground' }" @click="activeNav = 'playground'">
+              <i data-lucide="square-terminal"></i>{{ t.playground }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'apikeys' }" @click="activeNav = 'apikeys'">
+              <i data-lucide="key"></i>{{ t.apiKeys }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'docs' }" @click="activeNav = 'docs'">
+              <i data-lucide="book-open"></i>{{ t.docs }}
+            </button>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">{{ t.appLabel }}</div>
+            <button class="nav-item" :class="{ active: activeNav === 'text' }" @click="activeNav = 'text'">
+              <i data-lucide="message-square"></i>{{ t.text }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'images' }" @click="activeNav = 'images'">
+              <i data-lucide="image"></i>{{ t.images }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'video' }" @click="activeNav = 'video'">
+              <i data-lucide="video"></i>{{ t.video }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'audio' }" @click="activeNav = 'audio'">
+              <i data-lucide="headphones"></i>{{ t.audio }}
+            </button>
+          </div>
+
+          <div class="sidebar-section">
+            <div class="sidebar-section-title">{{ t.management }}</div>
+            <button class="nav-item" :class="{ active: activeNav === 'mymodels' }" @click="activeNav = 'mymodels'">
+              <i data-lucide="cpu"></i>{{ t.myModels }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'knowledge' }" @click="activeNav = 'knowledge'">
+              <i data-lucide="database"></i>{{ t.knowledge }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'tools' }" @click="activeNav = 'tools'">
+              <i data-lucide="wrench"></i>{{ t.tools }}
+            </button>
+          </div>
+        </aside>
+
+        <main class="main" role="main">
+          <div class="page">
+            <div class="page-shell">
+              <div class="notice">
+                <i data-lucide="info"></i>
+                <div>{{ t.alert }}</div>
+              </div>
+
+              <div class="toolbar">
+                <div class="filters">
+                  <div class="filter-pill"><i data-lucide="cloud"></i><span>{{ t.cloudPlatform }}: {{ t.all }}</span></div>
+                  <div class="filter-pill"><i data-lucide="map-pin"></i><span>{{ t.region }}</span></div>
+                  <div class="filter-pill search"><i data-lucide="search"></i><span>{{ t.frameworkName }}</span></div>
+                  <div class="filter-pill"><i data-lucide="layers-3"></i><span>{{ t.frameworkType }}</span></div>
+                </div>
+                <div class="actions">
+                  <button class="btn"><i data-lucide="upload"></i>{{ t.export }}</button>
+                  <button class="btn"><i data-lucide="download"></i>{{ t.import }}</button>
+                  <button class="btn primary"><i data-lucide="plus"></i>{{ t.addFramework }}</button>
+                </div>
+              </div>
+
+              <section class="content-card" v-if="variant === 'cards'">
+                <div class="layout-cards">
+                  <article class="framework-card" v-for="row in frameworks" :key="row.name">
+                    <div class="card-head">
+                      <div class="card-title">
+                        <div class="avatar-box"><i data-lucide="box"></i></div>
+                        <div class="min-w-0">
+                          <div class="framework-name">{{ row.name }}</div>
+                          <div class="framework-desc" :title="row.description">{{ row.description }}</div>
+                        </div>
+                      </div>
+                      <button class="more-btn" :title="t.uninstall"><i data-lucide="ellipsis"></i></button>
+                    </div>
+                    <div class="field-grid">
+                      <div class="field" v-for="field in fieldList" :key="field.key">
+                        <div class="field-label">{{ field.label }}</div>
+                        <div v-if="field.cloud" class="cloud-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                        <div v-else-if="field.type" class="type-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                        <div v-else class="field-value" :class="{ mono: field.mono }">{{ row[field.key] }}</div>
+                      </div>
+                    </div>
+                    <div class="action-menu">
+                      <button class="action-link"><i data-lucide="git-branch-plus"></i>{{ t.addVersion }}</button>
+                      <button class="action-link"><i data-lucide="pencil"></i>{{ t.edit }}</button>
+                      <button class="action-link danger"><i data-lucide="trash-2"></i>{{ t.uninstall }}</button>
+                    </div>
+                  </article>
+                </div>
+                <div class="pagination"><span>{{ t.pageSummary }}</span><div class="pager"><span class="page-no active">1</span></div></div>
+              </section>
+
+              <section class="content-card" v-if="variant === 'rows'">
+                <div class="layout-rows">
+                  <article class="framework-row" v-for="row in frameworks" :key="row.name">
+                    <div class="row-title">
+                      <div class="avatar-box"><i data-lucide="box"></i></div>
+                      <div class="min-w-0">
+                        <div class="framework-name">{{ row.name }}</div>
+                        <div class="framework-desc" :title="row.description">{{ row.description }}</div>
+                      </div>
+                    </div>
+                    <div class="field-grid row-fields">
+                      <div class="field" v-for="field in fieldList" :key="field.key">
+                        <div class="field-label">{{ field.label }}</div>
+                        <div v-if="field.cloud" class="cloud-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                        <div v-else-if="field.type" class="type-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                        <div v-else class="field-value" :class="{ mono: field.mono }">{{ row[field.key] }}</div>
+                      </div>
+                    </div>
+                    <div class="action-menu">
+                      <button class="action-link"><i data-lucide="git-branch-plus"></i>{{ t.addVersion }}</button>
+                      <button class="action-link"><i data-lucide="pencil"></i>{{ t.edit }}</button>
+                      <button class="action-link danger"><i data-lucide="trash-2"></i>{{ t.uninstall }}</button>
+                    </div>
+                  </article>
+                </div>
+                <div class="pagination"><span>{{ t.pageSummary }}</span><div class="pager"><span class="page-no active">1</span></div></div>
+              </section>
+
+              <section class="content-card" v-if="variant === 'matrix'">
+                <div class="layout-matrix">
+                  <article class="matrix-card" v-for="row in frameworks" :key="row.name">
+                    <div class="matrix-top">
+                      <div class="avatar-box"><i data-lucide="box"></i></div>
+                      <div class="min-w-0">
+                        <div class="framework-name">{{ row.name }}</div>
+                        <div class="framework-desc" :title="row.description">{{ row.description }}</div>
+                      </div>
+                      <button class="more-btn" :title="t.uninstall"><i data-lucide="ellipsis"></i></button>
+                    </div>
+                    <div class="field-grid matrix-fields">
+                      <div class="field" v-for="field in fieldList" :key="field.key">
+                        <div class="field-label">{{ field.label }}</div>
+                        <div v-if="field.cloud" class="cloud-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                        <div v-else-if="field.type" class="type-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                        <div v-else class="field-value" :class="{ mono: field.mono }">{{ row[field.key] }}</div>
+                      </div>
+                    </div>
+                    <div class="action-menu">
+                      <button class="action-link"><i data-lucide="git-branch-plus"></i>{{ t.addVersion }}</button>
+                      <button class="action-link"><i data-lucide="pencil"></i>{{ t.edit }}</button>
+                      <button class="action-link danger"><i data-lucide="trash-2"></i>{{ t.uninstall }}</button>
+                    </div>
+                  </article>
+                </div>
+                <div class="pagination"><span>{{ t.pageSummary }}</span><div class="pager"><span class="page-no active">1</span></div></div>
+              </section>
+
+              <section class="content-card table-scroll" v-if="variant === 'table'">
+                <div class="layout-table">
+                  <div class="table-head">{{ t.frameworkName }}</div>
+                  <div class="table-head" v-for="field in fieldList" :key="field.key">{{ field.label }}</div>
+                  <div class="table-head">{{ t.uninstall }}</div>
+                  <template v-for="row in frameworks" :key="row.name">
+                    <div class="table-cell">
+                      <div class="table-title">
+                        <div class="avatar-box"><i data-lucide="box"></i></div>
+                        <div class="min-w-0">
+                          <div class="framework-name">{{ row.name }}</div>
+                          <div class="framework-desc" :title="row.description">{{ row.description }}</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="table-cell" v-for="field in fieldList" :key="field.key">
+                      <div v-if="field.cloud" class="cloud-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                      <div v-else-if="field.type" class="type-tag"><span class="dot"></span>{{ row[field.key] }}</div>
+                      <div v-else class="field-value" :class="{ mono: field.mono }">{{ row[field.key] }}</div>
+                    </div>
+                    <div class="table-cell table-actions">
+                      <div class="action-menu">
+                        <button class="action-link"><i data-lucide="git-branch-plus"></i>{{ t.addVersion }}</button>
+                        <button class="action-link"><i data-lucide="pencil"></i>{{ t.edit }}</button>
+                        <button class="action-link danger"><i data-lucide="trash-2"></i>{{ t.uninstall }}</button>
+                      </div>
+                    </div>
+                  </template>
+                </div>
+                <div class="pagination"><span>{{ t.pageSummary }}</span><div class="pager"><span class="page-no active">1</span></div></div>
+              </section>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  `,
+});
+
+for (const [key, comp] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, comp);
+}
+app.use(ElementPlus);
+app.mount('#app');
+lucide.createIcons();
+</script>
+</body>
+</html>

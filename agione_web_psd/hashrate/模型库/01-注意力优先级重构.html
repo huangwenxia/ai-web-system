@@ -1,0 +1,1161 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>模型库 - 注意力优先级重构</title>
+    <link type="text/css" rel="stylesheet" href="https://at.alicdn.com/t/c/font_4614982_ta3fsffdp7.css" />
+    <link type="text/css" rel="stylesheet" href="https://at.alicdn.com/t/c/font_4839395_zeh0j9u8an.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mamba-layout@latest/dist/layout.css" />
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <style>
+      html,
+      body,
+      mamba-layout {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+      }
+
+      mamba-layout {
+        display: block;
+      }
+    </style>
+    <style>
+      :root {
+        --model-page-bg: var(--ui-bg-page, #ffffff);
+        --model-card-bg: var(--ui-bg-card, #ffffff);
+        --model-muted-bg: var(--ui-bg-muted, #f4f4f5);
+        --model-text: var(--ui-text-primary, #303133);
+        --model-text-secondary: var(--ui-text-secondary, #606266);
+        --model-text-muted: var(--ui-text-disabled, #909399);
+        --model-border: var(--ui-border-default, #dcdfe6);
+        --model-border-light: var(--ui-border-light, #ebeef5);
+        --model-primary: #5f4ecf;
+        --model-blue: #4263eb;
+        --model-green: #168a4a;
+        --model-orange: #b56b1f;
+        --model-red: #c73b3b;
+        --model-radius: 8px;
+      }
+
+      :root.dark,
+      html.dark {
+        --model-primary: #a89eff;
+        --model-blue: #82a8ff;
+        --model-green: #65d18d;
+        --model-orange: #e7a553;
+        --model-red: #ff8a8a;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        color: var(--model-text);
+        font-family:
+          Inter,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          "PingFang SC",
+          "Microsoft YaHei",
+          sans-serif;
+      }
+
+      .model-library-page {
+        min-height: 100%;
+        padding: 24px;
+        background: var(--model-page-bg);
+      }
+
+      .model-library-shell {
+        width: min(1440px, 100%);
+        margin: 0 auto;
+      }
+
+      .page-top {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 20px;
+        align-items: start;
+        padding-bottom: 16px;
+        border-bottom: 1px solid var(--model-border);
+      }
+
+      .page-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        min-height: 28px;
+        padding: 0 10px;
+        border: 1px solid var(--model-border);
+        border-radius: 999px;
+        color: var(--model-text-secondary);
+        background: var(--model-card-bg);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .page-title {
+        margin: 10px 0 8px;
+        color: var(--model-text);
+        font-size: 26px;
+        line-height: 1.22;
+        font-weight: 750;
+        letter-spacing: 0;
+      }
+
+      .page-desc {
+        max-width: 780px;
+        margin: 0;
+        color: var(--model-text-secondary);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .page-actions,
+      .filter-actions,
+      .card-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .page-actions {
+        justify-content: flex-end;
+      }
+
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        min-height: 40px;
+        padding: 0 14px;
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        color: var(--model-text);
+        background: var(--model-card-bg);
+        font-size: 14px;
+        font-weight: 650;
+        cursor: pointer;
+        transition:
+          border-color 150ms ease-out,
+          background 150ms ease-out,
+          color 150ms ease-out;
+      }
+
+      .btn svg,
+      .btn i {
+        width: 16px;
+        height: 16px;
+        font-size: 16px;
+        flex: none;
+      }
+
+      .btn:hover,
+      .btn:focus-visible {
+        border-color: var(--model-primary);
+        color: var(--model-primary);
+        outline: none;
+      }
+
+      .btn-primary {
+        border-color: var(--model-primary);
+        color: #ffffff;
+        background: var(--model-primary);
+      }
+
+      .btn-primary:hover,
+      .btn-primary:focus-visible {
+        color: #ffffff;
+        background: color-mix(in srgb, var(--model-primary) 88%, #000000);
+      }
+
+      .btn-subtle {
+        background: var(--model-muted-bg);
+      }
+
+      .insight-strip {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        align-items: center;
+        margin-top: 18px;
+        padding: 14px 16px;
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        background: var(--model-card-bg);
+      }
+
+      .insight-copy {
+        display: grid;
+        gap: 4px;
+      }
+
+      .insight-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--model-text);
+        font-size: 14px;
+        font-weight: 750;
+      }
+
+      .insight-title svg {
+        width: 16px;
+        height: 16px;
+        color: var(--model-blue);
+      }
+
+      .insight-text {
+        margin: 0;
+        color: var(--model-text-secondary);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin-top: 18px;
+      }
+
+      .metric-card {
+        min-width: 0;
+        padding: 16px;
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        background: var(--model-card-bg);
+      }
+
+      .metric-label {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--model-text-secondary);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .metric-label svg {
+        width: 16px;
+        height: 16px;
+        color: var(--model-text-muted);
+      }
+
+      .metric-value {
+        margin-top: 12px;
+        color: var(--model-text);
+        font-size: 26px;
+        line-height: 1;
+        font-weight: 800;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .metric-note {
+        margin-top: 8px;
+        color: var(--model-text-muted);
+        font-size: 12px;
+      }
+
+      .workspace-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 320px;
+        gap: 16px;
+        align-items: start;
+        margin-top: 16px;
+      }
+
+      .work-main,
+      .work-side {
+        min-width: 0;
+      }
+
+      .filter-panel,
+      .side-panel {
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        background: var(--model-card-bg);
+      }
+
+      .filter-panel {
+        padding: 14px;
+      }
+
+      .filter-row {
+        display: grid;
+        grid-template-columns: minmax(220px, 1fr) 180px 180px auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .field {
+        display: grid;
+        gap: 6px;
+      }
+
+      .field label {
+        color: var(--model-text-secondary);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .input,
+      .select {
+        width: 100%;
+        min-height: 40px;
+        padding: 0 12px;
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        color: var(--model-text);
+        background: var(--model-card-bg);
+        font: inherit;
+        transition:
+          border-color 150ms ease-out,
+          box-shadow 150ms ease-out;
+      }
+
+      .input:focus,
+      .select:focus {
+        border-color: var(--model-primary);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--model-primary) 16%, transparent);
+        outline: none;
+      }
+
+      .view-switch {
+        display: inline-flex;
+        min-height: 40px;
+        padding: 3px;
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        background: var(--model-muted-bg);
+      }
+
+      .view-switch button {
+        min-width: 78px;
+        border: 0;
+        border-radius: 6px;
+        color: var(--model-text-secondary);
+        background: transparent;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 650;
+        cursor: pointer;
+      }
+
+      .view-switch button.is-active {
+        color: var(--model-text);
+        background: var(--model-card-bg);
+      }
+
+      .result-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin: 14px 0 10px;
+      }
+
+      .result-title {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        color: var(--model-text);
+        font-size: 15px;
+        font-weight: 750;
+      }
+
+      .result-count {
+        color: var(--model-text-muted);
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .sort-note {
+        color: var(--model-text-muted);
+        font-size: 12px;
+      }
+
+      .model-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .model-card {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        padding: 16px;
+        border: 1px solid var(--model-border);
+        border-radius: var(--model-radius);
+        background: var(--model-card-bg);
+        transition:
+          border-color 150ms ease-out,
+          background 150ms ease-out,
+          box-shadow 150ms ease-out;
+      }
+
+      .model-card:hover {
+        border-color: color-mix(in srgb, var(--model-primary) 52%, var(--model-border));
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      }
+
+      .model-head {
+        display: grid;
+        grid-template-columns: 48px minmax(0, 1fr);
+        gap: 12px;
+        align-items: center;
+      }
+
+      .model-logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border: 1px solid var(--model-border-light);
+        border-radius: var(--model-radius);
+        color: var(--model-primary);
+        background: var(--model-muted-bg);
+      }
+
+      .model-logo svg {
+        width: 24px;
+        height: 24px;
+      }
+
+      .model-name-line {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+
+      .model-name {
+        min-width: 0;
+        color: var(--model-text);
+        font-size: 17px;
+        line-height: 1.35;
+        font-weight: 800;
+      }
+
+      .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        min-height: 24px;
+        padding: 0 8px;
+        border-radius: 999px;
+        color: var(--model-text-secondary);
+        background: var(--model-muted-bg);
+        font-size: 12px;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .badge-blue {
+        color: var(--model-blue);
+        background: color-mix(in srgb, var(--model-blue) 12%, transparent);
+      }
+
+      .badge-green {
+        color: var(--model-green);
+        background: color-mix(in srgb, var(--model-green) 12%, transparent);
+      }
+
+      .badge-orange {
+        color: var(--model-orange);
+        background: color-mix(in srgb, var(--model-orange) 13%, transparent);
+      }
+
+      .badge-red {
+        color: var(--model-red);
+        background: color-mix(in srgb, var(--model-red) 11%, transparent);
+      }
+
+      .model-summary {
+        margin: 8px 0 0;
+        color: var(--model-text-secondary);
+        font-size: 13px;
+        line-height: 1.65;
+      }
+
+      .tag-row,
+      .meta-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+
+      .tag-row {
+        margin-top: 12px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 24px;
+        padding: 0 8px;
+        border: 1px solid var(--model-border-light);
+        border-radius: 999px;
+        color: var(--model-text-secondary);
+        background: var(--model-card-bg);
+        font-size: 12px;
+        white-space: nowrap;
+      }
+
+      .meta-row {
+        margin-top: 14px;
+        padding-top: 12px;
+        border-top: 1px solid var(--model-border-light);
+      }
+
+      .meta-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--model-text-muted);
+        font-size: 12px;
+      }
+
+      .meta-item strong {
+        color: var(--model-text-secondary);
+        font-weight: 750;
+      }
+
+      .model-side {
+        display: grid;
+        justify-items: end;
+        align-content: space-between;
+        gap: 22px;
+        min-width: 176px;
+      }
+
+      .version-block {
+        text-align: right;
+      }
+
+      .version-label {
+        color: var(--model-text-muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .version-value {
+        margin-top: 4px;
+        color: var(--model-text);
+        font-family: var(--ui-font-mono, "IBM Plex Mono", Consolas, monospace);
+        font-size: 16px;
+        font-weight: 750;
+        font-variant-numeric: tabular-nums;
+      }
+
+      .side-panel {
+        padding: 14px;
+      }
+
+      .side-panel + .side-panel {
+        margin-top: 12px;
+      }
+
+      .side-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin: 0 0 12px;
+        color: var(--model-text);
+        font-size: 14px;
+        font-weight: 800;
+      }
+
+      .side-title svg {
+        width: 16px;
+        height: 16px;
+        color: var(--model-text-muted);
+      }
+
+      .type-list,
+      .attention-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .type-item {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .type-name {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--model-text-secondary);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .bar {
+        grid-column: 1 / -1;
+        height: 6px;
+        overflow: hidden;
+        border-radius: 999px;
+        background: var(--model-muted-bg);
+      }
+
+      .bar span {
+        display: block;
+        height: 100%;
+        border-radius: inherit;
+        background: var(--model-primary);
+      }
+
+      .attention-item {
+        display: grid;
+        gap: 4px;
+        padding: 10px;
+        border: 1px solid var(--model-border-light);
+        border-radius: var(--model-radius);
+        background: var(--model-muted-bg);
+      }
+
+      .attention-main {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        color: var(--model-text);
+        font-size: 13px;
+        font-weight: 750;
+      }
+
+      .attention-sub {
+        color: var(--model-text-muted);
+        font-size: 12px;
+        line-height: 1.5;
+      }
+
+      .empty-state {
+        display: none;
+        padding: 44px 20px;
+        border: 1px dashed var(--model-border);
+        border-radius: var(--model-radius);
+        color: var(--model-text-secondary);
+        text-align: center;
+        background: var(--model-card-bg);
+      }
+
+      .empty-state.is-visible {
+        display: block;
+      }
+
+      .empty-state svg {
+        width: 42px;
+        height: 42px;
+        margin-bottom: 12px;
+        color: var(--model-text-muted);
+      }
+
+      .empty-title {
+        color: var(--model-text);
+        font-size: 16px;
+        font-weight: 800;
+      }
+
+      .empty-text {
+        margin-top: 6px;
+        font-size: 13px;
+      }
+
+      @media (max-width: 1180px) {
+        .metric-grid {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .workspace-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .work-side {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+        }
+
+        .side-panel + .side-panel {
+          margin-top: 0;
+        }
+      }
+
+      @media (max-width: 900px) {
+        .model-library-page {
+          padding: 16px;
+        }
+
+        .page-top,
+        .insight-strip {
+          grid-template-columns: 1fr;
+        }
+
+        .page-actions {
+          justify-content: flex-start;
+        }
+
+        .filter-row {
+          grid-template-columns: 1fr;
+        }
+
+        .filter-actions {
+          justify-content: flex-start;
+        }
+
+        .model-card {
+          grid-template-columns: 1fr;
+        }
+
+        .model-side {
+          justify-items: start;
+        }
+
+        .version-block {
+          text-align: left;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .metric-grid,
+        .work-side {
+          grid-template-columns: 1fr;
+        }
+
+        .page-title {
+          font-size: 22px;
+        }
+
+        .result-toolbar {
+          align-items: flex-start;
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <mamba-layout>
+      <main class="model-library-page">
+        <div class="model-library-shell">
+          <section class="page-top" aria-labelledby="page-title">
+            <div>
+              <span class="page-kicker"><i class="iconfont metisicon-moxingku"></i> 模型资产 / Model Library</span>
+              <h1 id="page-title" class="page-title">模型库</h1>
+              <p class="page-desc">统一管理可用于推理服务的模型资产，优先帮助运营人员判断模型类型、版本可用性、来源与最近维护状态，再进入详情、编辑或部署配置。</p>
+            </div>
+            <div class="page-actions" aria-label="页面操作">
+              <button class="btn btn-subtle" type="button"><i class="iconfont metisicon-shangchuan1"></i> 导出</button>
+              <button class="btn btn-subtle" type="button"><i class="iconfont metisicon-daoru"></i> 导入</button>
+              <button class="btn btn-primary" type="button"><i data-lucide="plus"></i> 新增模型</button>
+            </div>
+          </section>
+
+          <section class="insight-strip" aria-label="模型库说明">
+            <div class="insight-copy">
+              <div class="insight-title"><i data-lucide="info"></i> 当前资产范围</div>
+              <p class="insight-text">覆盖自有对象存储、ModelScope、HuggingFace 与公共模型来源。列表优先呈现名称、类型、版本与维护时间，标签和描述用于二次判断。</p>
+            </div>
+            <span class="badge badge-blue">最近同步 2026-05-13 09:30</span>
+          </section>
+
+          <section class="metric-grid" aria-label="模型概览">
+            <article class="metric-card">
+              <div class="metric-label">全部模型 <i data-lucide="boxes"></i></div>
+              <div class="metric-value">128</div>
+              <div class="metric-note">覆盖 7 类模型资产</div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-label">可部署模型 <i data-lucide="circle-check"></i></div>
+              <div class="metric-value">96</div>
+              <div class="metric-note">版本与来源配置完整</div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-label">本周更新 <i data-lucide="calendar-clock"></i></div>
+              <div class="metric-value">18</div>
+              <div class="metric-note">按更新时间排序优先展示</div>
+            </article>
+            <article class="metric-card">
+              <div class="metric-label">待补全 <i data-lucide="triangle-alert"></i></div>
+              <div class="metric-value">7</div>
+              <div class="metric-note">缺少标签或版本说明</div>
+            </article>
+          </section>
+
+          <section class="workspace-grid">
+            <div class="work-main">
+              <section class="filter-panel" aria-label="筛选模型">
+                <div class="filter-row">
+                  <div class="field">
+                    <label for="modelSearch">模型名称</label>
+                    <input id="modelSearch" class="input" type="search" placeholder="输入名称、标签或版本" />
+                  </div>
+                  <div class="field">
+                    <label for="modelType">模型类型</label>
+                    <select id="modelType" class="select">
+                      <option value="">全部类型</option>
+                      <option value="chat">对话模型</option>
+                      <option value="image">图片模型</option>
+                      <option value="voice">语音模型</option>
+                      <option value="embedding">嵌入模型</option>
+                      <option value="rerank">重排模型</option>
+                      <option value="multi">多模态</option>
+                    </select>
+                  </div>
+                  <div class="field">
+                    <label for="modelSource">模型来源</label>
+                    <select id="modelSource" class="select">
+                      <option value="">全部来源</option>
+                      <option value="storage">自有对象存储</option>
+                      <option value="modelscope">ModelScope</option>
+                      <option value="huggingface">HuggingFace</option>
+                      <option value="public">公共模型</option>
+                    </select>
+                  </div>
+                  <div class="filter-actions">
+                    <button id="resetFilter" class="btn" type="button"><i data-lucide="rotate-ccw"></i> 重置</button>
+                    <div class="view-switch" aria-label="视图切换">
+                      <button class="is-active" type="button">卡片</button>
+                      <button type="button">紧凑</button>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <div class="result-toolbar">
+                <div class="result-title">模型列表 <span id="resultCount" class="result-count">共 6 个示例</span></div>
+                <div class="sort-note">优先级：可部署状态 > 最近更新 > 类型匹配</div>
+              </div>
+
+              <section id="modelList" class="model-list" aria-label="模型列表">
+                <article class="model-card" data-type="chat" data-source="modelscope" data-keywords="DeepSeek R1 对话 推理 v1.0 reasoning">
+                  <div>
+                    <div class="model-head">
+                      <div class="model-logo"><i data-lucide="brain-circuit"></i></div>
+                      <div>
+                        <div class="model-name-line">
+                          <div class="model-name">DeepSeek-R1-Distill-Qwen-7B</div>
+                          <span class="badge badge-blue">对话模型</span>
+                          <span class="badge badge-green">可部署</span>
+                        </div>
+                        <p class="model-summary">面向复杂问答、推理与代码理解的通用对话模型，已完成推理框架和默认 API 后缀配置。</p>
+                      </div>
+                    </div>
+                    <div class="tag-row">
+                      <span class="tag">reasoning</span>
+                      <span class="tag">qwen</span>
+                      <span class="tag">chat</span>
+                      <span class="tag">生产推荐</span>
+                    </div>
+                    <div class="meta-row">
+                      <span class="meta-item"><strong>来源</strong> ModelScope</span>
+                      <span class="meta-item"><strong>更新时间</strong> 2026-05-12 18:20</span>
+                      <span class="meta-item"><strong>维护人</strong> 算力运营组</span>
+                    </div>
+                  </div>
+                  <aside class="model-side">
+                    <div class="version-block">
+                      <div class="version-label">当前版本</div>
+                      <div class="version-value">v1.0.3</div>
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn btn-primary" type="button">详情</button>
+                      <button class="btn" type="button">编辑</button>
+                    </div>
+                  </aside>
+                </article>
+
+                <article class="model-card" data-type="multi" data-source="huggingface" data-keywords="Qwen VL 多模态 视觉 v2.5">
+                  <div>
+                    <div class="model-head">
+                      <div class="model-logo"><i data-lucide="scan-eye"></i></div>
+                      <div>
+                        <div class="model-name-line">
+                          <div class="model-name">Qwen2.5-VL-32B-Instruct</div>
+                          <span class="badge badge-blue">多模态</span>
+                          <span class="badge badge-green">可部署</span>
+                        </div>
+                        <p class="model-summary">支持图文理解、视觉问答与结构化提取，适合需要同时处理文本和图片输入的推理服务。</p>
+                      </div>
+                    </div>
+                    <div class="tag-row">
+                      <span class="tag">vision</span>
+                      <span class="tag">multimodal</span>
+                      <span class="tag">instruct</span>
+                    </div>
+                    <div class="meta-row">
+                      <span class="meta-item"><strong>来源</strong> HuggingFace</span>
+                      <span class="meta-item"><strong>更新时间</strong> 2026-05-11 14:05</span>
+                      <span class="meta-item"><strong>维护人</strong> 模型服务组</span>
+                    </div>
+                  </div>
+                  <aside class="model-side">
+                    <div class="version-block">
+                      <div class="version-label">当前版本</div>
+                      <div class="version-value">v2.5.1</div>
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn btn-primary" type="button">详情</button>
+                      <button class="btn" type="button">编辑</button>
+                    </div>
+                  </aside>
+                </article>
+
+                <article class="model-card" data-type="embedding" data-source="storage" data-keywords="BGE Embedding 嵌入 检索 v1.2">
+                  <div>
+                    <div class="model-head">
+                      <div class="model-logo"><i data-lucide="network"></i></div>
+                      <div>
+                        <div class="model-name-line">
+                          <div class="model-name">BGE-M3-Embedding</div>
+                          <span class="badge badge-blue">嵌入模型</span>
+                          <span class="badge badge-orange">标签待补全</span>
+                        </div>
+                        <p class="model-summary">用于文本向量化、检索召回和知识库索引，当前缺少业务场景标签，建议补全后再开放给租户选择。</p>
+                      </div>
+                    </div>
+                    <div class="tag-row">
+                      <span class="tag">embedding</span>
+                      <span class="tag">retrieval</span>
+                    </div>
+                    <div class="meta-row">
+                      <span class="meta-item"><strong>来源</strong> 自有对象存储</span>
+                      <span class="meta-item"><strong>更新时间</strong> 2026-05-10 09:40</span>
+                      <span class="meta-item"><strong>维护人</strong> 平台运营组</span>
+                    </div>
+                  </div>
+                  <aside class="model-side">
+                    <div class="version-block">
+                      <div class="version-label">当前版本</div>
+                      <div class="version-value">v1.2.0</div>
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn btn-primary" type="button">详情</button>
+                      <button class="btn" type="button">编辑</button>
+                    </div>
+                  </aside>
+                </article>
+
+                <article class="model-card" data-type="image" data-source="public" data-keywords="Stable Diffusion 图片 生成 xl v0.9">
+                  <div>
+                    <div class="model-head">
+                      <div class="model-logo"><i data-lucide="image"></i></div>
+                      <div>
+                        <div class="model-name-line">
+                          <div class="model-name">Stable-Diffusion-XL</div>
+                          <span class="badge badge-blue">图片模型</span>
+                          <span class="badge badge-green">可部署</span>
+                        </div>
+                        <p class="model-summary">用于图像生成、风格转换与素材扩展，已绑定公共模型来源和默认资源规格。</p>
+                      </div>
+                    </div>
+                    <div class="tag-row">
+                      <span class="tag">image</span>
+                      <span class="tag">generation</span>
+                      <span class="tag">sdxl</span>
+                    </div>
+                    <div class="meta-row">
+                      <span class="meta-item"><strong>来源</strong> 公共模型</span>
+                      <span class="meta-item"><strong>更新时间</strong> 2026-05-08 16:48</span>
+                      <span class="meta-item"><strong>维护人</strong> AI 应用组</span>
+                    </div>
+                  </div>
+                  <aside class="model-side">
+                    <div class="version-block">
+                      <div class="version-label">当前版本</div>
+                      <div class="version-value">v0.9.8</div>
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn btn-primary" type="button">详情</button>
+                      <button class="btn" type="button">编辑</button>
+                    </div>
+                  </aside>
+                </article>
+
+                <article class="model-card" data-type="rerank" data-source="modelscope" data-keywords="Reranker 重排 检索 v0.4">
+                  <div>
+                    <div class="model-head">
+                      <div class="model-logo"><i data-lucide="list-filter"></i></div>
+                      <div>
+                        <div class="model-name-line">
+                          <div class="model-name">BGE-Reranker-Large</div>
+                          <span class="badge badge-blue">重排模型</span>
+                          <span class="badge badge-green">可部署</span>
+                        </div>
+                        <p class="model-summary">用于对召回结果进行相关性重排，通常与嵌入模型和知识库检索链路搭配使用。</p>
+                      </div>
+                    </div>
+                    <div class="tag-row">
+                      <span class="tag">rerank</span>
+                      <span class="tag">retrieval</span>
+                      <span class="tag">ranking</span>
+                    </div>
+                    <div class="meta-row">
+                      <span class="meta-item"><strong>来源</strong> ModelScope</span>
+                      <span class="meta-item"><strong>更新时间</strong> 2026-05-07 11:16</span>
+                      <span class="meta-item"><strong>维护人</strong> 搜索增强组</span>
+                    </div>
+                  </div>
+                  <aside class="model-side">
+                    <div class="version-block">
+                      <div class="version-label">当前版本</div>
+                      <div class="version-value">v0.4.2</div>
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn btn-primary" type="button">详情</button>
+                      <button class="btn" type="button">编辑</button>
+                    </div>
+                  </aside>
+                </article>
+
+                <article class="model-card" data-type="voice" data-source="storage" data-keywords="Whisper 语音 识别 asr v3">
+                  <div>
+                    <div class="model-head">
+                      <div class="model-logo"><i data-lucide="audio-lines"></i></div>
+                      <div>
+                        <div class="model-name-line">
+                          <div class="model-name">Whisper-Large-V3</div>
+                          <span class="badge badge-blue">语音模型</span>
+                          <span class="badge badge-red">版本待确认</span>
+                        </div>
+                        <p class="model-summary">用于语音识别和转写场景，当前版本来源需要复核，暂不建议直接进入生产部署。</p>
+                      </div>
+                    </div>
+                    <div class="tag-row">
+                      <span class="tag">asr</span>
+                      <span class="tag">speech</span>
+                      <span class="tag">transcribe</span>
+                    </div>
+                    <div class="meta-row">
+                      <span class="meta-item"><strong>来源</strong> 自有对象存储</span>
+                      <span class="meta-item"><strong>更新时间</strong> 2026-05-03 10:12</span>
+                      <span class="meta-item"><strong>维护人</strong> 音频服务组</span>
+                    </div>
+                  </div>
+                  <aside class="model-side">
+                    <div class="version-block">
+                      <div class="version-label">当前版本</div>
+                      <div class="version-value">v3.0.0</div>
+                    </div>
+                    <div class="card-actions">
+                      <button class="btn btn-primary" type="button">详情</button>
+                      <button class="btn" type="button">编辑</button>
+                    </div>
+                  </aside>
+                </article>
+              </section>
+
+              <section id="emptyState" class="empty-state" aria-live="polite">
+                <i data-lucide="search-x"></i>
+                <div class="empty-title">没有找到匹配模型</div>
+                <div class="empty-text">调整名称、类型或来源筛选后再试。</div>
+              </section>
+            </div>
+
+            <aside class="work-side" aria-label="模型治理侧栏">
+              <section class="side-panel">
+                <h2 class="side-title">类型分布 <i data-lucide="chart-no-axes-column"></i></h2>
+                <div class="type-list">
+                  <div class="type-item">
+                    <div class="type-name"><span>对话模型</span><strong>44%</strong></div>
+                    <div class="bar"><span style="width: 44%"></span></div>
+                  </div>
+                  <div class="type-item">
+                    <div class="type-name"><span>多模态</span><strong>18%</strong></div>
+                    <div class="bar"><span style="width: 18%; background: var(--model-blue)"></span></div>
+                  </div>
+                  <div class="type-item">
+                    <div class="type-name"><span>嵌入 / 重排</span><strong>24%</strong></div>
+                    <div class="bar"><span style="width: 24%; background: var(--model-green)"></span></div>
+                  </div>
+                  <div class="type-item">
+                    <div class="type-name"><span>图像 / 语音</span><strong>14%</strong></div>
+                    <div class="bar"><span style="width: 14%; background: var(--model-orange)"></span></div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="side-panel">
+                <h2 class="side-title">今日关注 <i data-lucide="bell"></i></h2>
+                <div class="attention-list">
+                  <div class="attention-item">
+                    <div class="attention-main"><span>版本待确认</span><span class="badge badge-red">2</span></div>
+                    <div class="attention-sub">优先处理来源和版本号不一致的模型。</div>
+                  </div>
+                  <div class="attention-item">
+                    <div class="attention-main"><span>标签缺失</span><span class="badge badge-orange">5</span></div>
+                    <div class="attention-sub">补全标签后，租户侧选择模型更容易。</div>
+                  </div>
+                  <div class="attention-item">
+                    <div class="attention-main"><span>近期更新</span><span class="badge badge-green">18</span></div>
+                    <div class="attention-sub">确认最近上架模型的部署可用性。</div>
+                  </div>
+                </div>
+              </section>
+            </aside>
+          </section>
+        </div>
+      </main>
+    </mamba-layout>
+    <script>
+      const searchInput = document.querySelector("#modelSearch");
+      const typeSelect = document.querySelector("#modelType");
+      const sourceSelect = document.querySelector("#modelSource");
+      const resetButton = document.querySelector("#resetFilter");
+      const cards = Array.from(document.querySelectorAll(".model-card"));
+      const resultCount = document.querySelector("#resultCount");
+      const emptyState = document.querySelector("#emptyState");
+
+      function updateList() {
+        const keyword = searchInput.value.trim().toLowerCase();
+        const type = typeSelect.value;
+        const source = sourceSelect.value;
+        let visibleCount = 0;
+
+        cards.forEach((card) => {
+          const matchKeyword = !keyword || card.dataset.keywords.toLowerCase().includes(keyword);
+          const matchType = !type || card.dataset.type === type;
+          const matchSource = !source || card.dataset.source === source;
+          const visible = matchKeyword && matchType && matchSource;
+          card.style.display = visible ? "grid" : "none";
+          if (visible) visibleCount += 1;
+        });
+
+        resultCount.textContent = `共 ${visibleCount} 个示例`;
+        emptyState.classList.toggle("is-visible", visibleCount === 0);
+      }
+
+      searchInput.addEventListener("input", updateList);
+      typeSelect.addEventListener("change", updateList);
+      sourceSelect.addEventListener("change", updateList);
+      resetButton.addEventListener("click", () => {
+        searchInput.value = "";
+        typeSelect.value = "";
+        sourceSelect.value = "";
+        updateList();
+      });
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mamba-layout@latest/dist/layout.global.js"></script>
+  </body>
+</html>
