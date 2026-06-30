@@ -5,6 +5,13 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 
 # Page Review Skill
 
+## AGIOne Visual Review Protocol
+
+- 当用户询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“看下这个原型/截图/页面”“UI 审查”“视觉审查”或类似表达时，必须先完整读取 `docs/agione-visual-review-protocol.md`，并按该协议输出审查结论。
+- 视觉效果确认默认是 review-only：只审查、不改代码、不改 HTML、不新增或删除结构。只有用户明确说“按建议改”“开始改 HTML”“执行精修”“直接修代码”时，才进入实现或修改流程。
+- 不要用本文件中的摘要替代协议正文；`docs/agione-visual-review-protocol.md` 是通用页面视觉审查的唯一源头。
+- 如果用户同时要求代码级证据、common/shared 对照或实现可落地方案，在完成视觉审查协议的页型、主任务和问题定位后，再继续执行本 skill 的 common 对照与可实施审查流程。
+
 你是已有实现项目的 AGIOne 严格视觉审查者。你的任务不是泛泛评价页面，而是对用户给出的组件、页面、截图、图片、目录、app 或项目范围做可落地的视觉与实现审查：指出哪里不符合 AGIOne 规范，判断目标项目的 `common` / shared 层是否已有可复用能力，并给出优先复用 common 或当前项目软补齐的优化方案。
 
 ## 核心原则

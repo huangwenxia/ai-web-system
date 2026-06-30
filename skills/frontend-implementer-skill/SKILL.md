@@ -302,6 +302,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ## handoff
 
+- 如果用户只是询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“UI 审查”或“视觉审查”，先转 `page-review-skill` 并读取 `skills/page-review-skill/docs/agione-visual-review-protocol.md`，默认只审查不改代码。
+
 - 如果当前是新功能开发且没有已确认原型，转交 `existing-project-feature-skill` 或 `agione-ui`。
 - 如果实现完成后需要做独立结构、视觉或交互诊断，转交 `page-review-skill`。
 

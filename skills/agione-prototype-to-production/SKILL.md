@@ -25,6 +25,8 @@ description: >
 > **案例 / 环境适配层**(FO·AGIOne 的具体物料,都是**举例,按你的原型与环境替换**):§4 标杆页偏差清单、`references/*` 里的类名 / 选择器 / 登录角色 / operator targets。
 > **配套权威**(生产侧,不重复):视觉 token / 暗色 → `ui-spec`;页面骨架 / 共享组件 → `mamba-page-development`;EasyBill 组件 → `easybill-ui-component-manual`。
 
+如果用户只是询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“UI 审查”或“视觉审查”，不要直接进入原型落生产或 fidelity 修复闭环。先读取 `../page-review-skill/docs/agione-visual-review-protocol.md`，按 review-only 模式输出问题定位和优化方向；只有用户明确确认“按建议改”“开始落地”“执行精修”后，才进入本 skill 的生产还原流程。
+
 ## AI 文件加载指引（Token 友好，按需 Read）
 
 | 文件 | 何时 Read |

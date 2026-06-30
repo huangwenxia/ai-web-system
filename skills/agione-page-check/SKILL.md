@@ -9,6 +9,12 @@ Use this skill to verify AGIOne frontend pages in the browser without accidental
 
 This skill is intentionally platform-neutral. Codex should use the in-app Browser or Chrome browser skills available in the current session. Claude or another agent should use its equivalent browser automation while following the same checks.
 
+## Visual Review Mode
+
+- When the user asks to confirm visual quality, for example “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, first collect the browser evidence needed by this skill, then read and follow `../page-review-skill/docs/agione-visual-review-protocol.md`.
+- In this mode, default to review-only: do not change code, do not edit HTML, and do not add/remove page structure unless the user explicitly asks to modify after the review.
+- Use screenshots, visible DOM, computed styles, theme state, final URL, role, and backend shost as evidence for the protocol. Do not replace the full protocol with a brief visual impression.
+
 ## Defaults
 
 - Default frontend app: `project-mamba/apps/all` at `http://localhost:8000`.

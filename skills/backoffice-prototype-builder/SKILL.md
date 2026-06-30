@@ -120,6 +120,8 @@ Choose one mode from the request:
 - `review`: give IA/design recommendations without producing HTML when the user asks only for review.
 - `production-alignment`: inspect an existing project design system and make the prototype visually consistent with it.
 
+For AGIOne strict visual-quality review requests such as “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, use `review` mode and read `../page-review-skill/docs/agione-visual-review-protocol.md` before giving recommendations. Default to review-only and do not generate, edit, or rewrite HTML unless the user explicitly asks to proceed with changes after the review.
+
 When working in an existing project, save new prototypes under the project root `xia_doc/` directory unless the user specifies another path. Create `xia_doc/` if needed.
 
 ## Workflow

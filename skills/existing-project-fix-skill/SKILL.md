@@ -163,6 +163,8 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 10. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
+
+- 如果用户只是询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“UI 审查”或“视觉审查”，先转 `page-review-skill` 并读取 `skills/page-review-skill/docs/agione-visual-review-protocol.md`，默认只审查不改代码。
 - 如果任务其实是新增功能开发，转交 `existing-project-feature-skill`。
 - 如果任务已经变成独立审查，转交 `page-review-skill`。
 - 如果问题主要是术语或 i18n，转交 `translate-terms-skill`。

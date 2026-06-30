@@ -11,6 +11,8 @@ Implement approved prototypes in project-mamba frontend code with high fidelity,
 
 This skill only covers prototype implementation and validation. Do not use it to invent product decisions, perform unrelated maintenance, or hand off to unrelated company-specific workflows.
 
+If the user asks only to judge visual quality, for example “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, do not enter implementation. Read `../page-review-skill/docs/agione-visual-review-protocol.md` and answer in review-only mode. Enter this implementation skill only after the user explicitly confirms “按建议改”, “开始改 HTML”, “执行精修”, or direct frontend implementation.
+
 ## Source Order
 
 Use this order when constraints conflict:
