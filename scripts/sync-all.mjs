@@ -6,9 +6,10 @@
  */
 
 import { parseCliArgs, printSupportedMatrix, printUsage, syncTerminalAssets } from './sync-terminal-assets-lib.mjs';
+import { syncUserMemory } from './sync-user-memory.mjs';
 
 const SCRIPT_NAME = 'sync-all.mjs';
-const DEFAULT_ASSETS = ['skills', 'rules'];
+const DEFAULT_ASSETS = ['skills', 'user-memory'];
 
 async function main() {
   const options = parseCliArgs(process.argv.slice(2), {
@@ -23,7 +24,8 @@ async function main() {
       examples: [
         'node scripts/sync-all.mjs',
         'node scripts/sync-all.mjs --terminal=claude-code,codex --asset=skills',
-        'node scripts/sync-all.mjs --terminal=cursor,trae-cn --asset=rules',
+        'node scripts/sync-all.mjs --terminal=claude-code,codex --asset=user-memory',
+        'node scripts/sync-all.mjs --terminal=cursor,trae-cn --asset=rules --target-project=E:\\work\\project-mamba',
       ],
     });
     return;
@@ -34,7 +36,17 @@ async function main() {
     return;
   }
 
-  await syncTerminalAssets(options);
+  const terminalAssetTypes = options.assetTypes.filter((assetType) => assetType !== 'user-memory');
+  if (terminalAssetTypes.length) {
+    await syncTerminalAssets({ ...options, assetTypes: terminalAssetTypes });
+  }
+
+  if (options.assetTypes.includes('user-memory')) {
+    await syncUserMemory({
+      terminals: options.terminals,
+      dryRun: options.dryRun,
+    });
+  }
 }
 
 main().catch((error) => {

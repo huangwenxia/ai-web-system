@@ -3,7 +3,7 @@
  * Maintenance guardrails:
  * - Check the latest official terminal docs before changing repository rule support.
  * - Check the latest official terminal docs before changing rules target paths.
- * - Keep repository portability based on repo-relative paths, not terminal-private config.
+ * - ai-web-system keeps rules/ as the source only; do not maintain .cursor/.trae projections here.
  */
 
 import { parseCliArgs, printSupportedMatrix, printUsage, syncTerminalAssets } from './sync-terminal-assets-lib.mjs';
@@ -20,11 +20,10 @@ async function main() {
   if (options.help) {
     printUsage({
       scriptName: SCRIPT_NAME,
-      description: 'Sync this repository\'s rule projections to selected terminals.',
+      description: 'Sync rules/*.mdc from this repository to an explicit target project.',
       examples: [
-        'node scripts/sync-project-rules.mjs',
-        'node scripts/sync-project-rules.mjs --terminal=cursor',
-        'node scripts/sync-project-rules.mjs --terminal=trae-cn --name=10-existing-frontend-dev',
+        'node scripts/sync-project-rules.mjs --terminal=cursor --target-project=E:\\work\\project-mamba',
+        'node scripts/sync-project-rules.mjs --terminal=trae-cn --target-project=E:\\work\\project-mamba --name=10-existing-frontend-dev',
       ],
     });
     return;

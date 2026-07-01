@@ -9,8 +9,8 @@ import { fileURLToPath } from 'url';
  * - Check the latest official terminal docs before changing skills / rules target paths.
  * - Do not infer support from legacy scripts, folder leftovers, or local habits alone.
  * - Keep repo-internal references repo-relative or derived from the repo root.
- * - Do not sync terminal assets into external project roots; project-level terminal files
- *   should come from the target repository itself via clone / pull.
+ * - This repository stores source rules only. Project-rule sync must target an
+ *   explicitly selected project root; do not create repo-local .cursor/.trae projections.
  */
 
 const __filename = fileURLToPath(import.meta.url);
@@ -19,7 +19,7 @@ const __dirname = dirname(__filename);
 export const REPO_ROOT = join(__dirname, '..');
 
 const USER_HOME = homedir();
-const VALID_ASSET_TYPES = ['skills', 'rules'];
+const VALID_ASSET_TYPES = ['skills', 'rules', 'user-memory'];
 const FRONTMATTER_PATTERN = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/;
 
 const TERMINAL_ALIASES = new Map([
@@ -41,12 +41,18 @@ const ASSET_ALIASES = new Map([
   ['rules', 'rules'],
   ['project-rule', 'rules'],
   ['project-rules', 'rules'],
+  ['memory', 'user-memory'],
+  ['user-memory', 'user-memory'],
+  ['user-rule', 'user-memory'],
+  ['user-rules', 'user-memory'],
+  ['terminal-memory', 'user-memory'],
 ]);
 
 export const TERMINAL_DEFINITIONS = {
   'claude-code': {
     label: 'Claude Code',
     legacyCommandTarget: join(USER_HOME, '.claude', 'commands'),
+    userMemory: true,
     assets: {
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
@@ -56,6 +62,7 @@ export const TERMINAL_DEFINITIONS = {
   },
   codex: {
     label: 'Codex',
+    userMemory: true,
     assets: {
       skills: {
         sourceDir: join(REPO_ROOT, 'skills'),
@@ -73,8 +80,7 @@ export const TERMINAL_DEFINITIONS = {
       },
       rules: {
         sourceDir: join(REPO_ROOT, 'rules'),
-        projectSubdir: ['.cursor', 'rules'],
-        projectOnly: true,
+        targetProjectSubdir: ['.cursor', 'rules'],
       },
     },
   },
@@ -93,8 +99,7 @@ export const TERMINAL_DEFINITIONS = {
       },
       rules: {
         sourceDir: join(REPO_ROOT, 'rules'),
-        projectSubdir: ['.trae', 'rules'],
-        projectOnly: true,
+        targetProjectSubdir: ['.trae', 'rules'],
       },
     },
   },
@@ -178,6 +183,7 @@ export function parseCliArgs(rawArgs, defaults = {}) {
   const terminalArgs = [];
   const assetArgs = [];
   const nameArgs = [];
+  let targetProjectRoot = null;
 
   let dryRun = false;
   let help = false;
@@ -223,9 +229,10 @@ export function parseCliArgs(rawArgs, defaults = {}) {
     }
 
     if (token.startsWith('--target-project') || token.startsWith('--target')) {
-      throw new Error(
-        'External project sync is retired. Sync project-level terminal files from the target repository via clone/pull instead.',
-      );
+      const parsed = parseArgValue(rawArgs, index);
+      targetProjectRoot = resolve(parsed.value);
+      index = parsed.nextIndex;
+      continue;
     }
 
     throw new Error(`Unknown argument: ${token}`);
@@ -237,6 +244,7 @@ export function parseCliArgs(rawArgs, defaults = {}) {
     help,
     list,
     dryRun,
+    targetProjectRoot,
     terminals: normalizeTerminalList(terminalArgs),
     assetTypes: normalizeAssetList(assetArgs, defaultAssets),
     itemNames: normalizeItemNameList(nameArgs),
@@ -254,7 +262,8 @@ export function printUsage(options = {}) {
   console.log('');
   console.log('Options:');
   console.log('  --terminal=claude-code,cursor   Filter target terminals');
-  console.log('  --asset=skills,rules            Filter asset types');
+  console.log('  --asset=skills,rules,user-memory Filter asset types');
+  console.log('  --target-project=path           Required when syncing project rules');
   console.log('  --plugin=skill                  Alias of --asset');
   console.log('  --name=existing-project-feature-skill Filter individual skill/rule names');
   console.log('  --name=agione-*                  Filter by wildcard pattern');
@@ -265,10 +274,12 @@ export function printUsage(options = {}) {
   console.log('Asset aliases:');
   console.log('  skills   = skill');
   console.log('  rules    = rule, project-rule');
+  console.log('  user-memory = memory, user-rule, user-rules, terminal-memory');
   console.log('');
   console.log('Default target behavior:');
   console.log('  skills -> sync to user terminal directories');
-  console.log('  rules  -> sync to this repository project dirs');
+  console.log('  rules  -> sync rules/*.mdc to an explicit target project only');
+  console.log('  user-memory -> sync rules/user-rule.md to terminal long-term memory targets');
   console.log('');
 
   if (examples.length) {
@@ -283,7 +294,9 @@ export function printUsage(options = {}) {
 export function printSupportedMatrix() {
   console.log('Supported terminals and assets:');
   for (const [terminalKey, terminal] of Object.entries(TERMINAL_DEFINITIONS)) {
-    const assets = VALID_ASSET_TYPES.filter((assetType) => terminal.assets[assetType]);
+    const assets = VALID_ASSET_TYPES.filter((assetType) =>
+      assetType === 'user-memory' ? terminal.userMemory : terminal.assets[assetType],
+    );
     console.log(`  ${terminalKey} -> ${assets.join(', ') || 'none'}`);
   }
 }
@@ -407,14 +420,25 @@ function filterItems(items, itemNames) {
   );
 }
 
-function resolveTargetBase(terminalKey, assetType) {
+function resolveTargetBase(terminalKey, assetType, options) {
   const assetConfig = TERMINAL_DEFINITIONS[terminalKey]?.assets?.[assetType];
   if (!assetConfig) {
     return null;
   }
 
-  if (assetConfig.projectOnly) {
-    return join(REPO_ROOT, ...assetConfig.projectSubdir);
+  if (assetConfig.targetProjectSubdir) {
+    if (!options.targetProjectRoot) {
+      throw new Error(
+        `Project rules are no longer maintained inside ai-web-system. Pass --target-project=<project root> to sync ${assetType} for ${terminalKey}.`,
+      );
+    }
+
+    const targetRoot = resolve(options.targetProjectRoot);
+    if (resolve(targetRoot) === resolve(REPO_ROOT)) {
+      throw new Error('Refusing to sync project rules back into ai-web-system; edit rules/ as the source instead.');
+    }
+
+    return join(targetRoot, ...assetConfig.targetProjectSubdir);
   }
 
   return assetConfig.userTarget;
@@ -443,7 +467,7 @@ function buildSourceMetadataBlock(sourcePath, newline) {
   return [
     '<!-- ai-web-system-sync-metadata',
     `AI_WEB_SYSTEM_REPO_ROOT=${repoRoot}`,
-    'Repo-internal refs like rules/, skills/, and agents/ resolve from AI_WEB_SYSTEM_REPO_ROOT.',
+    'Repo-internal refs like rules/ and skills/ resolve from AI_WEB_SYSTEM_REPO_ROOT.',
     '-->',
     '',
   ].join(newline);
@@ -459,15 +483,18 @@ function injectSourceMetadata(content, sourcePath) {
   return `${frontmatterMatch[0]}${metadataBlock}${content.slice(frontmatterMatch[0].length)}`;
 }
 
-async function buildTargetBuffer(sourcePath, targetPath) {
+async function buildTargetBuffer(sourcePath, targetPath, assetType) {
   const sourceBuffer = await fs.readFile(sourcePath);
+  if (assetType === 'rules') {
+    return sourceBuffer;
+  }
+
   if (!isMarkdownLikeFile(sourcePath)) {
     return sourceBuffer;
   }
 
-  // Source assets stay repo-relative and portable. Only external sync targets
-  // receive machine-local source metadata, otherwise repo projections such as
-  // `.cursor/rules` would start containing absolute paths and fail portability checks.
+  // Source assets stay repo-relative and portable. Only external skill targets
+  // receive machine-local source metadata.
   if (isPathInside(REPO_ROOT, targetPath)) {
     return sourceBuffer;
   }
@@ -615,8 +642,8 @@ async function pruneLegacyCommandTarget(terminal, dryRun) {
   return pruneTargetBase(terminal.legacyCommandTarget, [], dryRun, false);
 }
 
-async function copyFileIfChanged(sourcePath, targetPath, dryRun) {
-  const sourceBuffer = await buildTargetBuffer(sourcePath, targetPath);
+async function copyFileIfChanged(sourcePath, targetPath, dryRun, assetType) {
+  const sourceBuffer = await buildTargetBuffer(sourcePath, targetPath, assetType);
   const targetExists = await pathExists(targetPath);
 
   if (targetExists) {
@@ -635,10 +662,10 @@ async function copyFileIfChanged(sourcePath, targetPath, dryRun) {
   return 'synced';
 }
 
-async function syncItemToTarget(item, targetBase, dryRun) {
+async function syncItemToTarget(item, targetBase, dryRun, assetType) {
   if (item.type === 'file') {
     const targetPath = join(targetBase, item.relativeTargetPath);
-    const status = await copyFileIfChanged(item.sourcePath, targetPath, dryRun);
+    const status = await copyFileIfChanged(item.sourcePath, targetPath, dryRun, assetType);
     return [{ status, sourcePath: item.sourcePath, targetPath }];
   }
 
@@ -647,7 +674,7 @@ async function syncItemToTarget(item, targetBase, dryRun) {
   for (const sourceFile of sourceFiles) {
     const relPath = relative(item.sourcePath, sourceFile);
     const targetPath = join(targetBase, item.relativeTargetPath, relPath);
-    const status = await copyFileIfChanged(sourceFile, targetPath, dryRun);
+    const status = await copyFileIfChanged(sourceFile, targetPath, dryRun, assetType);
     results.push({ status, sourcePath: sourceFile, targetPath });
   }
   return results;
@@ -663,7 +690,10 @@ function printHeader(options) {
   console.log(`Script: ${options.scriptName}`);
   console.log(`Terminals: ${options.terminals.join(', ')}`);
   console.log(`Assets: ${options.assetTypes.join(', ')}`);
-  console.log('Target mode: user-home skills + repo-local rules');
+  console.log('Target mode: user-home skills + explicit target-project rules');
+  if (options.targetProjectRoot) {
+    console.log(`Target project: ${options.targetProjectRoot}`);
+  }
   console.log(`Dry run: ${options.dryRun ? 'yes' : 'no'}`);
   if (options.itemNames.length) {
     console.log(`Name filter: ${options.itemNames.join(', ')}`);
@@ -720,7 +750,7 @@ export async function syncTerminalAssets(options) {
       }
 
       const selectedItems = filterItems(itemCache.get(assetType), options.itemNames);
-      const targetBase = resolveTargetBase(terminalKey, assetType);
+      const targetBase = resolveTargetBase(terminalKey, assetType, options);
 
       console.log(`  [asset] ${assetType} -> ${targetBase}`);
       summary.assets += 1;
@@ -745,7 +775,7 @@ export async function syncTerminalAssets(options) {
       }
 
       for (const item of selectedItems) {
-        const results = await syncItemToTarget(item, targetBase, options.dryRun);
+        const results = await syncItemToTarget(item, targetBase, options.dryRun, assetType);
         const itemCounts = { synced: 0, skipped: 0, planned: 0 };
 
         for (const result of results) {

@@ -1,32 +1,20 @@
-# Cursor User Rule 建议文本
+# User-Level Preferences
 
-把下面内容粘贴到 Cursor 的 User Rule：
+- When using AGIOne UI related skills such as `agione-ui` or `agione-ui-explore` for design or prototype work, create a new standalone single-file HTML prototype by default. Only edit an existing `.html` prototype when I explicitly ask to modify, refactor, or optimize based on that existing file; explicitly say to continue designing in the original `.html` design draft; or use an `--edit <existing.html>` style request. If I provide old HTML only as reference, or ask to redesign, recreate, start over, try a new direction, or create a new design, do not overwrite or directly edit the old file; create a new HTML file and use the old one only as context.
+- When designing prototypes, every displayed numeric value must be defensible. It must either be a real business value with clear meaning, or be derived from other business data through explicit business logic. Do not invent numbers only to make the UI look richer, balanced, or visually pleasing. If the data source is unknown, use clearly marked placeholders or record the assumption instead of presenting arbitrary numbers as real.
+- 所有 UI 设计、原型设计、页面实现和视觉审查，都必须先判断“目标用户是谁、当前页面任务是什么”，再决定信息层级和展示深度。设计必须服务目标用户完成判断和动作，而不是展示系统内部复杂度。
+- 一切设计遵循“大道至简”。简不是内容少，而是用户判断路径短、主次清楚、动作明确。用户第一眼应能快速理解：自己正在看什么对象或范围、当前最重要的信息是什么、接下来应该关注哪里或执行什么动作、主要动作会带来什么结果。如果页面需要额外解释才能看懂，默认优先判断为过度设计或业务目标不清楚，应先收敛主任务和业务表达，而不是继续增加模块、说明、卡片、标签、指标或装饰。
+- 页面可见内容只展示“当前目标用户完成当前任务所需要的信息”。严禁把与任务无关的内部实现证据暴露给用户，包括原型说明、设计备注、AI-NOTES、mock 说明、data-source、源码 API client 名称、代码变量、内部判断表达式、状态推导规则、前端路由等。
+- 如果页面本身就是 API 调用、SDK 文档、日志诊断、事件追踪、运维排查等技术页面，则 API 地址、请求方法、Headers、Body、示例代码、错误码等可以展示，因为它们就是目标用户完成任务所需的信息。但即使是技术页面，也不得展示与当前任务无关的实现过程、原型备注或内部判断逻辑；敏感信息必须脱敏，低频诊断信息应降级或折叠。
+- 输出前必须做“目标用户 5 秒自检”：目标用户能否在 5 秒内理解页面目的、当前状态 / 重点、下一步关注点 / 动作和动作结果？页面上是否存在与当前任务无关的代码感、接口感、内部规则感或原型说明感内容？如果未通过自检，不得交付，应先删减、改写和收敛。
+- When using `agione-ui`, `agione-ui-explore`, or other AGIOne UI related skills to generate, edit, redesign, or create design prototypes, save every newly created standalone single-file HTML prototype under `E:\work\ai-web-system\agione_web_psd\` by default. This path has higher priority than the current terminal cwd, Codex worktree, inspected target project, or skill source directory; do not reinterpret "current project root" as a temporary worktree for AGIOne design output. Create the directory if it does not exist. Only use another output path when I explicitly specify one, or when I explicitly request editing an existing `.html` with `--edit` / "continue in the original HTML". Do not write prototypes into business source directories or temporary directories. In the final response, include the actual HTML file path.
+- When I ask “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “看下这个原型/截图/页面”, “UI 审查”, “视觉审查”, or similar visual-quality confirmation, treat it as an AGIOne general page visual review request for an existing page or a prototype with an initial shape. Use `page-review-skill` and read `skills/page-review-skill/docs/agione-visual-review-protocol.md` completely; output only problem diagnosis and optimization direction. Do not modify code, edit HTML, or add/remove page structure unless I explicitly say “按建议改”, “开始改 HTML”, “执行精修”, or “直接修代码”.
+- After AI frontend code changes, do not run project build commands such as `pnpm build`, `npm run build`, `yarn build`, `vite build`, or app-specific build scripts unless I explicitly request it in that task. The frontend owner will manually inspect the page and submit the build after confirming the page is correct. AI may still run lightweight non-build checks such as typecheck, lint, targeted validation scripts, encoding checks, and `git diff --check` when appropriate.
+- For frontend work, form popup layers such as create, edit, configure, or submit dialogs/drawers/popovers must strictly use the project wrapper `FormDialog.show`. Do not hand-write `el-dialog`, `el-drawer`, or `el-popover` combined with `el-form` for form overlays. If a popup is not a form workflow, state why the rule does not apply; if the project lacks `FormDialog.show`, stop and report the missing wrapper or ask for confirmation instead of hand-writing an Element Plus form overlay.
+- For frontend work, component/page scoped styles must not use `:global(...)` or `:global (...)` to escape scoped boundaries. Treat such selectors, especially global overrides of Element Plus internals such as `.el-dialog`, `.el-dialog__body`, `.el-form-item`, popper shells, or page wrapper classes, as global style pollution. Use component-local classes, component props/wrapper classes, `popper-class`, `FormDialog.show` options, or an approved shared style entry instead, and validate with the project guard scripts when available.
+- 当我说把规则同步到 agent、终端、长期记忆或永久规则时，意思是同步到各终端官方认可的用户级长期规则位置；`agent.md`、`AGENTS.md`、`CLAUDE.md` 或 `rules` 只是不同终端的目标文件名。不要因此在仓库中新建 `agents/` 源目录；仓库内用户级长期规则源统一维护在 `rules/user-rule.md`，同步脚本负责投影到终端目标位置。
+- `ai-web-system` 内不维护 `.cursor/rules/`、`.trae/rules/` 或类似终端规则投影副本；项目级终端规则同步必须直接从本系统源 `rules/*.mdc` 写入显式指定的目标项目。
+- When I ask to create, update, refine, or add rules to my skills, rules, or protocols, do not directly edit globally installed runtime copies such as `C:/Users/xia/.agents/skills/...` or `C:/Users/xia/.codex/skills/...` by default. First inspect the current workspace root for the source-of-truth repository or project-owned definitions such as `skills/`, `.agents/skills/`, `.codex/skills/`, `rules/`, `docs/`, and sync/publish scripts, and prefer editing that workspace source when it exists. Runtime skill source locators show where a skill is currently loaded from; they are not automatically the intended write target. Before modifying an installed/global skill path, confirm no workspace source exists or ask me for explicit approval. If a global installed-skill hotfix has already happened or is explicitly required, sync the same change back to the project source in the same turn; if that cannot be done, report the exact source path that could not be updated and why.
 
-```text
-默认以工程执行为导向工作：
-- 先判断任务是否属于当前项目开发；如果不是开发问题，直接按普通问答回答，不强行套工程流程。
-- 优先复用现有目录结构、规则、脚本和约束，不重复发明第二套标准。
-- 修改代码前先确认上下文、影响范围和复用点，不基于单文件猜测直接改动。
-- 输出优先可执行、可落地；需要代码时直接落实现，不只停留在建议。
-- 文档与代码都要考虑可维护性，不把一次性结论冒充长期规则。
-- 如果改了代码，至少说明最小验证方式；如果改了文档，优先保证链接和路径可移植。
-- 面对不确定问题，优先从仓库现有上下文中求证，再补充推断。
-- 使用 `agione-ui` / `agione-ui-explore` 等 AGIOne UI 相关 skill 做页面设计或原型时，默认新建独立单文件 HTML。只有用户明确要求“基于已有文件修改 / 重构 / 优化”、明确指定“在原设计稿 `.html` 上继续设计”，或使用类似 `--edit <existing.html>` 的增量编辑语义时，才允许在已有 HTML 上修改。
-- 如果用户只是提供旧 HTML 作为参考，或要求“重新设计 / 重做 / 换一种方案 / 新设计一个页面”，不得覆盖或直接改写原文件；应新建 HTML，并仅把旧文件作为理解问题和参考信息。
-- 设计原型时，页面展示的每一个数值都必须有依据：要么是具备明确业务含义的真实业务数据，要么是由其它业务数据按清晰业务逻辑计算出的结果。不得为了视觉饱满、排版好看或增强氛围而随意编造数值；数据来源不明确时，应使用明确标记的占位值或记录假设，不能把随意数值当真实业务数据展示。
-- 使用 `agione-ui` 生成或编辑既有项目原型时，尤其是用户要求“重新设计 / 重做 / 换一种方案 / 新设计一个页面”时，默认把新建的单文件 HTML 输出到用户正在处理的目标项目根目录 `agione_web_psd/`；目录不存在就创建。这里的项目根目录必须从用户提供的 workspace、当前代码仓库或明确路径判断，不是 skill 源码目录、全局安装目录或终端随意所在目录。除非用户明确指定其他路径，不写入业务源码目录或临时目录，最终回复必须给出实际 HTML 路径。
-- 当我询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“看下这个原型/截图/页面”“UI 审查”“视觉审查”等视觉确认语义时，默认表示对已有页面或已有雏形原型做 AGIOne 通用页面视觉审查；先使用 `page-review-skill` 并完整读取 `skills/page-review-skill/docs/agione-visual-review-protocol.md`，只输出问题定位和优化方向，不改代码、不改 HTML、不新增或删除页面结构。只有我明确说“按建议改”“开始改 HTML”“执行精修”“直接修代码”时，才进入修改或实现流程。
-- 既有项目前端实现或修复中，组件 / 页面样式严禁使用 `:global(...)` / `:global (...)` 逃逸 scoped 边界，尤其不得用它覆盖 Element Plus 内部类、浮层壳层或页面外层容器；这类写法按全局样式污染处理，必须改为组件局部类、组件 props / wrapper class、`popper-class`、`FormDialog.show` 参数或经批准的共享样式入口，并通过校验脚本拦截。
-- 修改、创建或补充我的 skill / rule / protocol 时，必须先检查当前 workspace 是否是规范源仓库，并优先修改仓库内 `skills/`、`rules/`、`docs/` 或同步脚本定义；运行时 skill source locator 只表示当前可加载位置，不等于默认写入目标。未经我明确要求，不得直接编辑 `C:/Users/xia/.agents/skills`、`C:/Users/xia/.codex/skills` 等全局安装副本；若已经或必须热修全局运行时副本，必须在同一轮同步回项目源，做不到时要说明阻塞原因和未同步路径。
-```
-
-## 说明
-这份 User Rule 故意保持短而通用。
-
-它不绑定：
-- 前端技术栈
-- 某个公司项目
-- 某个仓库目录
-- 某个组件库
-
-这些内容应留在项目级 `.cursor/rules` 中。
+- File editing is allowed with any tool that preserves verified UTF-8 bytes, including `apply_patch`, Node `fs.writeFileSync(..., 'utf8')`, or explicitly authorized PowerShell `Set-Content -NoNewline -Encoding UTF8`. The hard rule is not tool prohibition; the hard rule is no mojibake and no console-rendering based repair. Before and after non-trivial edits, verify disk truth with `git diff -- <path>`, Node `fs.readFileSync(path, 'utf8')`, `Format-Hex`, or another byte-level check. PowerShell stdout is not disk truth, so never infer file corruption from garbled terminal output alone.
+- PowerShell stdout is not disk truth. In this Windows workspace, PowerShell output can re-render UTF-8 bytes through the console code page (system ANSI / GBK), so mojibake such as garbled Chinese, replacement glyphs, `UnicodeDecodeError`, `illegal multibyte sequence`, or strange terminal text must be treated first as a console rendering artifact, not as evidence that the file on disk is corrupted. Before claiming an encoding problem or attempting any repair, verify the actual on-disk bytes with a non-rendering check such as `Format-Hex`, Node `fs.readFileSync(...).toString('hex')`, `git diff -- <path>`, or `git log -p -- <path>`. Never use PowerShell writes or re-encoding commands to "fix" a file based only on console-rendered text. If console output looks wrong, stop, verify bytes, and edit only with `apply_patch` against confirmed file content.

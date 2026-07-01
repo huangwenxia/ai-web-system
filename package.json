@@ -7,8 +7,8 @@
   "scripts": {
     "verify-encoding": "node scripts/verify-encoding.mjs .",
     "check-paths": "node scripts/check-absolute-paths.mjs .",
-    "sync-rules": "node scripts/sync-rules-to-cursor.mjs",
-    "sync-agent": "node scripts/sync-agent.mjs"
+    "sync-rules": "node scripts/sync-project-rules.mjs",
+    "sync-user-memory": "node scripts/sync-user-memory.mjs"
   },
   "engines": {
     "node": ">=18.0.0",

@@ -12,28 +12,28 @@
 
 | Script | Default assets | Notes |
 | --- | --- | --- |
-| `sync-all.mjs` | `skills + rules` | 全量同步入口，可再用参数缩小范围 |
+| `sync-all.mjs` | `skills + user-memory` | 全量同步入口，可再用参数缩小范围 |
 | `sync-skills.mjs` | `skills` | 只同步技能协议 |
-| `sync-project-rules.mjs` | `rules` | 只同步当前仓库的规则投影 |
-| `sync-agent.mjs` | `agent.md` | 同步终端用户级规则到 Codex home |
-| `sync-rules-to-cursor.mjs` | legacy | 旧脚本，保留兼容 |
+| `sync-project-rules.mjs` | `rules` | 从 `rules/*.mdc` 同步到显式指定的目标项目 |
+| `sync-user-memory.mjs` | `user-memory` | 同步 `rules/user-rule.md` 到终端用户级长期规则位置 |
 
 ## 支持的终端与资产
 
-| Terminal | skills | rules | Notes |
-| --- | --- | --- | --- |
-| `claude-code` | yes | no | 同步到 `~/.claude/skills` |
-| `codex` | yes | no | 同步到 `~/.agents/skills` |
-| `cursor` | yes | yes | skills 到用户目录，rules 到当前仓库 `.cursor/rules` |
-| `trae-cn` | yes | yes | skills 到用户目录，rules 到当前仓库 `.trae/rules` |
-| `roo-code` | no maintained assets | no | 仅清理历史 commands 残留 |
-| `cline` | no maintained assets | no | 仅清理历史 commands 残留 |
+| Terminal | skills | project rules | user memory | Notes |
+| --- | --- | --- | --- | --- |
+| `claude-code` | yes | no | yes | skills 到 `~/.claude/skills`，user memory 到 `~/.claude/CLAUDE.md` |
+| `codex` | yes | no | yes | skills 到 `~/.agents/skills`，user memory 到 `~/.codex/AGENTS.md` |
+| `cursor` | yes | yes | no maintained target | skills 到用户目录，rules 只写入显式 `--target-project` 的 `.cursor/rules` |
+| `trae-cn` | yes | yes | no maintained target | skills 到用户目录，rules 只写入显式 `--target-project` 的 `.trae/rules` |
+| `roo-code` | no maintained assets | no | no | 仅清理历史 commands 残留 |
+| `cline` | no maintained assets | no | no | 仅清理历史 commands 残留 |
 
 ## 通用参数
 
 ```powershell
 --terminal=claude-code,cursor
---asset=skills,rules
+--asset=skills,rules,user-memory
+--target-project=E:\work\project-mamba
 --plugin=skill
 --name=existing-project-feature-skill
 --name=agione-*
@@ -46,8 +46,10 @@
 
 - `--terminal` 用来限制同步到哪些终端
 - `--asset` 或 `--plugin` 用来限制同步哪类资产
+- `--target-project` 仅在同步项目级 `rules` 时使用，必须显式指定；不会默认写入 `ai-web-system`
 - `skills` 支持别名 `skill`
 - `rules` 支持别名 `rule`、`project-rule`
+- `user-memory` 支持别名 `memory`、`user-rule`、`user-rules`、`terminal-memory`
 - `--name` 可以限制具体 skill / rule 名称；支持 `*` 通配，例如 `--name=agione-*`
 - `--dry-run` 只打印计划，不写文件
 
@@ -56,17 +58,19 @@
 默认行为：
 
 - `skills` 同步到用户目录下的终端目录
-- `rules` 同步到当前仓库自己的项目目录
+- `rules` 从 `rules/*.mdc` 同步到显式指定目标项目的终端规则目录
+- `user-memory` 从 `rules/user-rule.md` 同步到终端自己的用户级长期规则位置
 
 示例：
 
 - Claude Code skills -> `~/.claude/skills`
+- Claude Code user memory -> `~/.claude/CLAUDE.md`
 - Codex skills -> `~/.agents/skills`
-- Codex user agent -> `~/.codex/agent.md` and `~/.codex/AGENTS.md`
+- Codex user memory -> `~/.codex/AGENTS.md`
 - Cursor skills -> `~/.cursor/skills`
-- Cursor rules -> `<repo>/.cursor/rules`
+- Cursor project rules -> `<target-project>/.cursor/rules`
 - Trae skills -> `~/.trae/skills`
-- Trae rules -> `<repo>/.trae/rules`
+- Trae project rules -> `<target-project>/.trae/rules`
 
 ## 历史 commands 清理
 
@@ -108,16 +112,16 @@ node scripts/sync-skills.mjs --terminal=cursor --name=agione-ui
 node scripts/sync-skills.mjs --terminal=codex --name=agione-*
 ```
 
-### 只同步仓库内 rules 投影
+### 只同步项目级 rules 到目标项目
 
 ```powershell
-node scripts/sync-project-rules.mjs --terminal=cursor,trae-cn
+node scripts/sync-project-rules.mjs --terminal=cursor,trae-cn --target-project=E:\work\project-mamba
 ```
 
-### 只同步终端 agent.md
+### 只同步终端用户长期规则
 
 ```powershell
-node scripts/sync-agent.mjs
+node scripts/sync-user-memory.mjs
 ```
 
 ### 先看计划，不实际写入
@@ -128,8 +132,10 @@ node scripts/sync-all.mjs --terminal=claude-code --asset=skills --dry-run
 
 ## 维护原则
 
-- 源文件只维护在 `skills/`、`rules/`、`agents/`
+- 源文件只维护在 `skills/`、`rules/`
+- `agent.md`、`AGENTS.md`、`CLAUDE.md` 或 `rules` 只是终端目标文件名，不是仓库内源目录
+- 本仓库不维护 `.cursor/rules/`、`.trae/rules/` 或类似终端规则投影副本
 - 同步脚本只做复制、过滤和历史残留清理，不反向改源
 - 默认不会删除隐藏系统项
 - 如果目标文件内容完全一致，会自动跳过
-- 外部项目的终端 / 插件目录不再由本仓库注入维护；项目级文件应来自目标仓库自身
+- 项目级规则同步必须显式指定目标项目，并直接从本系统源 `rules/` 写入
