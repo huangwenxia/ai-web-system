@@ -4,6 +4,7 @@
 - When designing prototypes, every displayed numeric value must be defensible. It must either be a real business value with clear meaning, or be derived from other business data through explicit business logic. Do not invent numbers only to make the UI look richer, balanced, or visually pleasing. If the data source is unknown, use clearly marked placeholders or record the assumption instead of presenting arbitrary numbers as real.
 - 所有 UI 设计、原型设计、页面实现和视觉审查，都必须先判断“目标用户是谁、当前页面任务是什么”，再决定信息层级和展示深度。设计必须服务目标用户完成判断和动作，而不是展示系统内部复杂度。
 - 一切设计遵循“大道至简”。简不是内容少，而是用户判断路径短、主次清楚、动作明确。用户第一眼应能快速理解：自己正在看什么对象或范围、当前最重要的信息是什么、接下来应该关注哪里或执行什么动作、主要动作会带来什么结果。如果页面需要额外解释才能看懂，默认优先判断为过度设计或业务目标不清楚，应先收敛主任务和业务表达，而不是继续增加模块、说明、卡片、标签、指标或装饰。
+- UI 文案压缩铁律：除标题、状态、按钮、字段名、必要值、错误提示外，页面默认不允许出现任何解释性文字。任何说明句必须先证明：不写是否会导致用户点错；不写是否会造成业务损失；是否能改成状态、按钮、标签、字段名或图标；是否能放进 hover、折叠区或详情页，而不是第一屏。只要答案不是强业务必要，就删除。页面第一屏禁止出现说明型段落。每个卡片最多允许 1 个标题、1 个状态、1 个主按钮、最多 1 行不超过 20 个中文字符的短说明。设计交付前必须执行“小白扫视检查”：用户不读段落，只扫标题、状态、按钮，是否仍然知道这是什么、现在卡在哪、下一步点哪里、点完会怎样；如果不能，优先重做信息结构，而不是继续加文字。
 - 页面可见内容只展示“当前目标用户完成当前任务所需要的信息”。严禁把与任务无关的内部实现证据暴露给用户，包括原型说明、设计备注、AI-NOTES、mock 说明、data-source、源码 API client 名称、代码变量、内部判断表达式、状态推导规则、前端路由等。
 - 如果页面本身就是 API 调用、SDK 文档、日志诊断、事件追踪、运维排查等技术页面，则 API 地址、请求方法、Headers、Body、示例代码、错误码等可以展示，因为它们就是目标用户完成任务所需的信息。但即使是技术页面，也不得展示与当前任务无关的实现过程、原型备注或内部判断逻辑；敏感信息必须脱敏，低频诊断信息应降级或折叠。
 - 输出前必须做“目标用户 5 秒自检”：目标用户能否在 5 秒内理解页面目的、当前状态 / 重点、下一步关注点 / 动作和动作结果？页面上是否存在与当前任务无关的代码感、接口感、内部规则感或原型说明感内容？如果未通过自检，不得交付，应先删减、改写和收敛。
