@@ -14,6 +14,8 @@ This skill is intentionally platform-neutral. Codex should use the in-app Browse
 - When the user asks to confirm visual quality, for example “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, first collect the browser evidence needed by this skill, then read and follow `../page-review-skill/docs/agione-visual-review-protocol.md`.
 - In this mode, default to review-only: do not change code, do not edit HTML, and do not add/remove page structure unless the user explicitly asks to modify after the review.
 - Use screenshots, visible DOM, computed styles, theme state, final URL, role, and backend shost as evidence for the protocol. Do not replace the full protocol with a brief visual impression.
+- Judge the page from the current target user's first visit: identify the role, page task, first-screen object/scope, key state/result/context, next focus/action, and expected action result.
+- Check visible text for unrelated internal evidence such as `Api.general.xxx`, `result.total`, `hasXxx`, `currentStep`, `AI-NOTES`, `data-source`, `mock`, frontend routes, source API client names, state expressions, or prototype-note labels like “数据来源 / 状态判断来源 / 根据规则推导”. Developer/API/debug/log pages may show task-relevant technical material, but not frontend source client names or AI/prototype notes; sensitive values must be masked.
 
 ## Defaults
 
@@ -94,6 +96,7 @@ Do not inspect cookies, passwords, or browser profile data. Reading visible page
 7. Run the requested checks:
    - Visual checks: take screenshots when the user asks or when the issue is visual.
    - DOM checks: use selectors for page roots, target buttons, dialogs, tables, or chips.
+   - Visible-text checks: collect headings, labels, helper text, buttons, table headers, status chips, empty/error text, and obvious code-like/internal evidence before judging visual quality.
    - Style checks: read `getComputedStyle` for exact colors, z-index, layout, disabled state, hover state, dark-mode tokens, and transition properties.
    - Hover checks: move the mouse or trigger the state, then compare computed values before/after hover.
    - Light/dark checks: switch theme through visible UI when possible; after switching, re-read DOM and computed style.
@@ -104,6 +107,8 @@ Do not inspect cookies, passwords, or browser profile data. Reading visible page
    - Role used.
    - Final URL.
    - Whether the expected page root or marker exists.
+   - Target-user 5-second self-check: whether the page purpose, current state, next focus/action, and action result are understandable from the first screen.
+   - Whether visible internal evidence was present, and where.
    - Key computed values or observed network responses.
    - Screenshots saved or emitted, if any.
    - Any uncertainty, especially if browser state or route bundle differs from the user's visible page.

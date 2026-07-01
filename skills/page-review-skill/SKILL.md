@@ -19,6 +19,9 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 - 先审查已有实现，再给结论；不要凭印象替代码或截图下判断。
 - 审查默认聚焦视觉严格性：颜色 token、字体层级、图标语义 / 图标体系、表单、Radio、卡片、表格、间距、动效、状态表达、暗黑模式、布局密度、组件复用。
 - 页面审查完成前必须做全局语义清洗和 attention 检查：先明确页面主业务目标，必要时再识别一个次业务目标；页面内所有文字、图标、状态表达和操作入口都必须服务这些目标。
+- 默认站在“当前目标用户第一次进入页面”的视角审查：先判断用户角色、页面任务和信息展示深度，再判断页面第一眼是否能说明对象/范围、关键状态/结果/上下文、下一步关注点/动作和动作结果。
+- “大道至简”是默认质量线：如果页面不简单、不清楚、需要解释才能看懂，优先判断为过度设计或业务目标不清楚；先收敛主任务、主次层级和业务表达，不继续增加模块、卡片、标签、指标或装饰。
+- 审查页面可见文本时，客户可见界面不得出现与当前任务无关的内部技术证据，例如 `Api.general.xxx`、`result.total`、`hasXxx`、`currentStep`、`AI-NOTES`、`data-source`、`mock`、前端路由、源码 API client 名称、状态推导规则或“数据来源 / 根据规则推导”等原型说明感文案。开发者/API/日志/诊断页面例外，但只能展示完成当前技术任务所需的信息，且敏感信息必须脱敏。
 - 先对照目标项目自身规范和 common 实现，再对照 AGIOne 规则。若 common 已能覆盖，优先要求迁移到 common 标准；若 common 不足，才提出当前 app 的 soft override 或 app-local 组件方案。
 - 只有用户明确要求“整体扫一遍 / 优化整个项目 / 全项目 AGIOne 治理”时，才做项目级全量扫描。普通页面、组件或 bug 相关审查只覆盖目标范围和直接依赖。
 - 审查结论必须能指导后续实施，避免“更高级一点”“视觉再优化”这类不可执行描述。
@@ -65,15 +68,17 @@ rg -n "font-size\\s*:|font-weight\\s*:|font-family\\s*:|line-height\\s*:|text-\\
 rg -n "<el-form|<CurdForm|form-modern|<el-radio|<el-radio-group|<el-radio-button|radio-card|radio-segmented|radio-pill|radio-circle" <target> --glob "*.vue"
 rg -n "translate-y|transform-\\[translateY|duration-300|hover:shadow-lg|transition-all|scale-" <target> --glob "*.vue" --glob "*.scss" --glob "*.css"
 rg -n "bg-white|text-gray-|border-gray-|text-blue-|bg-blue-|#[0-9a-fA-F]" <target> --glob "*.vue" --glob "*.scss" --glob "*.css"
+rg -n "Api\\.general\\.|result\\.total|has[A-Z][A-Za-z0-9_]*|currentStep|AI-NOTES|data-source|mock|数据来源|状态判断来源|根据规则推导" <target> --glob "*.vue" --glob "*.html" --glob "*.md"
 ```
 
-扫描结果只作为线索，必须抽样打开具体文件确认上下文。注释、第三方 Markdown 内容、图标尺寸、布局居中 transform、移动侧栏 translate 等合理例外不要误报。
+扫描结果只作为线索，必须抽样打开具体文件确认上下文。只有这些实现证据会渲染成用户可见文案、可见标签、按钮、标题、说明或表格内容时才作为 UI 问题；注释、内部属性、测试数据、第三方 Markdown 内容、图标尺寸、布局居中 transform、移动侧栏 translate 等合理例外不要误报。
 
 ## AGIOne 严格视觉审查口径
 
 ### 全局语义与 Attention 清洗
 
 - 先明确页面主业务目标；如果页面确实承担两个任务，再识别一个次业务目标。目标不清时，把“主业务目标不清”作为审查问题，而不是继续只评样式。
+- 按目标用户第一次进入页面的 5 秒路径检查：页面目的、当前状态、下一步关注点/动作和动作结果必须能被快速理解；不能通过外部解释、原型备注或内部规则说明来补洞。
 - 审查页面内所有文字、图标、状态表达和操作入口是否服务主 / 次业务目标；删除或弱化无业务值、重复、装饰性、只为填充版面或制造丰富感的信息。
 - 文字必须有明确业务含义，能帮助用户理解当前状态、业务对象、风险、结果或下一步操作；表达要精炼，不在多个位置重复说同一件事；数值必须有实际业务值或明确来源，未知时标记占位或假设。
 - 状态文案要说明“当前是什么”，必要时说明“下一步去哪做”；非关键区域文字降低存在感，不能抢主业务 attention。
@@ -143,6 +148,7 @@ rg -n "bg-white|text-gray-|border-gray-|text-blue-|bg-blue-|#[0-9a-fA-F]" <targe
 **审查范围**
 - 目标：...
 - 模式：single-component / page-review / image-review / module-scan / project-scan
+- 目标用户：...
 - 主业务目标：...
 - 证据：截图、文件、扫描命中、抽样页面
 

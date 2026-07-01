@@ -15,6 +15,7 @@
 | `sync-all.mjs` | `skills + rules` | 全量同步入口，可再用参数缩小范围 |
 | `sync-skills.mjs` | `skills` | 只同步技能协议 |
 | `sync-project-rules.mjs` | `rules` | 只同步当前仓库的规则投影 |
+| `sync-agent.mjs` | `agent.md` | 同步终端用户级规则到 Codex home |
 | `sync-rules-to-cursor.mjs` | legacy | 旧脚本，保留兼容 |
 
 ## 支持的终端与资产
@@ -22,7 +23,7 @@
 | Terminal | skills | rules | Notes |
 | --- | --- | --- | --- |
 | `claude-code` | yes | no | 同步到 `~/.claude/skills` |
-| `codex` | yes | no | 同步到 `~/.codex/skills` |
+| `codex` | yes | no | 同步到 `~/.agents/skills` |
 | `cursor` | yes | yes | skills 到用户目录，rules 到当前仓库 `.cursor/rules` |
 | `trae-cn` | yes | yes | skills 到用户目录，rules 到当前仓库 `.trae/rules` |
 | `roo-code` | no maintained assets | no | 仅清理历史 commands 残留 |
@@ -60,7 +61,8 @@
 示例：
 
 - Claude Code skills -> `~/.claude/skills`
-- Codex skills -> `~/.codex/skills`
+- Codex skills -> `~/.agents/skills`
+- Codex user agent -> `~/.codex/agent.md` and `~/.codex/AGENTS.md`
 - Cursor skills -> `~/.cursor/skills`
 - Cursor rules -> `<repo>/.cursor/rules`
 - Trae skills -> `~/.trae/skills`
@@ -112,6 +114,12 @@ node scripts/sync-skills.mjs --terminal=codex --name=agione-*
 node scripts/sync-project-rules.mjs --terminal=cursor,trae-cn
 ```
 
+### 只同步终端 agent.md
+
+```powershell
+node scripts/sync-agent.mjs
+```
+
 ### 先看计划，不实际写入
 
 ```powershell
@@ -120,7 +128,7 @@ node scripts/sync-all.mjs --terminal=claude-code --asset=skills --dry-run
 
 ## 维护原则
 
-- 源文件只维护在 `skills/`、`rules/`
+- 源文件只维护在 `skills/`、`rules/`、`agents/`
 - 同步脚本只做复制、过滤和历史残留清理，不反向改源
 - 默认不会删除隐藏系统项
 - 如果目标文件内容完全一致，会自动跳过

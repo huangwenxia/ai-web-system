@@ -1,0 +1,23 @@
+---
+description: Project-level constraints for bug fixes and code optimization in existing projects
+alwaysApply: true
+---
+
+当任务属于“bug 修复”或“代码优化”时，遵守以下约束：
+
+- 必须优先遵循 `ai-web-system` 的项目级规则、现行 skill 协议和反馈机制；需要判断修复、审查或回写时，优先参考 `skills/` 与 `rules/` 中的现行定义。
+- 修改前必须先结合当前项目上下文确认影响范围，识别对应组件、公共函数、状态来源、调用方和复用范围。
+- 不允许只盯当前文件做局部修补；至少要确认相关实现来自哪里、被哪些页面或模块使用。
+- 优先修正问题根因，不用一次性临时补丁掩盖结构问题。
+- 优化时优先保持现有行为稳定；没有证据表明需要改动的上下游逻辑，不擅自扩大修改范围。
+- 修复或优化涉及表单类弹出层时，严格沿用项目封装的 `FormDialog.show`；不得为局部修复新增手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form` 组合。若历史代码暂未整改，必须说明保留原因和后续收敛建议。
+- 修复或优化样式时，严禁新增 `:global(...)` / `:global (...)` 这类逃逸 scoped 的全局覆盖；发现历史 `:global` 覆盖 Element Plus 内部类、浮层壳层或页面外层容器时，按全局样式污染风险记录，当前范围能收敛则改为局部类、props / wrapper class、`popper-class` 或经批准的共享样式入口，暂不整改时必须说明原因和后续收敛建议。
+- 修复后默认顺手检查同链路的细节一致性、交互顺滑度和回归风险，但不把每次 bug 修复都扩成大范围审查任务。
+- 如果问题暴露出组件边界、状态归属、字段映射或通用函数设计缺陷，可以提出治理候选，但默认仍先完成当前修复。
+- 只有形成稳定修复模式时，才考虑回写到对应 skill 协议；只有明确属于跨任务的环境级默认约束时，才升级到 `rules/`。
+- 单点 bug、局部样式修正、一次性兼容处理默认不回写。
+
+参考：
+@skills/existing-project-fix-skill/SKILL.md
+@skills/frontend-implementer-skill/SKILL.md
+@skills/page-review-skill/SKILL.md

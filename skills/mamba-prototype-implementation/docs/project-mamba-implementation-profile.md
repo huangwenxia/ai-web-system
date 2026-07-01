@@ -104,6 +104,7 @@
 - 运行 `skills/mamba-prototype-implementation/scripts/verify-encoding.mjs` 检查本次目标文件或目录，覆盖 UTF-8 BOM 与常见乱码；空检查不得视为通过，除非明确使用 `--allow-empty` 并说明原因。
 - 运行 diff check：至少执行 `git diff --check`，并人工审视本次 diff 是否只包含目标修改。
 - 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；没有可用 URL、dev server 或目标路由时，最终输出说明无法刷新原因。
+- 可见 UI 交付前必须做目标用户 5 秒自检：目标用户能否理解页面目的、当前状态、下一步关注点/动作和动作结果；页面是否不存在与当前任务无关的代码感、接口感、内部规则感或原型说明感内容。
 - 页面入口结构清晰 / 冗杂抽离审视是首要 AI 语义门禁；新增功能或页面的 `src/views/**/index.vue` / 同目录主 `.vue` 如果承载过多页面区块、状态分支、交互细节和样式壳层，必须先抽出页面私有组件并在最终检查表列出。
 - 自动检查硬指标：
   - 新增 `.vue` 物理总行数不超过 250 行
@@ -116,6 +117,7 @@
 - 当用户明确指定旧文件优化，或旧 `.vue` 是本次新功能主承载页面时，运行脚本必须追加 `--strict-vue-lines`，把 250 行限制应用到所有被检查的 `.vue` 文件。
 
 ### AI 语义校验
+- 涉及可见 UI 时，先判断当前目标用户、页面主任务和第一次进入页面的判断路径；首屏必须交代对象/范围、关键状态/结果/上下文、下一步关注点/动作和主操作结果。普通业务用户界面不得出现 `Api.general.xxx`、`result.total`、`hasXxx`、`currentStep`、`AI-NOTES`、`data-source`、`mock`、前端路由、源码 API client 名称、状态判断表达式或原型说明感文案；开发者/API/诊断页面只展示完成任务所需的技术信息，并对敏感信息脱敏。
 - 新增组件或 `useXxx.ts` 前，先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；最终输出必须列出检索范围、命中候选和未复用原因。
 - 弹出层表单、抽屉表单、popover 表单不得默认手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`；先查项目已有弹窗表单、抽屉表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块已有 modal/form 封装和 `easybill-ui`。确实无法复用时，才能基于 Element Plus 组合实现，并在最终输出列出命中候选和未复用原因。
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
@@ -139,7 +141,7 @@
 - 抽离组件如 props 引用了外部业务类型、`./types` 或相对路径导入类型，不使用 `defineProps<ExternalType>()` 做 props 推导；改用运行时 props 对象 + `PropType`，避免 SFC 编译宏或 `anonymous.vue` 场景解析失败。
 - 数组 / 对象 props 的 `default` 必须使用工厂函数；有 `default` 时通常不写 `required: false`，`required: true` 不写 `default`。
 - props 命名必须有业务语义；子组件不得直接修改 props 或 props 对象 / 数组的深层值，需要编辑时复制本地状态或使用 `defineModel`。
-- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、首要校验：页面入口结构清晰 / 冗杂抽离审视、独立职责边界抽离判断、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、`FormDialog.show` 浮层表单检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、`:global` 全局污染禁用检查、flex 布局 / 禁用 grid、内容驱动换行、`shrink-0` 高度保护、固定宽度只保操作区、少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
+- 最终输出必须给出达标 / 未达标检查表：topology 结果、checked files、目标用户 5 秒自检、可见内部证据清理、首要校验：页面入口结构清晰 / 冗杂抽离审视、独立职责边界抽离判断、数据归属组件 / hook 拆分、页面纯工具函数抽离、胶囊目录强校验、递归三轮抽离复查、`.vue <= 250`、复用检查证据、图标语义 / 图标体系复查、`FormDialog.show` 浮层表单检查、表格复用检查、`v-for` 复用检查、状态分支抽离、路由工具选择、UTF-8 / 中文直写 / Unicode escape、抽离预案与实际落地、函数长度、Vue 3 语法、Tailwind / Element Plus 使用、`:global` 全局污染禁用检查、flex 布局 / 禁用 grid、内容驱动换行、`shrink-0` 高度保护、固定宽度只保操作区、少断点、容器自适应、滚动容器 / scrollbar、边界状态、类型检查、实现检查、结构检查、编码检查、diff check、浏览器刷新结果、build 未运行说明、验证命令。
 - 涉及新增组件、Hook、types、utils、组件抽离或目录调整时，运行 `scripts/check-component-structure.mjs --strict`；只有纯历史目录扫描或无组件目录在作用域时，才允许非 strict 或 `--allow-empty`，且必须说明原因。
 
 ## 页面壳与组件选择规则

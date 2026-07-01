@@ -124,6 +124,17 @@ For AGIOne strict visual-quality review requests such as “视觉效果怎么�
 
 When working in an existing target project, save new prototypes under that target project's root `agione_web_psd/` directory unless the user specifies another path. Resolve the target project root from the user's workspace/path or the repository being inspected; never treat the skill source folder, global installed skill folder, or arbitrary terminal cwd as the target root. Create `agione_web_psd/` if needed.
 
+## First-Visit User Gate
+
+Before generating or reviewing a prototype, judge the page from the current target user's first visit. The target user may be a business user, developer, operator, admin, or integration user; decide the role and task before deciding information depth.
+
+- Simplicity means a short judgment path, clear priority, and obvious action. If the page needs explanation to be understood, treat it as over-designed or under-defined; reduce the main task and business expression before adding modules, helper text, cards, tags, metrics, or decoration.
+- The first screen must quickly answer: what object or scope is being shown, what the most important state/result/context is, where the user should look or act next, and what the primary action will enter, change, or return.
+- Interpret this by page type: list pages emphasize scope, filters, row status, and row actions; detail pages emphasize object identity, key state, main configuration, and related entrances; forms emphasize submit goal, required fields, and submit consequence; flow pages emphasize current step, blocker, and next action; dashboards emphasize overall health, exceptions, and drill-down path; API/developer pages emphasize endpoint status, call method, required parameters, copy affordance, errors, and debug path.
+- Do not show internal technical evidence in customer-visible text: prototype notes, `AI-NOTES`, mock explanations, design remarks, `data-source`, frontend routes, source API client names, code variables, internal expressions, state derivation rules, or labels such as “数据来源 / 状态判断来源 / 根据规则推导”.
+- Developer/API/debug/log pages may show API URLs, methods, headers, body, examples, responses, error codes, and copy buttons only when those are the user's task materials. Even there, do not expose frontend source names such as `Api.general.xxx`, page state expressions, prototype data notes, or AI design remarks; sensitive values must be masked and low-frequency diagnostics should be collapsed.
+- Before delivery, run a 5-second self-check: can the target user understand the page purpose, current state, next focus/action, and action result; and is the visible UI free of unrelated code/API/internal-rule/prototype-note content? If not, prune and rewrite before delivery.
+
 ## Workflow
 
 ### 0. Thinking Gate
@@ -144,6 +155,7 @@ The page is ready for code only when these are known from evidence or explicitly
 - API responsibility split or stated data-source limitation.
 - Strong business expression decision.
 - Content to keep, delete, collapse, or de-emphasize.
+- First-visit judgment path and the 5-second self-check target.
 
 Never invent the primary business subject, user role, workflow status, metric meaning, risk judgment, or action consequence. "Think clearly first" means separate facts, assumptions, and blockers; it does not mean fabricate business context.
 
@@ -159,7 +171,7 @@ Use `rg` first for local discovery. Capture:
 - Target project design-system evidence: tokens, page shell, shared components, typography, status badges, tables, forms, dialogs, dark mode.
 - Chosen profile: `generic-backoffice`, `agione-strict`, `target-project`, or user-specified.
 
-If evidence is incomplete, write assumptions in the prototype `AI-NOTES` and mark placeholder data visibly in code comments or labels.
+If evidence is incomplete, write assumptions in the prototype `AI-NOTES` and mark placeholder data in code comments or explicit placeholder labels only when the visible placeholder is part of the user's task. Do not surface `AI-NOTES`, `data-source`, route names, source API client names, mock notes, or derivation rules as customer-visible UI copy.
 
 Required `AI-NOTES` evidence keys for generated prototypes:
 
@@ -168,6 +180,8 @@ Required `AI-NOTES` evidence keys for generated prototypes:
 - `assumptions`: assumptions used to continue; use `none` when there are no assumptions.
 - `blocking-questions`: questions that would change page direction; use `none` only when safe to proceed.
 - `ia-readiness`: `ready` only when the Thinking Gate is satisfied.
+- `target-user`: the current user's role and task context.
+- `first-visit-path`: object/scope, key state/result/context, next focus/action, and primary action result.
 - `strong-expression-decision`: whether strong business expression is needed and why.
 
 ### 2. IA Preflight
@@ -175,6 +189,7 @@ Required `AI-NOTES` evidence keys for generated prototypes:
 Before designing, answer:
 
 - What is the page's primary subject: object, collection, workflow, configuration area, operational task, monitoring question, or diagnostic problem?
+- Who is the current target user, and what would that user need to understand in the first 5 seconds?
 - What are the user's top 3 confirmations, decisions, or actions?
 - What page type is it: `configuration/profile`, `collection management`, `form workflow`, `business overview`, `business decision`, `operation execution`, or `troubleshooting analysis`?
 - Is strong business expression necessary? Why?
@@ -232,8 +247,8 @@ For a new prototype:
    - `BACKOFFICE_EDIT_NOTES`
    For `agione-strict`, use the AGIOne `AGIONE_EDIT_*` anchors instead.
 6. Replace demo content with task-specific content.
-7. Add `data-source` to every metric, status, table, form group, and derived display when practical.
-8. Keep `AI-NOTES` accurate: evidence status, evidence used, assumptions, blocking questions, IA readiness, strong expression decision, selected design system, design profile, product identity, page subject, page type, API responsibilities, derived formulas, placeholders, project alignment, and rule gaps.
+7. Add `data-source` as non-visible metadata to every metric, status, table, form group, and derived display when practical.
+8. Keep `AI-NOTES` accurate: evidence status, evidence used, assumptions, blocking questions, IA readiness, target user, first-visit path, strong expression decision, selected design system, design profile, product identity, page subject, page type, API responsibilities, derived formulas, placeholders, project alignment, and rule gaps.
 9. Run the validation script.
 
 If the target project has an existing design system, first mirror its tokens/components/page shell. Do not use AGIOne strict assets unless the selected profile is `agione-strict`.
@@ -251,6 +266,7 @@ Generic visual rules:
 - Tables and forms should feel production-ready: stable row height, clear headers, visible focus, predictable action placement.
 - Low-frequency technical details should be collapsed, subdued, or placed inside row/detail panels.
 - Every number must be real, derived, or clearly placeholder.
+- All visible text must be user language for the current role. Business users see business status and next actions; developers see usable endpoints, parameters, examples, and error handling; admins see configuration impact and risk. Internal implementation evidence stays in comments, attributes, or `AI-NOTES`, not on screen.
 
 ### 7. Validate
 
@@ -281,7 +297,7 @@ Do not run project build commands unless the user explicitly requests them.
 For prototype generation, include:
 
 - The created HTML path.
-- A short IA summary: page subject, page type, top user task, strong expression decision.
+- A short IA summary: target user, page subject, page type, first-visit judgment path, top user task, strong expression decision.
 - Validation result.
 - Any remaining assumptions or placeholders.
 
@@ -295,6 +311,7 @@ For review-only mode, output in Chinese:
 - ...
 
 **页面主语**
+- 目标用户：...
 - 核心主语/任务：...
 - 用户最该确认/完成的 3 件事：...
 - 页面类型：configuration/profile / collection management / form workflow / business overview / business decision / operation execution / troubleshooting analysis

@@ -56,6 +56,7 @@ Before editing code, establish:
 
 - Prototype source and confirmation status.
 - Target app, route, view folder, page name, or enough business wording to infer them from code.
+- Target user, page task, and first-visit judgment path: what object/scope the user sees, what state/result/context matters most, where the user should look or act next, and what the primary action changes or returns.
 - Page kind: table list, card list, detail, tabbed detail, create/edit form, dialog action, dashboard-like composition, or page-local component.
 - Required states: default, loading, empty, error, disabled, permission, create/edit/detail modes, and dark-mode parity when visible.
 - Data contract: generated API, existing mock, local sample data, fields, dictionaries, status mapping, query behavior, and submit behavior.
@@ -63,9 +64,19 @@ Before editing code, establish:
 
 If a non-frontend requester gives business wording only, translate it into the contract above by reading code first. Ask only for blocking decisions that change fields, actions, data behavior, or layout.
 
+## First-Visit User Gate
+
+Visible UI implementation defaults to the current target user's first visit. Simplicity means a short judgment path, clear priority, and obvious action, not fewer fields.
+
+- If the page needs explanation to be understood, treat it as over-designed or under-defined; reduce the main task and business expression before adding modules, helper text, cards, tags, metrics, or decoration.
+- Interpret the first screen by page type: list pages emphasize scope, filters, row status, and row actions; detail pages emphasize object identity, key state, main configuration, and related entrances; forms emphasize submit goal, required fields, and submit consequence; flow pages emphasize current step, blocker, and next action; dashboards emphasize overall health, exceptions, and drill-down path; API/developer pages emphasize endpoint status, call method, required parameters, copy affordance, errors, and debug path.
+- Customer-visible text must not expose unrelated internal evidence: `Api.general.xxx`, `result.total`, `hasXxx`, `currentStep`, `AI-NOTES`, `data-source`, `mock`, frontend routes, source API client names, code variables, internal expressions, derivation rules, or prototype-note labels like “数据来源 / 状态判断来源 / 根据规则推导”.
+- Developer/API/debug/log pages may show API URLs, methods, headers, body, examples, responses, error codes, copy buttons, and debug details only when those are the user's task materials. Do not expose frontend source client names, page state expressions, prototype data notes, or AI design remarks; mask sensitive values and collapse low-frequency diagnostics.
+- Before delivery, run a 5-second self-check: can the target user understand page purpose, current state, next focus/action, and action result; and is the visible UI free of unrelated code/API/internal-rule/prototype-note content? If not, prune and rewrite before delivery.
+
 ## Workflow
 
-1. Normalize the prototype into a compact implementation map: sections, controls, fields, actions, states, data, visual details, and acceptance points.
+1. Normalize the prototype into a compact implementation map: target user, first-visit judgment path, sections, controls, fields, actions, states, data, visual details, and acceptance points.
 2. Identify app topology and route ownership from current code. Run topology verification when the app or route source is unclear.
 3. Scan for reuse before creating UI: target app components, `apps/common`, EasyBill UI when installed, generated API types, constants, locale helpers, utilities, and nearby pages.
 4. Choose the page shell and component layer from current project code and `docs/project-mamba-implementation-profile.md`.
@@ -88,6 +99,7 @@ Compare the implementation with the prototype:
 
 - Structure: shell, section order, route/dialog ownership, grouping, and hierarchy.
 - Content: titles, labels, helper text, field order, table columns, card metadata, options, status values, and action names.
+- User language: visible text translates internal states, interface decisions, and system rules into language the target user can understand and act on; unrelated implementation evidence is absent from the visible UI.
 - Interaction: search, pagination, create/edit/detail, submit, cancel, destructive confirmation, refresh, disabled, permission, loading, empty, and error states.
 - Visuals: spacing, alignment, typography scale, radius, border strength, color semantics, icon mapping, density, responsive behavior, and dark-mode parity.
 - Data: API mapping, payloads, response adaptation, formatters, dictionary/status fallback, route query persistence, and refresh behavior.
@@ -105,6 +117,7 @@ End with:
 - Reuse decisions and local component decisions.
 - Validation commands and results, including checked files.
 - Browser refresh / verification notes for visible UI, including whether core content remained visible.
+- Target user 5-second self-check and visible internal-evidence cleanup result.
 - Fidelity notes: matched points, adapted points, blockers, and residual risks.
 
 Do not mark a check as passed when it did not run. State the reason and the smallest useful fallback check.

@@ -19,6 +19,7 @@
 | 轻量概览（KPI + 内容卡，无 chart 主体） | **OverviewPage** | HeaderBox + KpiCard × 3 + CardBox × N | `partials/overview-page.partial.html` |
 | **监控大盘 / analytics（chart 为主）** | **DashboardPage（v6.9）** | 先走 **决策树 ⑪** → `.ds-section` × N + KPI 两档 + chart family | `partials/dashboard.partial.html` + `dashboard.md` |
 | 向导 / 多步表单 | 组装 | HeaderBox + Stepper + FormModern × N | — |
+| API / SDK / 调试 / 日志 / 事件追踪 | 组装 | HeaderBox + DetailSection + Tabs / Alert / 复制入口 / 折叠技术详情 | — |
 | 营销 / 引导 | 组装 | HeroBand + ListCardItem × N | — |
 
 **默认（不确定时）**：StandardListPage —— 控制台 90% 是列表/管理页
