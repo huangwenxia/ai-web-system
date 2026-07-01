@@ -122,7 +122,7 @@ Choose one mode from the request:
 
 For AGIOne strict visual-quality review requests such as “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, use `review` mode and read `../page-review-skill/docs/agione-visual-review-protocol.md` before giving recommendations. Default to review-only and do not generate, edit, or rewrite HTML unless the user explicitly asks to proceed with changes after the review.
 
-When working in an existing project, save new prototypes under the project root `xia_doc/` directory unless the user specifies another path. Create `xia_doc/` if needed.
+When working in an existing target project, save new prototypes under that target project's root `agione_web_psd/` directory unless the user specifies another path. Resolve the target project root from the user's workspace/path or the repository being inspected; never treat the skill source folder, global installed skill folder, or arbitrary terminal cwd as the target root. Create `agione_web_psd/` if needed.
 
 ## Workflow
 
@@ -219,7 +219,7 @@ For a new prototype:
 1. Choose the shell:
    - `agione-strict`: copy `assets/agione-product-shell-template.html`.
    - all other profiles: copy `assets/backoffice-shell-template.html`.
-2. Save it to `xia_doc/<meaningful-slug>.html`.
+2. Save it to `<target-project-root>/agione_web_psd/<meaningful-slug>.html`.
 3. Read references only when the chosen profile needs them:
    - `agione-strict`: read `design-system/agione-strict/AI-USAGE.md` plus `catalog.md` and only the extra files needed by the page type.
    - `generic-backoffice`: use the self-contained shell tokens and this SKILL.md workflow.
