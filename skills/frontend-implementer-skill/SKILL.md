@@ -66,7 +66,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 路径说明：本节中的 `docs/`、`scripts/`、`templates/` 均相对当前 skill 目录解析；`rules/` 与 `skills/` 仍按 `ai-web-system` 仓库根目录解析。
 
-- `rules/10-existing-frontend-dev.mdc`
+- `rules/10-existing-project-frontend-guardrails.mdc`
 - 检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`

@@ -23,7 +23,7 @@ async function main() {
       description: 'Sync rules/*.mdc from this repository to an explicit target project.',
       examples: [
         'node scripts/sync-project-rules.mjs --terminal=cursor --target-project=E:\\work\\project-mamba',
-        'node scripts/sync-project-rules.mjs --terminal=trae-cn --target-project=E:\\work\\project-mamba --name=10-existing-frontend-dev',
+        'node scripts/sync-project-rules.mjs --terminal=trae-cn --target-project=E:\\work\\project-mamba --name=10-existing-project-frontend-guardrails',
       ],
     });
     return;

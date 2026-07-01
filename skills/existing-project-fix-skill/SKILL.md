@@ -47,8 +47,8 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 - `quality_bar`：默认产品级；修复后仍需顺手检查相关链路的细节一致性与顺滑度。
 
 ## 执行前先读
-- `rules/00-global-task-scope.mdc`
-- `rules/20-bugfix-and-optimization.mdc`
+- `rules/00-task-routing.mdc`
+- `rules/20-existing-project-fix-guardrails.mdc`
 - `skills/frontend-implementer-skill/SKILL.md`
 - 必要时读取 `skills/page-review-skill/SKILL.md`
 - 需要使用外部受控 Chrome、真实登录态页面或授权页面 DOM / 样式 / 网络只读诊断时，读取 `skills/frontend-implementer-skill/docs/browser-readonly-diagnostics.md`

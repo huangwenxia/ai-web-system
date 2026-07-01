@@ -47,8 +47,8 @@ description: "面向既有项目中新功能模块页面或组件开发的任务
 - `quality_bar`：默认产品级；只有用户明确压缩要求时，才允许降级交付深度。
 
 ## 执行前先读
-- `rules/00-global-task-scope.mdc`
-- `rules/10-existing-frontend-dev.mdc`
+- `rules/00-task-routing.mdc`
+- `rules/10-existing-project-frontend-guardrails.mdc`
 - `skills/agione-ui/SKILL.md`
 - `skills/frontend-implementer-skill/SKILL.md`
 - 检查清单：`docs/feature-delivery-checklist.md`

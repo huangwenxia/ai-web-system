@@ -1,0 +1,62 @@
+---
+description: Project-level task routing rules for ai-web-system workflows
+alwaysApply: true
+---
+
+本文件只定义任务入口分流和规则层级边界。
+不定义终端同步路径；终端投影由 `scripts/sync-project-rules.mjs` 负责。
+不承载完整执行流程；具体流程进入对应 `skills/*/SKILL.md`。
+
+## 任务分流
+
+每次对话先判断是否属于已知任务类型；如果属于，默认自动进入对应主工作流，不要求用户显式点名 skill。
+
+1. A-既有项目
+   - A-0 产品级审查与持续优化：用户明确要求审查、抠细节、视觉确认，或当前任务暴露明显结构 / 视觉 / UX 风险时，进入 `page-review-skill`。
+   - A-1 新功能模块页面 / 组件开发：已有原型、设计稿或确认方案时进入 `existing-project-feature-skill`；没有确认原型时先通过 `agione-ui` 生成并确认原型。
+   - A-2 翻译、术语统一与 i18n：进入 `translate-terms-skill`。
+   - A-3 bug 修复 / 代码优化 / 局部体验修正：进入 `existing-project-fix-skill`。
+2. B-新系统构建
+   - 目前不默认套用既有项目前端开发规则；只有用户明确要求时，再单独定义或启用对应链路。
+3. C-非开发问题 / 纯知识问答
+   - 直接按大模型问答回复，不强行套项目工作流。
+
+任务维度只负责选择主链路；执行时仍应叠加专业型 skill。不能因为有任务型入口，就跳过 UI、实现、翻译、审查等专业判断。
+
+## 规则层级
+
+- `rules/user-rule.md`：用户级长期偏好源，投影到终端用户级长期规则位置。
+- `rules/*.mdc`：项目级默认约束源，用于目标项目的 project rules。
+- `skills/*/SKILL.md`：可复用任务执行协议、handoff、guardrails 和输出约束。
+- 当前会话进度、临时待办、一次性任务判断：由任务列表或任务输出承接，不写进长期规则。
+
+当任务属于当前项目开发时，先遵循 `ai-web-system` 的源规则、现行 skill 协议和反馈机制。
+
+## 新任务维度判定
+
+如果当前对话不属于已知任务类型，再判断它是否能形成稳定、可复用、输入输出清晰的新闭环任务链路。
+
+只有同时满足以下条件，才提示用户考虑新增任务维度 skill：
+
+1. 它明确属于整个产品生产系统的一环。
+2. 它能稳定提高效率、质量或交付一致性。
+3. 它不是一次性问题，而是可复用的长期流程。
+4. 现有工作流和现存 skill 的组合无法低成本覆盖。
+
+一旦发现这类候选，只能先向用户说明：它属于哪一环、解决什么问题、没有会怎样、为什么值得做；得到确认后才能新增对应任务维度 skill。
+
+## 边界
+
+- 不把所有对话都自动拉进完整审查、原型、回写或治理流程。
+- 不把一次性的项目特例误判成新的长期工作流。
+- 不用任务维度替代专业能力维度。
+- 不用长期记忆替代 rule、skill、任务列表或真实项目实现。
+
+参考：
+@rules/10-existing-project-frontend-guardrails.mdc
+@rules/20-existing-project-fix-guardrails.mdc
+@rules/50-writeback-governance.mdc
+@skills/existing-project-feature-skill/SKILL.md
+@skills/existing-project-fix-skill/SKILL.md
+@skills/page-review-skill/SKILL.md
+@skills/translate-terms-skill/SKILL.md
