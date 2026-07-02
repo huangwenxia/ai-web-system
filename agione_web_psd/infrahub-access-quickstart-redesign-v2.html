@@ -1749,6 +1749,28 @@ html, body {
   height: 100%;
   min-height: 0;
 }
+body:has(.access-page) .demo-banner {
+  height: var(--ui-space-card);
+  padding-inline: var(--ui-space-section);
+  background: var(--ui-bg-page);
+  color: var(--ui-text-muted);
+  font-size: 12px;
+  border-bottom-color: transparent;
+  opacity: .72;
+}
+body:has(.access-page) .demo-mode-chip {
+  color: var(--ui-topnav-muted);
+  border-color: color-mix(in srgb, var(--ui-topnav-muted) 42%, transparent);
+  opacity: .78;
+}
+body:has(.access-page) .demo-banner [data-lucide] {
+  color: var(--ui-text-muted);
+  opacity: .56;
+}
+body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
+  color: var(--ui-topnav-muted);
+  opacity: .8;
+}
 .access-content {
   flex: 1;
   min-height: 0;
@@ -1757,9 +1779,12 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: var(--ui-space-section);
-  max-width: 1040px;
+  max-width: 980px;
   width: 100%;
   margin: 0 auto;
+}
+.access-content > [data-component="page-header-pro"] .page-header {
+  padding: var(--ui-space-card) 0 0;
 }
 .access-hero {
   background: var(--ui-bg-card);
@@ -1768,7 +1793,7 @@ html, body {
   box-shadow: var(--ui-shadow-card);
   padding: var(--ui-space-card);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
+  grid-template-columns: minmax(0, 1fr) minmax(180px, 220px);
   gap: var(--ui-space-card);
   align-items: center;
 }
@@ -1817,11 +1842,16 @@ html, body {
 }
 .access-hero__panel {
   justify-content: center;
-  gap: var(--ui-space-control);
-  padding: var(--ui-space-control);
-  background: var(--ui-bg-muted);
-  border: 1px solid var(--ui-border-soft);
-  border-radius: var(--ui-radius-control);
+  gap: var(--ui-space-inline);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  align-self: end;
+  justify-self: end;
+  width: 100%;
+  max-width: 220px;
+  opacity: .86;
 }
 .access-hero__meta,
 .access-actions,
@@ -1851,8 +1881,9 @@ html, body {
   padding-top: var(--ui-space-xs);
 }
 .access-panel-row {
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: baseline;
+  gap: var(--ui-space-control);
 }
 .access-panel-title {
   color: var(--ui-text-muted);
@@ -1865,16 +1896,21 @@ html, body {
 .access-progress-rail__item {
   height: var(--ui-space-xs);
   border-radius: var(--ui-radius-pill);
-  background: var(--ui-border-default);
+  background: var(--ui-border-soft);
 }
 .access-progress-rail__item.is-complete {
   background: var(--ui-color-success);
+  opacity: .56;
 }
 .access-progress-rail__item.is-current {
   background: var(--ui-color-primary);
+  opacity: 1;
 }
 .access-layout {
   display: block;
+}
+.access-workflow {
+  max-width: 860px;
 }
 .access-workflow__head {
   display: flex;
@@ -1908,7 +1944,7 @@ html, body {
   background: var(--ui-border-soft);
 }
 .access-step.is-complete:not(:last-child)::after {
-  background: var(--ui-color-success);
+  background: var(--ui-border-soft);
 }
 .access-step.is-current {
   border-color: var(--ui-color-primary);
@@ -1916,10 +1952,11 @@ html, body {
   background: var(--ui-bg-card);
 }
 .access-step.is-complete {
-  background: var(--ui-bg-card);
-  border-color: var(--ui-border-soft);
+  background: transparent;
+  border-color: transparent;
   box-shadow: none;
   padding-block: var(--ui-space-sm);
+  padding-inline: var(--ui-space-card);
 }
 .access-step.is-locked {
   color: var(--ui-text-muted);
@@ -1945,9 +1982,12 @@ html, body {
   border-color: var(--ui-color-primary);
 }
 .access-step.is-complete .access-step__index {
-  background: var(--ui-color-success-subtle);
+  width: var(--ui-icon-xl);
+  height: var(--ui-icon-xl);
+  margin-inline: calc((var(--ui-space-2xl) - var(--ui-icon-xl)) / 2);
+  background: var(--ui-bg-card);
   color: var(--ui-color-success);
-  border-color: var(--ui-color-success);
+  border-color: var(--ui-border-soft);
 }
 .access-step.is-complete .access-step__title {
   color: var(--ui-text-secondary);
@@ -1958,6 +1998,11 @@ html, body {
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: var(--ui-space-control);
+}
+.access-step.is-complete .access-step__body {
+  display: flex;
+  justify-content: flex-start;
+  gap: var(--ui-space-card);
 }
 .access-step__title {
   display: flex;
@@ -1973,7 +2018,43 @@ html, body {
   color: var(--ui-color-primary);
 }
 .access-step.is-complete .access-step__icon {
-  color: var(--ui-color-success);
+  color: var(--ui-text-muted);
+  opacity: .64;
+}
+.access-step .status-badge {
+  flex-shrink: 0;
+}
+.access-step.is-complete .status-badge {
+  padding-inline: 0;
+  background: transparent;
+  color: var(--ui-text-muted);
+}
+.access-step.is-current .status-badge {
+  background: var(--ui-bg-card);
+  color: var(--ui-badge-orange-fg);
+  box-shadow: inset 0 0 0 1px var(--ui-border-soft);
+}
+.access-step.is-current .access-step__meta {
+  gap: var(--ui-space-control);
+}
+.access-step__action {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--ui-color-primary);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ui-space-xs);
+  font: inherit;
+  white-space: nowrap;
+}
+.access-step__action:hover {
+  color: var(--ui-color-primary-hover);
+}
+.access-step__action [data-lucide] {
+  width: var(--ui-icon-xs);
+  height: var(--ui-icon-xs);
 }
 .access-empty-shell {
   flex: 1;
@@ -2231,6 +2312,7 @@ const i18n = {
           title: '接入云平台',
           desc: '登记私有云或公有云平台，作为后续账号、资源池和授权的基础。',
           action: '配置云平台',
+          result: '保存云平台后继续云平台授权',
           doneAction: '查看云平台',
           icon: 'cloud',
         },
@@ -2238,6 +2320,7 @@ const i18n = {
           title: '云平台授权',
           desc: '把云平台使用权限授予租户，租户授权后才能使用对应云平台资源。',
           action: '授权云平台',
+          result: '授权云平台后继续接入账号',
           doneAction: '查看授权',
           icon: 'badge-check',
         },
@@ -2245,6 +2328,7 @@ const i18n = {
           title: '接入账号',
           desc: '为租户绑定云平台访问凭证，系统通过账号拉取并管理云端资源。',
           action: '新增云账号',
+          result: '保存账号后继续接入资源池',
           doneAction: '查看账号',
           icon: 'key-round',
         },
@@ -2252,6 +2336,7 @@ const i18n = {
           title: '接入资源池',
           desc: '配置可用的云区域与可用区，启用后资源池可被业务系统使用。',
           action: '配置资源池',
+          result: '保存资源池后继续资源池授权',
           doneAction: '查看资源池',
           icon: 'layers-3',
         },
@@ -2334,6 +2419,7 @@ const i18n = {
           title: 'Connect Cloud Platform',
           desc: 'Register a private or public cloud platform as the foundation for accounts, resource pools, and grants.',
           action: 'Configure Cloud Platform',
+          result: 'Save the cloud platform to continue with cloud authorization',
           doneAction: 'View Cloud Platform',
           icon: 'cloud',
         },
@@ -2341,6 +2427,7 @@ const i18n = {
           title: 'Cloud Platform Authorization',
           desc: 'Grant cloud platform usage permissions to tenants before they can access cloud resources.',
           action: 'Authorize Cloud Platform',
+          result: 'Authorize the cloud platform to continue with account access',
           doneAction: 'View Authorization',
           icon: 'badge-check',
         },
@@ -2348,6 +2435,7 @@ const i18n = {
           title: 'Connect Account',
           desc: 'Bind tenant access credentials so the system can pull and manage cloud-side resources.',
           action: 'Add Cloud Account',
+          result: 'Save the account to continue with resource pool access',
           doneAction: 'View Account',
           icon: 'key-round',
         },
@@ -2355,6 +2443,7 @@ const i18n = {
           title: 'Connect Resource Pool',
           desc: 'Configure cloud regions and zones so enabled resource pools can be used by business systems.',
           action: 'Configure Resource Pool',
+          result: 'Save the resource pool to continue with pool authorization',
           doneAction: 'View Resource Pool',
           icon: 'layers-3',
         },
@@ -3341,7 +3430,7 @@ const app = createApp({
       if (isErrorState.value) return t.value.access.resultErrorShort;
       if (isCompleteState.value) return t.value.access.resultCompleteShort;
       if (nextStepNumber.value === totalSteps.value) return t.value.access.resultReadyShort;
-      return t.value.access.resultGenericShort;
+      return activeBusinessStep.value.result || t.value.access.resultGenericShort;
     });
     const heroIcon = computed(() => {
       if (isErrorState.value) return 'circle-x';
@@ -3537,9 +3626,9 @@ const app = createApp({
         <!-- AGIONE_EDIT_MAIN_START · business main -->
         <main class="main" role="main">
           <section v-if="activeNav === 'quickstart'" class="access-page main-box" data-component="main-box">
-            <PageHeader :title="t.access.pageTitle"></PageHeader>
-
             <div class="access-content">
+              <PageHeader :title="t.access.pageTitle"></PageHeader>
+
               <Alert
                 v-if="isErrorState"
                 variant="error"
@@ -3611,6 +3700,15 @@ const app = createApp({
                         </div>
                         <div class="access-step__meta">
                           <StatusBadge :status="step.status" :label="step.statusText" />
+                          <button
+                            v-if="step.active && !isCompleteState && !isErrorState"
+                            class="access-step__action type-caption"
+                            type="button"
+                            @click.stop="handlePrimaryAction"
+                          >
+                            <span>{{ primaryActionText }}</span>
+                            <i data-lucide="arrow-right"></i>
+                          </button>
                         </div>
                       </div>
                     </article>
