@@ -60,7 +60,8 @@ AI 会收到下述之一：
 - 生成完原型后**不要**自动浏览器截图（单次 30-90s，绝大多数场景不需要）
 - 默认验证已足够：`node --check`（JS 语法）+ `grep`（chip 位置 / token 残留 / Logo 长度）
 - 浏览器视觉确认交给用户自己 open
-- **唯一例外**：用户 prompt 含关键词 "playwright" / "截图" / "screenshot" / "视觉验证" / "看效果" 时才调用
+- **唯一例外**：用户明确要求浏览器自动化或采集工具时才调用，例如 "用 Playwright" / "Browser MCP" / "Chrome MCP" / "自动截图验证" / "浏览器截图" / "screenshot" / "render check" / "pixel compare" / "抓取 DOM" / "采集 CSS"
+- "看效果"、"帮我看下页面"、"视觉效果怎么样" 只表示人工审查 / 反馈请求，不构成 Playwright / Browser MCP / Chrome MCP 授权
 
 ---
 

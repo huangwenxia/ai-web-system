@@ -1,8 +1,0 @@
-{
-  "url": "https://example.com/page",
-  "outputDir": "E:\\work\\target\\capture",
-  "waitMs": 3000,
-  "timeoutMs": 120000,
-  "viewportWidth": 1600,
-  "viewportHeight": 900
-}

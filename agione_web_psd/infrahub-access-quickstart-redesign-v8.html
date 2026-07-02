@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- AGIONE_EDIT_TITLE_START · business page title --><title>AGIOne Console - Infrahub Access Quick Start V2</title><!-- AGIONE_EDIT_TITLE_END -->
+<!-- AGIONE_EDIT_TITLE_START · business page title --><title>AGIOne Console - Infrahub Access Quick Start V8</title><!-- AGIONE_EDIT_TITLE_END -->
 <!-- AGIONE_EDIT_NOTES_START -->
 <!--AI-NOTES
 mode: edit
-redesign-generation: v2-optimized
+redesign-generation: v8-access-guide-vertical-focus
 created-at: 2026-07-01
 edited-at: 2026-07-02
-output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v2.html
+output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v8.html
 ia-gate: pass
 design-system: agione-strict
 selected-design-system: agione-strict
@@ -1754,7 +1754,6 @@ body:has(.access-page) .demo-banner {
   padding-inline: var(--ui-space-section);
   background: var(--ui-bg-page);
   color: var(--ui-text-muted);
-  font-size: 12px;
   border-bottom-color: transparent;
   opacity: .72;
 }
@@ -1778,147 +1777,202 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   padding: var(--ui-space-inline) var(--ui-space-section) var(--ui-space-section);
   display: flex;
   flex-direction: column;
-  gap: var(--ui-space-section);
+  gap: var(--ui-space-base);
   width: 100%;
   margin: 0;
 }
 .access-content > [data-component="page-header-pro"] .page-header {
-  padding: var(--ui-space-card) 0 0;
+  justify-content: center;
+  padding: var(--ui-space-card) 0 var(--ui-space-xs);
 }
-.access-actions,
-.access-step__meta,
-.access-workflow__head,
-.access-workflow__title,
-.access-step__summary,
-.access-step__heading,
-.access-current-task__top,
-.access-current-task,
-.access-step__title {
-  display: flex;
-  align-items: center;
-  gap: var(--ui-space-inline);
+.access-content > [data-component="page-header-pro"] .page-header__left {
+  flex: 0 1 auto;
+  text-align: center;
 }
-.access-actions,
-.access-current-task {
-  flex-wrap: wrap;
+.access-content > [data-component="page-header-pro"] .page-header__title-row {
+  justify-content: center;
 }
 .access-muted,
 .access-empty-copy {
-  color: var(--ui-text-muted);
-}
-.access-actions {
-  padding-top: var(--ui-space-xs);
-  flex-shrink: 0;
-}
-.access-actions .el-button {
-  min-width: calc(var(--ui-space-3xl) * 3);
-  height: calc(var(--ui-space-control) * 3);
-}
-.access-panel-title {
   color: var(--ui-text-muted);
 }
 .access-panel-value {
   color: var(--ui-text-secondary);
 }
 .access-layout {
-  display: block;
+  flex: 1;
+  min-height: 0;
+  display: flex;
 }
 .access-workflow {
   background: var(--ui-bg-card);
   border: 1px solid var(--ui-border-soft);
   border-radius: var(--ui-radius-card);
   box-shadow: var(--ui-shadow-card);
-  padding: var(--ui-space-card) var(--ui-space-section);
+  padding: var(--ui-space-card) var(--ui-space-section) var(--ui-space-section);
   width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 .access-workflow__head {
+  display: flex;
+  align-items: center;
   justify-content: space-between;
   gap: var(--ui-space-card);
-  padding-bottom: var(--ui-space-card);
-  border-bottom: 1px solid var(--ui-border-soft);
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
+  padding-bottom: var(--ui-space-control);
 }
 .access-workflow__title {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ui-space-xs);
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-inline);
   min-width: 0;
+}
+.access-workflow__title h2 {
+  margin: 0;
 }
 .access-progress-pill {
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--ui-space-xs);
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--ui-space-3xl) * 1.5);
+  height: calc(var(--ui-space-control) * 2.5);
+  padding-inline: var(--ui-space-control);
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted);
   white-space: nowrap;
   color: var(--ui-text-muted);
 }
-.access-workflow__body {
-  padding-top: var(--ui-space-card);
-}
-.access-step-list {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  overflow: visible;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-}
-.access-step {
-  position: relative;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: var(--ui-radius-control);
-  padding: var(--ui-space-control) 0;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: var(--ui-space-control);
-  align-items: center;
-  min-width: 0;
-  transition: border-color var(--ui-duration-fast) var(--ui-ease-out), box-shadow var(--ui-duration-fast) var(--ui-ease-out), background var(--ui-duration-fast) var(--ui-ease-out);
-}
-.access-step::before {
-  content: none;
-}
-.access-step:not(:last-child)::after {
-  content: '';
-  position: absolute;
-  left: var(--ui-space-base);
-  top: calc(var(--ui-space-control) + var(--ui-space-2xl));
-  bottom: calc(-1 * var(--ui-space-control));
-  width: 1px;
-  background: var(--ui-border-soft);
-}
-.access-step.is-complete:not(:last-child)::after {
-  background: var(--ui-border-soft);
-}
-.access-step.is-current {
-  margin: var(--ui-space-control) 0;
-  padding: var(--ui-space-card) var(--ui-space-card) var(--ui-space-card) calc(var(--ui-space-card) + var(--ui-space-inline));
-  border-color: color-mix(in srgb, var(--ui-color-primary) 18%, var(--ui-border-soft));
-  box-shadow: none;
-  background: var(--ui-bg-card);
+.access-progress-track {
+  height: var(--ui-space-xs);
+  width: 100%;
+  max-width: 1080px;
+  margin: 0 auto var(--ui-space-section);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted);
   overflow: hidden;
 }
-.access-step.is-current::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--ui-space-xs);
+.access-progress-track span {
+  display: block;
+  width: var(--access-progress, 0%);
+  height: 100%;
+  border-radius: inherit;
   background: var(--ui-color-primary);
+  transition: width var(--ui-duration-base) var(--ui-ease-out);
 }
-.access-step.is-complete {
-  background: transparent;
-  border-color: transparent;
-  box-shadow: none;
-  padding-block: var(--ui-space-sm);
-  padding-inline: 0;
+.access-workflow__body {
+  width: 100%;
+  max-width: 1080px;
+  margin-inline: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-section);
 }
-.access-step.is-complete::before {
-  content: none;
+.access-guide-card {
+  width: 100%;
+  border: 1px solid var(--ui-border-interactive);
+  border-radius: var(--ui-radius-card);
+  background: color-mix(in srgb, var(--ui-color-primary-subtle) 12%, var(--ui-bg-card));
+  box-shadow: var(--ui-shadow-xs);
+  padding: var(--ui-space-section);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--ui-space-card);
+  align-items: center;
 }
-.access-step.is-locked {
+.access-guide-card.is-ready {
+  border-color: var(--ui-border-interactive);
+  background: color-mix(in srgb, var(--ui-color-success-subtle) 18%, var(--ui-bg-card));
+}
+.access-guide__marker {
+  width: var(--ui-space-3xl);
+  height: var(--ui-space-3xl);
+  border-radius: var(--ui-radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-text-on-brand);
+  background: var(--ui-color-primary);
+  box-shadow: var(--ui-shadow-xs);
+}
+.access-guide-card.is-ready .access-guide__marker {
+  background: var(--ui-color-success);
+}
+.access-guide__marker [data-lucide],
+.access-guide__marker svg {
+  width: var(--ui-icon-md);
+  height: var(--ui-icon-md);
+}
+.access-guide__copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--ui-space-control);
+}
+.access-guide__top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--ui-space-inline);
+}
+.access-guide__copy h2,
+.access-guide__copy p {
+  margin: 0;
+}
+.access-guide__result {
   color: var(--ui-text-secondary);
+}
+.access-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-inline);
+  justify-content: flex-end;
+}
+.access-actions .el-button {
+  min-width: calc(var(--ui-space-3xl) * 3);
+  height: calc(var(--ui-space-control) * 3);
+}
+.access-route {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-control);
+}
+.access-route__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-control);
+}
+.access-route__head h3 {
+  margin: 0;
+}
+.access-step-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-xs);
+  width: 100%;
+}
+.access-step {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--ui-space-control);
+  align-items: center;
+  padding: var(--ui-space-control) var(--ui-space-card);
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-control);
   background: transparent;
+}
+.access-step.is-current {
+  border-color: var(--ui-border-interactive);
+  background: color-mix(in srgb, var(--ui-color-primary-subtle) 8%, var(--ui-bg-card));
 }
 .access-step__index {
   width: var(--ui-space-2xl);
@@ -1931,112 +1985,41 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border-default);
   flex-shrink: 0;
-  position: relative;
-  z-index: var(--ui-z-base);
 }
 .access-step.is-current .access-step__index {
-  background: var(--ui-color-primary);
   color: var(--ui-text-on-brand);
+  background: var(--ui-color-primary);
   border-color: var(--ui-color-primary);
 }
-.access-step.is-current::after {
-  left: calc(var(--ui-space-card) + var(--ui-space-inline) + var(--ui-space-base));
-  top: calc(var(--ui-space-card) + var(--ui-space-2xl));
-}
 .access-step.is-complete .access-step__index {
-  width: var(--ui-icon-xl);
-  height: var(--ui-icon-xl);
-  margin-inline: calc((var(--ui-space-2xl) - var(--ui-icon-xl)) / 2);
-  background: var(--ui-bg-card);
   color: var(--ui-color-success);
+  background: var(--ui-bg-card);
   border-color: var(--ui-border-soft);
 }
-.access-step.is-complete .access-step__title {
-  color: var(--ui-text-secondary);
-}
-.access-step.is-locked .access-step__title h3 {
-  color: var(--ui-text-secondary);
-}
-.access-step__body,
-.access-step__title {
-  min-width: 0;
-}
-.access-step__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ui-space-control);
-}
-.access-step.is-complete .access-step__body {
-  gap: var(--ui-space-inline);
-}
-.access-step__summary {
-  justify-content: space-between;
-  gap: var(--ui-space-control);
-  min-width: 0;
-}
-.access-step__heading {
-  min-width: 0;
+.access-step__index [data-lucide],
+.access-step__index svg {
+  width: var(--ui-icon-sm);
+  height: var(--ui-icon-sm);
 }
 .access-step__title {
-  display: flex;
-  align-items: center;
-  gap: var(--ui-space-inline);
+  min-width: 0;
+  color: var(--ui-text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
-.access-step__icon {
-  width: var(--ui-icon-md);
-  height: var(--ui-icon-md);
+.access-step.is-complete .access-step__title,
+.access-step.is-locked .access-step__title {
+  color: var(--ui-text-secondary);
+}
+.access-step__state {
   color: var(--ui-text-muted);
-  flex-shrink: 0;
+  white-space: nowrap;
 }
-.access-step.is-current .access-step__icon {
+.access-step.is-current .access-step__state {
   color: var(--ui-color-primary);
 }
-.access-step.is-complete .access-step__icon {
-  color: var(--ui-text-muted);
-  opacity: .64;
-}
-.access-step__title h3 {
-  margin: 0;
-}
-.access-current-task {
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--ui-space-section);
-  width: 100%;
-}
-.access-current-task__copy {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ui-space-inline);
-  max-width: 520px;
-}
-.access-current-task__top {
-  min-width: 0;
-}
-.access-current-task__copy h2,
-.access-current-task__result {
-  margin: 0;
-}
-.access-current-task__result {
-  color: var(--ui-text-secondary);
-}
-.access-step .status-badge {
-  flex-shrink: 0;
-}
-.access-step.is-complete .status-badge {
-  padding-inline: 0;
-  background: transparent;
-  color: var(--ui-text-muted);
-}
-.access-step.is-current .status-badge {
-  background: var(--ui-bg-card);
-  color: var(--ui-badge-orange-fg);
-  box-shadow: inset 0 0 0 1px var(--ui-border-soft);
-}
-.access-step.is-complete .access-current-task .status-badge {
-  padding-inline: var(--ui-space-inline);
-  background: var(--ui-color-success-subtle);
+.access-step.is-complete .access-step__state {
   color: var(--ui-color-success);
 }
 .access-empty-shell {
@@ -2057,21 +2040,23 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   .access-workflow {
     padding: var(--ui-space-card);
   }
+  .access-workflow__head,
+  .access-route__head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .access-guide-card {
+    grid-template-columns: 1fr;
+  }
   .access-actions,
   .access-actions .el-button {
     width: 100%;
   }
   .access-step {
-    grid-template-columns: 1fr;
+    grid-template-columns: auto minmax(0, 1fr);
   }
-  .access-step:not(:last-child)::after {
-    display: none;
-  }
-  .access-workflow__head,
-  .access-step__summary,
-  .access-current-task {
-    flex-direction: column;
-    align-items: flex-start;
+  .access-step__state {
+    grid-column: 2;
   }
 }
 /* AGIONE_ACCESS_QUICKSTART_STYLE_END */
@@ -2240,7 +2225,7 @@ const i18n = {
     access: {
       pageTitle: '接入管理 · 快速开始',
       overviewAction: '查看接入总览',
-      currentLabel: '当前待处理',
+      currentLabel: '当前步骤',
       completeLabel: '接入已就绪',
       progressLabel: '接入进度',
       progressDone: '已完成 {done} 个步骤，还差 {left} 个',
@@ -2265,8 +2250,8 @@ const i18n = {
       navPlaceholderHint: '回到快速开始，继续完成接入链路。',
       status: {
         done: '已完成',
-        pending: '待处理',
-        locked: '待前置条件',
+        pending: '当前步骤',
+        locked: '待完成',
       },
       focusItems: [
         '选择需要开放给业务单元的资源池。',
@@ -2341,7 +2326,7 @@ const i18n = {
     access: {
       pageTitle: 'Access Management · Quick Start',
       overviewAction: 'View Access Overview',
-      currentLabel: 'Current Task',
+      currentLabel: 'Current Step',
       completeLabel: 'Access Ready',
       progressLabel: 'Access Progress',
       progressDone: '{done} steps complete, {left} remaining',
@@ -2366,8 +2351,8 @@ const i18n = {
       navPlaceholderHint: 'Return to Quick Start to continue the access chain.',
       status: {
         done: 'Complete',
-        pending: 'Pending',
-        locked: 'Prerequisite Required',
+        pending: 'Current',
+        locked: 'Not Started',
       },
       focusItems: [
         'Choose the resource pools that business units can use.',
@@ -3357,6 +3342,7 @@ const app = createApp({
     const activeBusinessStep = computed(() => steps.value[(currentStepNumber.value || nextStepNumber.value) - 1] || steps.value[0]);
     const remainingStepCount = computed(() => Math.max(totalSteps.value - completedStep.value, 0));
     const progressText = computed(() => completedStep.value + '/' + totalSteps.value);
+    const progressPercent = computed(() => totalSteps.value ? Math.round((completedStep.value / totalSteps.value) * 100) : 0);
     const progressSentence = computed(() => {
       if (isCompleteState.value) return t.value.access.progressReady;
       return lang.value === 'zh'
@@ -3456,7 +3442,7 @@ const app = createApp({
       hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
       steps, totalSteps, completedStep, currentStepNumber, remainingStepCount, isCompleteState,
       currentStatus, currentTitle, currentDesc, primaryActionText, heroResultText, heroIcon,
-      progressText, progressSentence, completedStepNames, displaySteps,
+      progressText, progressPercent, progressSentence, completedStepNames, displaySteps,
       handlePrimaryAction,
       // AGIONE_EDIT_SETUP_RETURN_END
     };
@@ -3583,69 +3569,61 @@ const app = createApp({
                 <div class="access-workflow" data-component="access-workflow">
                   <div class="access-workflow__head">
                     <div class="access-workflow__title">
-                      <h2 class="type-h2">{{ t.access.workflowTitle }}</h2>
+                      <h2 class="type-h3">{{ t.access.workflowTitle }}</h2>
                       <span class="type-caption access-muted">{{ progressSentence }}</span>
                     </div>
-                    <div class="access-progress-pill" aria-live="polite">
-                      <span class="type-caption access-panel-title">{{ t.access.progressLabel }}</span>
+                    <div class="access-progress-pill" aria-live="polite" :aria-label="t.access.progressLabel + ' ' + progressText">
                       <span class="type-data access-panel-value">{{ progressText }}</span>
                     </div>
                   </div>
+                  <div class="access-progress-track" :style="{ '--access-progress': progressPercent + '%' }" aria-hidden="true">
+                    <span></span>
+                  </div>
+
                   <div class="access-workflow__body">
-                    <div class="access-step-list">
-                      <article
-                        v-for="step in displaySteps"
-                        :key="activeScenario + '-' + step.stepNumber + '-' + step.state"
-                        class="access-step"
-                        :class="step.stateClass"
-                        data-component="access-step"
-                        :data-state="step.state"
-                        :aria-current="step.active ? 'step' : null"
-                      >
-                        <div class="access-step__index type-data">
-                          <i v-if="step.done" data-lucide="check"></i>
-                          <span v-else>{{ step.stepNumber }}</span>
+                    <section class="access-guide-card" :class="{ 'is-ready': isCompleteState }" data-component="access-guide-current-step">
+                      <div class="access-guide__marker" aria-hidden="true">
+                        <i :data-lucide="heroIcon"></i>
+                      </div>
+                      <div class="access-guide__copy">
+                        <div class="access-guide__top">
+                          <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
+                          <span class="type-caption access-muted">{{ progressText }}</span>
                         </div>
-                        <div class="access-step__body">
-                          <div
-                            class="access-step__summary"
-                            v-if="!(step.active || (isCompleteState && step.stepNumber === totalSteps))"
-                          >
-                            <div class="access-step__heading">
-                              <div class="access-step__title">
-                                <i :data-lucide="step.icon" class="access-step__icon" aria-hidden="true"></i>
-                                <h3 class="type-h3">{{ step.title }}</h3>
-                              </div>
-                            </div>
-                            <div class="access-step__meta">
-                              <StatusBadge
-                                v-if="!step.done"
-                                :status="step.status"
-                                :label="step.statusText"
-                              />
-                            </div>
+                        <h2 class="type-h2">{{ currentTitle }}</h2>
+                        <p class="type-body-sm access-guide__result">{{ heroResultText }}</p>
+                      </div>
+                      <div class="access-actions">
+                        <el-button type="primary" @click.stop="handlePrimaryAction">{{ primaryActionText }}</el-button>
+                      </div>
+                    </section>
+
+                    <section class="access-route" data-component="access-guide-route">
+                      <div class="access-route__head">
+                        <h3 class="type-h3">{{ t.access.workflowTitle }}</h3>
+                        <span class="type-caption access-muted">{{ progressSentence }}</span>
+                      </div>
+                      <div class="access-step-list">
+                        <article
+                          v-for="step in displaySteps"
+                          :key="activeScenario + '-' + step.stepNumber + '-' + step.state"
+                          class="access-step"
+                          :class="step.stateClass"
+                          data-component="access-step"
+                          :data-state="step.state"
+                          :aria-current="step.active ? 'step' : null"
+                        >
+                          <div class="access-step__index type-data">
+                            <i v-if="step.done" data-lucide="check"></i>
+                            <span v-else>{{ step.stepNumber }}</span>
                           </div>
-                          <div
-                            v-if="step.active || (isCompleteState && step.stepNumber === totalSteps)"
-                            class="access-current-task"
-                          >
-                            <div class="access-current-task__copy">
-                              <div class="access-current-task__top">
-                                <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
-                              </div>
-                              <h2 class="type-h2">{{ currentTitle }}</h2>
-                              <p class="type-body access-current-task__result">{{ heroResultText }}</p>
-                            </div>
-                            <div class="access-actions">
-                              <el-button type="primary" @click.stop="handlePrimaryAction">{{ primaryActionText }}</el-button>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </div>
+                          <div class="type-body-sm access-step__title">{{ step.title }}</div>
+                          <div class="type-caption access-step__state">{{ step.statusText }}</div>
+                        </article>
+                      </div>
+                    </section>
                   </div>
                 </div>
-
               </section>
             </div>
           </section>

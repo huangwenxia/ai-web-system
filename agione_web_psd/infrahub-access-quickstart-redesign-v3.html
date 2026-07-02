@@ -1845,10 +1845,31 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
 }
 .access-progress-pill {
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--ui-space-xs);
+  align-items: center;
+  justify-content: center;
+  min-width: calc(var(--ui-space-3xl) * 1.5);
+  height: calc(var(--ui-space-control) * 2.5);
+  padding-inline: var(--ui-space-control);
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted);
   white-space: nowrap;
   color: var(--ui-text-muted);
+}
+.access-progress-track {
+  height: var(--ui-space-xs);
+  margin-top: var(--ui-space-card);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted);
+  overflow: hidden;
+}
+.access-progress-track span {
+  display: block;
+  width: var(--access-progress, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ui-color-primary);
+  transition: width var(--ui-duration-base) var(--ui-ease-out);
 }
 .access-workflow__body {
   padding-top: var(--ui-space-card);
@@ -1894,9 +1915,9 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
 .access-step.is-current {
   margin: var(--ui-space-control) 0;
   padding: var(--ui-space-card) var(--ui-space-card) var(--ui-space-card) calc(var(--ui-space-card) + var(--ui-space-inline));
-  border-color: color-mix(in srgb, var(--ui-color-primary) 18%, var(--ui-border-soft));
-  box-shadow: none;
-  background: var(--ui-bg-card);
+  border-color: color-mix(in srgb, var(--ui-color-primary) 24%, var(--ui-border-soft));
+  box-shadow: var(--ui-shadow-xs);
+  background: color-mix(in srgb, var(--ui-color-primary-subtle) 14%, var(--ui-bg-card));
   overflow: hidden;
 }
 .access-step.is-current::before {
@@ -2000,19 +2021,23 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
 }
 .access-current-task {
   align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--ui-space-section);
+  justify-content: flex-start;
+  gap: var(--ui-space-card);
   width: 100%;
+  max-width: 820px;
 }
 .access-current-task__copy {
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--ui-space-inline);
-  max-width: 520px;
+  max-width: 560px;
 }
 .access-current-task__top {
   min-width: 0;
+}
+.access-current-task .access-actions {
+  margin-left: auto;
 }
 .access-current-task__copy h2,
 .access-current-task__result {
@@ -3357,6 +3382,7 @@ const app = createApp({
     const activeBusinessStep = computed(() => steps.value[(currentStepNumber.value || nextStepNumber.value) - 1] || steps.value[0]);
     const remainingStepCount = computed(() => Math.max(totalSteps.value - completedStep.value, 0));
     const progressText = computed(() => completedStep.value + '/' + totalSteps.value);
+    const progressPercent = computed(() => totalSteps.value ? Math.round((completedStep.value / totalSteps.value) * 100) : 0);
     const progressSentence = computed(() => {
       if (isCompleteState.value) return t.value.access.progressReady;
       return lang.value === 'zh'
@@ -3456,7 +3482,7 @@ const app = createApp({
       hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
       steps, totalSteps, completedStep, currentStepNumber, remainingStepCount, isCompleteState,
       currentStatus, currentTitle, currentDesc, primaryActionText, heroResultText, heroIcon,
-      progressText, progressSentence, completedStepNames, displaySteps,
+      progressText, progressPercent, progressSentence, completedStepNames, displaySteps,
       handlePrimaryAction,
       // AGIONE_EDIT_SETUP_RETURN_END
     };
@@ -3586,10 +3612,12 @@ const app = createApp({
                       <h2 class="type-h2">{{ t.access.workflowTitle }}</h2>
                       <span class="type-caption access-muted">{{ progressSentence }}</span>
                     </div>
-                    <div class="access-progress-pill" aria-live="polite">
-                      <span class="type-caption access-panel-title">{{ t.access.progressLabel }}</span>
+                    <div class="access-progress-pill" aria-live="polite" :aria-label="t.access.progressLabel + ' ' + progressText">
                       <span class="type-data access-panel-value">{{ progressText }}</span>
                     </div>
+                  </div>
+                  <div class="access-progress-track" :style="{ '--access-progress': progressPercent + '%' }" aria-hidden="true">
+                    <span></span>
                   </div>
                   <div class="access-workflow__body">
                     <div class="access-step-list">

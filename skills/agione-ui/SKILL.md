@@ -347,9 +347,11 @@ rg -n "AGIONE_LOGO_DANGER" target.html
     - 生成完原型后**不要**自动调用 Playwright / Browser MCP / Chrome MCP 等浏览器工具截图验证视觉
     - 默认验证手段已足够：`node --check`（JS 语法）+ Bash grep（chip 位置 / token 残留 / Logo 长度）
     - 浏览器视觉确认交给用户自己 open
-    - **唯一例外**：用户 prompt 中明确出现以下任一关键词时才允许：
-      - "playwright" / "截图" / "screenshot"
-      - "视觉验证" / "看效果" / "render check"
+    - **唯一例外**：用户 prompt 中明确要求使用浏览器自动化或采集工具时才允许，例如：
+      - "用 Playwright" / "Browser MCP" / "Chrome MCP"
+      - "自动截图验证" / "浏览器截图" / "screenshot" / "render check" / "pixel compare"
+      - "抓取 DOM" / "采集 CSS" / "运行时页面快照"
+    - "看效果"、"帮我看下页面"、"视觉效果怎么样" 只表示人工审查 / 反馈请求，不构成 Playwright / Browser MCP / Chrome MCP 授权
     - **理由**：Playwright 启动 + 渲染 + 截图单次 30-90s，绝大多数原型生成不需要这步；让用户自己浏览器打开 0 成本。
 
 14. **L3 业务卡：自由 + 5 条底线**（v4.2，⚠️ 高频审美问题）：

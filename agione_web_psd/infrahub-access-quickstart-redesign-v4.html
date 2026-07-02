@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- AGIONE_EDIT_TITLE_START · business page title --><title>AGIOne Console - Infrahub Access Quick Start V2</title><!-- AGIONE_EDIT_TITLE_END -->
+<!-- AGIONE_EDIT_TITLE_START · business page title --><title>AGIOne Console - Infrahub Access Quick Start V4</title><!-- AGIONE_EDIT_TITLE_END -->
 <!-- AGIONE_EDIT_NOTES_START -->
 <!--AI-NOTES
 mode: edit
-redesign-generation: v2-optimized
+redesign-generation: v4-focus-polish
 created-at: 2026-07-01
 edited-at: 2026-07-02
-output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v2.html
+output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v4.html
 ia-gate: pass
 design-system: agione-strict
 selected-design-system: agione-strict
@@ -1778,12 +1778,12 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   padding: var(--ui-space-inline) var(--ui-space-section) var(--ui-space-section);
   display: flex;
   flex-direction: column;
-  gap: var(--ui-space-section);
+  gap: var(--ui-space-card);
   width: 100%;
   margin: 0;
 }
 .access-content > [data-component="page-header-pro"] .page-header {
-  padding: var(--ui-space-card) 0 0;
+  padding: var(--ui-space-control) 0 0;
 }
 .access-actions,
 .access-step__meta,
@@ -1832,26 +1832,53 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   width: 100%;
 }
 .access-workflow__head {
-  justify-content: space-between;
-  gap: var(--ui-space-card);
-  padding-bottom: var(--ui-space-card);
-  border-bottom: 1px solid var(--ui-border-soft);
+  justify-content: flex-start;
+  gap: var(--ui-space-control);
+  padding-bottom: var(--ui-space-control);
+  border-bottom: 0;
 }
 .access-workflow__title {
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--ui-space-xs);
+  flex-direction: row;
+  align-items: center;
+  gap: var(--ui-space-inline);
   min-width: 0;
+  flex-shrink: 0;
 }
 .access-progress-pill {
   display: inline-flex;
-  align-items: baseline;
-  gap: var(--ui-space-xs);
+  align-items: center;
+  justify-content: center;
+  min-width: auto;
+  height: auto;
+  padding-inline: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
   white-space: nowrap;
   color: var(--ui-text-muted);
 }
+.access-progress-track {
+  height: var(--ui-space-xs);
+  margin-top: 0;
+  flex: 1;
+  min-width: calc(var(--ui-space-3xl) * 4);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-bg-muted);
+  overflow: hidden;
+}
+.access-progress-track span {
+  display: block;
+  width: var(--access-progress, 0%);
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ui-color-primary);
+  transition: width var(--ui-duration-base) var(--ui-ease-out);
+}
 .access-workflow__body {
-  padding-top: var(--ui-space-card);
+  padding-top: var(--ui-space-control);
+  display: flex;
+  flex-direction: column;
+  gap: var(--ui-space-card);
 }
 .access-step-list {
   position: relative;
@@ -1892,19 +1919,15 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   background: var(--ui-border-soft);
 }
 .access-step.is-current {
-  margin: var(--ui-space-control) 0;
-  padding: var(--ui-space-card) var(--ui-space-card) var(--ui-space-card) calc(var(--ui-space-card) + var(--ui-space-inline));
-  border-color: color-mix(in srgb, var(--ui-color-primary) 18%, var(--ui-border-soft));
+  padding-block: var(--ui-space-sm);
+  padding-inline: 0;
+  border-color: transparent;
   box-shadow: none;
-  background: var(--ui-bg-card);
-  overflow: hidden;
+  background: transparent;
+  overflow: visible;
 }
 .access-step.is-current::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: var(--ui-space-xs);
-  background: var(--ui-color-primary);
+  content: none;
 }
 .access-step.is-complete {
   background: transparent;
@@ -1940,8 +1963,8 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   border-color: var(--ui-color-primary);
 }
 .access-step.is-current::after {
-  left: calc(var(--ui-space-card) + var(--ui-space-inline) + var(--ui-space-base));
-  top: calc(var(--ui-space-card) + var(--ui-space-2xl));
+  left: var(--ui-space-base);
+  top: calc(var(--ui-space-control) + var(--ui-space-2xl));
 }
 .access-step.is-complete .access-step__index {
   width: var(--ui-icon-xl);
@@ -1999,10 +2022,16 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   margin: 0;
 }
 .access-current-task {
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: var(--ui-space-section);
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--ui-space-card);
   width: 100%;
+  max-width: none;
+  padding: var(--ui-space-card);
+  border: 1px solid color-mix(in srgb, var(--ui-color-primary) 28%, var(--ui-border-soft));
+  border-radius: var(--ui-radius-card);
+  background: color-mix(in srgb, var(--ui-color-primary-subtle) 16%, var(--ui-bg-card));
+  box-shadow: var(--ui-shadow-xs);
 }
 .access-current-task__copy {
   min-width: 0;
@@ -2013,6 +2042,10 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
 }
 .access-current-task__top {
   min-width: 0;
+}
+.access-current-task .access-actions {
+  margin-left: 0;
+  padding-top: 0;
 }
 .access-current-task__copy h2,
 .access-current-task__result {
@@ -2033,11 +2066,6 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
   background: var(--ui-bg-card);
   color: var(--ui-badge-orange-fg);
   box-shadow: inset 0 0 0 1px var(--ui-border-soft);
-}
-.access-step.is-complete .access-current-task .status-badge {
-  padding-inline: var(--ui-space-inline);
-  background: var(--ui-color-success-subtle);
-  color: var(--ui-color-success);
 }
 .access-empty-shell {
   flex: 1;
@@ -3357,6 +3385,7 @@ const app = createApp({
     const activeBusinessStep = computed(() => steps.value[(currentStepNumber.value || nextStepNumber.value) - 1] || steps.value[0]);
     const remainingStepCount = computed(() => Math.max(totalSteps.value - completedStep.value, 0));
     const progressText = computed(() => completedStep.value + '/' + totalSteps.value);
+    const progressPercent = computed(() => totalSteps.value ? Math.round((completedStep.value / totalSteps.value) * 100) : 0);
     const progressSentence = computed(() => {
       if (isCompleteState.value) return t.value.access.progressReady;
       return lang.value === 'zh'
@@ -3456,7 +3485,7 @@ const app = createApp({
       hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
       steps, totalSteps, completedStep, currentStepNumber, remainingStepCount, isCompleteState,
       currentStatus, currentTitle, currentDesc, primaryActionText, heroResultText, heroIcon,
-      progressText, progressSentence, completedStepNames, displaySteps,
+      progressText, progressPercent, progressSentence, completedStepNames, displaySteps,
       handlePrimaryAction,
       // AGIONE_EDIT_SETUP_RETURN_END
     };
@@ -3583,15 +3612,29 @@ const app = createApp({
                 <div class="access-workflow" data-component="access-workflow">
                   <div class="access-workflow__head">
                     <div class="access-workflow__title">
-                      <h2 class="type-h2">{{ t.access.workflowTitle }}</h2>
+                      <h2 class="type-h3">{{ t.access.workflowTitle }}</h2>
                       <span class="type-caption access-muted">{{ progressSentence }}</span>
                     </div>
-                    <div class="access-progress-pill" aria-live="polite">
-                      <span class="type-caption access-panel-title">{{ t.access.progressLabel }}</span>
+                    <div class="access-progress-track" :style="{ '--access-progress': progressPercent + '%' }" aria-hidden="true">
+                      <span></span>
+                    </div>
+                    <div class="access-progress-pill" aria-live="polite" :aria-label="t.access.progressLabel + ' ' + progressText">
                       <span class="type-data access-panel-value">{{ progressText }}</span>
                     </div>
                   </div>
                   <div class="access-workflow__body">
+                    <section class="access-current-task" data-component="access-current-task">
+                      <div class="access-current-task__copy">
+                        <div class="access-current-task__top">
+                          <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
+                        </div>
+                        <h2 class="type-h2">{{ currentTitle }}</h2>
+                        <p class="type-body access-current-task__result">{{ heroResultText }}</p>
+                      </div>
+                      <div class="access-actions">
+                        <el-button type="primary" @click.stop="handlePrimaryAction">{{ primaryActionText }}</el-button>
+                      </div>
+                    </section>
                     <div class="access-step-list">
                       <article
                         v-for="step in displaySteps"
@@ -3607,10 +3650,7 @@ const app = createApp({
                           <span v-else>{{ step.stepNumber }}</span>
                         </div>
                         <div class="access-step__body">
-                          <div
-                            class="access-step__summary"
-                            v-if="!(step.active || (isCompleteState && step.stepNumber === totalSteps))"
-                          >
+                          <div class="access-step__summary">
                             <div class="access-step__heading">
                               <div class="access-step__title">
                                 <i :data-lucide="step.icon" class="access-step__icon" aria-hidden="true"></i>
@@ -3619,25 +3659,10 @@ const app = createApp({
                             </div>
                             <div class="access-step__meta">
                               <StatusBadge
-                                v-if="!step.done"
+                                v-if="step.locked"
                                 :status="step.status"
                                 :label="step.statusText"
                               />
-                            </div>
-                          </div>
-                          <div
-                            v-if="step.active || (isCompleteState && step.stepNumber === totalSteps)"
-                            class="access-current-task"
-                          >
-                            <div class="access-current-task__copy">
-                              <div class="access-current-task__top">
-                                <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
-                              </div>
-                              <h2 class="type-h2">{{ currentTitle }}</h2>
-                              <p class="type-body access-current-task__result">{{ heroResultText }}</p>
-                            </div>
-                            <div class="access-actions">
-                              <el-button type="primary" @click.stop="handlePrimaryAction">{{ primaryActionText }}</el-button>
                             </div>
                           </div>
                         </div>
