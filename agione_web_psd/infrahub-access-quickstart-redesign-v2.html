@@ -6,10 +6,12 @@
 <!-- AGIONE_EDIT_TITLE_START · business page title --><title>AGIOne Console - Infrahub Access Quick Start V2</title><!-- AGIONE_EDIT_TITLE_END -->
 <!-- AGIONE_EDIT_NOTES_START -->
 <!--AI-NOTES
-mode: generate
-redesign-generation: v2
+mode: edit
+redesign-generation: v2-optimized
 created-at: 2026-07-01
+edited-at: 2026-07-02
 output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v2.html
+ia-gate: pass
 design-system: agione-strict
 selected-design-system: agione-strict
 design-profile: agione-strict
@@ -17,17 +19,22 @@ product-identity: agione-console
 strict-shell: assets/agione-product-shell-template.html
 evidence-status: evidence-based
 evidence-used:
-  - screenshot feedback: customer-visible route/API/rule text confused first-time users
+  - user screenshot review of current v2 prototype
   - source page: apps/hashrate/src/views/index/op/workbanch/quick/index.vue
   - source card component: apps/hashrate/src/views/index/op/workbanch/quick/StepCardItem.vue
   - shared stepper component: apps/common/src/components/EditContainer/src/CreateSteps.vue
-  - API evidence kept as non-visible implementation notes only: cloud platform, cloud authorization, cloud account, resource pool, resource pool authorization
-assumptions: no live backend counts were available; scenario states remain review fixtures derived from source completion order
+  - business chain evidence kept non-visible: cloud platform, cloud authorization, cloud account, resource pool, resource pool authorization
+assumptions: no live backend values were available; scenario states remain review fixtures derived from the source step order
 blocking-questions: none
 ia-readiness: ready
 target-user: first-time operator or admin configuring cloud access prerequisites for compute usage
 page-subject: Access Management Quick Start
-page-type: operation execution / onboarding flow
+page-task: confirm whether the access chain is ready; if not ready, enter the only next required setup action
+business-flow: connect cloud platform -> authorize cloud platform -> connect account -> connect resource pool -> authorize resource pool
+current-state: default state has four of five steps complete; resource pool authorization is the only remaining blocker
+next-action: authorize the resource pool; when all steps are complete, view the access overview
+action-result: the business unit receives resource pool access and the access chain becomes ready for later compute usage
+page-type: operation execution
 api-responsibilities:
   primary-subject: access setup chain status
   action-contract: navigate to the relevant setup or authorization page
@@ -37,18 +44,21 @@ first-visit-path:
   object-or-scope: access setup chain for cloud platform, account, resource pool, and authorization
   key-state: all prerequisites are complete except resource pool authorization
   next-focus-or-action: authorize the resource pool for business units
-  primary-action-result: business systems can invoke cloud compute resources after authorization
-strong-expression-decision: yes; the page must emphasize the current blocker and next action, not implementation evidence
+  primary-action-result: access becomes ready after authorization
+strong-expression-decision: yes; the page must emphasize the current blocker, the only primary action, and the result after action
 content-pruning:
-  visible-copy-whitelist-applied: title, status, progress, step names, step states, and action text only
-  removed-from-visible-ui: explanatory paragraphs, tutorial cards, completed tag strip, step descriptions, API client names, frontend routes, boolean rules, status source panel, data-source labels, currentStep/source-code wording
-  retained-visible-ui: business step names, completed/pending states, progress derived from five source steps, next action, recovery action
+  visible-copy-whitelist-applied: title, status, progress, step names, step states, one primary action, and action result text only
+  removed-from-visible-ui: duplicate primary buttons, completed-step action buttons, explanatory paragraphs, tutorial cards, API client names, frontend routes, boolean rules, status source panel, data-source labels, currentStep/source-code wording
+  retained-visible-ui: business step names, completed/pending states, progress derived from five source steps, next action, completion action
+content-to-keep: page title, current state, progress, one primary action, five-step business chain, each step state, completed-state overview action
+content-to-delete-or-collapse: duplicate main actions, long explanations, low-value view buttons, over-weight completed steps, prototype or implementation evidence
+visible-assumptions: none
 technical-evidence-policy: internal technical evidence exists only in this AI-NOTES comment and non-visible code comments; it is not rendered in customer UI
 five-second-self-check:
   - target user can identify this as Access Management Quick Start
   - target user can see the current blocker is resource pool authorization
-  - target user can find the primary action immediately
-  - target user can understand the result after completion
+  - target user can find the single primary action immediately
+  - target user can understand that authorization makes access ready
   - visible UI contains no Api.*, result.*, hasXxx, currentStep, frontend route, or source-rule copy
 AI-NOTES-->
 <!-- AGIONE_EDIT_NOTES_END -->
@@ -1743,23 +1753,24 @@ html, body {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0 var(--ui-space-section) var(--ui-space-section);
+  padding: var(--ui-space-inline) var(--ui-space-section) var(--ui-space-section);
   display: flex;
   flex-direction: column;
   gap: var(--ui-space-section);
-  max-width: 1080px;
+  max-width: 1040px;
   width: 100%;
+  margin: 0 auto;
 }
 .access-hero {
   background: var(--ui-bg-card);
-  border: 1px solid var(--ui-border-default);
+  border: 1px solid var(--ui-border-soft);
   border-radius: var(--ui-radius-card);
   box-shadow: var(--ui-shadow-card);
   padding: var(--ui-space-card);
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
-  gap: var(--ui-space-section);
-  align-items: stretch;
+  gap: var(--ui-space-card);
+  align-items: center;
 }
 .access-hero__main,
 .access-hero__panel,
@@ -1769,13 +1780,48 @@ html, body {
   flex-direction: column;
 }
 .access-hero__main {
+  min-width: 0;
+}
+.access-hero__focus {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--ui-space-control);
+  align-items: flex-start;
+}
+.access-hero__copy {
+  display: flex;
+  flex-direction: column;
   gap: var(--ui-space-control);
   min-width: 0;
 }
+.access-object-mark {
+  width: var(--ui-space-3xl);
+  height: var(--ui-space-3xl);
+  border-radius: var(--ui-radius-card);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--ui-color-primary);
+  background: var(--ui-color-primary-subtle);
+  border: 1px solid var(--ui-border-soft);
+  flex-shrink: 0;
+}
+.access-object-mark i,
+.access-step__icon {
+  width: var(--ui-icon-md);
+  height: var(--ui-icon-md);
+}
+.access-hero__result {
+  color: var(--ui-text-secondary);
+  margin: 0;
+}
 .access-hero__panel {
-  justify-content: space-between;
+  justify-content: center;
   gap: var(--ui-space-control);
-  padding-block: var(--ui-space-xs);
+  padding: var(--ui-space-control);
+  background: var(--ui-bg-muted);
+  border: 1px solid var(--ui-border-soft);
+  border-radius: var(--ui-radius-control);
 }
 .access-hero__meta,
 .access-actions,
@@ -1811,6 +1857,22 @@ html, body {
 .access-panel-title {
   color: var(--ui-text-muted);
 }
+.access-progress-rail {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: var(--ui-space-xs);
+}
+.access-progress-rail__item {
+  height: var(--ui-space-xs);
+  border-radius: var(--ui-radius-pill);
+  background: var(--ui-border-default);
+}
+.access-progress-rail__item.is-complete {
+  background: var(--ui-color-success);
+}
+.access-progress-rail__item.is-current {
+  background: var(--ui-color-primary);
+}
 .access-layout {
   display: block;
 }
@@ -1822,33 +1884,50 @@ html, body {
   margin-bottom: var(--ui-space-control);
 }
 .access-step-list {
-  gap: var(--ui-space-control);
+  gap: var(--ui-space-inline);
 }
 .access-step {
+  position: relative;
   background: var(--ui-bg-card);
-  border: 1px solid var(--ui-border-default);
+  border: 1px solid var(--ui-border-soft);
   border-radius: var(--ui-radius-card);
   padding: var(--ui-space-control) var(--ui-space-card);
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   gap: var(--ui-space-control);
   align-items: center;
   transition: border-color var(--ui-duration-fast) var(--ui-ease-out), box-shadow var(--ui-duration-fast) var(--ui-ease-out), background var(--ui-duration-fast) var(--ui-ease-out);
 }
+.access-step:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  left: calc(var(--ui-space-card) + var(--ui-space-base));
+  top: calc(var(--ui-space-control) + var(--ui-space-2xl));
+  bottom: calc(-1 * var(--ui-space-inline));
+  width: 1px;
+  background: var(--ui-border-soft);
+}
+.access-step.is-complete:not(:last-child)::after {
+  background: var(--ui-color-success);
+}
 .access-step.is-current {
   border-color: var(--ui-color-primary);
-  box-shadow: var(--ui-shadow-card);
+  box-shadow: var(--ui-shadow-xs);
+  background: var(--ui-bg-card);
 }
 .access-step.is-complete {
   background: var(--ui-bg-card);
+  border-color: var(--ui-border-soft);
+  box-shadow: none;
+  padding-block: var(--ui-space-sm);
 }
 .access-step.is-locked {
   color: var(--ui-text-muted);
-  background: var(--ui-bg-muted);
+  background: var(--ui-bg-card);
 }
 .access-step__index {
-  width: calc(var(--ui-space-section) + var(--ui-space-control));
-  height: calc(var(--ui-space-section) + var(--ui-space-control));
+  width: var(--ui-space-2xl);
+  height: var(--ui-space-2xl);
   border-radius: var(--ui-radius-pill);
   display: inline-flex;
   align-items: center;
@@ -1857,6 +1936,8 @@ html, body {
   background: var(--ui-bg-muted);
   border: 1px solid var(--ui-border-default);
   flex-shrink: 0;
+  position: relative;
+  z-index: var(--ui-z-base);
 }
 .access-step.is-current .access-step__index {
   background: var(--ui-color-primary);
@@ -1867,6 +1948,9 @@ html, body {
   background: var(--ui-color-success-subtle);
   color: var(--ui-color-success);
   border-color: var(--ui-color-success);
+}
+.access-step.is-complete .access-step__title {
+  color: var(--ui-text-secondary);
 }
 .access-step__body {
   min-width: 0;
@@ -1881,10 +1965,15 @@ html, body {
   gap: var(--ui-space-inline);
   min-width: 0;
 }
-.access-step__action {
-  display: flex;
-  justify-content: flex-end;
-  min-width: 150px;
+.access-step__icon {
+  color: var(--ui-text-muted);
+  flex-shrink: 0;
+}
+.access-step.is-current .access-step__icon {
+  color: var(--ui-color-primary);
+}
+.access-step.is-complete .access-step__icon {
+  color: var(--ui-color-success);
 }
 .access-empty-shell {
   flex: 1;
@@ -1904,10 +1993,6 @@ html, body {
   .access-step {
     grid-template-columns: auto minmax(0, 1fr);
   }
-  .access-step__action {
-    grid-column: 2;
-    justify-content: flex-start;
-  }
 }
 @media (max-width: 720px) {
   .access-content {
@@ -1916,13 +2001,19 @@ html, body {
   .access-step {
     grid-template-columns: 1fr;
   }
-  .access-step__body,
-  .access-workflow__head {
+  .access-hero__focus {
+    grid-template-columns: 1fr;
+  }
+  .access-step:not(:last-child)::after {
+    display: none;
+  }
+  .access-step__body {
     grid-template-columns: 1fr;
     align-items: flex-start;
   }
-  .access-step__action {
-    grid-column: auto;
+  .access-workflow__head {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 /* AGIONE_ACCESS_QUICKSTART_STYLE_END */
@@ -2100,7 +2191,7 @@ const i18n = {
       progressReady: '5 个步骤已全部完成',
       nextPrefix: '还差最后一步',
       nextGenericPrefix: '下一步',
-      completeTitle: '接入链路已完成',
+      completeTitle: '接入已就绪',
       completeDesc: '云平台、账号、资源池和业务授权已经形成完整链路，业务系统可以调用云端算力资源。',
       errorTitle: '暂时无法确认接入状态',
       errorDesc: '系统没有拿到完整状态。请重新加载后再继续，避免进入错误的配置页面。',
@@ -2109,6 +2200,10 @@ const i18n = {
       focusDesc: '把资源池分配给具体业务单元。完成后，业务系统才能正式使用这些云端算力资源。',
       resultTitle: '完成后会怎样',
       resultDesc: '业务单元获得资源池访问权限，后续模型部署和算力调用就可以走这条接入链路。',
+      resultReadyShort: '授权后接入就绪',
+      resultGenericShort: '完成后继续下一步',
+      resultCompleteShort: '接入已可用，可以查看总览',
+      resultErrorShort: '重新加载后再继续',
       completedTitle: '已完成的准备',
       unavailableTitle: '还不能操作',
       firstStep: '从这里开始',
@@ -2199,7 +2294,7 @@ const i18n = {
       progressReady: 'All 5 steps are complete',
       nextPrefix: 'Last Step Remaining',
       nextGenericPrefix: 'Next Step',
-      completeTitle: 'Access Chain Is Ready',
+      completeTitle: 'Access Ready',
       completeDesc: 'Cloud platform, account, resource pool, and business grants now form a complete chain for compute usage.',
       errorTitle: 'Access Status Cannot Be Confirmed',
       errorDesc: 'The system did not receive complete status. Reload before continuing to avoid opening the wrong setup page.',
@@ -2208,6 +2303,10 @@ const i18n = {
       focusDesc: 'Grant the resource pool to business units. After that, business systems can use these cloud compute resources.',
       resultTitle: 'What Happens Afterward',
       resultDesc: 'Business units receive access to the resource pool, and later deployments or compute calls can use this access chain.',
+      resultReadyShort: 'Access is ready after authorization',
+      resultGenericShort: 'Complete this step to continue',
+      resultCompleteShort: 'Access is ready. View the overview',
+      resultErrorShort: 'Reload before continuing',
       completedTitle: 'Preparation Complete',
       unavailableTitle: 'Not Available Yet',
       firstStep: 'Start here',
@@ -3191,6 +3290,7 @@ const app = createApp({
     const isCustomScenario = computed(() => hasScenarios.value && activeScenario.value !== defaultScenario);
     const scenarioData = computed(() => scenarios[activeScenario.value]?.data || scenarios[defaultScenario].data);
     const scenarioLabel = computed(() => scenarios[activeScenario.value]?.label?.[lang.value] || '');
+    const stepNavKeys = ['platform', 'cloudGrant', 'account', 'pool', 'poolGrant'];
 
     const steps = computed(() => t.value.access.steps);
     const totalSteps = computed(() => steps.value.length);
@@ -3201,8 +3301,12 @@ const app = createApp({
       return Math.max(0, Math.min(raw, totalSteps.value));
     });
     const isCompleteState = computed(() => completedStep.value >= totalSteps.value && !isErrorState.value);
-    const nextStepNumber = computed(() => Math.min(completedStep.value + 1, totalSteps.value));
-    const activeBusinessStep = computed(() => steps.value[nextStepNumber.value - 1] || steps.value[0]);
+    const currentStepNumber = computed(() => {
+      if (isErrorState.value || isCompleteState.value) return 0;
+      return Math.max(1, Math.min(completedStep.value + 1, totalSteps.value));
+    });
+    const nextStepNumber = computed(() => currentStepNumber.value || totalSteps.value);
+    const activeBusinessStep = computed(() => steps.value[(currentStepNumber.value || nextStepNumber.value) - 1] || steps.value[0]);
     const remainingStepCount = computed(() => Math.max(totalSteps.value - completedStep.value, 0));
     const progressText = computed(() => completedStep.value + '/' + totalSteps.value);
     const progressSentence = computed(() => {
@@ -3233,13 +3337,25 @@ const app = createApp({
       if (isCompleteState.value) return t.value.access.overviewAction;
       return activeBusinessStep.value.action;
     });
+    const heroResultText = computed(() => {
+      if (isErrorState.value) return t.value.access.resultErrorShort;
+      if (isCompleteState.value) return t.value.access.resultCompleteShort;
+      if (nextStepNumber.value === totalSteps.value) return t.value.access.resultReadyShort;
+      return t.value.access.resultGenericShort;
+    });
+    const heroIcon = computed(() => {
+      if (isErrorState.value) return 'circle-x';
+      if (isCompleteState.value) return 'circle-check';
+      return activeBusinessStep.value.icon || 'arrow-right';
+    });
     const completedStepNames = computed(() => steps.value.slice(0, completedStep.value).map(step => step.title));
 
     const displaySteps = computed(() => steps.value.map((step, index) => {
       const stepNumber = index + 1;
       const done = !isErrorState.value && completedStep.value >= stepNumber;
-      const active = !isErrorState.value && !isCompleteState.value && nextStepNumber.value === stepNumber;
+      const active = !isErrorState.value && currentStepNumber.value === stepNumber;
       const locked = !done && !active;
+      const state = done ? 'complete' : active ? 'current' : 'locked';
       const prerequisite = index > 0 ? steps.value[index - 1].title : t.value.access.firstStep;
       return {
         ...step,
@@ -3247,14 +3363,26 @@ const app = createApp({
         done,
         active,
         locked,
-        stateClass: done ? 'is-complete' : active ? 'is-current' : 'is-locked',
-        status: isErrorState.value ? 'inactive' : done ? 'active' : active ? 'pending' : 'inactive',
-        statusText: isErrorState.value ? t.value.access.status.unknown : done ? t.value.access.status.done : active ? t.value.access.status.pending : t.value.access.status.locked,
-        buttonText: done ? step.doneAction : active ? step.action : t.value.access.lockedPrefix + ' · ' + prerequisite,
-        buttonDisabled: locked || isErrorState.value,
+        state,
+        navKey: stepNavKeys[index] || 'quickstart',
+        stateClass: 'is-' + state,
+        status: isErrorState.value ? 'inactive' : state === 'complete' ? 'active' : state === 'current' ? 'pending' : 'inactive',
+        statusText: isErrorState.value ? t.value.access.status.unknown : state === 'complete' ? t.value.access.status.done : state === 'current' ? t.value.access.status.pending : t.value.access.status.locked,
         prerequisite,
       };
     }));
+
+    function handlePrimaryAction() {
+      if (isErrorState.value) {
+        activeScenario.value = defaultScenario;
+        return;
+      }
+      if (isCompleteState.value) {
+        activeNav.value = 'overview';
+        return;
+      }
+      activeNav.value = stepNavKeys[currentStepNumber.value - 1] || 'quickstart';
+    }
 
     function toggleTheme() {
       isDark.value = !isDark.value;
@@ -3287,9 +3415,10 @@ const app = createApp({
       scenarios, activeScenario, defaultScenario,
       balance,
       hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
-      steps, totalSteps, completedStep, remainingStepCount, isErrorState, isCompleteState,
-      currentStatus, currentTitle, currentDesc, primaryActionText,
+      steps, totalSteps, completedStep, currentStepNumber, remainingStepCount, isErrorState, isCompleteState,
+      currentStatus, currentTitle, currentDesc, primaryActionText, heroResultText, heroIcon,
       progressText, progressSentence, completedStepNames, displaySteps,
+      handlePrimaryAction,
       // AGIONE_EDIT_SETUP_RETURN_END
     };
   },
@@ -3408,12 +3537,7 @@ const app = createApp({
         <!-- AGIONE_EDIT_MAIN_START · business main -->
         <main class="main" role="main">
           <section v-if="activeNav === 'quickstart'" class="access-page main-box" data-component="main-box">
-            <PageHeader :title="t.access.pageTitle">
-              <template #actions>
-                <el-button @click.stop>{{ t.access.overviewAction }}</el-button>
-                <el-button type="primary" @click.stop>{{ primaryActionText }}</el-button>
-              </template>
-            </PageHeader>
+            <PageHeader :title="t.access.pageTitle"></PageHeader>
 
             <div class="access-content">
               <Alert
@@ -3423,31 +3547,45 @@ const app = createApp({
                 :desc="t.access.errorDesc"
               />
 
-              <section class="access-hero">
+              <section class="access-hero" :class="{ 'is-ready': isCompleteState }" data-component="access-task-card">
                 <div class="access-hero__main">
-                  <div class="access-hero__meta">
-                    <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
-                    <span class="type-data">{{ progressText }}</span>
-                    <span class="type-caption access-muted">{{ progressSentence }}</span>
-                  </div>
-                  <h2 class="type-h2">{{ currentTitle }}</h2>
-                  <div class="access-actions">
-                    <el-button type="primary" @click.stop>{{ primaryActionText }}</el-button>
-                    <el-button @click.stop>{{ t.access.overviewAction }}</el-button>
+                  <div class="access-hero__focus">
+                    <div class="access-object-mark" aria-hidden="true">
+                      <i :data-lucide="heroIcon"></i>
+                    </div>
+                    <div class="access-hero__copy">
+                      <div class="access-hero__meta">
+                        <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
+                        <span class="type-data">{{ progressText }}</span>
+                        <span class="type-caption access-muted">{{ progressSentence }}</span>
+                      </div>
+                      <h2 class="type-h2">{{ currentTitle }}</h2>
+                      <p class="type-body access-hero__result">{{ heroResultText }}</p>
+                      <div class="access-actions">
+                        <el-button type="primary" @click.stop="handlePrimaryAction">{{ primaryActionText }}</el-button>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
                 <div class="access-hero__panel">
                   <div class="access-panel-row">
                     <span class="type-caption access-panel-title">{{ t.access.progressLabel }}</span>
-                    <span class="type-kpi">{{ progressText }}</span>
+                    <span class="type-h3">{{ progressText }}</span>
                   </div>
-                  <UsageBar :used="completedStep" :total="totalSteps" />
+                  <div class="access-progress-rail" aria-hidden="true">
+                    <span
+                      v-for="step in displaySteps"
+                      :key="'rail-' + activeScenario + '-' + step.stepNumber"
+                      class="access-progress-rail__item"
+                      :class="step.stateClass"
+                    ></span>
+                  </div>
                 </div>
               </section>
 
-              <section class="access-layout">
-                <div class="access-workflow">
+              <section class="access-layout" data-component="access-workflow-section">
+                <div class="access-workflow" data-component="access-workflow">
                   <div class="access-workflow__head">
                     <h2 class="type-h2">{{ t.access.workflowTitle }}</h2>
                     <span class="type-caption access-muted">{{ progressSentence }}</span>
@@ -3455,9 +3593,12 @@ const app = createApp({
                   <div class="access-step-list">
                     <article
                       v-for="step in displaySteps"
-                      :key="step.stepNumber"
+                      :key="activeScenario + '-' + step.stepNumber + '-' + step.state"
                       class="access-step"
                       :class="step.stateClass"
+                      data-component="access-step"
+                      :data-state="step.state"
+                      :aria-current="step.active ? 'step' : null"
                     >
                       <div class="access-step__index type-data">
                         <i v-if="step.done" data-lucide="check"></i>
@@ -3465,19 +3606,12 @@ const app = createApp({
                       </div>
                       <div class="access-step__body">
                         <div class="access-step__title">
+                          <i :data-lucide="step.icon" class="access-step__icon" aria-hidden="true"></i>
                           <h3 class="type-h3">{{ step.title }}</h3>
                         </div>
                         <div class="access-step__meta">
                           <StatusBadge :status="step.status" :label="step.statusText" />
                         </div>
-                      </div>
-                      <div class="access-step__action">
-                        <el-button
-                          :type="step.active ? 'primary' : 'default'"
-                          :plain="step.done"
-                          :disabled="step.buttonDisabled"
-                          @click.stop
-                        >{{ step.buttonText }}</el-button>
                       </div>
                     </article>
                   </div>

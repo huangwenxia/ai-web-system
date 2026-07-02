@@ -20,7 +20,7 @@ Before `IA-GATE` is complete, do not call tools that create, copy, modify, or va
 - `page-subject`: object, collection, workflow, configuration area, operational task, monitoring question, or diagnostic problem
 - `page-task`: the user's primary confirmation, decision, or action
 - `business-flow`: the workflow or object relationship the page must express
-- `current-state`: the current status, blocker, result, or key context
+- `current-state`: the current status, blocker, result, task state, or key context; use the real create/edit/configure/read/choose/empty/permission/system-feedback state when there is no business status
 - `next-action`: where the user should act or look next
 - `action-result`: what the primary action will enter, change, complete, or return
 - `page-type`: `configuration/profile`, `collection management`, `form workflow`, `business overview`, `business decision`, `operation execution`, or `troubleshooting analysis`
@@ -157,6 +157,7 @@ Before generating or reviewing a prototype, judge the page from the current targ
 
 - Simplicity means a short judgment path, clear priority, and obvious action. If the page needs explanation to be understood, treat it as over-designed or under-defined; reduce the main task and business expression before adding modules, helper text, cards, tags, metrics, or decoration.
 - The first screen must quickly answer: what object or scope is being shown, what the most important state/result/context is, where the user should look or act next, and what the primary action will enter, change, or return.
+- A page does not always need a business status. If the page is create, edit, configure, read, choose, empty, permission, documentation, or system feedback, organize it around the real task state instead of inventing health scores, risk counts, pending items, success rates, or trends to make it feel richer.
 - Interpret this by page type: list pages emphasize scope, filters, row status, and row actions; detail pages emphasize object identity, key state, main configuration, and related entrances; forms emphasize submit goal, required fields, and submit consequence; flow pages emphasize current step, blocker, and next action; dashboards emphasize overall health, exceptions, and drill-down path; API/developer pages emphasize endpoint status, call method, required parameters, copy affordance, errors, and debug path.
 - Do not show internal technical evidence in customer-visible text: prototype notes, `AI-NOTES`, mock explanations, design remarks, `data-source`, frontend routes, source API client names, code variables, internal expressions, state derivation rules, or labels such as “数据来源 / 状态判断来源 / 根据规则推导”.
 - Developer/API/debug/log pages may show API URLs, methods, headers, body, examples, responses, error codes, and copy buttons only when those are the user's task materials. Even there, do not expose frontend source names such as `Api.general.xxx`, page state expressions, prototype data notes, or AI design remarks; sensitive values must be masked and low-frequency diagnostics should be collapsed.
@@ -212,7 +213,7 @@ Required `AI-NOTES` evidence keys for generated prototypes:
 - `target-user`: the current user's role and task context.
 - `page-task`: the user's primary confirmation, decision, or action.
 - `business-flow`: workflow, object relationship, or operational sequence.
-- `current-state`: current status, blocker, result, or key context.
+- `current-state`: current status, blocker, result, task state, or key context; use the real create/edit/configure/read/choose/empty/permission/system-feedback state when there is no business status.
 - `next-action`: where the user should act or look next.
 - `action-result`: what the primary action will enter, change, complete, or return.
 - `page-type`: the selected page type.
