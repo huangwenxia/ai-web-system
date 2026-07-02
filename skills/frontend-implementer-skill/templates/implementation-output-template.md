@@ -11,6 +11,21 @@
 - 约束条件：
 - 修改范围：
 
+## FRONTEND-GATE 硬闸门状态
+| Gate | 状态 | 证据 / 结论 | 阻断项 / 例外原因 |
+| --- | --- | --- | --- |
+| PRE-FLIGHT-GATE | pass / blocked / delegated / not-applicable | 任务类型、目标、来源、scope、原型确认、目标用户、页面任务 |  |
+| CONTEXT-GATE | pass / blocked / delegated / not-applicable | 当前仓库 / app / route ownership / 页面壳 / 调用链 / 影响范围 |  |
+| REUSE-GATE | pass / blocked / delegated / not-applicable | 组件、表格、表单、弹窗、状态、图标、hooks、utils、locale 检索证据 |  |
+| IMPLEMENTATION-GATE | pass / blocked / delegated / not-applicable | 页面根、业务容器、纯视觉组件、数据归属、胶囊目录、样式边界、边界态 |  |
+| VALIDATION-GATE | pass / blocked / delegated / not-applicable | typecheck / lint / skill 脚本 / 组件结构 / 编码检查 / diff check / 浏览器刷新 |  |
+
+## 文件编辑前结论
+- 是否允许编辑文件：是 / 否
+- 若否，阻断原因：
+- 若转交 handoff，目标 skill：
+- 若需要用户补充，必须补充的信息：
+
 ## 使用的标准
 - 读取的 rules / skills / docs：
 - 是否命中 project-mamba profile：是 / 否
@@ -66,6 +81,7 @@
 | 结构检查 |  |  |  |
 | 编码检查 |  |  |  |
 | diff check |  |  |  |
+| gate report | `node skills/frontend-implementer-skill/scripts/validate-frontend-gate-report.mjs <report.md>` |  | 仅当实现报告 / handoff 报告落成 markdown 文件时运行 |
 
 ## 实现前复用校验表（命中 project-mamba 时）
 - 当前目标项目：
@@ -99,7 +115,8 @@
 - 结构检查命令：
 - 编码检查命令：
 - diff check 命令：
-- 自动检查结果：类型检查 / 实现检查 / 结构检查 / 编码检查 / diff check：通过 / 未通过 / 未运行（逐项说明原因）
+- gate report 命令：未生成 markdown 报告 / 已运行（写明命令） / 阻断 handoff 已使用 `--allow-blocked`
+- 自动检查结果：类型检查 / 实现检查 / 结构检查 / 编码检查 / diff check / gate report：通过 / 未通过 / 未运行（逐项说明原因）
 - 浏览器刷新结果：目标页面 URL；正常渲染 / 异常；核心内容未丢失 / 有缺失（说明）
 - checked files：
 - `.vue <= 250`：达标 / 未达标 / 排除（locale / schema / 纯配置 / 旧文件历史超限）

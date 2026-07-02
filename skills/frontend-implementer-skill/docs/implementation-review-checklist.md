@@ -13,6 +13,20 @@
 - 输入前提是否足够支撑直接落代码
 - 如果是新功能开发，是否已经有已确认原型；没有则是否回退到 `existing-project-feature-skill` 或 `agione-ui`
 
+## FRONTEND-GATE 硬闸门检查
+- 是否在任何文件编辑前建立 `FRONTEND-GATE` 状态，并记录 `PRE-FLIGHT-GATE`、`CONTEXT-GATE`、`REUSE-GATE`、`IMPLEMENTATION-GATE`、`VALIDATION-GATE`
+- `PRE-FLIGHT-GATE` 是否明确 `task_type`、`target`、`source`、`scope`、`prototype-confirmed`、`target-user`、`page-task` 和真正阻断问题
+- 新功能页面没有已确认原型时，是否停止代码实施并转 `existing-project-feature-skill` 或 `agione-ui`
+- `CONTEXT-GATE` 是否确认当前仓库、当前 app、route ownership、页面壳、入口文件、相邻页面、调用链和影响范围
+- 命中 `project-mamba` 或同构仓库时，是否读取 profile 并核对 `vite.config.ts`、`src/main.ts`、router / generated routes 入口
+- 涉及公共组件、公共 util、共享样式、i18n、接口层或菜单路由时，是否先查调用方和影响范围
+- `REUSE-GATE` 是否覆盖页面壳、表格、表单、弹窗、筛选、状态、tag / badge、图标、空态、加载态、错误态、hooks、utils、constants、types、API 层和 locale 路径
+- 每个自定义 UI、每个 `v-for`、每个表单浮层、每个表格和每个新增图标是否都有“检索范围 / 关键词 / 命中候选 / 采用或未复用原因”
+- `IMPLEMENTATION-GATE` 是否先定页面根、业务容器、纯视觉组件、数据归属、胶囊目录、样式边界和边界态，再编辑文件
+- `VALIDATION-GATE` 是否在交付前记录适用检查命令、结果、未运行原因、checked files、浏览器刷新结果、build 未运行说明和目标用户 5 秒自检
+- 当实现报告 / handoff 报告落成 markdown 文件时，是否运行 `scripts/validate-frontend-gate-report.mjs <report.md>`；若报告是阻断交接，是否显式使用 `--allow-blocked`
+- 任一 gate 为 `blocked` 时，是否停止实现并补上下文、转 handoff 或请用户补充；是否没有用“先写再补检查”绕过
+
 ## 实施前门禁复核检查
 - 用户要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”时，是否在任何代码编辑前进入实施前门禁复核并先输出四张表
 - 实施前门禁复核是否至少完成 3 轮（3 遍）：第 1 轮查复用证据和原型差异，第 2 轮查 Vue 结构、数据归属和胶囊目录，第 3 轮查自动检查计划、checked files、阻断项和最小整改路径

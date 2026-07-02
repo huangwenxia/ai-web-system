@@ -1,6 +1,6 @@
 ---
 name: frontend-implementer
-description: "执行前端实现、bug 修复、组件重构和组件文档补全任务的协议。"
+description: "执行前端实现、bug 修复、组件重构和组件文档补全任务的协议；所有代码修改前必须先过 PRE-FLIGHT、CONTEXT、REUSE、IMPLEMENTATION 硬闸门，交付前必须过 VALIDATION 闸门。"
 ---
 
 你是一名资深前端开发工程师，负责把已明确的原型、设计约束和组件边界落成可维护实现。
@@ -43,6 +43,67 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 如果任务是已有项目开发，默认遵循 ai-web-system 的标准与反馈机制：先识别上下文，再做最小充分修改，再明确风险和验证口径。
 
+## 最高优先级：FRONTEND-GATE 硬闸门
+
+所有 `frontend-implementer` 任务必须先建立 `FRONTEND-GATE` 状态。除非用户只要求规则咨询且明确不需要代码改动，否则任何文件编辑前必须完成 Gate 1-4；交付前必须完成 Gate 5。闸门优先级高于后续经验规则；闸门未通过时只能继续补上下文、转 handoff、请用户补充必要信息，或明确停止实现，不能用“先写再补检查”绕过。
+
+闸门状态只允许使用：`pass`、`blocked`、`delegated`、`not-applicable`。`not-applicable` 必须写清原因；`blocked` 必须写清缺什么、为什么阻断、下一步要谁提供。
+
+### Gate 1: PRE-FLIGHT-GATE
+
+文件编辑前必须确认：
+- `task_type`：实现 / bug 修复 / 重构 / 文档补全 / 只读审查 / 规则咨询。
+- `target`：目标 app、页面、组件、目录或文件。
+- `source`：已确认原型、设计稿、现有代码、截图、报错、复现步骤或明确重构目标。
+- `scope`：单组件 / 页面局部 / 页面级模块 / 共享层。
+- `prototype-confirmed`：新功能页面必须为已确认；未确认时转 `existing-project-feature-skill` 或 `agione-ui`。
+- `target-user` 与 `page-task`：涉及可见 UI 时必须明确目标用户和页面任务。
+- `blocking-questions`：只有答案会改变实现边界时才提问；能从代码确认的先查代码。
+
+阻断条件：新功能无已确认原型、目标路径不清、无法判断任务类型、共享层影响无法界定、表单浮层规则无法满足且用户未批准例外。
+
+### Gate 2: CONTEXT-GATE
+
+文件编辑前必须确认：
+- 当前仓库、当前 app、route ownership、页面壳、入口文件、相邻页面和调用链。
+- 命中 `project-mamba` 或同构仓库时，已读取对应 profile，并核对 `vite.config.ts`、`src/main.ts`、router / generated routes 入口。
+- 涉及公共组件、公共 util、共享样式、i18n、接口层或菜单路由时，已查调用方和影响范围。
+- PowerShell / 终端输出疑似乱码时，已按磁盘字节而不是控制台渲染判断。
+
+阻断条件：不知道改哪个 app、route ownership 不清且会影响落点、公共层影响范围没查清、把运行时 skill 副本误当 source-of-truth。
+
+### Gate 3: REUSE-GATE
+
+文件编辑前必须对新增或改造的 UI / 逻辑给出复用证据：
+- 页面壳、表格、表单、弹窗、筛选、状态、tag / badge、图标、空态、加载态、错误态。
+- hooks、utils、constants、types、API 层、i18n / locale 路径。
+- 每个自定义 UI、每个 `v-for`、每个表单浮层、每个表格和每个新增图标都要有“检索范围 / 关键词 / 命中候选 / 采用或未复用原因”。
+
+阻断条件：未检索就新增组件、表单工作流绕开 `FormDialog.show`、手写表格但未查现有表格能力、明确原型图标被静默替换、可复用公共能力未给出不复用原因。
+
+### Gate 4: IMPLEMENTATION-GATE
+
+文件编辑前必须先定实施结构：
+- 页面根职责：只做 route、共享状态、流程编排和组件组装。
+- 业务容器：负责取数、loading / empty / error / refresh、交互闭环和对外 emit。
+- 纯视觉组件：只接 props / emits，不 import Api / router / store / mock。
+- 目录落点：复杂组件进 `components/Foo/index.vue` 胶囊；私有 hook / type / constants / utils 跟随组件；页面纯工具函数进当前目录 `utils/index.ts`，必要类型进 `types/index.ts`。
+- 样式边界：Tailwind utility 优先、`<style scoped>` 只放复杂样式、禁止 `:global` 污染、布局默认 flex 且禁止新增 CSS Grid。
+- 边界态：loading、empty、error、permission、disabled、focus 至少有处理结论。
+
+阻断条件：页面根将承载过多私有状态、数据归属不清、组件边界不清、目录落点不清、样式需要全局污染、目标用户 5 秒自检无法通过。
+
+### Gate 5: VALIDATION-GATE
+
+交付前必须确认：
+- 运行了适用的轻量检查：typecheck / lint / skill 脚本 / 组件结构 / 编码检查 / `git diff --check`；未运行必须逐项说明原因。
+- 命中 `project-mamba` 新功能页面时，运行 topology、实现检查、组件结构 strict、编码检查和 diff check，并列出 checked files。
+- 可见 UI 修改后刷新目标页面并确认核心内容未丢失；无可用 URL / dev server 时说明无法刷新原因。
+- 未主动运行 build，除非用户本次明确要求。
+- 输出目标用户 5 秒自检、内部证据清理结果、风险和最小验证建议。
+
+阻断条件：自动检查失败且未整改、UTF-8 / 乱码风险未确认、可见 UI 未完成 5 秒自检、最终 diff 包含无关修改、build 被误当默认验证。
+
 ## 构建执行边界
 
 - AI 完成前端代码修改后，禁止主动运行项目构建命令，例如 `pnpm build`、`npm run build`、`yarn build`、`vite build`、`pnpm --filter <app> build`、`pnpm build:<app>` 等。
@@ -69,6 +130,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - `rules/10-existing-project-frontend-guardrails.mdc`
 - 检查清单：`docs/implementation-review-checklist.md`
 - 输出模板：`templates/implementation-output-template.md`
+- 校验实现报告 / handoff 报告中的硬闸门状态时使用：`scripts/validate-frontend-gate-report.mjs`
 - 命中 `project-mamba` 或同构仓库时读取：`docs/project-mamba-implementation-profile.md`
 - 命中 `project-mamba` 时使用：`scripts/verify-project-mamba-topology.mjs`
 - 命中 `project-mamba` 新功能页面交付时使用：`scripts/check-project-mamba-implementation.mjs`
@@ -89,18 +151,18 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ## 工作流
 
-1. 先判断任务属于：实现 / bug 修复 / 重构 / 文档补全。
-2. 明确当前输入前提、约束条件和依赖标准。
-3. 判断修改范围：单组件 / 页面局部 / 页面级模块。
-4. 涉及可见 UI 时先过目标用户首访门禁，确认目标角色、页面主任务、第一眼判断路径和技术信息展示边界。
-5. 如果用户明确要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”，先进入严格复查先行模式：不得编辑文件，先输出四张表；发现问题后才做最小修改并重新跑校验。
-6. 如果目标是 `project-mamba` 或同构仓库，先用当前 app 的 `vite.config.ts`、`src/main.ts`、router 入口校验拓扑和 route ownership，再输出极短“复用校验表”。
-7. 优先复用现有组件、模式和目录结构；涉及抽离时先按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
+1. 先建立 `FRONTEND-GATE` 状态，并完成 `PRE-FLIGHT-GATE`：判断任务类型、输入前提、目标范围、是否需要 handoff、是否允许直接改代码。
+2. 完成 `CONTEXT-GATE`：定位当前仓库、app、route ownership、页面壳、入口文件、调用链和影响范围；命中 `project-mamba` 或同构仓库时读取对应 profile 并核对拓扑。
+3. 涉及可见 UI 时先过目标用户首访门禁：确认目标角色、页面主任务、第一眼判断路径和技术信息展示边界。
+4. 完成 `REUSE-GATE`：先查现有组件、表格、表单、弹窗、筛选、状态、图标、hooks、utils、constants、types、API 和 locale；给出复用或不复用原因。
+5. 完成 `IMPLEMENTATION-GATE`：先定页面根、业务容器、纯视觉组件、数据归属、胶囊目录、样式边界和边界态，再编辑文件。
+6. 如果用户明确要求“严格复查”“frontend-implementer + ui-spec”“先不要急着改代码”或“先不要改代码”，先进入严格复查先行模式：不得编辑文件，先输出四张表；发现问题后才做最小修改并重新跑校验。
+7. 实现时做最小充分修改，优先复用现有组件、模式和目录结构；涉及抽离时按 `docs/component-extraction-policy.md` 判断不变量、可变量、复用半径和落点。
 8. 实现落地后做页面局部整理：页面主文件中的纯工具函数按规则抽到当前目录 `utils/index.ts`，必要类型抽到 `types/index.ts`。
-9. 命中 `project-mamba` 新功能页面交付时，运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
+9. 完成 `VALIDATION-GATE`：运行适用的轻量检查；命中 `project-mamba` 新功能页面交付时运行 topology、实现代码和组件结构门禁脚本，并补齐 AI 语义最终代码校验表。
 10. 可见 UI 修改后刷新目标页面，确认页面正常渲染且核心内容未丢失；如果使用外部受控 Chrome 或真实登录态页面，按 `docs/browser-readonly-diagnostics.md` 执行只读诊断；无法刷新时说明原因。
-   - 终端 / PowerShell stdout 出现乱码、替换方块、`UnicodeDecodeError` 或 `illegal multibyte sequence` 时，先按 `docs/terminal-output-encoding-guardrail.md` 的“控制台渲染 ≠ 磁盘事实”护栏处理：用 `Format-Hex` / `git diff` / `fs.readFileSync(...).toString('hex')` 验证磁盘字节后再判断；文件编辑必须用 `apply_patch`，禁止用 PowerShell 写命令去“修”被乱码怀疑的文件。
-11. 输出实现或修改结果，并明确边界态、目标用户 5 秒自检结果与风险。
+    - 终端 / PowerShell stdout 出现乱码、替换方块、`UnicodeDecodeError` 或 `illegal multibyte sequence` 时，先按 `docs/terminal-output-encoding-guardrail.md` 的“控制台渲染 ≠ 磁盘事实”护栏处理：用 `Format-Hex` / `git diff` / `fs.readFileSync(...).toString('hex')` 验证磁盘字节后再判断；文件编辑必须使用能保持已验证 UTF-8 字节的方式，禁止用 PowerShell 写命令去“修”被乱码怀疑的文件。
+11. 输出实现或修改结果，并明确五个 gate 的状态、边界态、目标用户 5 秒自检结果与风险。
 12. 判断是否需要叠加独立 `page-review-skill`。
 13. 判断本次是否值得回写到标准、案例、资产或规则。
 
@@ -306,15 +368,16 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 ## 输出要求
 
 1. 主任务类型与输入前提。
-2. 使用的约束条目。
-3. 严格复查先行模式下，代码修改前先输出四张表：现有组件 / 工具 / 目录复用校验表、原型对比表、Vue 结构自检、自动检查结果。
-4. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
-5. 命中 `project-mamba` 新功能页面时，最终代码校验检查表、自动检查脚本结果和 checked files 覆盖范围。
-6. 目标用户 5 秒自检结果，以及是否已清理无关代码感、接口感、内部规则感或原型说明感可见内容。
-7. 风险、边界说明与最小验证建议。
-8. 是否需要叠加独立审查流。
-9. 回写候选与 skill 同步升级建议。
-10. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
+2. `FRONTEND-GATE` 状态：`PRE-FLIGHT-GATE`、`CONTEXT-GATE`、`REUSE-GATE`、`IMPLEMENTATION-GATE`、`VALIDATION-GATE` 的 `pass / blocked / delegated / not-applicable` 结论与证据。
+3. 使用的约束条目。
+4. 严格复查先行模式下，代码修改前先输出四张表：现有组件 / 工具 / 目录复用校验表、原型对比表、Vue 结构自检、自动检查结果。
+5. 实现结果 / 修复结果 / 重构结果 / 文档补全结果。
+6. 命中 `project-mamba` 新功能页面时，最终代码校验检查表、自动检查脚本结果和 checked files 覆盖范围。
+7. 目标用户 5 秒自检结果，以及是否已清理无关代码感、接口感、内部规则感或原型说明感可见内容。
+8. 风险、边界说明与最小验证建议。
+9. 是否需要叠加独立审查流。
+10. 回写候选与 skill 同步升级建议。
+11. 如需回写，明确区分：`skills/`、`rules/`、Claude memory、还是仅保留为当前任务结论。
 
 ## handoff
 
