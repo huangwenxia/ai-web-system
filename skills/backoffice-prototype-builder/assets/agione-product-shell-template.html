@@ -6,6 +6,7 @@
 <!-- AGIONE_EDIT_TITLE_START · ⚠️ 改业务页面双语标题 --><title>AGIOne Console — Shell Sample v1.1</title><!-- AGIONE_EDIT_TITLE_END -->
 <!-- AGIONE_EDIT_NOTES_START -->
 <!--AI-NOTES
+ia-gate: pass
 evidence-status: assumption-based
 evidence-used:
   - AGIOne strict shell sample only; replace with real user request, files, screenshots, routes, or APIs.
@@ -14,6 +15,40 @@ assumptions:
 blocking-questions:
   - none for shell sample; real prototypes must ask when missing information changes page direction.
 ia-readiness: ready
+target-user:
+  role: AGIOne console reviewer
+  task-context: Verify strict product chrome, theme switcher, language switcher, scenario switcher, and anchor discipline.
+page-task: Verify the AGIOne product shell and anchor discipline before replacing sample content.
+business-flow:
+  - Open the strict shell sample.
+  - Verify product chrome and runtime controls.
+  - Replace sample content with a real page after IA-GATE.
+current-state: Strict shell sample is ready for business content replacement.
+next-action: Replace the anchored business regions after the real page IA-GATE passes.
+action-result: The prototype keeps AGIOne shell parity while rendering the real page task.
+page-type: configuration/profile
+first-visit-path:
+  object-scope: AGIOne Console shell
+  key-state: Strict shell runtime is present
+  next-focus: Anchored business regions
+  action-result: Replace sample content without changing product chrome
+content-pruning:
+  summary: Keep shell identity, runtime controls, and anchor discipline; remove demo content once a real page task is known.
+content-to-keep:
+  - Product chrome
+  - Theme switcher
+  - Language switcher
+  - Scenario switcher
+  - Editable anchors
+content-to-delete-or-collapse:
+  - Shell sample demo content
+  - Prototype notes in visible UI
+  - Mock explanations
+  - Frontend route names
+  - Source API client names
+  - Internal state expressions
+visible-assumptions:
+  - none
 strong-expression-decision:
   needed: false
   reason: Shell sample should demonstrate strict product shell fidelity, not infer business health or risk.

@@ -47,6 +47,120 @@ def extract_main(text: str) -> tuple[str, int]:
     return match.group(1), start_line
 
 
+IA_GATE_REQUIRED_FIELDS = [
+    "ia-gate",
+    "evidence-status",
+    "evidence-used",
+    "assumptions",
+    "blocking-questions",
+    "ia-readiness",
+    "target-user",
+    "page-subject",
+    "page-task",
+    "business-flow",
+    "current-state",
+    "next-action",
+    "action-result",
+    "page-type",
+    "first-visit-path",
+    "content-pruning",
+    "content-to-keep",
+    "content-to-delete-or-collapse",
+    "visible-assumptions",
+    "strong-expression-decision",
+    "selected-design-system",
+    "design-profile",
+    "product-identity",
+    "api-responsibilities",
+    "data-assumptions",
+]
+
+
+def extract_notes(original: str) -> str:
+    match = re.search(r"<!--AI-NOTES(.*?)AI-NOTES-->", original, flags=re.I | re.S)
+    return match.group(1) if match else ""
+
+
+def note_field_exists(notes: str, key: str) -> bool:
+    lines = notes.splitlines()
+    key_pattern = re.compile(rf"^(\s*){re.escape(key)}\s*:\s*(.*)$", flags=re.I)
+
+    for index, line in enumerate(lines):
+        match = key_pattern.match(line)
+        if not match:
+            continue
+
+        if match.group(2).strip():
+            return True
+
+        base_indent = len(match.group(1))
+        for cursor in range(index + 1, len(lines)):
+            candidate = lines[cursor]
+            trimmed = candidate.strip()
+            if not trimmed:
+                continue
+
+            indent = len(candidate) - len(candidate.lstrip())
+            if indent <= base_indent and re.match(r"^[A-Za-z0-9_-]+\s*:", trimmed):
+                return False
+            if indent > base_indent or trimmed.startswith("-"):
+                return True
+
+        return False
+
+    return False
+
+
+def visible_text_from_main(main: str) -> str:
+    text = re.sub(r"<script\b.*?</script>", " ", main, flags=re.I | re.S)
+    text = re.sub(r"<style\b.*?</style>", " ", text, flags=re.I | re.S)
+    text = re.sub(r"<[^>]*>", " ", text)
+    text = text.replace("&nbsp;", " ").replace("&amp;", "&")
+    return re.sub(r"\s+", " ", text).strip()
+
+
+def evaluate_ia_gate(original: str, main: str) -> list[Finding]:
+    failures: list[Finding] = []
+    notes = extract_notes(original)
+
+    if not notes:
+        return [Finding("ia-gate.missing-notes", "Missing AI-NOTES block; cannot prove IA-GATE.")]
+
+    if not re.search(r"^\s*ia-gate\s*:\s*pass\s*$", notes, flags=re.I | re.M):
+        failures.append(Finding("ia-gate.not-pass", "AI-NOTES must include `ia-gate: pass` before delivery."))
+
+    for field_name in IA_GATE_REQUIRED_FIELDS:
+        if not note_field_exists(notes, field_name):
+            failures.append(
+                Finding(
+                    "ia-gate.missing-field",
+                    f"AI-NOTES must include IA-GATE field: {field_name}.",
+                )
+            )
+
+    visible_text = visible_text_from_main(main)
+    forbidden_visible_patterns = [
+        (r"\bAI-NOTES\b", "AI-NOTES"),
+        (r"\bdata-source\b", "data-source"),
+        (r"\bmock\b", "mock"),
+        (r"\bApi\.[A-Za-z0-9_.]+", "source API client name"),
+        (r"\b(result\.[A-Za-z_$][\w$]*|currentStep|has[A-Z][A-Za-z0-9_]*)\b", "code/state expression"),
+        (r"\b(router\.|route\.|src/views|@/|@[A-Za-z0-9_-]+/)", "frontend route/source path"),
+        (r"(数据来源|状态判断来源|根据规则推导|原型说明|设计备注|mock\s*说明)", "internal evidence label"),
+    ]
+
+    for pattern, label in forbidden_visible_patterns:
+        if re.search(pattern, visible_text, flags=re.I):
+            failures.append(
+                Finding(
+                    "visible-text.internal-evidence",
+                    f"Visible UI text contains internal/prototype evidence: {label}.",
+                )
+            )
+
+    return failures
+
+
 def line_hits(
     pattern: str,
     text: str,
@@ -124,6 +238,8 @@ def evaluate_structure(path: Path) -> tuple[list[Finding], list[Finding]]:
     if not main:
         failures.append(Finding("main.missing", "No <main> region found; shell-sample chrome may be broken."))
         return failures, warnings
+
+    failures.extend(evaluate_ia_gate(original, main))
 
     subtitle_hits = line_hits(
         r"\bpageSubtitle\b|class=[\"'][^\"']*\bpage-subtitle\b",

@@ -7,7 +7,8 @@
   <title>Backoffice Prototype</title>
   <!-- BACKOFFICE_EDIT_TITLE_END -->
   <!-- BACKOFFICE_EDIT_NOTES_START -->
-  <!--AI-NOTES
+<!--AI-NOTES
+  ia-gate: pass
   evidence-status: assumption-based
   evidence-used:
     - Shell sample only; replace with real user request, files, screenshots, routes, or APIs.
@@ -16,6 +17,39 @@
   blocking-questions:
     - none for shell sample; real prototypes must ask when missing information changes page direction.
   ia-readiness: ready
+  target-user:
+    role: Back-office admin
+    task-context: Review API client access state and open the row that needs action.
+  page-task: Review client access state and open the client that needs action.
+  business-flow:
+    - Review client list.
+    - Identify status.
+    - Open client detail or rotate keys.
+  current-state: API clients are listed with demo access states.
+  next-action: Open a client row or rotate keys.
+  action-result: The user enters detail handling for the selected client.
+  page-type: collection management
+  first-visit-path:
+    object-scope: API clients
+    key-state: Client access state
+    next-focus: Row status and row action
+    action-result: Open the selected client for handling
+  content-pruning:
+    summary: Keep list scope, status, and row actions; remove implementation notes and internal source details from visible UI.
+  content-to-keep:
+    - Page title
+    - Client identity
+    - Client status
+    - Last used time
+    - Row actions
+  content-to-delete-or-collapse:
+    - Prototype notes
+    - Mock explanations
+    - Frontend route names
+    - Source API client names
+    - Internal state expressions
+  visible-assumptions:
+    - none
   strong-expression-decision:
     needed: false
     reason: Shell sample is a collection management page; it should confirm object state, not infer risk or business health.

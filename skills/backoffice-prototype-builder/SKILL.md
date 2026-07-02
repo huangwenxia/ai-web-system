@@ -1,11 +1,38 @@
 ---
 name: backoffice-prototype-builder
-description: "Generic back-office/admin system prototype generator with IA-first design review and two explicit profiles: generic back-office or AGIOne strict. Use when Codex needs to think through page subject, user task, API responsibilities, content pruning, information hierarchy, profile selection, and then generate a production-aligned standalone HTML prototype for admin/console pages such as lists, details, forms, settings, dashboards, operation pages, and troubleshooting pages."
+description: "Generic back-office/admin system prototype generator with mandatory IA-GATE before any file work and two explicit profiles: generic back-office or AGIOne strict. Use when Codex needs to first clarify target user, page task, business flow, current state, next action, action result, API responsibilities, content pruning, information hierarchy, profile selection, and then generate a production-aligned standalone HTML prototype for admin/console pages such as lists, details, forms, settings, dashboards, operation pages, and troubleshooting pages."
 ---
 
 # Backoffice Prototype Builder
 
 Build back-office/admin system prototypes by thinking clearly first, selecting either a generic profile or AGIOne strict profile, then producing a restrained, production-aligned single-file HTML prototype.
+
+## Hard Gate 0: IA-GATE Before Any Prototype Work
+
+Whenever this skill is used, complete `IA-GATE` before any file creation, file copy, file edit, HTML generation, visual layout work, or validation run.
+
+Before `IA-GATE` is complete, do not call tools that create, copy, modify, or validate prototype files. Evidence collection and read-only inspection are allowed.
+
+`IA-GATE` is complete only when these fields are explicitly written in the assistant response or in the prototype `AI-NOTES` before implementation:
+
+- `ia-gate`: `pass`
+- `target-user`: current role and task context
+- `page-subject`: object, collection, workflow, configuration area, operational task, monitoring question, or diagnostic problem
+- `page-task`: the user's primary confirmation, decision, or action
+- `business-flow`: the workflow or object relationship the page must express
+- `current-state`: the current status, blocker, result, or key context
+- `next-action`: where the user should act or look next
+- `action-result`: what the primary action will enter, change, complete, or return
+- `page-type`: `configuration/profile`, `collection management`, `form workflow`, `business overview`, `business decision`, `operation execution`, or `troubleshooting analysis`
+- `first-visit-path`: object/scope, key state/result/context, next focus/action, and primary action result
+- `content-to-keep`: visible content required for the current target user and task
+- `content-to-delete-or-collapse`: content that is unrelated, too technical for the role, secondary, or over-explanatory
+- `visible-assumptions`: assumptions safe to expose to the user, or `none`
+- `blocking-questions`: questions that would change the page direction, or `none`
+
+If any missing item would change the page subject, target user, primary workflow, metric meaning, risk/status judgment, or action consequence, stop and ask concise blocking questions. Do not generate HTML.
+
+For generated prototypes, `AI-NOTES` must preserve the completed `IA-GATE`. The validators fail generated HTML when `ia-gate: pass` or any required `IA-GATE` field is missing.
 
 This skill is independent. It has no AGIOne-compatible middle mode. Use exactly one of:
 
@@ -137,9 +164,9 @@ Before generating or reviewing a prototype, judge the page from the current targ
 
 ## Workflow
 
-### 0. Thinking Gate
+### 0. IA-GATE / Thinking Gate
 
-Do not create, copy, or edit prototype code until the IA decision is clear enough to proceed.
+Do not create, copy, edit, validate, or visually compose prototype code until `IA-GATE` has passed. The first concrete output of this skill is the completed `IA-GATE`; HTML is the implementation result after the gate passes.
 
 Use this evidence rule before generation:
 
@@ -151,6 +178,7 @@ The page is ready for code only when these are known from evidence or explicitly
 
 - Page subject and user role.
 - Top user confirmation, decision, or action.
+- Business flow, current state, next action, and action result.
 - Page type and primary page pattern.
 - API responsibility split or stated data-source limitation.
 - Strong business expression decision.
@@ -175,13 +203,24 @@ If evidence is incomplete, write assumptions in the prototype `AI-NOTES` and mar
 
 Required `AI-NOTES` evidence keys for generated prototypes:
 
+- `ia-gate`: `pass` only when the gate has been completed.
 - `evidence-status`: `evidence-based`, `assumption-based`, or `blocked-before-generation`.
 - `evidence-used`: concrete files, screenshots, APIs, route names, user instructions, or `none provided`.
 - `assumptions`: assumptions used to continue; use `none` when there are no assumptions.
 - `blocking-questions`: questions that would change page direction; use `none` only when safe to proceed.
 - `ia-readiness`: `ready` only when the Thinking Gate is satisfied.
 - `target-user`: the current user's role and task context.
+- `page-task`: the user's primary confirmation, decision, or action.
+- `business-flow`: workflow, object relationship, or operational sequence.
+- `current-state`: current status, blocker, result, or key context.
+- `next-action`: where the user should act or look next.
+- `action-result`: what the primary action will enter, change, complete, or return.
+- `page-type`: the selected page type.
 - `first-visit-path`: object/scope, key state/result/context, next focus/action, and primary action result.
+- `content-pruning`: summary of what was kept, deleted, collapsed, or de-emphasized.
+- `content-to-keep`: visible content required for the target user and task.
+- `content-to-delete-or-collapse`: unrelated, low-frequency, internal, or over-explanatory content.
+- `visible-assumptions`: assumptions safe to show in the UI, or `none`.
 - `strong-expression-decision`: whether strong business expression is needed and why.
 
 ### 2. IA Preflight
@@ -231,6 +270,7 @@ Use three visual layers:
 
 For a new prototype:
 
+0. Confirm `IA-GATE` is complete and recorded. If not, stop before copying a shell.
 1. Choose the shell:
    - `agione-strict`: copy `assets/agione-product-shell-template.html`.
    - all other profiles: copy `assets/backoffice-shell-template.html`.
@@ -248,7 +288,7 @@ For a new prototype:
    For `agione-strict`, use the AGIOne `AGIONE_EDIT_*` anchors instead.
 6. Replace demo content with task-specific content.
 7. Add `data-source` as non-visible metadata to every metric, status, table, form group, and derived display when practical.
-8. Keep `AI-NOTES` accurate: evidence status, evidence used, assumptions, blocking questions, IA readiness, target user, first-visit path, strong expression decision, selected design system, design profile, product identity, page subject, page type, API responsibilities, derived formulas, placeholders, project alignment, and rule gaps.
+8. Keep `AI-NOTES` accurate: `ia-gate: pass`, evidence status, evidence used, assumptions, blocking questions, IA readiness, target user, page subject, page task, business flow, current state, next action, action result, page type, first-visit path, content pruning, visible assumptions, strong expression decision, selected design system, design profile, product identity, API responsibilities, derived formulas, placeholders, project alignment, and rule gaps.
 9. Run the validation script.
 
 If the target project has an existing design system, first mirror its tokens/components/page shell. Do not use AGIOne strict assets unless the selected profile is `agione-strict`.
@@ -290,6 +330,13 @@ python -X utf8 <skill-dir>/scripts/agione-strict/evaluate-prototype.py <target.h
 
 Fix failures before delivery. Warnings may be delivered only if explained in the final response or `AI-NOTES`.
 
+Validation is blocking. For generated prototypes, validators must fail when:
+
+- `AI-NOTES` has no `ia-gate: pass`.
+- Any required `IA-GATE` field is missing.
+- Visible UI text contains prototype notes, mock notes, `data-source`, frontend route names, source API client names, code variables, internal state expressions, or status derivation labels.
+- The first screen cannot answer what the page is, current state or key point, next action or focus, and action result.
+
 Do not run project build commands unless the user explicitly requests them.
 
 ## Output Contract
@@ -297,7 +344,7 @@ Do not run project build commands unless the user explicitly requests them.
 For prototype generation, include:
 
 - The created HTML path.
-- A short IA summary: target user, page subject, page type, first-visit judgment path, top user task, strong expression decision.
+- A short IA summary: target user, page subject, page task, business flow, page type, first-visit judgment path, current state, next action, action result, strong expression decision.
 - Validation result.
 - Any remaining assumptions or placeholders.
 
