@@ -1,5 +1,6 @@
 # User-Level Preferences
 
+- 视觉 / 原型任务前必须先做版本保护硬检查：用户是否明确说“覆盖 / 原文件上改 / --edit”？没有明确授权时，当前文件只作为参考，不动原文件，必须复制或按目录版本递增生成新版本；“参考”“重新设计”“再来一版”“换方向”都不构成编辑授权。
 - 所有设计 / 原型 / 页面视觉任务默认保护已有版本：除非我明确要求基于某个现有文件继续修改或覆盖，否则已有设计稿、HTML 原型、截图复刻文件只作为参考，必须创建新的独立设计页面或新版本文件。新文件应按目录已有版本递增命名，避免覆盖满意版本。
 - 只有“基于当前页面修改”“继续改这个 HTML”“在原文件上优化”“覆盖当前版本”“--edit <existing.html>”等明确表达，才表示允许编辑既有设计文件；“参考旧版”“重新设计”“换个方向”“再来一版”“探索方案”等默认生成新版本。
 - When designing prototypes, every displayed numeric value must be defensible. It must either be a real business value with clear meaning, or be derived from other business data through explicit business logic. Do not invent numbers only to make the UI look richer, balanced, or visually pleasing. If the data source is unknown, use clearly marked placeholders or record the assumption instead of presenting arbitrary numbers as real.
