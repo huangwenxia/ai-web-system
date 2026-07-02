@@ -40,8 +40,9 @@ first-visit-path:
   primary-action-result: business systems can invoke cloud compute resources after authorization
 strong-expression-decision: yes; the page must emphasize the current blocker and next action, not implementation evidence
 content-pruning:
-  removed-from-visible-ui: API client names, frontend routes, boolean rules, status source panel, data-source labels, currentStep/source-code wording
-  retained-visible-ui: business step names, completed/pending states, progress derived from five source steps, next action, completion outcome, recovery action
+  visible-copy-whitelist-applied: title, status, progress, step names, step states, and action text only
+  removed-from-visible-ui: explanatory paragraphs, tutorial cards, completed tag strip, step descriptions, API client names, frontend routes, boolean rules, status source panel, data-source labels, currentStep/source-code wording
+  retained-visible-ui: business step names, completed/pending states, progress derived from five source steps, next action, recovery action
 technical-evidence-policy: internal technical evidence exists only in this AI-NOTES comment and non-visible code comments; it is not rendered in customer UI
 five-second-self-check:
   - target user can identify this as Access Management Quick Start
@@ -1746,6 +1747,8 @@ html, body {
   display: flex;
   flex-direction: column;
   gap: var(--ui-space-section);
+  max-width: 1080px;
+  width: 100%;
 }
 .access-hero {
   background: var(--ui-bg-card);
@@ -1754,15 +1757,13 @@ html, body {
   box-shadow: var(--ui-shadow-card);
   padding: var(--ui-space-card);
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 280px);
   gap: var(--ui-space-section);
   align-items: stretch;
 }
 .access-hero__main,
 .access-hero__panel,
-.access-focus-card,
 .access-step-list,
-.access-summary-list,
 .access-empty-actions {
   display: flex;
   flex-direction: column;
@@ -1773,20 +1774,16 @@ html, body {
 }
 .access-hero__panel {
   justify-content: space-between;
-  gap: var(--ui-space-card);
-  border: 1px solid var(--ui-border-default);
-  border-radius: var(--ui-radius-control);
-  background: var(--ui-bg-muted);
-  padding: var(--ui-space-card);
+  gap: var(--ui-space-control);
+  padding-block: var(--ui-space-xs);
 }
 .access-hero__meta,
 .access-actions,
 .access-step__meta,
 .access-done-strip,
 .access-panel-row,
-.access-focus-item,
 .access-complete-list,
-.access-focus-card__head {
+.access-workflow__head {
   display: flex;
   align-items: center;
   gap: var(--ui-space-inline);
@@ -1797,10 +1794,7 @@ html, body {
 .access-complete-list {
   flex-wrap: wrap;
 }
-.access-hero__desc,
 .access-muted,
-.access-step__desc,
-.access-focus-card__desc,
 .access-empty-copy {
   color: var(--ui-text-muted);
 }
@@ -1818,10 +1812,14 @@ html, body {
   color: var(--ui-text-muted);
 }
 .access-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 360px);
-  gap: var(--ui-space-section);
-  align-items: start;
+  display: block;
+}
+.access-workflow__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ui-space-card);
+  margin-bottom: var(--ui-space-control);
 }
 .access-step-list {
   gap: var(--ui-space-control);
@@ -1830,10 +1828,10 @@ html, body {
   background: var(--ui-bg-card);
   border: 1px solid var(--ui-border-default);
   border-radius: var(--ui-radius-card);
-  padding: var(--ui-space-card);
+  padding: var(--ui-space-control) var(--ui-space-card);
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: var(--ui-space-card);
+  gap: var(--ui-space-control);
   align-items: center;
   transition: border-color var(--ui-duration-fast) var(--ui-ease-out), box-shadow var(--ui-duration-fast) var(--ui-ease-out), background var(--ui-duration-fast) var(--ui-ease-out);
 }
@@ -1872,9 +1870,10 @@ html, body {
 }
 .access-step__body {
   min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--ui-space-inline);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--ui-space-control);
 }
 .access-step__title {
   display: flex;
@@ -1886,38 +1885,6 @@ html, body {
   display: flex;
   justify-content: flex-end;
   min-width: 150px;
-}
-.access-focus-column {
-  display: flex;
-  flex-direction: column;
-  gap: var(--ui-space-control);
-}
-.access-focus-card {
-  gap: var(--ui-space-control);
-  background: var(--ui-bg-card);
-  border: 1px solid var(--ui-border-default);
-  border-radius: var(--ui-radius-card);
-  padding: var(--ui-space-card);
-}
-.access-focus-card__head {
-  justify-content: space-between;
-}
-.access-focus-item {
-  align-items: flex-start;
-}
-.access-focus-item__icon {
-  width: var(--ui-icon-xl);
-  height: var(--ui-icon-xl);
-  border-radius: var(--ui-radius-pill);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ui-color-primary);
-  background: var(--ui-color-primary-subtle);
-  flex-shrink: 0;
-}
-.access-summary-list {
-  gap: var(--ui-space-inline);
 }
 .access-empty-shell {
   flex: 1;
@@ -1931,8 +1898,7 @@ html, body {
   max-width: 520px;
 }
 @media (max-width: 1180px) {
-  .access-hero,
-  .access-layout {
+  .access-hero {
     grid-template-columns: 1fr;
   }
   .access-step {
@@ -1949,6 +1915,11 @@ html, body {
   }
   .access-step {
     grid-template-columns: 1fr;
+  }
+  .access-step__body,
+  .access-workflow__head {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
   }
   .access-step__action {
     grid-column: auto;
@@ -2139,7 +2110,6 @@ const i18n = {
       resultTitle: '完成后会怎样',
       resultDesc: '业务单元获得资源池访问权限，后续模型部署和算力调用就可以走这条接入链路。',
       completedTitle: '已完成的准备',
-      currentStepTitle: '当前步骤',
       unavailableTitle: '还不能操作',
       firstStep: '从这里开始',
       lockedPrefix: '先完成',
@@ -2239,7 +2209,6 @@ const i18n = {
       resultTitle: 'What Happens Afterward',
       resultDesc: 'Business units receive access to the resource pool, and later deployments or compute calls can use this access chain.',
       completedTitle: 'Preparation Complete',
-      currentStepTitle: 'Current Step',
       unavailableTitle: 'Not Available Yet',
       firstStep: 'Start here',
       lockedPrefix: 'Complete first',
@@ -3233,14 +3202,14 @@ const app = createApp({
     });
     const isCompleteState = computed(() => completedStep.value >= totalSteps.value && !isErrorState.value);
     const nextStepNumber = computed(() => Math.min(completedStep.value + 1, totalSteps.value));
-    const currentStep = computed(() => steps.value[nextStepNumber.value - 1] || steps.value[0]);
+    const activeBusinessStep = computed(() => steps.value[nextStepNumber.value - 1] || steps.value[0]);
     const remainingStepCount = computed(() => Math.max(totalSteps.value - completedStep.value, 0));
     const progressText = computed(() => completedStep.value + '/' + totalSteps.value);
     const progressSentence = computed(() => {
       if (isCompleteState.value) return t.value.access.progressReady;
-      return t.value.access.progressDone
-        .replace('{done}', completedStep.value)
-        .replace('{left}', remainingStepCount.value);
+      return lang.value === 'zh'
+        ? `还差 ${remainingStepCount.value} 步`
+        : `${remainingStepCount.value} Step${remainingStepCount.value === 1 ? '' : 's'} Left`;
     });
 
     const currentStatus = computed(() => {
@@ -3252,17 +3221,17 @@ const app = createApp({
       if (isErrorState.value) return t.value.access.errorTitle;
       if (isCompleteState.value) return t.value.access.completeTitle;
       const prefix = nextStepNumber.value === totalSteps.value ? t.value.access.nextPrefix : t.value.access.nextGenericPrefix;
-      return prefix + '：' + currentStep.value.title;
+      return prefix + '：' + activeBusinessStep.value.title;
     });
     const currentDesc = computed(() => {
       if (isErrorState.value) return t.value.access.errorDesc;
       if (isCompleteState.value) return t.value.access.completeDesc;
-      return currentStep.value.desc;
+      return activeBusinessStep.value.desc;
     });
     const primaryActionText = computed(() => {
       if (isErrorState.value) return t.value.access.retryAction;
       if (isCompleteState.value) return t.value.access.overviewAction;
-      return currentStep.value.action;
+      return activeBusinessStep.value.action;
     });
     const completedStepNames = computed(() => steps.value.slice(0, completedStep.value).map(step => step.title));
 
@@ -3318,7 +3287,7 @@ const app = createApp({
       scenarios, activeScenario, defaultScenario,
       balance,
       hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
-      steps, totalSteps, completedStep, remainingStepCount, isErrorState, isCompleteState, currentStep,
+      steps, totalSteps, completedStep, remainingStepCount, isErrorState, isCompleteState,
       currentStatus, currentTitle, currentDesc, primaryActionText,
       progressText, progressSentence, completedStepNames, displaySteps,
       // AGIONE_EDIT_SETUP_RETURN_END
@@ -3458,14 +3427,10 @@ const app = createApp({
                 <div class="access-hero__main">
                   <div class="access-hero__meta">
                     <StatusBadge :status="currentStatus.status" :label="currentStatus.label" />
+                    <span class="type-data">{{ progressText }}</span>
                     <span class="type-caption access-muted">{{ progressSentence }}</span>
                   </div>
                   <h2 class="type-h2">{{ currentTitle }}</h2>
-                  <p class="type-body access-hero__desc">{{ currentDesc }}</p>
-                  <div v-if="completedStepNames.length && !isErrorState" class="access-done-strip">
-                    <span class="type-caption access-muted">{{ t.access.completedTitle }}</span>
-                    <Tag v-for="name in completedStepNames" :key="name" color="green">{{ name }}</Tag>
-                  </div>
                   <div class="access-actions">
                     <el-button type="primary" @click.stop>{{ primaryActionText }}</el-button>
                     <el-button @click.stop>{{ t.access.overviewAction }}</el-button>
@@ -3478,15 +3443,14 @@ const app = createApp({
                     <span class="type-kpi">{{ progressText }}</span>
                   </div>
                   <UsageBar :used="completedStep" :total="totalSteps" />
-                  <p class="type-body-sm access-muted">{{ isCompleteState ? t.access.resultDesc : t.access.focusDesc }}</p>
                 </div>
               </section>
 
               <section class="access-layout">
-                <div>
-                  <div class="access-focus-card__head">
+                <div class="access-workflow">
+                  <div class="access-workflow__head">
                     <h2 class="type-h2">{{ t.access.workflowTitle }}</h2>
-                    <span class="type-caption access-muted">{{ t.access.currentStepTitle }}：{{ currentStep.title }}</span>
+                    <span class="type-caption access-muted">{{ progressSentence }}</span>
                   </div>
                   <div class="access-step-list">
                     <article
@@ -3501,10 +3465,8 @@ const app = createApp({
                       </div>
                       <div class="access-step__body">
                         <div class="access-step__title">
-                          <i :data-lucide="step.icon"></i>
                           <h3 class="type-h3">{{ step.title }}</h3>
                         </div>
-                        <p class="type-body-sm access-step__desc">{{ step.desc }}</p>
                         <div class="access-step__meta">
                           <StatusBadge :status="step.status" :label="step.statusText" />
                         </div>
@@ -3521,34 +3483,6 @@ const app = createApp({
                   </div>
                 </div>
 
-                <aside class="access-focus-column">
-                  <section class="access-focus-card">
-                    <div class="access-focus-card__head">
-                      <h2 class="type-h2">{{ t.access.focusTitle }}</h2>
-                      <Tag color="purple">{{ currentStep.title }}</Tag>
-                    </div>
-                    <p class="type-body-sm access-focus-card__desc">{{ t.access.focusDesc }}</p>
-                    <div class="access-summary-list">
-                      <div v-for="item in t.access.focusItems" :key="item" class="access-focus-item">
-                        <span class="access-focus-item__icon"><i data-lucide="check"></i></span>
-                        <span class="type-body-sm">{{ item }}</span>
-                      </div>
-                    </div>
-                  </section>
-
-                  <section class="access-focus-card">
-                    <div class="access-focus-card__head">
-                      <h2 class="type-h2">{{ t.access.resultTitle }}</h2>
-                    </div>
-                    <p class="type-body-sm access-focus-card__desc">{{ t.access.resultDesc }}</p>
-                    <div class="access-summary-list">
-                      <div v-for="item in t.access.resultItems" :key="item" class="access-focus-item">
-                        <span class="access-focus-item__icon"><i data-lucide="arrow-right"></i></span>
-                        <span class="type-body-sm">{{ item }}</span>
-                      </div>
-                    </div>
-                  </section>
-                </aside>
               </section>
             </div>
           </section>

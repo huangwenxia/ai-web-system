@@ -27,7 +27,7 @@ alwaysApply: true
 
 以下规则用于兜底 Cursor / Trae 等没有维护用户级 memory 的终端，只放影响任务入口、文件落点和第三方资产边界的硬约束；详细 UI 设计原则仍以 `rules/user-rule.md` 和对应 skill 为准。
 
-- AGIOne UI 原型设计 / 生成 / 重新设计任务，默认新建 standalone single-file HTML，并保存到 `E:\work\ai-web-system\agione_web_psd\`；只有用户明确要求修改、重构、优化既有 HTML，明确要求继续在原设计稿 `.html` 上设计，或使用 `--edit <existing.html>` 语义时，才编辑旧文件。
+- AGIOne UI 原型设计 / 生成 / 重新设计任务（包括 `backoffice-prototype-builder` 选择或推断为 `profile=agione-strict` 的任务），默认新建 standalone single-file HTML，并保存到 `E:\work\ai-web-system\agione_web_psd\`；只有用户明确要求修改、重构、优化既有 HTML，明确要求继续在原设计稿 `.html` 上设计，或使用 `--edit <existing.html>` 语义时，才编辑旧文件。
 - 用户只问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“看下这个原型 / 截图 / 页面”“UI 审查”“视觉审查”或类似视觉质量确认时，进入 `page-review-skill` 做 review-only；不得修改代码、HTML 或页面结构，除非用户明确说“按建议改”“开始改 HTML”“执行精修”或“直接修代码”。
 - 创建、更新、细化 rules / skills / protocols 时，先检查当前工作区的源定义和同步脚本；不得默认直接修改全局安装副本。外部或第三方维护的 skill 不写入个人偏好；个人偏好应放在 `rules/user-rule.md`、项目级 rules 或自有 wrapper / overlay 中。
 
