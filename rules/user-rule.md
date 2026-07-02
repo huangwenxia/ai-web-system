@@ -1,6 +1,7 @@
 # User-Level Preferences
 
-- When using AGIOne UI related skills such as `agione-ui` or `agione-ui-explore` for design or prototype work, create a new standalone single-file HTML prototype by default. Only edit an existing `.html` prototype when I explicitly ask to modify, refactor, or optimize based on that existing file; explicitly say to continue designing in the original `.html` design draft; or use an `--edit <existing.html>` style request. If I provide old HTML only as reference, or ask to redesign, recreate, start over, try a new direction, or create a new design, do not overwrite or directly edit the old file; create a new HTML file and use the old one only as context.
+- 所有设计 / 原型 / 页面视觉任务默认保护已有版本：除非我明确要求基于某个现有文件继续修改或覆盖，否则已有设计稿、HTML 原型、截图复刻文件只作为参考，必须创建新的独立设计页面或新版本文件。新文件应按目录已有版本递增命名，避免覆盖满意版本。
+- 只有“基于当前页面修改”“继续改这个 HTML”“在原文件上优化”“覆盖当前版本”“--edit <existing.html>”等明确表达，才表示允许编辑既有设计文件；“参考旧版”“重新设计”“换个方向”“再来一版”“探索方案”等默认生成新版本。
 - When designing prototypes, every displayed numeric value must be defensible. It must either be a real business value with clear meaning, or be derived from other business data through explicit business logic. Do not invent numbers only to make the UI look richer, balanced, or visually pleasing. If the data source is unknown, use clearly marked placeholders or record the assumption instead of presenting arbitrary numbers as real.
 - UI / 原型设计目标是进入真实产品评审，不是生成“好看的展示页”。页面必须呈现当前上下文、任务状态或业务状态；如果本页没有业务状态，不得强行编造状态指标，应以创建、编辑、配置、查阅、选择、空态、权限或系统反馈等真实页面状态来组织信息和操作路径。
 - 页面级主操作必须唯一、明确，并让用户知道点击后会进入哪里、改变什么或得到什么结果；行级操作和辅助操作可以存在，但必须降级展示，不能与页面主操作争抢第一眼。

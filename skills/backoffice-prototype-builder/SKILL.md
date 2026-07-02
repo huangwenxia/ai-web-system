@@ -147,6 +147,12 @@ Choose one mode from the request:
 - `review`: give IA/design recommendations without producing HTML when the user asks only for review.
 - `production-alignment`: inspect an existing project design system and make the prototype visually consistent with it.
 
+Protect existing design versions when choosing the mode:
+
+- If the user provides an old HTML prototype, screenshot, or design draft only as reference, stay in `generate` mode and create a new standalone file.
+- Switch to `edit` only for explicit requests such as "continue in this HTML", "modify the current file", "optimize in place", "overwrite this version", or `--edit <existing.html>`.
+- For new prototypes, use a meaningful slug and increment an existing version suffix when the output directory already contains related designs. Never overwrite a satisfactory earlier version to create a new direction.
+
 For AGIOne strict visual-quality review requests such as “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, use `review` mode and read `../page-review-skill/docs/agione-visual-review-protocol.md` before giving recommendations. Default to review-only and do not generate, edit, or rewrite HTML unless the user explicitly asks to proceed with changes after the review.
 
 When working in an existing target project, save new prototypes under that target project's root `agione_web_psd/` directory unless the user specifies another path. Resolve the target project root from the user's workspace/path or the repository being inspected; never treat the skill source folder, global installed skill folder, or arbitrary terminal cwd as the target root. Create `agione_web_psd/` if needed.
@@ -391,4 +397,4 @@ For review-only mode, output in Chinese:
 - Do not use dashboards/charts to decorate a page. Use them only for monitoring, comparison, or decision tasks.
 - Do not let low-frequency technical fields occupy first-screen attention.
 - Do not write vague advice such as "make it more advanced" or "add richer visuals"; translate recommendations into concrete placement, deletion, grouping, or hierarchy.
-- Do not overwrite an existing HTML prototype unless the user explicitly asks to edit it.
+- Do not overwrite an existing HTML prototype or design draft unless the user explicitly asks to edit or overwrite that exact file.
