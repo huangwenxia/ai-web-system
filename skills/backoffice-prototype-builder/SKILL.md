@@ -308,6 +308,7 @@ Generic visual rules:
 - Low-frequency technical details should be collapsed, subdued, or placed inside row/detail panels.
 - Every number must be real, derived, or clearly placeholder.
 - All visible text must be user language for the current role. Business users see business status and next actions; developers see usable endpoints, parameters, examples, and error handling; admins see configuration impact and risk. Internal implementation evidence stays in comments, attributes, or `AI-NOTES`, not on screen.
+- For back-office/admin pages, check canvas utilization in the current browser viewport after applying the product shell, sidebar, top nav, and fixed page regions. The primary business area should not default to a narrow article-like column; right-side blank space must have a business purpose such as secondary details, actions, preview, status, comparison, or a follow-up reading path.
 
 ### 7. Validate
 
@@ -330,6 +331,8 @@ python -X utf8 <skill-dir>/scripts/agione-strict/evaluate-prototype.py <target.h
 ```
 
 Fix failures before delivery. Warnings may be delivered only if explained in the final response or `AI-NOTES`.
+
+Validation scripts do not replace visual review. Before delivery, inspect the rendered page or screenshot and explicitly answer whether large blank space in the main content canvas has a business purpose. If not, adjust the layout or record the specific page-type reason for the narrow layout.
 
 Validation is blocking. For generated prototypes, validators must fail when:
 
