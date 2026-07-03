@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- AGIONE_EDIT_TITLE_START - business page title --><title>AGIOne Console - Infrahub Access Quick Start Explore V14-1</title><!-- AGIONE_EDIT_TITLE_END -->
+<!-- AGIONE_EDIT_TITLE_START - business page title --><title>AGIOne Console - Infrahub Access Quick Start V19 Polish</title><!-- AGIONE_EDIT_TITLE_END -->
 <!-- AGIONE_EDIT_NOTES_START -->
 <!--AI-NOTES
-mode: explore
-variant: 1 of 2
-approach: Ultra-light launcher: one current task, one primary action, one quiet completion path.
-ds-status: DS outside - review candidate
-tradeoff: Very low cognitive load, but fewer visible details before clicking.
+mode: strict-polish
+variant: v19 from v18
+approach: Production landing candidate: wider task card, softened completed state, tightened launcher rhythm.
+ds-status: production-aligned review candidate
+tradeoff: Keeps one-task focus while using the available console canvas more evenly.
 created-at: 2026-07-03
-output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v14-v1.html
-source-shell: infrahub-access-quickstart-redesign-v13.html
-version-protection: v13 preserved; this file is a new explore variant
+output-path: E:/work/ai-web-system/agione_web_psd/infrahub-access-quickstart-redesign-v19-stepper-final-polish.html
+source-shell: infrahub-access-quickstart-redesign-v18-stepper-type-polish.html
+version-protection: v18 preserved; this file is a new polish version
 page-task: first-time operator completes the access setup chain with one obvious next action
 primary-action: enter the current required setup step
 visible-copy-policy: title, status, current step, primary action, step names, completion destinations only
@@ -2734,7 +2734,7 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
 /* AGIONE_EDIT_EXPLORE_V14_START */
 .xq-page { height: 100%; min-height: 0; padding: var(--ui-space-section); background: var(--ui-bg-page); }
 .xq-page__inner { display: flex; min-height: 0; flex-direction: column; gap: var(--ui-space-section); }
-.xq-launch { width: min(100%, calc(var(--ui-space-3xl) * 28)); margin-inline: auto; display: grid; gap: var(--ui-space-section); padding: var(--ui-space-3xl); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-modal); background: linear-gradient(135deg, var(--ui-bg-card), var(--ui-bg-muted)); box-shadow: var(--ui-shadow-card); }
+.xq-launch { width: min(100%, calc(var(--ui-space-3xl) * 28)); margin-inline: auto; display: grid; gap: var(--ui-space-card); padding: var(--ui-space-3xl); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-modal); background: linear-gradient(135deg, var(--ui-bg-card), var(--ui-bg-muted)); box-shadow: var(--ui-shadow-card); }
 .xq-launch__status, .xq-launch__line, .xq-after, .xq-track-head, .xq-track-current__meta, .xq-route-out, .xq-placeholder__head { display: flex; align-items: center; gap: var(--ui-space-inline); color: var(--ui-text-muted); }
 .xq-launch__status { width: fit-content; min-height: var(--ui-icon-lg); align-items: center; gap: var(--ui-space-sm); }
 .xq-launch__status > span:not(.xq-status-dot) { display: inline-flex; align-items: center; min-height: var(--ui-icon-md); line-height: 1; white-space: nowrap; }
@@ -2745,30 +2745,33 @@ body:has(.access-page) .demo-mode-chip [data-lucide="lightbulb"] {
 .xq-launch__copy { display: grid; gap: var(--ui-space-control); min-width: 0; }
 .xq-launch__title, .xq-track-current__title { margin: 0; color: var(--ui-text-primary); }
 .xq-launch__line { max-width: calc(var(--ui-space-3xl) * 14); }
-.xq-primary.el-button { align-self: start; min-width: calc(var(--ui-space-3xl) * 4); margin-block-start: calc(var(--ui-icon-lg) + var(--ui-space-sm)); justify-content: center; }
+.xq-primary.el-button { align-self: start; min-width: calc(var(--ui-space-3xl) * 3.6); margin-block-start: calc(var(--ui-icon-lg) + var(--ui-space-sm)); justify-content: center; }
 .xq-primary [data-lucide], .xq-primary svg, .xq-route-action [data-lucide], .xq-route-action svg, .xq-after__item [data-lucide], .xq-after__item svg, .xq-placeholder__head [data-lucide], .xq-placeholder__head svg { width: var(--ui-icon-sm); height: var(--ui-icon-sm); }
 .xq-mini-steps { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; padding: var(--ui-space-xs) 0 0; margin: 0; list-style: none; }
 .xq-mini-step { position: relative; display: grid; justify-items: center; gap: var(--ui-space-control); min-width: 0; color: var(--ui-text-muted); text-align: center; }
 .xq-mini-step::before { content: ""; position: absolute; inset-inline: 0; top: calc(var(--ui-icon-lg) / 2); height: 1px; background: var(--ui-border-default); }
 .xq-mini-step:first-child::before { inset-inline-start: 50%; }
 .xq-mini-step:last-child::before { inset-inline-end: 50%; }
-.xq-mini-step.is-current::before { background: linear-gradient(90deg, var(--ui-color-success), var(--ui-color-success) 50%, var(--ui-border-default) 50%, var(--ui-border-default)); }
-.xq-mini-step.is-complete::before { background: var(--ui-color-success); }
+.xq-mini-step.is-current::before { background: linear-gradient(90deg, color-mix(in srgb, var(--ui-color-success) 68%, var(--ui-border-default)), color-mix(in srgb, var(--ui-color-success) 68%, var(--ui-border-default)) 50%, var(--ui-border-default) 50%, var(--ui-border-default)); }
+.xq-mini-step.is-complete::before { background: color-mix(in srgb, var(--ui-color-success) 68%, var(--ui-border-default)); }
 .xq-step-node { position: relative; z-index: var(--ui-z-base); display: flex; justify-content: center; width: 100%; }
 .xq-step-copy { display: inline-flex; align-items: center; justify-content: center; flex-wrap: nowrap; gap: var(--ui-space-xs); box-sizing: border-box; max-width: 100%; min-width: 0; height: calc(var(--ui-space-control) * 2); padding: 0 var(--ui-space-inline); border: 1px solid transparent; border-radius: var(--ui-radius-pill); background: transparent; white-space: nowrap; }
 .xq-step-name, .xq-step-state { display: inline-flex; align-items: center; justify-content: center; box-sizing: border-box; line-height: 1; letter-spacing: 0; text-transform: none; white-space: nowrap; transform: translateY(calc(var(--ui-space-xs) / 8)); }
 .xq-step-name { flex: 0 1 auto; min-width: 0; height: var(--ui-icon-lg); color: var(--ui-text-secondary); overflow: hidden; text-overflow: ellipsis; }
+.xq-step-separator { flex: 0 0 auto; width: var(--ui-space-xs); height: var(--ui-space-xs); border-radius: var(--ui-radius-pill); background: currentColor; color: var(--ui-text-muted); opacity: 0.42; transform: translateY(calc(var(--ui-space-xs) / 8)) scale(0.72); }
 .xq-step-state { position: relative; flex: 0 0 auto; gap: calc(var(--ui-space-xs) * 0.75); height: var(--ui-icon-lg); padding-inline: 0; border: 0; border-radius: 0; background: transparent; color: var(--ui-text-muted); font-weight: 400; }
 .xq-step-state::before { content: ""; display: none; width: var(--ui-space-xs); height: var(--ui-space-xs); border-radius: var(--ui-radius-pill); background: currentColor; opacity: 0.72; }
 .xq-step-dot { width: var(--ui-icon-lg); height: var(--ui-icon-lg); border: 1px solid var(--ui-border-default); outline: var(--ui-space-xs) solid var(--ui-bg-card); background: var(--ui-bg-card); color: var(--ui-text-muted); }
 .xq-mini-step.is-current .xq-step-dot, .xq-track-step.is-current .xq-track-step__index { border-color: var(--ui-color-primary); background: var(--ui-color-primary); color: var(--ui-text-on-brand); }
-.xq-mini-step.is-complete .xq-step-dot, .xq-track-step.is-complete .xq-track-step__index { border-color: var(--ui-color-success); background: var(--ui-color-success-subtle); color: var(--ui-color-success); }
+.xq-mini-step.is-complete .xq-step-dot, .xq-track-step.is-complete .xq-track-step__index { border-color: color-mix(in srgb, var(--ui-color-success) 48%, var(--ui-border-default)); background: color-mix(in srgb, var(--ui-color-success-subtle) 62%, var(--ui-bg-card)); color: color-mix(in srgb, var(--ui-color-success) 76%, var(--ui-text-secondary)); }
 .xq-mini-step.is-current .xq-step-dot { outline-color: var(--ui-color-primary-subtle); }
-.xq-mini-step.is-complete .xq-step-dot { outline-color: var(--ui-color-success-subtle); }
+.xq-mini-step.is-complete .xq-step-dot { outline-color: color-mix(in srgb, var(--ui-color-success-subtle) 68%, var(--ui-bg-card)); }
 .xq-mini-step.is-current .xq-step-copy { border-color: transparent; background: transparent; }
 .xq-mini-step.is-current .xq-step-name { color: var(--ui-text-primary); }
+.xq-mini-step.is-current .xq-step-separator { color: var(--ui-color-primary); opacity: 0.46; transform: translateY(0) scale(0.72); }
 .xq-mini-step.is-current .xq-step-state { height: calc(var(--ui-space-control) * 1.5); padding-inline: calc(var(--ui-space-xs) * 1.5); border: 1px solid color-mix(in srgb, var(--ui-color-primary) 24%, transparent); border-radius: var(--ui-radius-md); background: color-mix(in srgb, var(--ui-color-primary-subtle) 58%, var(--ui-bg-card)); color: var(--ui-color-primary); font-weight: 600; transform: translateY(0); }
-.xq-mini-step.is-complete .xq-step-state { border-color: transparent; background: transparent; color: var(--ui-badge-green-fg); font-weight: 500; transform: translateY(0); }
+.xq-mini-step.is-complete .xq-step-separator { color: var(--ui-color-success); opacity: 0.36; transform: translateY(0) scale(0.72); }
+.xq-mini-step.is-complete .xq-step-state { border-color: transparent; background: transparent; color: color-mix(in srgb, var(--ui-color-success) 66%, var(--ui-text-secondary)); font-weight: 500; transform: translateY(0); }
 .xq-step-dot [data-lucide], .xq-step-dot svg, .xq-track-step__index [data-lucide], .xq-track-step__index svg, .xq-done-dot [data-lucide], .xq-done-dot svg { width: var(--ui-icon-xs); height: var(--ui-icon-xs); }
 .xq-after { justify-content: center; flex-wrap: wrap; }
 .xq-after__item, .xq-route-action { display: inline-flex; align-items: center; gap: var(--ui-space-xs); border: 0; background: transparent; color: var(--ui-text-muted); cursor: pointer; }
@@ -4236,7 +4239,7 @@ const app = createApp({
         <!-- Main — Shell-only Stage（占位，AI 生成原型时替换为业务内容） -->
         <!-- AGIONE_EDIT_MAIN_START - business main -->
         <main class="main" role="main">
-          <section v-if="activeNav === 'quickstart'" class="xq-page main-box" data-component="main-box"><div class="xq-page__inner"><PageHeader :title="t.access.pageTitle"></PageHeader><section class="xq-launch" data-component="quickstart-explore-launcher"><div class="xq-launch__status"><span class="xq-status-dot" :class="accessStatusClass" aria-hidden="true"></span><span class="type-caption">{{ isCompleteState ? t.access.readyLabel : t.access.pendingLabel }}</span><span class="type-data">{{ progressText }}</span><span class="type-caption">{{ progressSentence }}</span></div><div class="xq-launch__body"><div class="xq-launch__copy"><span class="type-caption">{{ t.access.nextLabel }}</span><h2 class="type-display-sm xq-launch__title">{{ currentTitle }}</h2><div class="xq-launch__line"><span class="type-body-sm">{{ currentDesc }}</span><span class="type-caption">{{ heroResultText }}</span></div></div><el-button class="xq-primary" type="primary" size="large" @click.stop="handlePrimaryAction">{{ primaryActionText }}<i data-lucide="arrow-right"></i></el-button></div><ol class="xq-mini-steps" aria-label="Access setup steps"><li v-for="step in displaySteps" :key="activeScenario + '-' + step.stepNumber + '-' + step.state" class="xq-mini-step" :class="step.stateClass" :aria-current="step.active ? 'step' : null"><div class="xq-step-node"><span class="xq-step-dot type-data"><i v-if="step.done" data-lucide="check"></i><span v-else>{{ step.stepNumber }}</span></span></div><div class="xq-step-copy"><span class="type-body-sm xq-step-name">{{ step.short }}</span><span class="type-caption xq-step-state">{{ step.statusText }}</span></div></li></ol></section><div v-if="isCompleteState" class="xq-after" data-component="quickstart-completion-path"><span class="type-caption">{{ t.access.followupTitle }}</span><button v-for="item in completionFollowupItems" :key="item.navKey" type="button" class="xq-after__item" @click="activeNav = item.navKey"><i :data-lucide="item.icon"></i><span class="type-body-sm">{{ item.title }}</span></button></div></div></section><section v-else class="xq-placeholder"><div class="xq-placeholder__panel"><div class="xq-placeholder__head"><i data-lucide="map"></i><h2 class="type-h2 xq-launch__title">{{ t.access.placeholderTitle }}</h2></div><p class="type-body-sm xq-track-current__desc">{{ t.access.placeholderHint }}</p><el-button type="primary" @click="activeNav = 'quickstart'">{{ t.access.backToQuickstart }}</el-button></div></section>
+          <section v-if="activeNav === 'quickstart'" class="xq-page main-box" data-component="main-box"><div class="xq-page__inner"><PageHeader :title="t.access.pageTitle"></PageHeader><section class="xq-launch" data-component="quickstart-explore-launcher"><div class="xq-launch__status"><span class="xq-status-dot" :class="accessStatusClass" aria-hidden="true"></span><span class="type-caption">{{ isCompleteState ? t.access.readyLabel : t.access.pendingLabel }}</span><span class="type-data">{{ progressText }}</span><span class="type-caption">{{ progressSentence }}</span></div><div class="xq-launch__body"><div class="xq-launch__copy"><span class="type-caption">{{ t.access.nextLabel }}</span><h2 class="type-display-sm xq-launch__title">{{ currentTitle }}</h2><div class="xq-launch__line"><span class="type-body-sm">{{ currentDesc }}</span><span class="type-caption">{{ heroResultText }}</span></div></div><el-button class="xq-primary" type="primary" size="large" @click.stop="handlePrimaryAction">{{ primaryActionText }}<i data-lucide="arrow-right"></i></el-button></div><ol class="xq-mini-steps" aria-label="Access setup steps"><li v-for="step in displaySteps" :key="activeScenario + '-' + step.stepNumber + '-' + step.state" class="xq-mini-step" :class="step.stateClass" :aria-current="step.active ? 'step' : null"><div class="xq-step-node"><span class="xq-step-dot type-data"><i v-if="step.done" data-lucide="check"></i><span v-else>{{ step.stepNumber }}</span></span></div><div class="xq-step-copy"><span class="type-body-sm xq-step-name">{{ step.short }}</span><span class="xq-step-separator" aria-hidden="true"></span><span class="type-caption xq-step-state">{{ step.statusText }}</span></div></li></ol></section><div v-if="isCompleteState" class="xq-after" data-component="quickstart-completion-path"><span class="type-caption">{{ t.access.followupTitle }}</span><button v-for="item in completionFollowupItems" :key="item.navKey" type="button" class="xq-after__item" @click="activeNav = item.navKey"><i :data-lucide="item.icon"></i><span class="type-body-sm">{{ item.title }}</span></button></div></div></section><section v-else class="xq-placeholder"><div class="xq-placeholder__panel"><div class="xq-placeholder__head"><i data-lucide="map"></i><h2 class="type-h2 xq-launch__title">{{ t.access.placeholderTitle }}</h2></div><p class="type-body-sm xq-track-current__desc">{{ t.access.placeholderHint }}</p><el-button type="primary" @click="activeNav = 'quickstart'">{{ t.access.backToQuickstart }}</el-button></div></section>
         </main>
         <!-- AGIONE_EDIT_MAIN_END -->
 
