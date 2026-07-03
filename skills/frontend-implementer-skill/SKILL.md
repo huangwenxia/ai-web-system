@@ -95,6 +95,8 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 ### Gate 5: VALIDATION-GATE
 
+For visible UI work, read `../page-review-skill/docs/ui-craft-gates.md` before final delivery and apply both `Universal Craft Invariant Gate` and `Universal UI Micro-Craft Gate`; automated checks, token compliance, and DOM correctness do not replace this visible-result craft pass.
+
 交付前必须确认：
 - 运行了适用的轻量检查：typecheck / lint / skill 脚本 / 组件结构 / 编码检查 / `git diff --check`；未运行必须逐项说明原因。
 - 命中 `project-mamba` 新功能页面时，运行 topology、实现检查、组件结构 strict、编码检查和 diff check，并列出 checked files。

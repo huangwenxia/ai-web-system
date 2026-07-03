@@ -28,6 +28,7 @@ If the target repository has additional project-local guidance, read it only whe
 
 Read these files progressively from this skill directory:
 
+- `../page-review-skill/docs/ui-craft-gates.md`: read before final delivery for visible UI micro-craft, invariant checks, and page-wide generalization of local roughness.
 - `docs/project-mamba-implementation-profile.md`: read for every project-mamba implementation. It defines app topology, route ownership, page-shell selection, validation gates, and final checklist requirements.
 - `docs/project-mamba-app-topology-matrix.md`: use only as a facts cache; verify it with current `vite.config.ts`, `src/main.ts`, router entries, and `scripts/verify-project-mamba-topology.mjs`.
 - `docs/implementation-review-checklist.md`: read before final delivery and when doing strict pre-implementation review.

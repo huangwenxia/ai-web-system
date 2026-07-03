@@ -159,6 +159,8 @@ When working in an existing target project, save new prototypes under that targe
 
 ## First-Visit User Gate
 
+Before generation delivery or review-only output, read `../page-review-skill/docs/ui-craft-gates.md` and apply both craft gates to the visible prototype. Validation scripts and IA checks do not replace this final craft review.
+
 Before generating or reviewing a prototype, judge the page from the current target user's first visit. The target user may be a business user, developer, operator, admin, or integration user; decide the role and task before deciding information depth.
 
 - Simplicity means a short judgment path, clear priority, and obvious action. If the page needs explanation to be understood, treat it as over-designed or under-defined; reduce the main task and business expression before adding modules, helper text, cards, tags, metrics, or decoration.

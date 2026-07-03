@@ -7,6 +7,7 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 
 ## AGIOne Visual Review Protocol
 
+- Before any visual review or UI quality judgment, read `docs/ui-craft-gates.md` and apply both `Universal Craft Invariant Gate` and `Universal UI Micro-Craft Gate`; use them to generalize local roughness into page-wide checks. Do not replace `docs/agione-visual-review-protocol.md`; apply the craft gates together with it.
 - 当用户询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“看下这个原型/截图/页面”“UI 审查”“视觉审查”或类似表达时，必须先完整读取 `docs/agione-visual-review-protocol.md`，并按该协议输出审查结论。
 - 视觉效果确认默认是 review-only：只审查、不改代码、不改 HTML、不新增或删除结构。只有用户明确说“按建议改”“开始改 HTML”“执行精修”“直接修代码”时，才进入实现或修改流程。
 - 不要用本文件中的摘要替代协议正文；`docs/agione-visual-review-protocol.md` 是通用页面视觉审查的唯一源头。
