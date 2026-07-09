@@ -1,0 +1,5 @@
+interface:
+  display_name: Reasoning Architecture Framework
+  short_description: Diagnose symptoms into root causes, architecture layers, and action briefs.
+  icon: 🧭
+  brand_color: '#4B6BFB'
