@@ -9,14 +9,6 @@ Use this skill to verify AGIOne frontend pages in the browser without accidental
 
 This skill is intentionally platform-neutral. Codex should use the in-app Browser or Chrome browser skills available in the current session. Claude or another agent should use its equivalent browser automation while following the same checks.
 
-## Visual Review Mode
-
-- When the user asks to confirm visual quality, for example “视觉效果怎么样”, “帮我看下页面”, “页面好不好看”, “哪里不舒服”, “UI 审查”, or “视觉审查”, first collect the browser evidence needed by this skill, then read and follow `../page-review-skill/docs/agione-visual-review-protocol.md`.
-- In this mode, default to review-only: do not change code, do not edit HTML, and do not add/remove page structure unless the user explicitly asks to modify after the review.
-- Use screenshots, visible DOM, computed styles, theme state, final URL, role, and backend shost as evidence for the protocol. Do not replace the full protocol with a brief visual impression.
-- Judge the page from the current target user's first visit: identify the role, page task, first-screen object/scope, key state/result/context, next focus/action, and expected action result.
-- Check visible text for unrelated internal evidence such as `Api.general.xxx`, `result.total`, `hasXxx`, `currentStep`, `AI-NOTES`, `data-source`, `mock`, frontend routes, source API client names, state expressions, or prototype-note labels like “数据来源 / 状态判断来源 / 根据规则推导”. Developer/API/debug/log pages may show task-relevant technical material, but not frontend source client names or AI/prototype notes; sensitive values must be masked.
-
 ## Defaults
 
 - Default frontend app: `project-mamba/apps/all` at `http://localhost:8000`.
@@ -57,6 +49,17 @@ The login page is flexible by design: the `shost` field chooses the backend. Qui
 
 Do not inspect cookies, passwords, or browser profile data. Reading visible page text, DOM, computed styles, console logs, and network status is fine.
 
+### Environment gate — Step 0, before you read or trust ANY data
+
+Determining the backend env (`mtest` vs `mdev`) is the FIRST action, not an afterthought. Do not log in (or read page data) and only afterward check which backend you are on — verify first, then act.
+
+- The authoritative backend is the stored `SERVERURL` (the value actually sent as the `shost` header), NOT `ROOT_CONFIG.shost` (which defaults to `mdev-gateway.opr` on `localhost` and will mislead you):
+  ```js
+  JSON.parse(localStorage.getItem("SERVERURL") || "{}").value   // e.g. "mtest-gateway.opr"
+  ```
+- **This applies even when you are already logged in.** A new tab on the same `localhost` origin inherits the existing session (token + `SERVERURL` in localStorage), so you may land already authenticated — still verify `SERVERURL` equals the requested env (and the visible role is right) BEFORE trusting anything on screen.
+- If `SERVERURL` does not match the requested env, treat all on-screen data as wrong-environment and re-login with the correct `shost` (see Backend Selection Rules) before continuing.
+
 ## Workflow
 
 1. Confirm the target:
@@ -96,7 +99,6 @@ Do not inspect cookies, passwords, or browser profile data. Reading visible page
 7. Run the requested checks:
    - Visual checks: take screenshots when the user asks or when the issue is visual.
    - DOM checks: use selectors for page roots, target buttons, dialogs, tables, or chips.
-   - Visible-text checks: collect headings, labels, helper text, buttons, table headers, status chips, empty/error text, and obvious code-like/internal evidence before judging visual quality.
    - Style checks: read `getComputedStyle` for exact colors, z-index, layout, disabled state, hover state, dark-mode tokens, and transition properties.
    - Hover checks: move the mouse or trigger the state, then compare computed values before/after hover.
    - Light/dark checks: switch theme through visible UI when possible; after switching, re-read DOM and computed style.
@@ -107,23 +109,36 @@ Do not inspect cookies, passwords, or browser profile data. Reading visible page
    - Role used.
    - Final URL.
    - Whether the expected page root or marker exists.
-   - Target-user 5-second self-check: whether the page purpose, current state, next focus/action, and action result are understandable from the first screen.
-   - Whether visible internal evidence was present, and where.
    - Key computed values or observed network responses.
    - Screenshots saved or emitted, if any.
    - Any uncertainty, especially if browser state or route bundle differs from the user's visible page.
+
+## Console shell check (before hunting for a menu)
+
+After login you may land on a public landing/chooser page (for example the "Public Model / Self Deploy Model" chooser) that has NO management navigation. Before looking for a specific menu (`设置`/Settings, `组织`/Organizations, etc.):
+
+1. Confirm the console shell is actually on screen — a top nav (e.g. `Model Services / AI Infra / Trading Services / Billing / Settings`) or a left sidebar.
+2. If the expected top menu is missing, FIRST suspect "I have not entered the console yet" (still on a landing / login / chooser page), NOT a route or permission bug. Enter the console from the landing page (e.g. click the user avatar / a console entry), then look again.
+3. Only after you have confirmed the console shell is present should you treat a missing menu as a route/permission problem (next section).
 
 ## Route And App Checks
 
 When a target page unexpectedly shows "开发中" or 404:
 
-1. Confirm `shost` and role first.
-2. Confirm the route exists in source, for example under `apps/common/src/views`, `apps/financial/src/views`, or `apps/gnosis/src/views`.
-3. Confirm the running Vite app:
+1. Confirm `shost`, backend target, and quick-login role first. Wrong `shost` or wrong role is more likely than a route bug.
+2. Check whether the current user has the corresponding menu and permission before changing frontend route code:
+   - If the page or network error explicitly says `缺少应用[...]的权限[...]` or `You do not have permission for app [...]`, switch to `$agione-permission-repair` for the database/cache repair workflow before changing frontend code.
+   - Confirm the target `frontAppId` and menu path.
+   - Confirm the menu exists and is visible/enabled for that app.
+   - Confirm the menu is bound to the expected permission code, and that the role/user is granted that menu/permission.
+   - If you are working in local/dev/test and the permission is missing, initialize or repair the menu/permission/role-grant data, clear menu/user/virtual-permission caches when needed, then log out and quick-login again before rechecking.
+   - Do not patch frontend route whitelists, `router.beforeEach`, `handleMenuPermission`, route bases, or dynamic `addRoute` logic until permission data is proven correct.
+3. Confirm the route exists in source, for example under `apps/common/src/views`, `apps/financial/src/views`, or `apps/gnosis/src/views`.
+4. Confirm the running Vite app:
    - `lsof -nP -iTCP:8000 -sTCP:LISTEN`
    - `ps -wwp <pid> -o pid,ppid,command`
-4. Confirm the app's Vite route plugin includes the module.
-5. If a new route was recently added, restart the dev server and clear Vite cache only when needed:
+5. Confirm the app's Vite route plugin includes the module.
+6. If a new route was recently added, restart the dev server and clear Vite cache only when needed:
    - `apps/all/node_modules/.vite`
    - app-specific `node_modules/.vite`
 
