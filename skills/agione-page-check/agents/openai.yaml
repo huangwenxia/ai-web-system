@@ -1,0 +1,4 @@
+interface:
+  display_name: "AGIOne Page Check"
+  short_description: "Browser acceptance checks for AGIOne pages"
+  default_prompt: "Use $agione-page-check to verify an AGIOne page at the appropriate smoke, standard, or deep level. Confirm backend shost and role first, then check route/permission, runtime requests, data semantics, workflow states, i18n, visual integrity, extreme values, and reproducible evidence."
