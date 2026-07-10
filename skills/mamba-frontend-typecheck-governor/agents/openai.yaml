@@ -1,0 +1,4 @@
+interface:
+  display_name: "Mamba Frontend Typecheck Governor"
+  short_description: "Govern project-mamba type-check cleanup."
+  default_prompt: "Use $mamba-frontend-typecheck-governor to run the project-mamba frontend type-check governance workflow for the target app."
