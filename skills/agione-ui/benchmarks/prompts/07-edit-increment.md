@@ -1,6 +1,6 @@
 # agione-ui Benchmark 07 · Edit Increment
 
-请使用 `agione-ui` strict 模式走增量改路径。
+请使用 `agione-ui --direct --edit` strict 模式走增量改路径。
 
 前置文件：`{OUTPUT_DIR}/01-standard-list.html`
 
@@ -28,6 +28,6 @@
 
 验收重点：
 - Logo 两段 base64 仍完整。
-- Scenario Switcher baseline 仍满足 `demo-mode-chip ≥ 5` / `demo-banner ≥ 3`。
+- 右下角状态机 baseline 仍包含 fixed `.state-machine-control`、圆形 `.state-machine-trigger`、按需展开的 `.state-machine-switcher`、`v-model="activeScenario"` 和基于 `scenarios` 的 Select options，且无旧 `demo-mode-chip` / `demo-banner`。
 - 只增量改变业务区，不重写 chrome。
 - 无副标题、无 CardBox 包 FilterBox、无 4 个 KpiCard。

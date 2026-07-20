@@ -7,7 +7,7 @@
 
 1. **先按意图桶定位** → 找到组件需求所在的章节
 2. **看类型列**决定**怎么写**这个组件：
-   - `runtime-component` → 用 PascalCase 标签：`<HeaderBox title="..." />`
+   - `runtime-component` → 用 PascalCase 标签并显式闭合：`<HeaderBox title="..."></HeaderBox>`
    - `css-pattern` → 用 div 包裹给 DOM 片段：`<div class="form-modern" data-component="form-modern"><el-form>...</el-form></div>`（DOM 骨架见 api-cheatsheet.md）
    - `element-plus` → 用 EP 原生标签：`<el-button type="primary">`
    - `template-partial` → 复制 partials/X.partial.html 内容到 `<main>` 内（不复制 `<html>` / chrome）
@@ -23,7 +23,7 @@ _Last build: 2026-05-15 14:36:35_
 
 ## 🎨 Foundations · 视觉基础
 
-> 类型 `reference-only` —— 不直接用，只查 token / 字型 / Badge 词汇。**对应规则已内联 AI-USAGE.md**，AI 通常不必 Read 这些文件。
+> 类型 `reference-only` —— 不直接用，只查 token / 字型 / Badge 词汇。共享规则已汇总在 `references/base-spec.md`；只有需要精确词汇或视觉真值时才 Read 对应 foundation。
 
 | 基础 | 用途 | 文件 |
 |------|------|------|
@@ -60,7 +60,7 @@ _Last build: 2026-05-15 14:36:35_
 
 | 组件 | 类型 | 数据特性 | 信号 | ⚠ 注意混淆 | 文件 |
 |------|------|---------|------|-----------|------|
-| HeaderBox | `runtime-component` | 页面顶部; 标题 + 副标题 + 操作; 可选 content 区放筛选 | `TREE-②` | PageHeader, HeroBand | `design-system/components/L1/header-box.html` |
+| HeaderBox | `runtime-component` | 页面顶部; 标题 + 操作; 可选 content 区放筛选 | `TREE-②` | PageHeader, HeroBand | `design-system/components/L1/header-box.html` |
 | HeroBand | `runtime-component` | 大字号 hero; 装饰渐变; 营销视觉权重 | `TREE-②` | HeaderBox, PageHeader | `design-system/components/L2/hero-band.html` |
 | PageHeader | `runtime-component` | 面包屑 + title + meta + 右操作; 通常后接 Tabs | `TREE-②` | HeaderBox, HeroBand | `design-system/components/L2/page-header.html` |
 
@@ -72,7 +72,7 @@ _Last build: 2026-05-15 14:36:35_
 | FormModern | `css-pattern` | 任何含 el-form 的表单; label 顶部对齐; 40px 输入框; ring focus; ⚠ icon 错误 | `STOP` | — | `design-system/components/L2/form-modern.html` |
 | Form | `element-plus` | 字段集合; 验证规则; 提交按钮区 | `STOP` | — | `design-system/components/L2/form.html` |
 | I18nField | `runtime-component` | 同一字段多语言; Tabs 切换; 完成度圆点 | `TREE-⑨` | — | `design-system/components/L2/i18n-field.html` |
-| RadioVariants | `css-pattern` | 见 SKILL.md §1.4-10 决策树 | `TREE-⑥` | — | `design-system/components/L2/radio-variants.html` |
+| RadioVariants | `css-pattern` | 四种单选视觉；按选项内容与密度选择 | `TREE-⑥` | — | `design-system/components/L2/radio-variants.html` |
 | Upload | `element-plus` | 拖拽 drop-zone; 进度条; 文件列表 | `TREE-⑨` | — | `design-system/components/L2/upload.html` |
 
 ### 反馈

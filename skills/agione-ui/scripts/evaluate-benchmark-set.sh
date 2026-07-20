@@ -89,21 +89,28 @@ echo "============================================================"
 for file in "${FILES[@]}"; do
   base="$(basename "$file" .html)"
   prompt="$PROMPT_DIR/$base.md"
-  PROMPT_ARGS=()
-  if [[ -f "$prompt" ]]; then
-    PROMPT_ARGS=(--prompt "$prompt")
-  fi
 
   echo
   echo ">>> $(basename "$file")"
-  if python3 "$EVAL_SCRIPT" "${PROMPT_ARGS[@]}" "$file"; then
+  if [[ -f "$prompt" ]]; then
+    python3 "$EVAL_SCRIPT" --prompt "$prompt" "$file"
+    eval_status=$?
+  else
+    python3 "$EVAL_SCRIPT" "$file"
+    eval_status=$?
+  fi
+  if [[ "$eval_status" -eq 0 ]]; then
     PASS=$((PASS + 1))
   else
     FAIL=$((FAIL + 1))
   fi
 
   if [[ -n "$REPORT_DIR" ]]; then
-    python3 "$EVAL_SCRIPT" --json "${PROMPT_ARGS[@]}" "$file" > "$REPORT_DIR/$base.json" || true
+    if [[ -f "$prompt" ]]; then
+      python3 "$EVAL_SCRIPT" --json --prompt "$prompt" "$file" > "$REPORT_DIR/$base.json" || true
+    else
+      python3 "$EVAL_SCRIPT" --json "$file" > "$REPORT_DIR/$base.json" || true
+    fi
   fi
 done
 

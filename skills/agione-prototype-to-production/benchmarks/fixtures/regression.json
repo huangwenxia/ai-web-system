@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    { "id": "01-crud-list", "status": "FAIL", "findings": [{ "id": "hardcoded-copy", "severity": "P1" }], "evidence": ["artifacts/01"] },
+    { "id": "02-dashboard-hero", "status": "PASS", "findings": [], "evidence": ["artifacts/02"] },
+    { "id": "03-detail-dialog", "status": "PASS", "findings": [], "evidence": ["artifacts/03"] },
+    { "id": "04-step-form", "status": "PASS", "findings": [], "evidence": ["artifacts/04"] },
+    { "id": "05-incremental-edit", "status": "PASS", "findings": [], "evidence": ["artifacts/05"] }
+  ]
+}

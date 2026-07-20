@@ -1,0 +1,9 @@
+[
+  {
+    "name": "fixture-config-error",
+    "viewport": { "width": 800, "height": 600 },
+    "proto": { "url": "fixtures/proto.html", "waitFor": ".fixture-page", "storageState": false },
+    "impl": { "url": "fixtures/impl-match.html", "storageState": false },
+    "probe": { "page": ".fixture-page" }
+  }
+]

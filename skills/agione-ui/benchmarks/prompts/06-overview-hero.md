@@ -1,6 +1,6 @@
 # agione-ui Benchmark 06 · Overview Hero
 
-请使用 `agione-ui` strict 模式生成一个单文件 HTML 原型。
+请使用 `agione-ui --direct` strict 模式生成一个单文件 HTML 原型。
 
 输出文件：`{OUTPUT_DIR}/06-overview-hero.html`
 

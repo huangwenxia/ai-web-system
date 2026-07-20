@@ -271,14 +271,14 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
               </div>
             </div>
 
-            <!-- ✅ Type Utility Class · 强制用法（已入 SKILL.md §1.4 规则 11） -->
+            <!-- ✅ Type Utility Class · 强制用法（见 references/base-spec.md §3） -->
             <div class="card-box" style="margin-top: var(--ui-space-xl); border-color: var(--ui-color-success); box-shadow: 0 0 0 3px var(--ui-color-success-subtle);">
               <div class="card-box__head" style="background: var(--ui-color-success-subtle);">
                 <div class="card-box__title" style="display: flex; align-items: center; gap: 8px; color: var(--ui-color-success);">
                   <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
                   ✅ Type Utility Class · 8 个 .type-* class（强制用，禁止手写 font-size/weight/line-height）
                 </div>
-                <span class="badge badge-green">L1 · 入 SKILL.md</span>
+                <span class="badge badge-green">L1 · Base Spec</span>
               </div>
               <div class="card-box__body" style="padding: var(--ui-space-xl);">
                 <p style="font-size: 13px; color: var(--ui-text-secondary); line-height: 1.7; margin-bottom: var(--ui-space-base);">
@@ -327,7 +327,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                 </div>
 
                 <div class="ds-block-when" style="margin-top: var(--ui-space-base); background: var(--ui-color-warning-subtle); border-left-color: var(--ui-color-warning);">
-                  <strong>关键约束（SKILL.md §1.4 规则 11）</strong>
+                  <strong>关键约束（references/base-spec.md §3）</strong>
                   ① <strong>禁止手写</strong> <code class="token">font-size / font-weight / line-height / font-family</code>，必须用 <code class="token">.type-*</code> class<br>
                   ② <strong>颜色与字型解耦</strong>：颜色用 <code class="token">var(--*)</code> token 单独设置（如 <code class="token">color: var(--ui-text-muted)</code>），让 caption 也能用 foreground 色，灵活搭配<br>
                   ③ <strong>极少数例外</strong>（如 KPI 巨数字 / Hero 营销字）：先升级 §2.2 字型表，加新 <code class="token">.type-*</code> class，禁止现场写<br>

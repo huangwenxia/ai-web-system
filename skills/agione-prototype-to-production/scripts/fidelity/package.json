@@ -1,15 +1,17 @@
 {
-  "name": "fidelity-harness",
+  "name": "agione-prototype-fidelity-harness",
   "private": true,
   "type": "module",
-  "description": "Prototype-vs-impl visual fidelity comparator for the prototype-port goal loop.",
+  "description": "Measured prototype-to-production visual fidelity harness",
   "scripts": {
     "auth": "node capture-auth.mjs",
-    "compare": "node compare.mjs"
+    "compare": "node compare.mjs",
+    "gate": "node compare.mjs --gate",
+    "test": "node test-fixtures.mjs"
   },
   "devDependencies": {
-    "pixelmatch": "^5.3.0",
-    "playwright": "^1.48.0",
-    "pngjs": "^7.0.0"
+    "pixelmatch": "5.3.0",
+    "playwright": "1.48.0",
+    "pngjs": "7.0.0"
   }
 }

@@ -1,92 +1,61 @@
-# Goal Mode — port the impl to 1:1 with the prototype (AI agent runbook)
+# Goal Mode：逐状态复刻原型
 
-You are running an autonomous fidelity loop. **Goal:** make the running impl match the static
-prototype, then stop. Every round you get an objective signal — you are NOT guessing.
+目标：只修改任务允许的生产实现，使所有 required states 的结构和可控样式与原型一致，同时保留真实 API、真实数据和当前项目规范。
 
-The comparator (`compare.mjs`) screenshots both sides and emits, per page, into `report/`:
+Comparator 提供机械证据，不提供自动视觉批准：
 
-- **`shots/<page>-sidebyside.png`** — proto ｜ impl, real UI. **You can view images — OPEN this and compare by eye.** This is your primary signal.
-- **`shots/<page>-diff.png`** — pixel diff of masked shots; colored = real difference, 🟣 magenta = masked dynamic data (ignore).
-- **`shots/<page>-proto.png` / `-impl.png`** — full-res singles for fine detail (the side-by-side is downscaled).
-- **`fidelity-report.md`** — mismatch % (gate) + **style deltas** (exact computed-style/geometry targets).
+- `sidebyside.png`：未遮罩真实页面，必须打开目检。
+- `diff.png`：动态像素对称 mask 后的定位图。
+- `fidelity-report.md/json`：required probe、元素数量、完整样式/SVG 差异、准备错误。
 
----
-
-## One-time setup
+## 一次性准备
 
 ```bash
-cd tools/fidelity && pnpm install && npx playwright install chromium
-# serve the prototypes (separate terminal; point at the FO prototype html dir):
-cd <…>/REQ-20260515-173706-ww-finance-optimization/prototypes/html && python3 -m http.server 8088
-# impl dev server must be up on :8030  (pnpm dev --filter=financial)
-node capture-auth.mjs    # opens a browser; log in; press ENTER (re-run when token expires)
+cd tools/fidelity
+pnpm install --frozen-lockfile
+npx playwright install chromium
+cp targets.example.json targets.json
+node capture-auth.mjs
 ```
 
-Confirm the URLs/selectors in `targets.json` match your prototype filenames and impl routes.
+按 `references/target-config.md` 把 URL、角色、auth、真实 storage key、states、mask 和 probes 配完整。先手动打开两侧 URL，确认原型与实现都在正确页面、语言和主题。
 
----
+## 迭代循环
 
-## The loop (repeat until the stop condition)
+1. 测量单页：`node compare.mjs <page>`。
+2. 先处理 `ERROR`：auth、最终 URL、waitFor、loading、状态或 selector 不正确时禁止调 CSS。
+3. 打开未遮罩 side-by-side，列出缺失、多余、错序和明显视觉偏差。
+4. 读取 probe delta，用原型实测值修实现；共享组件默认值不构成豁免。
+5. 检查被 mask 区域的真实列、图表结构、空态和交互。
+6. 只修一组可解释差异，复跑 `node compare.mjs <page> --gate`。
+7. 机械结果变成 `REVIEW_REQUIRED` 后，完成未遮罩目检和对应运行态检查。
 
-1. **Measure:** `node compare.mjs <page>` (e.g. `eu-overview`). Whole set: `node compare.mjs`.
-2. **Look:** open `report/shots/<page>-sidebyside.png`. Scan left (proto) vs right (impl) for
-   anything off — spacing, font size/weight, color, alignment, a missing/extra element, wrong
-   order. Cross-check `report/fidelity-report.md`: highest mismatch % / most style deltas /
-   ⚠ height mismatch (= a whole section wrong) is where to start.
-3. **Fix in the Vue impl only.** Two complementary signals:
-   - **Visual** (side-by-side) tells you *what looks wrong*.
-   - **Style deltas** give the *exact value*, e.g. `` heroBalanceNum: fontSize: proto=`52px` impl=`40px` `` →
-     `grep -rn "ex-v3-hero__amount-num" apps/financial/src`, open that `.vue`, set it to the **proto** value.
-   Make the smallest edit that closes the gap. Don't invent values — take them from the delta / proto.
-4. **Re-measure that one page.** Confirm deltas dropped, % dropped, and the side-by-side now matches.
-5. Repeat.
+连续两轮没有改善时停止修改，把残差写入单独的 `report/accepted-residuals.md`，说明：位置、证据、分类、为什么不可控或为什么业务规范优先。不要把说明追加到会被下一轮覆盖的生成报告。
 
-### Stop condition (success)
-For every page, the **hard gate** is: **style deltas empty** AND **no ⚠ height mismatch** AND
-the side-by-side looks the same to you. **mismatch % < 2.0% is a reference signal, NOT a hard gate** —
-if % stays high but deltas are 0, classify the residual first (see `references/troubleshooting.md` §8):
-- *true-data / locale residual* (real backend labels ≠ mock labels; wrong language/theme state) → acceptable / fix the test state, don't chase the %.
-- *true style regression* (deltas non-zero, or visible structure diff in side-by-side) → fix it.
-Then stop and summarize what you changed. **Never fake data to push the % down.**
+## 机械状态
 
-If a round yields **no improvement twice in a row**, STOP and append a note to
-`fidelity-report.md` listing what's left and why (e.g. "residual 3% is the ECharts canvas vs the
-prototype's SVG — mask it or escalate"). **Never loop forever or game the %.**
+- `ERROR`：环境或准备失败，退出码 2。
+- `MECHANICAL_FAIL`：required probe、元素数量、字段、结构高度或显式 gate 未通过；`--gate` 退出码 1。
+- `REVIEW_REQUIRED`：已配置机械信号清零；仍需未遮罩目检、状态矩阵和 Gate C，不能直接称为 PASS。
 
----
+## 逐帧停止条件
 
-## Reading the signals — DO / DON'T
+对每个 required state：
 
-- ✅ **Side-by-side image first.** You have vision — use it. It catches things no metric does
-  (a slightly wrong gradient, a misaligned icon).
-- ✅ **Style deltas are exact.** They compare style/geometry (not text) so they're immune to live
-  data. Fix every one to the proto value.
-- ✅ **⚠ Height mismatch** = a section is missing / extra / mis-sized. Fix structure, not just styles.
-- 🟣 **Magenta in the diff = masked dynamic data (numbers, dates, charts, lists). IGNORE.**
-- ⚠ **Don't chase the last fraction of a %.** Static HTML vs Vue is never literally pixel-identical
-  (font hinting, sub-pixel AA, ECharts vs hand-rolled SVG). < 2% after masks + a matching
-  side-by-side = faithful. If the residual is all inside a chart/canvas, mask it and move on.
+- required probes 全命中、重复元素数量一致、无未接受字段差异。
+- full-page/目标容器结构一致。
+- 未遮罩 side-by-side 无未解释差异。
+- mask 区域已独立验证。
+- hover/focus/active/disabled/loading/empty/弹窗等适用状态已验证。
+- 动效存在时已核对关键帧、时长、缓动、方向和最终位置；只测静态图时明确写 NOT TESTED。
 
----
+`mismatch%` 只用于定位。真实值、已证明的业务语义差异、不可控抗锯齿或不同渲染器内部像素可以记录为 residual；任何可控样式差异都必须修。
 
-## Hard rules (do not violate)
+## 硬规则
 
-- **Edit only `apps/financial/src/**`.** Never touch the prototype HTML, `package.json`,
-  `node_modules`, lockfiles, or any dependency. (A red Vite overlay about `mamba-layout/theme.css`
-  is a stale-dep issue, NOT your code — restart the dev server, don't "fix" it in code.)
-- **Additive on shared assets.** Shared i18n keys / shared components serve other pages too —
-  add, don't repurpose or delete, unless you've confirmed the only consumer.
-- **One page at a time**, smallest viable edit, re-measure before moving on.
-- **Spec beats prototype on copy.** `frontend-development-guide-v1.md` wins (no
-  GNOSIS/WANMORE/OPERATOR_FEE/VOID/晚到顺延; source systems = MODELONE/POWERONE/FINANCIAL).
-  The prototype is the *visual* target, not the source of business wording.
-
-## Extending coverage
-
-Add objects to `targets.json`. Per page:
-- `proto.url` / `impl.url` + a `waitFor` selector that proves the page rendered.
-- `mask`: selectors for **dynamic-data regions** (numbers, dates, charts, lists) — blacked out on
-  both sides so the % measures layout/style, not live values. Proto and impl share class names
-  (impl was ported from the prototype), so one list usually works for both; use `proto.mask` /
-  `impl.mask` for per-side extras.
-- `probe`: `{ alias: selector }` for key structural elements you want exact style parity on.
+- 修改范围来自当前任务，不在 runbook 写死某个 app。
+- 目标仓库 `AGENTS.md`、repo-local skills、真实 API/types 和组件源码优先于历史案例。
+- 只改生产实现；不改原型、全局 token、依赖、lockfile 或无关页面来改善比较结果。
+- 不 mock、不删真实字段、不扩大 mask、不删除 probe 来过 Gate。
+- 图标包、单位、locale alias 和验证命令每次从目标仓库重新确认。
+- 机械闭环后使用 `agione-page-check` 验证角色、backend/shost、权限、网络、工作流、极端数据和四态；未完成时只能报告“视觉实现完成”。

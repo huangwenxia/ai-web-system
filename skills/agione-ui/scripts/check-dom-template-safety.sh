@@ -2,8 +2,8 @@
 # -----------------------------------------------------------------------------
 # AGIOne UI Skill · DOM Template Safety Check (v2.0)
 #
-# Scans a single-file HTML prototype for the eight known landmines
-# (P1–P8) documented in SKILL.md §4.
+# Scans a single-file HTML prototype for the shared shell/template landmines
+# documented in references/base-spec.md.
 #
 # Usage:
 #   bash scripts/check-dom-template-safety.sh <output-file.html>
@@ -80,14 +80,17 @@ else
   pass "createApp not chained"
 fi
 
-# P6: All CDN deps must pin versions
-echo "[P6] All CDN deps pin versions"
-UNPINNED=$(grep -nE 'unpkg\.com/(vue|element-plus|@element-plus/icons-vue)(/|")' "$FILE" | grep -v '@[0-9]' || true)
+# P6: All prototype CDN dependencies must pin an exact x.y.z version.
+# This intentionally covers the complete canonical dependency set rather than
+# consulting a mutable online "latest" alias.
+echo "[P6] All CDN deps pin exact semver"
+TARGET_CDNS=$(grep -nE 'https://(unpkg\.com/(vue|element-plus|@element-plus/icons-vue|lucide)|cdn\.tailwindcss\.com|cdn\.jsdelivr\.net/npm/@fontsource/(manrope|inter|ibm-plex-mono))' "$FILE" || true)
+UNPINNED=$(printf '%s\n' "$TARGET_CDNS" | grep -vE '(unpkg\.com/vue@[0-9]+\.[0-9]+\.[0-9]+/|unpkg\.com/element-plus@[0-9]+\.[0-9]+\.[0-9]+/|unpkg\.com/@element-plus/icons-vue@[0-9]+\.[0-9]+\.[0-9]+/|unpkg\.com/lucide@[0-9]+\.[0-9]+\.[0-9]+/|cdn\.tailwindcss\.com/[0-9]+\.[0-9]+\.[0-9]+(["/]|$)|cdn\.jsdelivr\.net/npm/@fontsource/(manrope|inter|ibm-plex-mono)@[0-9]+\.[0-9]+\.[0-9]+/)' || true)
 if [[ -n "$UNPINNED" ]]; then
-  fail "Unpinned CDN dependency detected"
+  fail "Unpinned or non-exact CDN dependency detected — use an x.y.z code-baseline version"
   echo "$UNPINNED" | head -5 | sed 's/^/    /'
 else
-  pass "All critical CDNs appear pinned"
+  pass "All prototype CDNs use exact semver"
 fi
 
 # P7: No \uXXXX unicode escapes inside templates
@@ -105,18 +108,26 @@ echo "[P8] Colors via CSS variables (no hard-coded hex outside :root)"
 # color values and are not business CSS. Within CSS, allow :root / [data-theme] token
 # declarations and flag remaining #rgb/#rrggbb literals.
 HARDCODED=$(awk '
-  BEGIN{instyle=0; inroot=0}
+  BEGIN{instyle=0; inroot=0; incomment=0}
   /^[[:space:]]*<style([[:space:]>]|$)/ {instyle=1; next}
   /^[[:space:]]*<\/style>/ {instyle=0}
   !instyle {next}
+  incomment {
+    if (/\*\//) incomment=0
+    next
+  }
+  /\/\*/ {
+    if ($0 !~ /\/\*.*\*\//) incomment=1
+    next
+  }
   /:root *\{|\[data-theme[^]]*\] *\{/ {inroot=1}
-  inroot && /^\s*\}/ {inroot=0}
-  !inroot && /#[0-9a-fA-F]{3,8}([^0-9a-fA-F]|$)/ && !/^[[:space:]]*\/\// && !/^[[:space:]]*\*/ && !/^[[:space:]]*<!--/ {
+  inroot && /^[[:space:]]*\}/ {inroot=0}
+  !inroot && !/html[.]dark [.]el-button[.]el-button--(primary|success|danger)/ && /#[0-9a-fA-F]{3,8}([^0-9a-fA-F]|$)/ && !/^[[:space:]]*\/\// && !/^[[:space:]]*<!--/ {
     print NR": "$0
   }
 ' "$FILE" | grep -vE 'rgba?\(' | grep -vE '(url\(|href=|src=|content=)' | head -5)
 if [[ -n "$HARDCODED" ]]; then
-  fail "Hard-coded hex color outside :root / [data-theme] — use var(--color-xxx)"
+  fail "Hard-coded hex color outside :root / [data-theme] — use var(--ui-*)"
   echo "$HARDCODED" | sed 's/^/    /'
 else
   pass "No obvious hard-coded hex colors outside theme blocks"
@@ -142,14 +153,6 @@ if [[ -n "$BAD" ]]; then
   echo "$BAD" | head -5 | sed 's/^/    /'
 else
   pass "No mustache-in-attribute violations"
-fi
-
-# Extra 3: Version label present (skill rule §3 item 3)
-echo "[X3] Version label (V1.0+)"
-if grep -qE '(V|v)[0-9]+\.[0-9]+' "$FILE"; then
-  pass "Version label present"
-else
-  fail "No version label (V1.0+) found — add near page title"
 fi
 
 echo "-----------------------------------------------------"

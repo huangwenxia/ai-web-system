@@ -1,0 +1,4 @@
+interface:
+  display_name: "AGIOne 原型生产页逐帧复刻"
+  short_description: "将定稿原型逐状态高保真落到 project-mamba 生产页"
+  default_prompt: "Use $agione-prototype-to-production to port this approved HTML prototype into project-mamba with real APIs and strict state-by-state visual fidelity."

@@ -1,6 +1,6 @@
 # agione-ui Benchmark 03 · Dashboard
 
-请使用 `agione-ui` strict 模式生成一个单文件 HTML 原型。
+请使用 `agione-ui --direct` strict 模式生成一个单文件 HTML 原型。
 
 输出文件：`{OUTPUT_DIR}/03-dashboard.html`
 
@@ -28,5 +28,5 @@
 验收重点：
 - dashboard 4 列例外只用于 `.ds-stat-card`。
 - 非 dashboard KpiCard 不超过 3。
-- 无自造 dashboard 之外的场景切换 UI。
+- 无自造 dashboard 之外的场景/状态切换 UI；如需切换只用 shell 右下角悬浮入口及其业务状态面板。
 - dark/light 都应依赖 token，不硬编码图表颜色。

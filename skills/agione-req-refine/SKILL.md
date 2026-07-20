@@ -1,12 +1,11 @@
 ---
 name: agione-req-refine
-version: 1.2
 description: >
   brief.md 定稿后、进入原型生成前的需求细化阶段引导。
   4 个 Phase：solution.md（跨功能主方案）→ flow.md（主流程与状态流转）→
   functions/ 骨架（功能模块识别 + 完整功能说明书 + 批量/逐个确认）→ batch-align.md（待 PM 拍板汇总）。
   支持中断恢复、增量写入；只写业务层，不写字段/接口/SQL；不修改上游文档（brief / acceptance-checklist 只读）。
-  v1.2：solution.md §8.1 与 functions §9.1 必须填代码地图对口（参照 00-overview/code-map.md）。
+  solution.md §8.1 与 functions §9.1 必须填代码地图对口（参照 00-overview/code-map.md）。
   触发方式：/agione-req-refine [REQ 目录路径]
 ---
 
@@ -45,6 +44,10 @@ description: >
 5. **只写业务层**：字段名、接口规范、SQL 不属于本阶段范畴，禁止出现在产出文档中。**业务层状态流转**（如 Active → Archived、PENDING → APPROVED）属于本阶段，但**技术层状态机实现细节**（如数据库枚举值、状态码映射）不属于。
 6. **不修改上游文档**：brief.md 和 acceptance-checklist.md 只读，不允许修改。
 7. **增量写入**：每个阶段完成后立即写文件，用户可随时中断，已完成部分不丢失。
+8. **上游冲突必须阻塞**：只读不等于忽略。brief、acceptance 或最新 Owner 决定相互冲突时，停止受影响阶段，要求先由 `/agione-req-intake` 或 Owner 修正上游；不得在 solution/flow/functions 中自行选择一个版本继续。
+9. **稳定口径变更必须级联替换**：用户确认的新决定替代现有 solution、flow 或 functions 规则时，必须同步改写本 Skill 所有受影响下游文档，不能只在最新章节追加一段相反说明。
+10. **扩展与替代分开处理**：读取 `Extends`、`Supersedes` 和 changelog。`Extends` 不得破坏父规则；`Supersedes` 必须明确旧规则失效范围和待清理文档。
+11. **逻辑字段不推导 UI**：对象归属、系统自动解析关系、审计和幂等字段可以进入业务对象或实现对口说明，但不得因此推导为用户可选、可填或可见字段。
 
 ---
 
@@ -57,8 +60,16 @@ description: >
 | brief.md 存在 | 文件存在 | 中止，提示先运行 `/agione-req-intake` |
 | 复杂度字段 | 有明确的「小/中/大」 | 询问用户当前复杂度判断 |
 | 代码地图 | `00-overview/code-map.md` 存在 | 仅提示「未找到 code-map.md，§8.1 / §9.1 将留待人工补充」，不阻塞流程 |
+| 口径关系 | `Extends` / `Supersedes` / changelog 与现有文档无冲突 | 输出冲突清单并中止受影响阶段，先修正上游 |
 
 **代码地图加载**：检查通过后，把 `00-overview/code-map.md` 第 1 节（顶部导航 ↔ 仓库映射）和第 10 节（速查表）读入工作上下文，备用于 Phase 1 §8.1 和 Phase 3 §9.1 的代码落点判断。其他章节按需查阅，不必整本加载。
+
+**口径一致性诊断**：
+
+1. 提取 brief、acceptance、changelog、已有 solution/flow/functions 中的核心规则、明确不做项和角色边界。
+2. 根据最新决定整理新旧关键词，使用 `rg --no-ignore` 检索整个 REQ 目录和被 `Extends` / `Supersedes` 的关联 REQ。
+3. 将命中项分类为：当前有效、需要本 Skill 改写、上游冲突、历史废弃、仅逻辑层保留。
+4. 发现上游冲突时，不得进入“已有 solution 直接确认”或后续 Phase；先输出文件与章节位置并要求收敛。
 
 **如果复杂度为「小」：**
 
@@ -103,7 +114,7 @@ description: >
 
 ### 1.1 如果 solution.md 已存在
 
-切换为确认模式：
+先与 brief、acceptance、changelog 和最新 Owner 决定对比。无冲突时切换为确认模式；有冲突时按照 Step 0 阻塞，不得把“已有”视为“有效”。
 
 ```
 ## solution.md 已存在（版本：{版本号}）
@@ -199,6 +210,7 @@ Q2 — 对象归属关系
   - "主要落点"表至少列出每个本期能力对应的后端仓库 + 前端 app
   - 如果识别出跨仓库桥（典型例：`metis-cbdp` ↔ `metis-wanmore` 的 `CbdpRechargeController`、`metis-hashrate` 的 `Wm*Controller`），必须在"跨仓库桥"小表里列出
   - 拿不准的落点写 `⚠️ 待研发 Owner 在 functions/§9.1 进一步细化`，不要硬猜 Controller 名字
+- 如果本次起草替代了已有跨功能规则，同步列出并改写 flow.md、functions/ 中受影响位置；尚未完成级联修改时不得把 Phase 1 标记为整体收敛
 
 写入路径：`[REQ路径]/solution.md`
 
@@ -438,6 +450,14 @@ Q2 — 对象归属关系
 ---
 
 ## Phase 全部完成 — 收口报告
+
+输出收口报告前先执行口径一致性门禁：
+
+1. 使用 `rg --no-ignore` 按新旧关键词复查 brief、acceptance、solution、flow、functions、batch-align 和关联 REQ。
+2. 当前有效文档中的相反表述必须清零；仅追加新说明、保留旧规则视为失败。
+3. 逻辑层保留项必须明确标注为内部关系或非页面能力，不能被 prototype 阶段误读为 UI 要求。
+4. 无权修改的上游冲突必须保持阻塞并列入报告，不能输出“需求细化完成”。
+5. 报告列出检索关键词、同步修改文件、废弃资料和允许保留的残留命中。
 
 四个阶段全部完成后，输出：
 

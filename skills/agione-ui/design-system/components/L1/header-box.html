@@ -7,8 +7,8 @@ data-component: header-box
 since: v3.4
 status: stable
 related: PageHeader, HeroBand
-description: 列表 / 管理页顶部容器（title + subtitle + 右侧操作 + 可选筛选区）
-data-characteristics: 页面顶部; 标题 + 副标题 + 操作; 可选 content 区放筛选
+description: 列表 / 管理页顶部容器（title + 右侧操作 + 可选筛选区）
+data-characteristics: 页面顶部; 标题 + 操作; 可选 content 区放筛选
 when-to-use: 所有列表 / 管理页（默认顶部容器）
 when-not-to-use: 详情页 → 用 PageHeader; 营销页 → 用 HeroBand
 intent: 页面头部
@@ -172,7 +172,6 @@ pre { background: var(--ui-topnav-bg); color: var(--ui-topnav-foreground); paddi
 .header-box__top { padding: var(--ui-space-lg) 28px; display: flex; justify-content: space-between; align-items: flex-start; gap: var(--ui-space-base); }
 .header-box__title-wrap { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .header-box__title { font-family: var(--ui-font-heading); font-size: 24px; font-weight: 800; line-height: 1.2; color: var(--ui-text-primary); }
-.header-box__subtitle { font-size: 13px; color: var(--ui-text-muted); }
 .header-box__right { display: flex; align-items: center; gap: var(--ui-space-sm); flex-shrink: 0; }
 .header-box__content { padding: var(--ui-space-base) 28px; border-top: 1px solid var(--ui-border-soft); }
 .filter-box { display: flex; flex-wrap: wrap; gap: var(--ui-space-sm); align-items: flex-end; padding: var(--ui-space-md) 0; }
@@ -182,7 +181,7 @@ pre { background: var(--ui-topnav-bg); color: var(--ui-topnav-foreground); paddi
 <body>
 
 <h1>HeaderBox</h1>
-<p style="color: var(--ui-text-muted); margin: 0;">列表 / 管理页顶部容器（title + subtitle + 右侧操作 + 可选筛选区）</p>
+<p style="color: var(--ui-text-muted); margin: 0;">列表 / 管理页顶部容器（title + 右侧操作 + 可选筛选区）</p>
 
 <h2>Preview</h2>
 <div id="app">
@@ -191,7 +190,6 @@ pre { background: var(--ui-topnav-bg); color: var(--ui-topnav-foreground); paddi
                     <div class="header-box__top">
                       <div class="header-box__title-wrap">
                         <h1 class="header-box__title">License 管理</h1>
-                        <p class="header-box__subtitle">管理租户的 License 套餐、配额和有效期</p>
                       </div>
                       <div class="header-box__right">
                         <el-button>导出</el-button>

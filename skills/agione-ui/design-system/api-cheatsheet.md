@@ -142,7 +142,11 @@ _Last build: 2026-05-15 21:44:48_
 - ~~`subtitle`~~ 已移除（v6.9.3：所有页面不传副标题）
 - `eyebrow` · `String` · default: ``
 - `eyebrowIcon` · `String` · default: ``
-**Slots**: `actions`
+- `backLabel` · `String` · default: ``
+- `statusLabel` · `String` · default: ``
+- `statusColor` · `String` · default: `muted` (`green | orange | red | purple | muted`)
+**Slots**: `actions`, `avatar`
+**Events**: `back`
 
 ### `<MetricsStrip>`
 **Props**:
@@ -185,6 +189,7 @@ _Last build: 2026-05-15 21:44:48_
 - `operationsLabel` · `String` · default: `操作`
 - `operationsWidth` · `String | Number` · default: `160`
 **Slots**: `operations`
+**Events**: `update:page`, `update:pageSize`, `row-click`
 
 ### `<Tag>`
 **Props**:
@@ -203,6 +208,7 @@ _Last build: 2026-05-15 21:44:48_
 - `options` · `Array` · **required**
 - `modelValue` · `String | Number` · default: ``
 - `variant` · `String` · default: `underline`
+**Events**: `update:modelValue`
 
 ### `<Avatar>`
 **Props**:
@@ -219,6 +225,7 @@ _Last build: 2026-05-15 21:44:48_
 - `activeTab` · `String | Number` · default: ``
 - `showBack` · `Boolean` · default: `true`
 **Slots**: `actions`, `default`
+**Events**: `update:activeTab`, `back`
 
 ### `<Breadcrumb>`
 **Props**:
@@ -250,24 +257,24 @@ const columns = [
   { prop: 'name',   label: '租户名称',  minWidth: 180 },             // 普通文本列
   { prop: 'status', label: '状态',     width: 100, slot: 'status' }, // 用 named slot 自定义渲染
   { prop: 'usage',  label: '使用率',   width: 160, slot: 'usage' },
-  { prop: '_actions', label: '操作', width: 160, fixed: 'right', slot: 'actions' }, // 操作列固定右侧
 ];
+// 操作列由 #operations slot 自动追加并固定到右侧，不放进 columns。
 ```
 
-**模板（自定义 cell 用 named slot，slot props 是 `{ row, $index }`）**：
+**模板（自定义 cell 用 named slot，slot props 是 `{ row, col, index }`）**：
 ```html
 <DataTable :columns="columns" :data="rows" :total="total" v-model:page="page">
   <template #status="{ row }">
-    <StatusBadge :status="row.status" />
+    <StatusBadge :status="row.status"></StatusBadge>
   </template>
   <template #usage="{ row }">
-    <UsageBar :used="row.used" :total="row.total" />
+    <UsageBar :used="row.used" :total="row.total"></UsageBar>
   </template>
-  <template #actions="{ row }">
+  <template #operations="{ row }">
     <TableActions :actions="[
       { label: '查看', onClick: () => view(row) },
       { label: '删除', onClick: () => del(row), danger: true }
-    ]" />
+    ]"></TableActions>
   </template>
 </DataTable>
 ```
@@ -275,7 +282,7 @@ const columns = [
 **避坑**：
 - 不用 `<DataTable>` 而用原生 `<el-table>` = 违反 L1 铁律
 - columns 内的 `slot` 字段就是 template 里 `#<slot-name>` 的 key
-- 操作列必须 `fixed: 'right'` + 用 `<TableActions>`
+- 操作列用 `#operations` slot + `<TableActions>`；`DataTable` 自动固定到右侧
 
 ### `<EmptyState>` action slot
 
@@ -283,7 +290,7 @@ slot `action` 接 1 个按钮（通常 `<el-button type="primary">`）：
 ```html
 <EmptyState icon="package-x" title="还没有任何套餐" hint="去浏览可购套餐">
   <template #action>
-    <el-button type="primary" @click="$router.push('/plans')">浏览套餐</el-button>
+    <el-button type="primary" @click="browsePlans">浏览套餐</el-button>
   </template>
 </EmptyState>
 ```
@@ -292,7 +299,7 @@ slot `action` 接 1 个按钮（通常 `<el-button type="primary">`）：
 
 `iconColor` 控制右上图标色，但**整张卡片状态色**通过额外 class 实现：
 ```html
-<KpiCard title="Success Rate" value="99.85%" icon="check-circle" iconColor="success" />
+<KpiCard title="Success Rate" value="99.85%" icon="check-circle" iconColor="success"></KpiCard>
 <!-- 整卡变 success 调：在 shell-sample 定义 .kpi-card--success / --warning / --cool -->
 <div class="kpi-card kpi-card--success">...</div>  <!-- 直接写 DOM 而非组件标签时 -->
 ```
@@ -311,7 +318,7 @@ form.name = { zh: '', en: '', ja: '', ko: '' };  // v-model 绑定一个对象�
     { code: 'ja', label: '日本語',  required: false },
   ]"
   :placeholder="{ zh: '输入中文名', en: 'Enter English name' }"
-/>
+></I18nField>
 ```
 
 ---
@@ -347,7 +354,7 @@ form.name = { zh: '', en: '', ja: '', ko: '' };  // v-model 绑定一个对象�
       </div>
       <el-form-item label="名称" prop="name" size="large">
         <span class="form-helper">label 下方的 12px muted 说明</span>
-        <el-input v-model="form.name" />
+        <el-input v-model="form.name"></el-input>
       </el-form-item>
     </div>
     <div class="form-actions">
@@ -366,7 +373,7 @@ form.name = { zh: '', en: '', ja: '', ko: '' };  // v-model 绑定一个对象�
 <div class="list-card-item-list" data-component="list-card-item-list">
   <div v-for="item in items" :key="item.id" class="list-card-item list-card-item--surface" data-component="list-card-item">
     <div class="list-card-item__avatar">
-      <Avatar :name="item.owner" />
+      <Avatar :name="item.owner"></Avatar>
     </div>
     <div class="list-card-item__body">
       <div class="list-card-item__title">{{ item.title }}</div>

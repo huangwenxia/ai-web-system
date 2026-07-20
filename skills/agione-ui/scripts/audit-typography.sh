@@ -4,7 +4,7 @@
 # 检测生成的原型 HTML 在业务区是否手写了 typography 属性
 # （font-size / font-weight / font-family / line-height）。
 #
-# 规则参考：SKILL.md §1.4-11 + AI-USAGE.md § Chrome 自带 class 字号豁免
+# 规则参考：references/base-spec.md §3 Typography
 #
 # 用法：
 #   bash scripts/audit-typography.sh <prototype.html>
@@ -46,8 +46,8 @@ INLINE_HITS=$(awk '
 #   - 遇到 font-size/weight/family/line-height 属性行
 #   - 若 selector **不在** 豁免清单 + 不是 :root + 不是注释 → 违规
 #
-# 豁免清单见 AI-USAGE.md § Chrome 自带 class 字号豁免（13 个 chrome class
-# + .type-* + Element Plus .el-* + 已知 chrome 内部 hook）
+# 豁免清单来自共享 shell 的 runtime/chrome class、.type-*、Element Plus
+# .el-* 与已知内部 hook。
 # ──────────────────────────────────────────────────────────────────
 CSS_HITS=$(awk '
   BEGIN {
@@ -97,9 +97,7 @@ CSS_HITS=$(awk '
       if (sel ~ /\.nav-search/)         next
       if (sel ~ /\.nav-icon-btn/)       next
       if (sel ~ /\.sidebar/)            next
-      if (sel ~ /\.demo-mode-chip/)     next
-      if (sel ~ /\.demo-banner/)        next
-      if (sel ~ /\.scenario-/)          next
+      if (sel ~ /\.state-machine-/)     next
       if (sel ~ /\.app-shell/)          next
       if (sel ~ /\.topnav/)             next
       if (sel ~ /\.btn-back/)           next
@@ -197,7 +195,7 @@ echo "修复建议："
 echo "  · CSS class 自写字号 → 改用 .type-* utility class"
 echo "  · inline style font-size → 改用 class=\"type-xxx\""
 echo "  · 业务卡焦点数字 28px → .type-kpi（v5.1 新增）"
-echo "  · 详见 design-system/AI-USAGE.md § Typography"
-echo "  · 若确属一次性 layout / 特殊场景，走 §0.4 rule-gap"
+echo "  · 详见 references/base-spec.md §3 Typography"
+echo "  · 如 active skill 允许例外，按其 SKILL.md 契约显式记录"
 
 exit 1

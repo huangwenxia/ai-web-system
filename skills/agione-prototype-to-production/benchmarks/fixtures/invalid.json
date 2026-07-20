@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "cases": [
+    { "id": "01-crud-list", "status": "PASS", "findings": [], "evidence": [] },
+    { "id": "01-crud-list", "status": "UNKNOWN", "findings": [], "evidence": [] }
+  ]
+}

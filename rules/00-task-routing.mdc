@@ -29,7 +29,8 @@ alwaysApply: true
 
 - AGIOne UI 原型设计 / 生成 / 重新设计任务（包括 `backoffice-prototype-builder` 选择或推断为 `profile=agione-strict` 的任务），默认新建 standalone single-file HTML，并保存到 `E:\work\ai-web-system\agione_web_psd\`；只有用户明确要求修改、重构、优化既有 HTML，明确要求继续在原设计稿 `.html` 上设计，或使用 `--edit <existing.html>` 语义时，才编辑旧文件。
 - 用户只问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“看下这个原型 / 截图 / 页面”“UI 审查”“视觉审查”或类似视觉质量确认时，进入 `page-review-skill` 做 review-only；不得修改代码、HTML 或页面结构，除非用户明确说“按建议改”“开始改 HTML”“执行精修”或“直接修代码”。
-- 重型浏览器自动化 / 页面采集能力（Playwright、`playwright-capture`、Browser MCP、Chrome MCP、自动截图、运行时 DOM/CSS/资产采集、像素/保真对比）默认不作为任务路由触发项。只有用户明确点名工具或动作时才允许启用，例如“用 Playwright”“运行 playwright-capture”“自动截图验证”“浏览器截图”“抓取 DOM”“跑像素对比”；“看效果”“帮我看页面”“视觉审查”“看截图里的页面”不构成授权。
+- 重型浏览器自动化 / 页面采集能力（Playwright、`playwright-capture`、Browser MCP、Chrome MCP、直接调用 `chrome.exe` / `msedge.exe` / Chromium 及其 `--headless`、`--screenshot`、`--dump-dom`、`--remote-debugging-port`、`--user-data-dir` 参数、自动截图、运行时 DOM/CSS/资产采集、像素/保真对比）默认不作为任务路由触发项。只有用户明确点名工具或动作时才允许启用，例如“用 Playwright”“运行 playwright-capture”“自动截图验证”“浏览器截图”“抓取 DOM”“跑像素对比”；“看效果”“帮我看页面”“视觉审查”“看截图里的页面”“测试一下”“检查一下”“验证一下”“自测”不构成授权，skill、handoff、验收清单和历史任务也不得绕过该授权。
+- 用户明确授权浏览器自动化 / 页面采集后，浏览器 profile、缓存、截图、日志、浏览器下载等临时产物必须进入操作系统临时目录下的任务唯一目录，禁止写入工作区、仓库、原型输出目录、业务源码目录或被检查 HTML 同级目录，禁止使用相对 `--user-data-dir`；任务结束必须通过 `try/finally` 或等价机制清理当前任务创建的临时产物。只有用户明确指定保留路径时才可另行保留；不得擅自删除历史遗留产物。
 - 创建、更新、细化 rules / skills / protocols 时，先检查当前工作区的源定义和同步脚本；不得默认直接修改全局安装副本。外部或第三方维护的 skill 不写入个人偏好；个人偏好应放在 `rules/user-rule.md`、项目级 rules 或自有 wrapper / overlay 中。
 
 ## 规则层级

@@ -6,69 +6,89 @@
 <!-- AGIONE_EDIT_TITLE_START · ⚠️ 改业务页面双语标题 --><title>AGIOne Console — Shell Sample v1.1</title><!-- AGIONE_EDIT_TITLE_END -->
 
 <!-- Vue 3 -->
-<script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+<script src="https://unpkg.com/vue@3.5.34/dist/vue.global.prod.js"></script>
 <!-- Element Plus -->
-<link rel="stylesheet" href="https://unpkg.com/element-plus@2.11.5/dist/index.css" />
-<script src="https://unpkg.com/element-plus@2.11.5/dist/index.full.min.js"></script>
-<script src="https://unpkg.com/@element-plus/icons-vue@2.3.1/dist/index.iife.min.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/element-plus@2.14.0/dist/index.css" />
+<script src="https://unpkg.com/element-plus@2.14.0/dist/index.full.min.js"></script>
+<script src="https://unpkg.com/@element-plus/icons-vue@2.3.2/dist/index.iife.min.js"></script>
 <!-- Fonts — jsdelivr (Google Fonts blocked in CN) -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/manrope/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource-variable/inter/index.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono/400.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/manrope@5.2.8/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/inter@5.2.8/index.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/ibm-plex-mono@5.2.7/400.css" />
 <!-- TailwindCSS -->
-<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
 <!-- Lucide Icons — plain script, NO type="module" -->
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://unpkg.com/lucide@1.24.0/dist/umd/lucide.js"></script>
 
 <style>
 /* ── Design DNA — §2.1 完整 CSS 变量 ── */
 :root {
-  /* TopBar（始终保持深色系；bg / accent / muted 随主题微调，见 darkVars / lightVars） */
-  --ui-topnav-bg:          #1a1025;   /* Light 默认值 */
-  --ui-topnav-accent:      #2d2240;   /* Light 默认值 */
-  --ui-topnav-foreground:          #f0edf5;
-  --ui-topnav-muted:       #8b7fa0;   /* Light 默认值 */
+  /* TopBar（代码侧 mamba-layout 基线：Light / Dark 共用同一深色导航） */
+  --ui-topnav-bg:          #2d2241;
+  --ui-topnav-accent:      #2d2240;
+  --ui-topnav-foreground:  #f0edf5;
+  --ui-topnav-muted:       #e1daed;
+  --ui-topnav-border:      rgba(240, 237, 245, 0.12);
+  --ui-topnav-hover:       rgba(240, 237, 245, 0.12);
+  --ui-topnav-surface:     rgba(240, 237, 245, 0.08);
+  --ui-topnav-shadow:      0 14px 40px rgba(0, 0, 0, 0.35);
   --ui-topnav-active-bg:   #312870;
   --ui-topnav-active-fg:   #c4bdff;
-  --ui-topnav-height:      56px;
 
   /* Sidebar & Body（Light 默认） */
   --ui-sidebar-bg:         #fafafa;
+  --ui-sidebar-accent:     #f4f4f5;
   --ui-sidebar-border:     #e4e4e7;
-  --ui-sidebar-foreground:         #09090b;
-  --ui-sidebar-muted:      #71717a;
+  --ui-sidebar-foreground: #09090b;
   --ui-sidebar-active-bg:  #e4e4e7;
   --ui-sidebar-active-fg:  #18181b;
-  --ui-sidebar-width:      256px;
-  --ui-body-bg:            #ffffff;
+  --ui-sidebar-hover-bg:   #f0f0f1;
   --ui-body-radius:        16px 16px 0 0;
+
+  /* mamba 原生基础颜色 */
+  --ui-color-background:       #ffffff;
+  --ui-color-foreground:       #09090b;
+  --ui-color-card:             #ffffff;
+  --ui-color-card-foreground:  #09090b;
+  --ui-color-muted:            #f4f4f5;
+  --ui-color-muted-foreground: #71717a;
+  --ui-color-accent:           #f4f4f5;
+  --ui-color-accent-foreground:#09090b;
+  --ui-color-border:           #e4e4e7;
+  --ui-color-border-soft:      #ececf1;
+  --ui-color-border-strong:    #d4d4d8;
+  --ui-color-input:            #ffffff;
+  --ui-color-overlay:          rgba(9, 9, 11, 0.45);
+  --ui-color-inverse:          #09090b;
+  --ui-color-ring:             #18181b;
+  --ui-color-on-brand:         #ffffff;
 
   /* 主色 */
   --ui-color-primary:        #7c66f7;
   --ui-color-primary-hover:  #6249e6;
   --ui-color-primary-active: #4e36c2;
-  --ui-color-primary-subtle: #ece9f9;
+  --ui-color-primary-subtle: color-mix(in srgb, var(--ui-color-primary) 14%, transparent);
   --ui-color-info:        #4a6298;
   --ui-color-info-subtle: color-mix(in srgb, var(--ui-color-info) 14%, transparent);  /* mamba 0.51.8：随 --ui-color-info 自动适配明暗，无需在 darkVars 重定义 */
   --ui-layout-shell-bg:   linear-gradient(133deg, #daeeff 0%, #f5faff 10%, #f9faff 58%, #fcfcff 100%);
   --ui-bg-disabled:       #fafafb;
-  --ui-text-on-brand:   #ffffff;
+  --ui-text-on-brand:   var(--ui-color-on-brand);
 
   /* 中性色 */
-  --ui-text-primary:           #09090b;
-  --ui-bg-page:           #ffffff;
-  --ui-bg-card:                 #ffffff;
-  --ui-accent:               #f4f4f5;
-  --ui-bg-muted:                #f4f4f5;
+  --ui-text-primary:       var(--ui-color-foreground);
+  --ui-bg-page:            var(--ui-color-background);
+  --ui-bg-card:            var(--ui-color-card);
+  --ui-bg-muted:           var(--ui-color-muted);
+  --ui-bg-overlay:         var(--ui-color-overlay);
+  --ui-bg-inverse:         var(--ui-color-inverse);
   --ui-text-muted:     #71717a;
   --ui-text-secondary:       #3f3f46;
   --ui-text-placeholder:     #a1a1aa;
   --ui-text-disabled:        #a1a1aa;
-  --ui-border-soft:          #ececf1;
-  --ui-border-default:               #e4e4e7;
-  --ui-border-strong:        #d4d4d8;
+  --ui-border-soft:          var(--ui-color-border-soft);
+  --ui-border-default:       var(--ui-color-border);
+  --ui-border-strong:        var(--ui-color-border-strong);
   --ui-border-interactive:   #8f8f8f;  /* v6.9.4 功能性控件边界（radio/checkbox/可点卡）WCAG 1.4.11 ≥3:1 · 白底 3.23:1 */
-  --ui-input:                #ffffff;
 
   /* 状态色（v6.9.6：补 hover/active 交互档，含 dark 版在 darkVars。light base=500→hover=600→active=700）*/
   --ui-color-success:        #22c55e;
@@ -125,11 +145,14 @@
        --ui-font-mono:    "IBM Plex Mono", "SFMono-Regular", ui-monospace, monospace
      skill 在 var(--el-font-family) 前各加一个 'X Variable' 字族——这是 skill 假设
      原型环境会引入 fontsource Variable 字体；不在时优雅 fallback 到 EP 系统栈 */
-  --ui-font-heading: 'Manrope Variable', Manrope, var(--el-font-family);
-  --ui-font-body:    'Inter Variable', var(--el-font-family);
+  --ui-font-heading: Manrope, var(--el-font-family);
+  --ui-font-body:    var(--el-font-family);
   --ui-font-mono:    'IBM Plex Mono', 'SFMono-Regular', ui-monospace, monospace;
 
   /* 动效 */
+  --ui-transition-fast: 150ms ease-out;
+  --ui-transition-base: 200ms ease-out;
+  /* 以下 duration/ease 为原型兼容扩展；新业务内容优先使用 transition-fast/base */
   --ui-duration-fast: 150ms;   /* hover / focus / state */
   --ui-duration-base: 250ms;   /* card hover / tooltip */
   --ui-duration-slow: 400ms;   /* drawer / dialog */
@@ -142,12 +165,12 @@
   --ui-avatar-bg: #7c3aed;
 
   /* 状态色 Subtle */
-  --ui-color-success-subtle:      #ecfdf5;
-  --ui-color-warning-subtle:      #fef3c7;
-  --ui-color-destructive-subtle:  #fef2f2;
+  --ui-color-success-subtle:      color-mix(in srgb, var(--ui-color-success) 14%, transparent);
+  --ui-color-warning-subtle:      color-mix(in srgb, var(--ui-color-warning) 16%, transparent);
+  --ui-color-destructive-subtle:  color-mix(in srgb, var(--ui-color-destructive) 14%, transparent);
 
   /* Focus ring */
-  --ui-ring: #18181b;
+  --ui-ring: var(--ui-color-ring);
 
   /* Spacing 间距（4px 基准网格，语义命名） */
   /* v6.8 加固：跟 mamba-layout 0.50.0 对齐
@@ -168,6 +191,11 @@
   --ui-space-control: 12px;  /* 控件内边距 = skill --ui-space-md */
   --ui-space-card:    20px;  /* 卡片内边距 = skill --ui-space-lg */
   --ui-space-section: 24px;  /* 区段间距 = skill --ui-space-xl */
+
+  /* Table */
+  --ui-table-header-bg:  #f4f4f5;
+  --ui-table-row-bg:     var(--ui-bg-card);
+  --ui-table-row-alt-bg: #fafafa;
 
   /* Z-index 层级 */
   --ui-z-base:     1;
@@ -191,20 +219,32 @@
   --ui-icon-3xl:  32px;
 
   /* Element Plus 兼容 */
-  --el-border-radius-base:     6px;
+  --el-border-radius-base:     var(--ui-radius-control);
   --el-border-color:           var(--ui-border-default);
-  --el-bg-color:               var(--ui-bg-page);
-  --el-bg-color-page:          var(--ui-accent);
+  --el-border-color-light:     #ececf1;
+  --el-border-color-lighter:   #f1f1f4;
+  --el-border-color-extra-light:#f4f4f5;
+  --el-bg-color:               #ffffff;
+  --el-bg-color-page:          var(--ui-color-muted);
   --el-bg-color-overlay:       #ffffff;
   --el-text-color-primary:     var(--ui-text-primary);
   --el-text-color-regular:     var(--ui-text-secondary);
   --el-text-color-secondary:   var(--ui-text-muted);
   --el-text-color-placeholder: var(--ui-text-placeholder);
   --el-text-color-disabled:    var(--ui-text-disabled);
-  --el-fill-color-blank:       var(--ui-input);
-  --el-fill-color-light:       var(--ui-accent);
-  --el-fill-color:             #f0f0f0;
-  --el-color-primary:          var(--ui-color-primary);
+  --el-fill-color-blank:       #ffffff;
+  --el-fill-color-light:       #f4f4f5;
+  --el-fill-color-lighter:     #f7f7f8;
+  --el-fill-color:             #f8f8fa;
+  --el-color-primary:          #5f4ecf;
+  --el-color-primary-rgb:      95, 78, 207;
+  --el-color-primary-light-3:  #8f83dd;
+  --el-color-primary-light-5:  #afa7e7;
+  --el-color-primary-light-7:  #cfcaf1;
+  --el-color-primary-light-8:  #dfdcf5;
+  --el-color-primary-light-9:  #efedfa;
+  --el-color-primary-light-10: #f7f6fd;
+  --el-color-primary-dark-2:   #4c3ea6;
   --el-color-success:          var(--ui-color-success);
   --el-color-warning:          var(--ui-color-warning);
   --el-color-danger:           var(--ui-color-destructive);
@@ -278,25 +318,25 @@ html, body {
   flex: 1;
   overflow: hidden;
   border-radius: var(--ui-body-radius);
-  background: var(--ui-body-bg);
+  background: var(--ui-bg-page);
 }
 
 .main {
   flex: 1;
   overflow: auto;
-  background: var(--ui-body-bg);
+  background: var(--ui-bg-page);
 }
 
 /* ── TopBar — §3.2 ── */
 .topnav {
-  height: var(--ui-topnav-height);
-  min-height: var(--ui-topnav-height);
+  height: 56px;
+  min-height: 56px;
   background: var(--ui-topnav-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 16px;
-  gap: 8px;
+  padding: 0 12px;
+  gap: 16px;
   z-index: 100;
 }
 .topnav-left  { display: flex; align-items: center; gap: 12px; min-width: 0; }
@@ -309,7 +349,7 @@ html, body {
 }
 .nav-logo img { height: 28px; width: auto; display: block; }
 
-.nav-divider { width: 1px; height: 20px; background: var(--ui-topnav-accent); flex-shrink: 0; }
+.nav-divider { width: 1px; height: 18px; background: var(--ui-topnav-border); flex-shrink: 0; }
 
 .nav-tabs { display: flex; align-items: center; gap: 4px; }
 
@@ -320,18 +360,18 @@ html, body {
   font-size: 13px; font-weight: 600;
   color: var(--ui-topnav-muted);
   white-space: nowrap;
-  transition: background var(--ui-duration-fast), color var(--ui-duration-fast);
+  transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
 }
 .nav-tab.active { background: var(--ui-topnav-active-bg); color: var(--ui-topnav-active-fg); }
-.nav-tab:not(.active):hover { background: rgba(255,255,255,0.06); color: var(--ui-topnav-foreground); }
+.nav-tab:not(.active):hover { background: var(--ui-topnav-surface); color: var(--ui-topnav-foreground); }
 
 .nav-search {
   display: flex; align-items: center; gap: 8px;
   padding: 6px 12px;
   border-radius: 6px;
-  background: var(--ui-topnav-accent);
+  background: var(--ui-topnav-surface);
   cursor: pointer;
-  transition: opacity var(--ui-duration-fast);
+  transition: opacity var(--ui-transition-fast);
 }
 .nav-search:hover { opacity: 0.8; }
 .nav-search [data-lucide] { width: 14px; height: 14px; color: var(--ui-topnav-muted); flex-shrink: 0; }
@@ -344,13 +384,13 @@ html, body {
 
 .nav-icon-btn {
   width: 30px; height: 30px;
-  border-radius: 6px;
+  border-radius: var(--ui-radius-control);
   display: flex; align-items: center; justify-content: center;
   color: var(--ui-topnav-muted);
-  transition: background var(--ui-duration-fast), color var(--ui-duration-fast);
+  transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
   flex-shrink: 0;
 }
-.nav-icon-btn:hover { background: var(--ui-topnav-accent); color: var(--ui-topnav-foreground); }
+.nav-icon-btn:hover { background: var(--ui-topnav-hover); color: var(--ui-topnav-foreground); }
 .nav-icon-btn [data-lucide] { width: 16px; height: 16px; }
 
 .nav-avatar {
@@ -362,33 +402,69 @@ html, body {
   cursor: pointer; flex-shrink: 0; user-select: none;
 }
 
-/* ── 演示场景 chip + 横幅 — §6.8 ── */
-.demo-mode-chip {
+/* ── 原型状态机切换器 — 右下角悬浮入口 + 按需展开面板 ── */
+.state-machine-control {
+  position: fixed; right: 24px; bottom: 24px; z-index: var(--ui-z-fixed);
+  display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 10px;
+}
+.state-machine-switcher {
+  width: min(240px, calc(100vw - 32px));
+  display: grid; gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--ui-border-default);
+  border-radius: var(--ui-radius-card);
+  background: var(--ui-bg-card);
+  box-shadow: var(--ui-shadow-pop);
+}
+.state-machine-switcher__header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+}
+.state-machine-switcher__label {
   display: flex; align-items: center; gap: 6px;
-  padding: 4px 10px;
-  border-radius: var(--ui-radius-pill);
-  border: 1px dashed var(--ui-topnav-muted);
-  background: transparent;
+  color: var(--ui-text-secondary);
   font-size: 12px; font-weight: 600;
-  color: var(--ui-topnav-foreground);
-  white-space: nowrap;
+}
+.state-machine-switcher__label [data-lucide] {
+  width: 14px; height: 14px; flex-shrink: 0;
+  color: var(--ui-color-primary);
+}
+.state-machine-switcher__close {
+  width: 24px; height: 24px; padding: 0; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: var(--ui-radius-pill);
+  background: transparent; color: var(--ui-text-muted);
   cursor: pointer;
-  transition: background var(--ui-duration-fast);
+  transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
 }
-.demo-mode-chip:hover { background: var(--ui-topnav-accent); }
-.demo-mode-chip [data-lucide="lightbulb"] { width: 13px; height: 13px; color: var(--ui-color-warning); }
-.demo-mode-chip [data-lucide="chevron-down"] { width: 12px; height: 12px; color: var(--ui-topnav-muted); }
-
-.demo-banner {
-  height: 32px;
-  padding: 0 16px;
-  display: flex; align-items: center; gap: 8px;
-  background: var(--ui-color-warning-subtle);
-  color: var(--ui-color-warning);
-  font-size: 13px; font-weight: 500;
-  border-bottom: 1px solid var(--ui-border-default);
+.state-machine-switcher__close:hover {
+  background: var(--ui-bg-muted); color: var(--ui-text-primary);
 }
-.demo-banner [data-lucide] { width: 14px; height: 14px; flex-shrink: 0; }
+.state-machine-switcher__close [data-lucide],
+.state-machine-switcher__close svg { width: 14px; height: 14px; }
+.state-machine-select { width: 100%; }
+.state-machine-select .el-select__wrapper {
+  min-height: 36px;
+  background: var(--ui-bg-card);
+  box-shadow: 0 0 0 1px var(--ui-border-interactive) inset;
+}
+.state-machine-select .el-select__wrapper.is-focused {
+  box-shadow: 0 0 0 2px var(--ui-color-ring) inset;
+}
+.state-machine-trigger {
+  width: 44px; height: 44px; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border: 0; border-radius: var(--ui-radius-pill);
+  background: var(--ui-color-primary); color: var(--ui-text-on-brand);
+  box-shadow: var(--ui-shadow-pop); cursor: pointer;
+  transition: background var(--ui-transition-fast);
+}
+.state-machine-trigger:hover { background: var(--ui-color-primary-hover); }
+.state-machine-trigger:active { background: var(--ui-color-primary-active); }
+html.dark .state-machine-trigger { background: var(--ui-color-primary-hover); }
+html.dark .state-machine-trigger:hover,
+html.dark .state-machine-trigger:active { background: var(--ui-color-primary-active); }
+.state-machine-trigger [data-lucide],
+.state-machine-trigger svg { width: 20px; height: 20px; }
 
 /* ── BalanceBox（TopNav 余额药丸，4 alert levels）—— 对齐 project-mamba BalanceBox.vue ── */
 .balance-pill {
@@ -407,7 +483,7 @@ html, body {
   color: var(--ui-topnav-muted);
   font-size: 12px; font-weight: 500; line-height: 1;
   white-space: nowrap; cursor: pointer;
-  transition: background var(--ui-duration-fast), border-color var(--ui-duration-fast), color var(--ui-duration-fast);
+  transition: background var(--ui-transition-fast), border-color var(--ui-transition-fast), color var(--ui-transition-fast), box-shadow var(--ui-transition-fast);
 }
 .balance-pill--readonly { padding-right: 10px; cursor: default; }
 .balance-pill__dot {
@@ -432,9 +508,10 @@ html, body {
   color: var(--balance-pill-cta-color);
   font-size: 11px; font-weight: 600; line-height: 1;
   white-space: nowrap; cursor: pointer;
-  transition: background var(--ui-duration-fast), color var(--ui-duration-fast);
+  transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
 }
 .balance-pill__cta:hover { background: var(--balance-pill-cta-hover-bg); }
+.balance-pill__cta:focus-visible { outline: 2px solid var(--ui-topnav-foreground); outline-offset: 2px; }
 .balance-pill__cta [data-lucide] { width: 11px; height: 11px; }
 /* 4 alert levels: normal / low / critical / empty */
 .balance-pill--low {
@@ -448,30 +525,42 @@ html, body {
   color: color-mix(in srgb, var(--ui-color-warning) 78%, var(--ui-topnav-foreground));
 }
 .balance-pill--critical {
-  --balance-pill-bg: color-mix(in srgb, var(--ui-color-destructive) 18%, transparent);
-  --balance-pill-border: color-mix(in srgb, var(--ui-color-destructive) 48%, transparent);
+  --balance-pill-bg: color-mix(in srgb, var(--ui-color-destructive) 16%, transparent);
+  --balance-pill-border: color-mix(in srgb, var(--ui-color-destructive) 45%, transparent);
   --balance-pill-icon: var(--ui-color-destructive);
-  --balance-pill-num: var(--ui-color-destructive);
+  --balance-pill-num: color-mix(in srgb, var(--ui-color-destructive) 46%, var(--ui-topnav-foreground));
   --balance-pill-cta-bg: var(--ui-color-destructive);
-  --balance-pill-cta-hover-bg: color-mix(in srgb, var(--ui-color-destructive) 86%, white);
-  --balance-pill-cta-color: white;
-  color: var(--ui-color-destructive);
+  --balance-pill-cta-hover-bg: color-mix(in srgb, var(--ui-color-destructive) 88%, var(--ui-topnav-bg));
+  --balance-pill-cta-color: var(--ui-text-on-brand);
+  color: color-mix(in srgb, var(--ui-color-destructive) 72%, var(--ui-topnav-foreground));
 }
 .balance-pill--empty {
-  --balance-pill-bg: color-mix(in srgb, var(--ui-color-destructive) 24%, transparent);
+  --balance-pill-bg: var(--ui-color-destructive);
   --balance-pill-border: var(--ui-color-destructive);
-  --balance-pill-icon: var(--ui-color-destructive);
-  --balance-pill-num: var(--ui-color-destructive);
-  --balance-pill-cta-bg: var(--ui-color-destructive);
-  --balance-pill-cta-hover-bg: color-mix(in srgb, var(--ui-color-destructive) 80%, black);
-  --balance-pill-cta-color: white;
-  color: var(--ui-color-destructive);
+  --balance-pill-icon: var(--ui-text-on-brand);
+  --balance-pill-num: var(--ui-text-on-brand);
+  --balance-pill-cta-bg: var(--ui-topnav-foreground);
+  --balance-pill-cta-hover-bg: color-mix(in srgb, var(--ui-topnav-foreground) 86%, var(--ui-color-destructive));
+  --balance-pill-cta-color: var(--ui-color-destructive);
+  color: color-mix(in srgb, var(--ui-text-on-brand) 84%, var(--ui-color-destructive));
+  animation: balance-empty-throb 2s ease-in-out infinite;
 }
+@keyframes balance-empty-throb {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ui-color-destructive) 60%, transparent); }
+  50% { box-shadow: 0 0 0 6px color-mix(in srgb, var(--ui-color-destructive) 0%, transparent); }
+}
+
+.balance-pill--loading { cursor: wait; }
+.balance-pill__icon--skeleton {
+  width: 14px; height: 14px; border-radius: 50%; background: currentColor;
+  opacity: 0.2; animation: balance-skeleton-pulse 1.4s ease-in-out infinite;
+}
+@keyframes balance-skeleton-pulse { 0%, 100% { opacity: .2; } 50% { opacity: .4; } }
 
 /* ── Sidebar — §3.3 ── */
 .sidebar {
-  width: var(--ui-sidebar-width);
-  min-width: var(--ui-sidebar-width);
+  width: 256px;
+  min-width: 256px;
   background: var(--ui-sidebar-bg);
   border-right: 1px solid var(--ui-sidebar-border);
   padding: 12px 12px 16px;
@@ -493,7 +582,7 @@ html, body {
 .sidebar-section-title {
   padding: 8px 8px 4px;
   font-size: 12px; font-weight: 500;
-  color: var(--ui-sidebar-muted);
+  color: var(--ui-text-muted);
   letter-spacing: 0.01em;
 }
 .sidebar-section + .sidebar-section .sidebar-section-title { padding-top: 12px; }
@@ -501,17 +590,73 @@ html, body {
 .nav-item {
   display: flex; align-items: center; gap: 8px;
   padding: 10px;
-  border-radius: 6px;
+  border-radius: var(--ui-radius-control);
   font-size: 14px; font-weight: 400;
   color: var(--ui-sidebar-foreground);
   transition: background 0.12s, color 0.12s;
   white-space: nowrap;
   width: 100%;
 }
-.nav-item [data-lucide] { width: 18px; height: 18px; flex-shrink: 0; color: var(--ui-sidebar-muted); }
+.nav-item [data-lucide] { width: 18px; height: 18px; flex-shrink: 0; color: var(--ui-text-muted); }
 .nav-item.active { background: var(--ui-sidebar-active-bg); font-weight: 500; color: var(--ui-sidebar-active-fg); }
 .nav-item.active [data-lucide] { color: var(--ui-sidebar-active-fg); }
-.nav-item:not(.active):hover { background: var(--ui-accent); }
+.nav-item:not(.active):hover { background: var(--ui-sidebar-hover-bg); }
+
+.mobile-menu-toggle,
+.sidebar-mobile-head,
+.layout-overlay { display: none; }
+
+@media (max-width: 1023px) {
+  html, body { background: var(--ui-bg-page); }
+  .body { border-radius: 0; }
+  .topnav { gap: 8px; }
+  .mobile-menu-toggle {
+    width: 40px; height: 40px; display: inline-flex; flex-shrink: 0;
+    align-items: center; justify-content: center;
+    border: 1px solid var(--ui-topnav-border);
+    border-radius: var(--ui-radius-control);
+    background: var(--ui-topnav-surface);
+    color: var(--ui-topnav-foreground);
+    transition: background var(--ui-transition-fast), color var(--ui-transition-fast);
+  }
+  .mobile-menu-toggle:hover { background: var(--ui-topnav-hover); }
+  .nav-divider, .nav-tabs, .nav-search, .nav-docs { display: none; }
+  .sidebar {
+    position: fixed; inset: 0 auto 0 0; z-index: 240;
+    width: min(86vw, 320px); min-width: 0; max-width: calc(100vw - 32px);
+    height: 100vh; height: 100dvh;
+    padding: 0 12px 16px;
+    box-shadow: var(--ui-shadow-pop);
+    transform: translateX(-100%);
+    transition: transform var(--ui-transition-base);
+  }
+  .sidebar.is-mobile-open { transform: translateX(0); }
+  .sidebar-mobile-head {
+    min-height: 56px; display: flex; align-items: center; justify-content: space-between;
+    margin: 0 -12px 8px; padding: 10px 12px;
+    border-bottom: 1px solid var(--ui-sidebar-border);
+  }
+  .sidebar-mobile-logo { height: 24px; width: auto; display: block; }
+  .sidebar-mobile-close {
+    width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center;
+    border: 1px solid var(--ui-sidebar-border); border-radius: var(--ui-radius-control);
+    background: var(--ui-sidebar-accent); color: var(--ui-text-muted);
+  }
+  .layout-overlay {
+    position: fixed; inset: 0; z-index: 230; display: block;
+    background: var(--ui-bg-overlay); backdrop-filter: blur(2px); touch-action: none;
+  }
+  .main { overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+}
+
+@media (max-width: 640px) {
+  .topnav-right { gap: 6px; }
+  .balance-pill { gap: 6px; }
+  .balance-pill__unit { display: none; }
+  .balance-pill__cta { width: 22px; padding: 0; }
+  .balance-pill__cta span { display: none; }
+  .state-machine-control { right: 16px; bottom: 16px; }
+}
 
 /* ── Stage（shell-only 空舞台） ── */
 .stage-wrap {
@@ -605,7 +750,7 @@ html, body {
   font-size: 20px; font-weight: 700; line-height: 1.2;     /* v5.0 对齐生产 TopBar 真值：20px / 700（原 24/800）*/
   color: var(--ui-text-primary);
 }
-/* v6.9.3: .header-box__subtitle 已移除——所有页面一律不传副标题（AI-USAGE §默认克制 ①）*/
+/* v6.9.3: .header-box__subtitle 已移除——所有页面一律不传副标题（references/base-spec.md §7）*/
 .header-box__right { display: flex; align-items: center; gap: var(--ui-space-sm); flex-shrink: 0; }
 .header-box__content {
   padding: var(--ui-space-base) 0 0;                       /* v5.2：去 card 后，content 区块只需顶部留白 */
@@ -852,7 +997,7 @@ html, body {
   color: var(--ui-text-primary);
   margin: 0;
 }
-/* v6.9.3: .page-header__subtitle 已移除——所有页面一律不传副标题（AI-USAGE §默认克制 ①）*/
+/* v6.9.3: .page-header__subtitle 已移除——所有页面一律不传副标题（references/base-spec.md §7）*/
 .page-header__right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 .page-header__status-pill {
   display: inline-flex; align-items: center;
@@ -1411,7 +1556,7 @@ html, body {
    Dashboard Chapter (v6.9.1 引入 — Section + Filter + KPI 两档)
    ──────────────────────────────────────────────────────────────────
    适用范围：dashboard / overview / 监控大盘 类页型（决策树 ⑪ 触发）。
-   规则参考：design-system/AI-USAGE.md §11 Dashboard 大盘契约
+   构图规则由 active skill overlay 决定；本段只提供共享 runtime hooks
    字号契约：stat-card 复用 .type-kpi (28px) / ov-card 用 .type-hero-data (44px)
    外壳协调：.ds-section-header border-bottom 是分隔器，豁免 v6.7 外壳克制
    ────────────────────────────────────────────────────────────────── */
@@ -1668,7 +1813,7 @@ html, body {
 <div id="app"></div>
 
 <script>
-const { createApp, ref, reactive, computed, nextTick, watch } = Vue;
+const { createApp, ref, reactive, computed, nextTick, watch, onMounted, onBeforeUnmount } = Vue;
 
 // ── §3.4 主题切换：JS 直接设 :root CSS 变量 ──
 // AGIONE_EDIT_THEME_VARS_START · ⚠️ 末尾追加业务专用 token（不要改已有 chrome 值）/ 含 darkVars + lightVars
@@ -1679,16 +1824,34 @@ const darkVars = {
   '--ui-topnav-muted':         '#e1daed',
   // Sidebar & Body
   '--ui-sidebar-bg':           '#18181b',
+  '--ui-sidebar-accent':       '#27272a',
   '--ui-sidebar-border':       '#27272a',
   '--ui-sidebar-foreground':           '#fafafa',
-  '--ui-sidebar-muted':        '#8b93a5',
   '--ui-sidebar-active-bg':    '#27272a',
   '--ui-sidebar-active-fg':    '#fafafa',
-  '--ui-body-bg':              '#09090b',
+  '--ui-sidebar-hover-bg':     '#27272a',
+  '--ui-color-background':     '#09090b',
+  '--ui-color-foreground':     '#fafafa',
+  '--ui-color-card':           '#18181b',
+  '--ui-color-card-foreground':'#fafafa',
+  '--ui-color-muted':          '#27272a',
+  '--ui-color-muted-foreground':'#8b93a5',
+  '--ui-color-accent':         '#27272a',
+  '--ui-color-accent-foreground':'#fafafa',
+  '--ui-color-border':         '#323238',
+  '--ui-color-border-soft':    '#27272a',
+  '--ui-color-border-strong':  '#52525b',
+  '--ui-color-input':          '#18181b',
+  '--ui-color-overlay':        'rgba(0, 0, 0, 0.5)',
+  '--ui-color-inverse':        '#fafafa',
+  '--ui-color-ring':           '#d4d4d8',
+  '--ui-color-on-brand':       '#f0edf5',
   '--ui-bg-page':           '#09090b',
   '--ui-bg-card':                 '#18181b',
   '--ui-accent':               '#27272a',
   '--ui-bg-muted':                '#27272a',
+  '--ui-bg-overlay':             'rgba(0, 0, 0, 0.5)',
+  '--ui-bg-inverse':             '#fafafa',
   '--ui-text-muted':     '#8b93a5',
   '--ui-border-soft':         '#27272a',
   '--ui-border-default':               '#323238',
@@ -1713,44 +1876,57 @@ const darkVars = {
   '--ui-text-on-brand':       '#f0edf5',
   '--ui-layout-shell-bg':     'linear-gradient(180deg, #09090b 0%, #111114 18%, #09090b 100%)',
   '--ui-bg-disabled':         '#202024',
-  '--ui-color-primary-subtle': '#221838',
   '--ui-badge-purple-bg':      '#221838', '--ui-badge-purple-fg': '#9878c8',
   '--ui-badge-blue-bg':        '#1c2438', '--ui-badge-blue-fg':   '#7a9ac8',
   '--ui-badge-green-bg':       '#1a2820', '--ui-badge-green-fg':  '#5a9272',
   '--ui-badge-orange-bg':      '#2a1c12', '--ui-badge-orange-fg': '#b07848',
   '--ui-badge-yellow-bg':      '#261e0c', '--ui-badge-yellow-fg': '#a08838',
-  '--el-border-color':      '#27272a',
+  '--ui-table-header-bg':      '#1f1f22',
+  '--ui-table-row-bg':         '#18181b',
+  '--ui-table-row-alt-bg':     '#111114',
+  '--el-border-color':      '#323238',
+  '--el-border-color-light':'#27272a',
+  '--el-border-color-lighter':'#3f3f46',
+  '--el-border-color-extra-light':'#323238',
   '--el-bg-color':          '#09090b',
   '--el-bg-color-page':     '#27272a',
   '--el-text-color-primary':  '#fafafa',
-  '--el-text-color-regular':  '#8b93a5',
+  '--el-text-color-regular':  '#d4d4d8',
+  '--el-text-color-secondary':'#8b93a5',
+  '--el-text-color-placeholder':'#71717a',
+  '--el-text-color-disabled':'#71717a',
   '--el-fill-color-blank':      '#18181b',
   '--el-fill-color-light':      '#27272a',
+  '--el-fill-color-lighter':    '#323238',
   '--el-fill-color':            '#303030',
-  '--el-fill-color-darker':     '#424243',
-  '--el-color-primary':         '#a99aff',
+  '--el-color-primary':         'rgb(169, 154, 255)',
+  '--el-color-primary-rgb':     '169,154,255',
+  '--el-color-primary-light-3': 'rgba(169,154,255, 0.8)',
+  '--el-color-primary-light-5': 'rgba(169,154,255, 0.6)',
+  '--el-color-primary-light-7': 'rgba(169,154,255, 0.4)',
+  '--el-color-primary-light-8': 'rgba(169,154,255, 0.2)',
+  '--el-color-primary-light-9': 'rgba(169,154,255, 0.1)',
+  '--el-color-primary-light-10':'rgba(169,154,255, 0.05)',
+  '--el-color-primary-dark-2':  '#6359c6',
   '--el-bg-color-overlay':      '#18181b',
   '--el-disabled-bg-color':     '#1c1c1e',
   '--el-disabled-border-color': '#414243',
   '--el-mask-color':            'rgba(0,0,0,0.8)',
   '--ui-ring':                     '#d4d4d8',
-  '--ui-color-success-subtle':     '#052e16',
-  '--ui-color-warning-subtle':     '#2a1a00',
-  '--ui-color-destructive-subtle': '#2a0a0a',
 };
 const lightVars = {
   // TopBar — Light
-  '--ui-topnav-bg':            '#1a1025',
+  '--ui-topnav-bg':            '#2d2241',
   '--ui-topnav-accent':        '#2d2240',
-  '--ui-topnav-muted':         '#8b7fa0',
+  '--ui-topnav-muted':         '#e1daed',
   // Sidebar & Body
   '--ui-sidebar-bg':           '#fafafa',
+  '--ui-sidebar-accent':       '#f4f4f5',
   '--ui-sidebar-border':       '#e4e4e7',
   '--ui-sidebar-foreground':           '#09090b',
-  '--ui-sidebar-muted':        '#71717a',
   '--ui-sidebar-active-bg':    '#e4e4e7',
   '--ui-sidebar-active-fg':    '#18181b',
-  '--ui-body-bg':              '#ffffff',
+  '--ui-sidebar-hover-bg':     '#f0f0f1',
   '--ui-bg-page':           '#ffffff',
   '--ui-bg-card':                 '#ffffff',
   '--ui-accent':               '#f4f4f5',
@@ -1769,29 +1945,40 @@ const lightVars = {
   '--ui-color-info':          '#4a6298',
   '--ui-layout-shell-bg':     'linear-gradient(133deg, #daeeff 0%, #f5faff 10%, #f9faff 58%, #fcfcff 100%)',
   '--ui-bg-disabled':         '#fafafb',
-  '--ui-color-primary-subtle': '#ece9f9',
   '--ui-badge-purple-bg':      '#f2eef8', '--ui-badge-purple-fg': '#6a4e9a',
   '--ui-badge-blue-bg':        '#eef1f8', '--ui-badge-blue-fg':   '#4a6298',
   '--ui-badge-green-bg':       '#eef5f0', '--ui-badge-green-fg':  '#3a7252',
   '--ui-badge-orange-bg':      '#f8f1ec', '--ui-badge-orange-fg': '#8a5e38',
   '--ui-badge-yellow-bg':      '#f7f4ea', '--ui-badge-yellow-fg': '#7a6228',
   '--el-border-color':      '#e4e4e7',
+  '--el-border-color-light':'#ececf1',
+  '--el-border-color-lighter':'#f1f1f4',
+  '--el-border-color-extra-light':'#f4f4f5',
   '--el-bg-color':          '#ffffff',
   '--el-bg-color-page':     '#f4f4f5',
   '--el-text-color-primary':  '#09090b',
-  '--el-text-color-regular':  '#71717a',
+  '--el-text-color-regular':  '#3f3f46',
+  '--el-text-color-secondary':'#71717a',
+  '--el-text-color-placeholder':'#a1a1aa',
+  '--el-text-color-disabled':'#a1a1aa',
   '--el-fill-color-blank':      '#ffffff',
   '--el-fill-color-light':      '#f4f4f5',
-  '--el-fill-color':            '#f0f0f0',
-  '--el-color-primary':         '#7c66f7',
+  '--el-fill-color-lighter':    '#f7f7f8',
+  '--el-fill-color':            '#f8f8fa',
+  '--el-color-primary':         '#5f4ecf',
+  '--el-color-primary-rgb':     '95, 78, 207',
+  '--el-color-primary-light-3': '#8f83dd',
+  '--el-color-primary-light-5': '#afa7e7',
+  '--el-color-primary-light-7': '#cfcaf1',
+  '--el-color-primary-light-8': '#dfdcf5',
+  '--el-color-primary-light-9': '#efedfa',
+  '--el-color-primary-light-10':'#f7f6fd',
+  '--el-color-primary-dark-2':  '#4c3ea6',
   '--el-bg-color-overlay':      '#ffffff',
   '--el-disabled-bg-color':     '#f5f5f5',
   '--el-disabled-border-color': '#e4e4e7',
   '--el-mask-color':            'rgba(255,255,255,0.9)',
   '--ui-ring':                     '#18181b',
-  '--ui-color-success-subtle':     '#ecfdf5',
-  '--ui-color-warning-subtle':     '#fef3c7',
-  '--ui-color-destructive-subtle': '#fef2f2',
   '--ui-color-success':       '#22c55e',
   '--ui-color-success-hover':  '#16a34a',
   '--ui-color-success-active': '#15803d',
@@ -1854,13 +2041,13 @@ const i18n = {
 
 // ──────────────────────────────────────────────
 // §5.0 Prototype Component Library —— 运行时组件库
-// 配套 CSS 见 <style> 块；API 文档见 SKILL.md §5.0.5
-// 使用：注册为 Vue Global Component，原型直接 <KpiCard />
+// 配套 CSS 见 <style> 块；API 文档见当前 skill 的组件 reference
+// 使用：注册为 Vue Global Component，原型直接 <KpiCard></KpiCard>
 // ──────────────────────────────────────────────
 const PrototypeComponents = {
 
   // <HeaderBox title> + slot:actions + default slot（filter/extra 内容）
-  // v6.9.3: 移除 subtitle——所有页面一律不传副标题（AI-USAGE §默认克制 ①）
+  // v6.9.3: 移除 subtitle——所有页面一律不传副标题（references/base-spec.md §7）
   HeaderBox: {
     props: {
       title:    { type: String, required: true },
@@ -2137,7 +2324,7 @@ const PrototypeComponents = {
       backLabel:    { type: String, default: '' },   // v6.9.3: 返回链接文案；back 固定渲染在标题左侧 inline
       statusLabel:  { type: String, default: '' },
       statusColor:  { type: String, default: 'muted' }, // green | orange | red | purple | muted
-      // v6.9.3 起移除 subtitle：所有页面一律不传副标题（见 AI-USAGE §默认克制 ①）
+      // v6.9.3 起移除 subtitle：所有页面一律不传副标题（见 references/base-spec.md §7）
     },
     emits: ['back'],
     template: `
@@ -2508,9 +2695,9 @@ const PrototypeComponents = {
   },
 
   // <BalanceBox :info :lang> — TopNav 余额药丸（对齐 project-mamba BalanceBox.vue）
-  // info: { balance: Number, level: 'normal'|'low'|'critical'|'empty', currency: 'Credits', showTopUp: Boolean, topUpLabel?: String, runwayDays?: Number }
+  // info: { balance: Number, level: 'normal'|'low'|'critical'|'empty', currency: 'credits', showTopUp: Boolean, loading?: Boolean, topUpLabel?: String, runwayDays?: Number }
   // 4 alert levels 自动配色；level=normal 不显示左侧 dot，critical/empty 显示脉冲 dot
-  // currency 字段**直接显示**（不自动加 s），如 'Credits' / 'CREDIT' / '¥' / 'Tokens'
+  // POINTS / CREDIT / CREDITS 统一按代码侧规范显示为小写 credits；其他币种保持原值
   // topUpLabel 不传时按 lang prop 自动 zh→"充值" / en→"Top Up"
   // v4.6 / v4.7 修正：图标 normal→database，移除自动加 s，CTA 跟随 lang
   BalanceBox: {
@@ -2519,6 +2706,7 @@ const PrototypeComponents = {
       lang: { type: String, default: 'en' },
     },
     computed: {
+      isLoading() { return this.info?.loading === true; },
       level() {
         const lv = (this.info?.level || 'normal').toLowerCase();
         return ['normal', 'low', 'critical', 'empty'].includes(lv) ? lv : 'normal';
@@ -2533,7 +2721,10 @@ const PrototypeComponents = {
       },
       showDot() { return this.level === 'critical' || this.level === 'empty'; },
       showTopUp() { return this.info?.showTopUp !== false; },
-      currency() { return this.info?.currency || 'Credits'; },
+      currency() {
+        const value = String(this.info?.currency || 'credits').trim();
+        return ['POINTS', 'CREDIT', 'CREDITS'].includes(value.toUpperCase()) ? 'credits' : value;
+      },
       topUpText() {
         if (this.info?.topUpLabel) return this.info.topUpLabel;
         return this.lang === 'zh' ? '充值' : 'Top Up';
@@ -2546,13 +2737,14 @@ const PrototypeComponents = {
     },
     template: `
       <div class="balance-pill" data-component="balance-pill"
-           :class="['balance-pill--' + level, { 'balance-pill--readonly': !showTopUp }]"
-           role="status">
-        <span v-if="showDot" class="balance-pill__dot" aria-hidden="true"></span>
-        <i :data-lucide="iconName" class="balance-pill__icon"></i>
+           :class="[isLoading ? 'balance-pill--loading' : 'balance-pill--' + level, { 'balance-pill--readonly': !showTopUp }]"
+           role="status" :aria-label="isLoading ? (lang === 'zh' ? '余额加载中' : 'Balance loading') : formattedBalance + ' ' + currency">
+        <span v-if="!isLoading && showDot" class="balance-pill__dot" aria-hidden="true"></span>
+        <span v-if="isLoading" class="balance-pill__icon balance-pill__icon--skeleton" aria-hidden="true"></span>
+        <i v-else :data-lucide="iconName" class="balance-pill__icon"></i>
         <span class="balance-pill__num">{{ formattedBalance }}</span>
         <span class="balance-pill__unit">{{ currency }}</span>
-        <button v-if="showTopUp" class="balance-pill__cta" type="button" @click.stop>
+        <button v-if="!isLoading && showTopUp" class="balance-pill__cta" type="button" @click.stop>
           <i data-lucide="plus"></i>
           <span>{{ topUpText }}</span>
         </button>
@@ -2739,28 +2931,48 @@ const app = createApp({
     const lang      = ref('en');
     const activeTab = ref(0);
     // AGIONE_EDIT_SETUP_DATA_START · ⚠️ 业务 ref / reactive 数据写在这里（filterKeyword / tableData / formModel 等）
-    // chrome 自带的 activeNav / lang / isDark / scenarios / balance 不动，业务 ref 增量加在 activeNav 后面
+    // chrome 自带的 activeNav / mobileNavOpen / lang / isDark / scenarios / balance 不动，业务 ref 增量加在 activeNav 后面
     const activeNav = ref('models');
+    const mobileNavOpen = ref(false);
     const t = computed(() => i18n[lang.value]);
 
     // BalanceBox (v4.8) — chrome 常驻，默认显示 normal 状态余额；AI 仅在需要切换状态/数值时覆盖
-    // 覆盖示例：balance.value = { balance: 213.5, level: 'low', currency: 'Credits', showTopUp: true }
+    // 覆盖示例：balance.value = { balance: 213.5, level: 'low', currency: 'credits', showTopUp: true }
     // 显式隐藏（极少数情况）：balance.value = null
     const balance = ref({
       balance:   15311.79,
       level:     'normal',
-      currency:  'Credits',
+      currency:  'credits',
       showTopUp: true,
     });
 
-// §6.8 演示场景切换器 —— 默认空对象，AI 检测多状态时填充
+// 原型状态机切换器 —— 默认空对象；涉及场景或状态切换时填充（至少 2 个状态）
     const scenarios = reactive({});  // { normal: { label: { zh, en }, data: {...} }, ... }
     const defaultScenario = 'normal';
     const activeScenario = ref(defaultScenario);
+    const stateMachineOpen = ref(false);
+    const stateMachineTrigger = ref(null);
+    const stateMachineClose = ref(null);
     const hasScenarios = computed(() => Object.keys(scenarios).length >= 2);
-    const isCustomScenario = computed(() => hasScenarios.value && activeScenario.value !== defaultScenario);
     const scenarioData = computed(() => scenarios[activeScenario.value]?.data || {});
-    const scenarioLabel = computed(() => scenarios[activeScenario.value]?.label?.[lang.value] || '');
+
+    function toggleStateMachine() {
+      stateMachineOpen.value = !stateMachineOpen.value;
+      if (stateMachineOpen.value) nextTick(() => stateMachineClose.value?.focus());
+    }
+
+    function closeStateMachine() {
+      if (!stateMachineOpen.value) return;
+      stateMachineOpen.value = false;
+      nextTick(() => stateMachineTrigger.value?.focus());
+    }
+
+    function handleStateMachineEscape(event) {
+      if (event.key === 'Escape' && stateMachineOpen.value) closeStateMachine();
+    }
+
+    onMounted(() => document.addEventListener('keydown', handleStateMachineEscape, true));
+    onBeforeUnmount(() => document.removeEventListener('keydown', handleStateMachineEscape, true));
 
     function toggleTheme() {
       isDark.value = !isDark.value;
@@ -2777,9 +2989,23 @@ const app = createApp({
       nextTick(() => lucide.createIcons());
     }
 
+    function selectNav(key) {
+      activeNav.value = key;
+      mobileNavOpen.value = false;
+    }
+
     // 任何 activeNav 切换都重置图标（避免新出现的 v-show 区域图标不渲染）
     watch(activeNav, () => {
       nextTick(() => lucide.createIcons());
+    });
+    watch(activeScenario, () => {
+      nextTick(() => lucide.createIcons());
+    });
+    watch(stateMachineOpen, () => {
+      nextTick(() => lucide.createIcons());
+    });
+    watch(mobileNavOpen, (isOpen) => {
+      if (isOpen) stateMachineOpen.value = false;
     });
 
     // logo: TopNav 永远 dark 背景，用 dark logo；其余区域跟随主题
@@ -2788,12 +3014,13 @@ const app = createApp({
       // AGIONE_EDIT_SETUP_DATA_END · 上面 setup() 内业务 ref 区结束
 
       // AGIONE_EDIT_SETUP_RETURN_START · ⚠️ 业务 ref / computed 暴露给 template（chrome 自带行 isDark / lang / scenarios / balance 不动，业务 key 增量加在最后）
-      isDark, lang, activeTab, activeNav, t, toggleTheme, toggleLang, logoSrc,
+      isDark, lang, activeTab, activeNav, mobileNavOpen, t, toggleTheme, toggleLang, selectNav, logoSrc,
       // §6.8
       scenarios, activeScenario, defaultScenario,
       balance,
-      hasScenarios, isCustomScenario, scenarioData, scenarioLabel,
-      // AGIONE_EDIT_SETUP_RETURN_END · 上面 setup return 结束（业务 key 增量加在 scenarioLabel 后）
+      stateMachineOpen, stateMachineTrigger, stateMachineClose, toggleStateMachine, closeStateMachine,
+      hasScenarios, scenarioData,
+      // AGIONE_EDIT_SETUP_RETURN_END · 上面 setup return 结束（业务 key 增量加在 scenarioData 后）
     };
   },
 
@@ -2803,10 +3030,20 @@ const app = createApp({
       <!-- TopBar §3.2 — 右侧固定顺序：Search → Docs → Language → Theme → Avatar -->
       <nav class="topnav" role="navigation" aria-label="Main navigation">
         <div class="topnav-left">
+          <button
+            class="mobile-menu-toggle"
+            type="button"
+            aria-label="Open navigation"
+            aria-controls="agione-sidebar"
+            :aria-expanded="String(mobileNavOpen)"
+            @click="mobileNavOpen = true"
+          >
+            <i data-lucide="menu"></i>
+          </button>
           <a class="nav-logo" href="#" aria-label="AGIOne">
             <img :src="logoSrc" alt="AGIOne" />
           </a>
-<div class="nav-divider" aria-hidden="true"></div>
+          <div class="nav-divider" aria-hidden="true"></div>
           <div class="nav-tabs" role="tablist">
             <button
               v-for="(tab, i) in t.tabs" :key="i"
@@ -2817,31 +3054,14 @@ const app = createApp({
           </div>
         </div>
         <div class="topnav-right">
-          <!-- §6.8 演示场景 chip — 仅 hasScenarios=true 时显示 -->
-          <el-dropdown v-if="hasScenarios" trigger="click">
-            <button class="demo-mode-chip" type="button">
-              <i data-lucide="lightbulb"></i>
-              <span>{{ lang === 'zh' ? '演示场景' : 'Scenario' }}：{{ scenarioLabel }}</span>
-              <i data-lucide="chevron-down"></i>
-            </button>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item
-                  v-for="(s, key) in scenarios"
-                  :key="key"
-                  @click="activeScenario = key"
-                >{{ s.label[lang] }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
           <!-- BalanceBox — 仅 balance reactive 已设值时显示（对齐 mamba BaseLayout #header-right）-->
-          <BalanceBox v-if="balance" :info="balance" :lang="lang" />
+          <BalanceBox v-if="balance" :info="balance" :lang="lang"></BalanceBox>
           <div class="nav-search" role="search" tabindex="0">
             <i data-lucide="search"></i>
             <span class="nav-search-text">{{ t.search }}</span>
             <span class="nav-search-kbd">Ctrl+K</span>
           </div>
-          <button class="nav-icon-btn" :title="t.docs">
+          <button class="nav-icon-btn nav-docs" :title="t.docs">
             <i data-lucide="book-open"></i>
           </button>
           <button class="nav-icon-btn" title="Language" @click="toggleLang">
@@ -2854,63 +3074,76 @@ const app = createApp({
         </div>
       </nav>
 
-      <!-- §6.8 演示场景警示横幅 — 非默认场景时显示 -->
-      <div v-if="isCustomScenario" class="demo-banner">
-        <i data-lucide="lightbulb"></i>
-        <span>{{ lang === 'zh' ? '当前演示场景' : 'Current scenario' }}：{{ scenarioLabel }} · {{ lang === 'zh' ? '仅评审用，非真实数据' : 'For review only, not real data' }}</span>
-      </div>
-
       <!-- Body §3.1 -->
       <div class="body">
 
         <!-- Sidebar §3.3 -->
         <!-- AGIONE_EDIT_SIDEBAR_START · ⚠️ 改 sidebar 菜单项（保留 chrome 结构 / activeNav 初始值） -->
-        <aside class="sidebar" role="navigation" aria-label="Sidebar navigation">
+        <aside
+          id="agione-sidebar"
+          class="sidebar"
+          :class="{ 'is-mobile-open': mobileNavOpen }"
+          role="navigation"
+          aria-label="Sidebar navigation"
+        >
+          <div class="sidebar-mobile-head">
+            <img class="sidebar-mobile-logo" :src="logoSrc" alt="AGIOne" />
+            <button class="sidebar-mobile-close" type="button" aria-label="Close navigation" @click="mobileNavOpen = false">
+              <i data-lucide="x"></i>
+            </button>
+          </div>
           <div class="sidebar-section">
             <div class="sidebar-section-title">{{ t.discover }}</div>
-            <button class="nav-item" :class="{ active: activeNav === 'models' }" @click="activeNav = 'models'">
+            <button class="nav-item" :class="{ active: activeNav === 'models' }" @click="selectNav('models')">
               <i data-lucide="compass"></i>{{ t.models }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'playground' }" @click="activeNav = 'playground'">
+            <button class="nav-item" :class="{ active: activeNav === 'playground' }" @click="selectNav('playground')">
               <i data-lucide="square-terminal"></i>{{ t.playground }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'apikeys' }" @click="activeNav = 'apikeys'">
+            <button class="nav-item" :class="{ active: activeNav === 'apikeys' }" @click="selectNav('apikeys')">
               <i data-lucide="key"></i>{{ t.apiKeys }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'docs' }" @click="activeNav = 'docs'">
+            <button class="nav-item" :class="{ active: activeNav === 'docs' }" @click="selectNav('docs')">
               <i data-lucide="book-open"></i>{{ t.docs }}
             </button>
           </div>
 
           <div class="sidebar-section">
             <div class="sidebar-section-title">{{ t.appLabel }}</div>
-            <button class="nav-item" :class="{ active: activeNav === 'text' }" @click="activeNav = 'text'">
+            <button class="nav-item" :class="{ active: activeNav === 'text' }" @click="selectNav('text')">
               <i data-lucide="message-square"></i>{{ t.text }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'images' }" @click="activeNav = 'images'">
+            <button class="nav-item" :class="{ active: activeNav === 'images' }" @click="selectNav('images')">
               <i data-lucide="image"></i>{{ t.images }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'video' }" @click="activeNav = 'video'">
+            <button class="nav-item" :class="{ active: activeNav === 'video' }" @click="selectNav('video')">
               <i data-lucide="video"></i>{{ t.video }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'audio' }" @click="activeNav = 'audio'">
+            <button class="nav-item" :class="{ active: activeNav === 'audio' }" @click="selectNav('audio')">
               <i data-lucide="headphones"></i>{{ t.audio }}
             </button>
           </div>
 
           <div class="sidebar-section">
             <div class="sidebar-section-title">{{ t.management }}</div>
-            <button class="nav-item" :class="{ active: activeNav === 'mymodels' }" @click="activeNav = 'mymodels'">
+            <button class="nav-item" :class="{ active: activeNav === 'mymodels' }" @click="selectNav('mymodels')">
               <i data-lucide="cpu"></i>{{ t.myModels }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'knowledge' }" @click="activeNav = 'knowledge'">
+            <button class="nav-item" :class="{ active: activeNav === 'knowledge' }" @click="selectNav('knowledge')">
               <i data-lucide="database"></i>{{ t.knowledge }}
             </button>
-            <button class="nav-item" :class="{ active: activeNav === 'tools' }" @click="activeNav = 'tools'">
+            <button class="nav-item" :class="{ active: activeNav === 'tools' }" @click="selectNav('tools')">
               <i data-lucide="wrench"></i>{{ t.tools }}
             </button>
           </div>
         </aside>
+        <button
+          v-if="mobileNavOpen"
+          class="layout-overlay"
+          type="button"
+          aria-label="Close navigation"
+          @click="mobileNavOpen = false"
+        ></button>
         <!-- AGIONE_EDIT_SIDEBAR_END -->
 
         <!-- Main — Shell-only Stage（占位，AI 生成原型时替换为业务内容） -->
@@ -2938,6 +3171,63 @@ const app = createApp({
         </main>
         <!-- AGIONE_EDIT_MAIN_END -->
 
+      </div>
+
+      <!-- 原型状态机 — 仅用于评审场景/状态，不属于客户业务 UI -->
+      <div
+        v-if="hasScenarios && !mobileNavOpen"
+        class="state-machine-control"
+        data-prototype-control="state-machine"
+      >
+        <button
+          ref="stateMachineTrigger"
+          class="state-machine-trigger"
+          type="button"
+          aria-controls="prototype-state-machine-panel"
+          aria-haspopup="dialog"
+          :aria-expanded="String(stateMachineOpen)"
+          :aria-label="stateMachineOpen
+            ? (lang === 'zh' ? '关闭业务状态切换' : 'Close business state switcher')
+            : (lang === 'zh' ? '打开业务状态切换' : 'Open business state switcher')"
+          @click="toggleStateMachine"
+        >
+          <i data-lucide="circle-help"></i>
+        </button>
+        <div
+          v-if="stateMachineOpen"
+          id="prototype-state-machine-panel"
+          class="state-machine-switcher"
+          role="dialog"
+          :aria-label="lang === 'zh' ? '业务状态' : 'Business state'"
+        >
+          <div class="state-machine-switcher__header">
+            <div class="state-machine-switcher__label">
+              <i data-lucide="workflow"></i>
+              <span>{{ lang === 'zh' ? '业务状态' : 'Business state' }}</span>
+            </div>
+            <button
+              ref="stateMachineClose"
+              class="state-machine-switcher__close"
+              type="button"
+              :aria-label="lang === 'zh' ? '关闭业务状态面板' : 'Close business state panel'"
+              @click="closeStateMachine"
+            >
+              <i data-lucide="x"></i>
+            </button>
+          </div>
+          <el-select
+            v-model="activeScenario"
+            class="state-machine-select"
+            :aria-label="lang === 'zh' ? '切换业务状态' : 'Switch business state'"
+          >
+            <el-option
+              v-for="(state, key) in scenarios"
+              :key="key"
+              :label="state.label[lang]"
+              :value="key"
+            ></el-option>
+          </el-select>
+        </div>
       </div>
     </div>
   `

@@ -2,6 +2,13 @@
 
 2026-06 把 Provider 收益总览原型落到 `apps/financial` 时，来回 **8 轮**才对齐，累计 ~40 处偏差 + 1 个功能 bug。这份清单按"类别"归档每一处，新页面 review 时**逐条自查**，大概率命中一半以上。
 
+> 这是历史案例，不是当前 project-mamba 契约。包名、单位、文案、路径、组件 API 和验证命令必须重新读取目标仓库；本文件只复用偏差模式与排查思路。
+
+## 目录
+
+- 致命/结构、文案、字体、字号、颜色、图标、盒模型、表格、功能 bug
+- 第二批发现、图表比对、装饰渐变取舍、复盘
+
 > 每条格式：`元素 — 原型值 vs 第一版错值 — 根因/教训`
 
 ---
@@ -52,7 +59,7 @@
 
 28. **Cumulative Settled / Settle success 图标**：原型 `check-circle`（= lucide 0.5x 的 `circle-check-big`，path `M21.801 10A10 10 0 1 1 17 3.335` + `m9 11 3 3L22 4`，开口圆+外延勾）vs 实现 `circle-check`（path `m9 12 2 2 4-4`，闭合圆+小勾）—— **两个不同图标**。
 29. KPI 图标尺寸：原型 24px vs 实现 16px。费率 chip 图标：原型 12px vs 实现 14px。
-30. **教训：lucide 选图标要去 `node_modules/.pnpm/lucide-vue-next@*/.../icons/<name>.js` 比对 svg path，名字相近的是不同变体。**
+30. **历史处理**：当时项目使用 `lucide-vue-next`，通过已安装包源码比对 svg path。可复用的规则是“检查当前图标包的真实几何签名”，不是继续使用这个旧包名。
 
 ## 七、阴影 / 圆角 / 间距（盒模型）
 
@@ -68,7 +75,7 @@
 
 ## 八、表格结构
 
-40. 最近结算表列：原型 `Cycle / Amount / Round off / Settled at / Detail操作` vs 实现缺 Round off 列 + Detail 操作列、多了 Status 列。金额原型 `+9,876.54`(绿带正号) vs 实现带 Credits 后缀。
+40. 最近结算表列：原型 `Cycle / Amount / Round off / Settled at / Detail操作` vs 实现缺 Round off 列 + Detail 操作列、多了 Status 列。金额原型 `+9,876.54`(绿带正号) vs 当时实现带 `Credits` 后缀；当前单位规则必须重新读取目标仓库。
 
 ## 九、功能 bug（不只是样式）
 
@@ -80,7 +87,7 @@
 43. **el-select 在 flex 里宽度失控**：`w-32`(128px) 对 `el-select` **不生效** —— element-plus 内部样式让它在宽松 flex 容器里被撑大（实测 210px）、在紧凑 flex（CardBoxHead 的 `.right`）里被压扁（实测 44px，文字显示不全）。**修：用固定 `width + flex: 0 0 <px>` 锁定**（如 `.x { width:124px; flex:0 0 124px }`），别靠 Tailwind `w-*`。同类控件（多个时间选择器）抽一个共用 class 保证三处一致。
 44. **el-table 行太挤**：el-table 默认 cell padding `8px 0`，原型是 `12px` → 行高 41 vs 原型 49，整张表显拥挤。**修：`:deep(.el-table th.el-table__cell, td.el-table__cell){ padding: 12px 0 }`**。同时 el-table 内的 `el-button`(detail 操作) 默认 14px，原型 12px，要 `:deep(.el-table .el-button){ font-size:12px }`。
 44b. **el-table 在 dark 下行分隔线透明、表头背景突兀**：dark 模式下 el-table 默认行边框算出来是 `rgba(0,0,0,0)`（看不见行分隔），表头还带默认填充色 → 整张表"糊"、跟原型那种"通透+清晰行线"不一样。**修：`:deep(.el-table td.el-table__cell, th.el-table__cell){ border-bottom: 1px solid var(--ui-border-soft) }` + 表头 `background-color: transparent`**。（和 #44 同一类：element-plus 表格在 dark 下默认样式不对版，要 `:deep` 显式纠。）
-45. **lucide 图标变体选错**（已在六节，再强调）：`circle-check`（闭合圆+小勾，path `m9 12 2 2 4-4`）≠ `circle-check-big`（开口圆+外延勾，= 旧 `check-circle`，path `M21.801 10...`）。0.5x 版**没有** `check-circle.js`，原型的 `check-circle` 对应 npm 包里的 `circle-check-big`。**选图标必须去 `node_modules/.pnpm/lucide-vue-next@*/.../icons/<name>.js` 对 path，不能只看名字。**
+45. **历史图标变体选错**：`circle-check`（闭合圆+小勾）≠ `circle-check-big`（开口圆+外延勾）。不同版本/包的导出名会变化，必须比较当前实现渲染出的 `viewBox + SVG geometry signature + stroke`，不能只看名字。
 
 ## 十一、图表类元素的比对方法（EsChart / canvas 没法 dump computed style）
 
@@ -88,7 +95,7 @@
 
 ## 十二、装饰性渐变 vs 语义色的取舍
 
-47. 排名占比条、hero 金属数字、趋势柱这些**品牌视觉渐变**，原型用固定 hex（如占比条 `#7c66f7→#f5d976`）。这类**装饰性渐变可以硬编码对齐原型**，不必强行用 `--ui-*` token（token 在 dark 下会变体，反而和原型对不上）。判断标准：是"语义色"（成功/警告/主色，随主题变）还是"品牌装饰色"（固定视觉）—— 后者硬编码。注意区别于 §2-D 第 10 条（普通文字/背景仍必须用语义 token）。
+47. 排名占比条、hero 金属数字、趋势柱这些**品牌视觉渐变**，原型用固定 hex（如占比条 `#7c66f7→#f5d976`）。这类**装饰性渐变可以用 page-scoped 固定值对齐原型**，不必强行套用会随主题变体的 token。判断标准：是“语义色”（成功/警告/主色，随主题变）还是“品牌装饰色”（固定视觉）；普通文字、背景和状态色仍遵守目标仓库当前语义 token 与可访问性规则。
 
 ---
 
@@ -96,4 +103,4 @@
 
 - 前 4 轮我靠**肉眼看截图** review，只能抓到"配色不对、布局乱"这种粗差，抓不到字号/字重/圆角/字体/阴影/图标 path 这些精细差。
 - 第 5 轮起改用 **inspect computed style 数值比对**（原型 vs 实现逐元素读值），偏差才开始系统性清零。
-- **结论：第一天就用数值比对，这页 2-3 轮就能收敛。** 这正是本 skill §3 + 比对脚本的意义。
+- **结论：第一天就用数值比对，这页 2-3 轮就能收敛。** 这正是本 skill Gate B 与比对脚本的意义。

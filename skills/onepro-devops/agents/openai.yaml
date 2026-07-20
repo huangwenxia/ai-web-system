@@ -1,0 +1,4 @@
+interface:
+  display_name: "OnePro DevOps 研发交付"
+  short_description: "监督或全托管完成可审计的全栈研发交付闭环"
+  default_prompt: "Use $onepro-devops in fully managed mode to take one explicit goal through intake, code, tests, acceptance, and completion without repeated checkpoint questions."

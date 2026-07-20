@@ -111,16 +111,17 @@ def evaluate_structure(path: Path) -> tuple[list[Finding], list[Finding]]:
         )
 
     custom_scenario_hits = line_hits(
-        r"\b(scenario-bar|scenario-switcher|demo-switcher|mode-tabs|mode-switcher|state-tabs|review-mode-bar)\b",
-        text,
+        r"\b(scenario-bar|scenario-switcher|demo-switcher|mode-tabs|mode-switcher|state-tabs|state-machine-control|state-machine-trigger|state-machine-switcher|state-machine-select|review-mode-bar)\b",
+        main,
         original,
         flags=re.I,
+        line_offset=main_start_line - 1,
     )
     if custom_scenario_hits:
         failures.append(
             Finding(
                 "scenario.custom-ui",
-                "Custom scenario UI found. Use shell-sample Scenario Switcher; do not add a switcher in sidebar/main/page header.",
+                "Custom scenario/state UI found in <main>. Use the shell's bottom-right business-state trigger and popover.",
                 custom_scenario_hits,
             )
         )
@@ -281,7 +282,7 @@ def print_business_checklist(prompt_items: list[str]) -> None:
         "Table/form/detail fields match the source requirement; no invented business fields.",
         "Primary actions, destructive actions, and disabled states match the workflow.",
         "Status labels/badges represent real business states and use the expected severity.",
-        "Scenario states cover required review cases: normal, empty, loading, error/risk, permission/edge case when applicable.",
+        "Prototype state machine covers required review cases: normal, empty, loading, error/risk, permission/edge case when applicable.",
         "Mock numbers, units, dates, and currency are plausible for the domain.",
     ]:
         print(f"  [ ] {item}")

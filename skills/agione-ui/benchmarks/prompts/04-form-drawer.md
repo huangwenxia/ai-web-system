@@ -1,6 +1,6 @@
 # agione-ui Benchmark 04 · Form + Drawer
 
-请使用 `agione-ui` strict 模式生成一个单文件 HTML 原型。
+请使用 `agione-ui --direct` strict 模式生成一个单文件 HTML 原型。
 
 输出文件：`{OUTPUT_DIR}/04-form-drawer.html`
 

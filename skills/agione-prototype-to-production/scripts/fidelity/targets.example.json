@@ -1,240 +1,86 @@
 [
   {
-    "name": "operator-dashboard",
+    "name": "page-overview",
     "viewport": { "width": 1440, "height": 900 },
     "fullPage": true,
-    "settleMs": 1500,
+    "settleMs": 1800,
     "proto": {
-      "url": "http://localhost:8088/operator/operator-v3-premium.html",
-      "waitFor": ".ex-v3-hero__amount-num",
-      "mask": [
-        ".topnav",
-        ".sidebar",
-        ".balance-pill",
-        ".card-box__body"
-      ]
+      "url": "http://localhost:8088/prototype.html",
+      "waitFor": ".prototype-overview"
     },
     "impl": {
-      "url": "http://localhost:8030/billing/admin/tasks",
-      "waitFor": ".ex-v3-hero__amount-num",
-      "mask": [
-        ".header-bar",
-        ".aside-bar",
-        ".card-box__body"
-      ]
+      "url": "http://localhost:8030/app/overview",
+      "waitFor": ".production-overview",
+      "waitForGone": ".production-overview .el-loading-mask",
+      "requiresAuth": true,
+      "storageState": "auth.json"
     },
-    "mask": [
-      ".ex-v3-hero__amount-num",
-      ".ex-v3-hero__breakdown-value"
+    "states": [
+      {
+        "name": "en-light",
+        "impl": {
+          "state": {
+            "localStorage": {
+              "__REPLACE_LOCALE_STORAGE_KEY__": "en",
+              "__REPLACE_THEME_STORAGE_KEY__": "light"
+            },
+            "removeHtmlClasses": ["dark"]
+          }
+        }
+      },
+      {
+        "name": "zh-dark",
+        "proto": {
+          "setup": [
+            { "type": "click", "selector": "button[title='Language']" },
+            { "type": "click", "selector": "button[title='Toggle theme']" }
+          ]
+        },
+        "impl": {
+          "state": {
+            "localStorage": {
+              "__REPLACE_LOCALE_STORAGE_KEY__": "zh-cn",
+              "__REPLACE_THEME_STORAGE_KEY__": "dark"
+            },
+            "htmlClasses": ["dark"]
+          }
+        }
+      }
     ],
+    "mask": [".dynamic-amount", ".chart-canvas", ".table-body"],
     "probe": {
-      "heroLabel": ".ex-v3-hero__label",
-      "heroBalanceNum": ".ex-v3-hero__amount-num",
-      "heroBalanceUnit": ".ex-v3-hero__amount-unit",
-      "cyclePill": ".ex-v3-hero__days",
-      "breakdownLabel": ".ex-v3-hero__breakdown-label",
-      "breakdownValue": ".ex-v3-hero__breakdown-value",
-      "cardBox": ".card-box",
-      "cardTitle": ".card-box__title",
-      "platformValue": ".card-box .type-kpi",
-      "detailLink": ".card-box .el-button, .operator-card__link"
-    }
-  },
-  {
-    "name": "operator-monthly-overview",
-    "viewport": { "width": 1440, "height": 900 },
-    "fullPage": true,
-    "settleMs": 3500,
-    "proto": {
-      "url": "http://localhost:8088/operator/operator-v3-premium.html",
-      "click": "button.nav-item:has-text('Monthly Overview')",
-      "waitFor": "section.main-box:has-text('Monthly Task List')",
-      "mask": [
-        ".topnav",
-        ".sidebar",
-        ".balance-pill"
-      ]
+      "pageShell": {
+        "proto": ".prototype-overview",
+        "impl": ".production-overview",
+        "fields": ["fontFamily", "fontSize", "color", "backgroundColor", "padding", "left", "top", "width", "height"]
+      },
+      "pageTitle": {
+        "proto": ".prototype-overview .page-title",
+        "impl": ".production-overview .page-title",
+        "fields": ["fontFamily", "fontSize", "fontWeight", "lineHeight", "letterSpacing", "color", "margin", "left", "top", "width", "height"]
+      },
+      "metricCards": {
+        "proto": ".prototype-overview .metric-card",
+        "impl": ".production-overview .metric-card",
+        "all": true,
+        "fields": ["backgroundColor", "backgroundImage", "backgroundSize", "backgroundPosition", "boxShadow", "borderTop", "borderRadius", "padding", "left", "top", "width", "height"]
+      },
+      "metricIcons": {
+        "proto": ".prototype-overview .metric-card svg",
+        "impl": ".production-overview .metric-card svg",
+        "all": true,
+        "fields": ["left", "top", "width", "height", "svgViewBox", "svgSignature", "stroke", "strokeWidth", "fill"]
+      },
+      "tableHeader": {
+        "proto": ".prototype-overview thead th",
+        "impl": ".production-overview thead th",
+        "all": true,
+        "compareText": true,
+        "fields": ["text", "fontFamily", "fontSize", "fontWeight", "lineHeight", "color", "padding", "borderBottom", "left", "top", "width", "height"]
+      }
     },
-    "impl": {
-      "url": "http://localhost:8030/billing/admin/provider-settlements/monthly-overview",
-      "waitFor": ".operator-monthly-overview",
-      "waitForGone": ".operator-monthly-overview .el-loading-mask",
-      "mask": [
-        ".header-bar",
-        ".aside-bar"
-      ]
-    },
-    "mask": [
-      ".type-display-sm",
-      ".type-h2",
-      ".tag",
-      ".card-box__body",
-      ".operator-monthly-task-list",
-      ".omo-task-grid",
-      ".omo-table"
-    ],
-    "probe": {
-      "headerBox": "section.main-box:not([style*='display: none']) .header-box, .operator-monthly-overview .header-box",
-      "headerTitle": "section.main-box:not([style*='display: none']) .header-box__title, .operator-monthly-overview .header-box__title",
-      "cardBox": "section.main-box:not([style*='display: none']) .card-box, .operator-monthly-overview .card-box",
-      "kpiValue": "section.main-box:not([style*='display: none']) .card-box .type-display-sm, .operator-monthly-overview .card-box .type-display-sm",
-      "amountValue": "section.main-box:not([style*='display: none']) .type-h2, .operator-monthly-overview .operator-monthly-amounts .type-h2",
-      "taskCard": "section.main-box:not([style*='display: none']) .card-box:has(.card-box__title), .operator-monthly-overview .operator-monthly-task-card",
-      "taskTitle": "section.main-box:not([style*='display: none']) .card-box__title, .operator-monthly-overview .card-box__title"
-    }
-  },
-  {
-    "name": "operator-settlement-list",
-    "viewport": { "width": 1440, "height": 900 },
-    "fullPage": true,
-    "settleMs": 3500,
-    "proto": {
-      "url": "http://localhost:8088/operator/operator-v3-premium.html",
-      "click": "button.nav-item:has-text('Settlement List')",
-      "waitFor": "section.main-box:has-text('settlementId')",
-      "mask": [
-        ".topnav",
-        ".sidebar",
-        ".balance-pill"
-      ]
-    },
-    "impl": {
-      "url": "http://localhost:8030/billing/admin/provider-settlements",
-      "waitFor": ".operator-settlements-page",
-      "waitForGone": ".operator-settlements-page .el-loading-mask",
-      "mask": [
-        ".header-bar",
-        ".aside-bar"
-      ]
-    },
-    "mask": [
-      "section.main-box:not([style*='display: none']) .card-box",
-      ".operator-settlements-page .ops-card",
-      ".card-box__body",
-      ".ops-table",
-      ".el-table__body-wrapper",
-      ".ops-pagination"
-    ],
-    "probe": {
-      "headerBox": "section.main-box:not([style*='display: none']) .header-box, .operator-settlements-page .ops-page-head, .operator-settlements-page .header-box",
-      "headerTitle": "section.main-box:not([style*='display: none']) .header-box__title, .operator-settlements-page .ops-page-head__title, .operator-settlements-page .header-box__title",
-      "filterBox": "section.main-box:not([style*='display: none']) .filter-box, .operator-settlements-page .ops-filter, .operator-settlements-page .filter-box",
-      "cardBox": "section.main-box:not([style*='display: none']) .card-box, .operator-settlements-page .ops-card, .operator-settlements-page .card-box",
-      "tableHeader": "section.main-box:not([style*='display: none']) .type-table-header, .operator-settlements-page .ops-table th.el-table__cell, .operator-settlements-page .type-table-header"
-    }
-  },
-  {
-    "name": "operator-financial-accounts",
-    "viewport": { "width": 1440, "height": 900 },
-    "fullPage": true,
-    "settleMs": 3500,
-    "proto": {
-      "url": "http://localhost:8088/operator/operator-v3-premium.html",
-      "click": "button.nav-item:has-text('Financial Accounts')",
-      "waitFor": "section.main-box:has-text('OPERATOR_CLEARING')",
-      "mask": [
-        ".topnav",
-        ".sidebar",
-        ".balance-pill"
-      ]
-    },
-    "impl": {
-      "url": "http://localhost:8030/billing/admin/financial-accounts",
-      "waitFor": ".operator-financial-accounts",
-      "waitForGone": ".el-loading-mask",
-      "mask": [
-        ".header-bar",
-        ".aside-bar"
-      ]
-    },
-    "mask": [
-      ".type-display-sm",
-      ".type-kpi",
-      "section.main-box:not([style*='display: none']) .card-box:has(table)",
-      ".operator-financial-accounts .operator-accounts-transaction-card",
-      ".el-table__body-wrapper",
-      ".el-pagination"
-    ],
-    "probe": {
-      "headerBox": "section.main-box:not([style*='display: none']) .header-box, .operator-financial-accounts .header-box, .financial-accounts-page .header-box",
-      "headerTitle": "section.main-box:not([style*='display: none']) .header-box__title, .operator-financial-accounts .header-box__title, .financial-accounts-page .header-box__title",
-      "tabs": "section.main-box:not([style*='display: none']) .detail-tabs, .operator-financial-accounts .detail-tabs",
-      "cardBox": "section.main-box:not([style*='display: none']) .card-box, .operator-financial-accounts .card-box, .financial-accounts-page .rounded-lg",
-      "kpiValue": "section.main-box:not([style*='display: none']) .type-display-sm, .operator-financial-accounts .type-display-sm, .financial-accounts-page .text-2xl",
-      "tableHeader": "section.main-box:not([style*='display: none']) .type-table-header, .operator-financial-accounts .type-table-header, .financial-accounts-page th.el-table__cell"
-    }
-  },
-  {
-    "name": "operator-reconciliation",
-    "viewport": { "width": 1440, "height": 900 },
-    "fullPage": true,
-    "settleMs": 3500,
-    "proto": {
-      "url": "http://localhost:8088/operator/operator-v3-premium.html",
-      "click": "button.nav-item:has-text('Reconciliation')",
-      "waitFor": "section.main-box:has-text('Bilateral Check')",
-      "mask": [
-        ".topnav",
-        ".sidebar",
-        ".balance-pill"
-      ]
-    },
-    "impl": {
-      "url": "http://localhost:8030/billing/admin/reconciliation",
-      "waitFor": ".operator-reconciliation",
-      "waitForGone": ".operator-reconciliation .el-loading-mask",
-      "mask": [
-        ".header-bar",
-        ".aside-bar"
-      ]
-    },
-    "mask": [
-      "section.main-box:not([style*='display: none']) .card-box",
-      ".operator-reconciliation .operator-recon-card"
-    ],
-    "probe": {
-      "headerBox": "section.main-box:not([style*='display: none']) .header-box, .operator-reconciliation .header-box",
-      "headerTitle": "section.main-box:not([style*='display: none']) .header-box__title, .operator-reconciliation .header-box__title",
-      "tabs": "section.main-box:not([style*='display: none']) .detail-tabs, .operator-reconciliation .detail-tabs",
-      "alert": "section.main-box:not([style*='display: none']) .alert, .operator-reconciliation .alert",
-      "cardBox": "section.main-box:not([style*='display: none']) .card-box, .operator-reconciliation .card-box"
-    }
-  },
-  {
-    "name": "operator-adjustment-sop",
-    "viewport": { "width": 1440, "height": 900 },
-    "fullPage": true,
-    "settleMs": 3500,
-    "proto": {
-      "url": "http://localhost:8088/operator/operator-v3-premium.html",
-      "click": "button.nav-item:has-text('Adjustment SOP')",
-      "waitFor": "section.main-box:has-text('New Adjustment')",
-      "mask": [
-        ".topnav",
-        ".sidebar",
-        ".balance-pill"
-      ]
-    },
-    "impl": {
-      "url": "http://localhost:8030/billing/admin/account-adjustments",
-      "waitFor": ".operator-adjustment-sop",
-      "waitForGone": ".operator-adjustment-sop .el-loading-mask",
-      "mask": [
-        ".header-bar",
-        ".aside-bar"
-      ]
-    },
-    "mask": [
-      "section.main-box:not([style*='display: none']) .card-box:has(table)",
-      ".operator-adjustment-sop .operator-adjust-history-card"
-    ],
-    "probe": {
-      "headerBox": "section.main-box:not([style*='display: none']) .header-box, .operator-adjustment-sop .header-box",
-      "headerTitle": "section.main-box:not([style*='display: none']) .header-box__title, .operator-adjustment-sop .header-box__title",
-      "cardBox": "section.main-box:not([style*='display: none']) .card-box, .operator-adjustment-sop .card-box",
-      "cardTitle": "section.main-box:not([style*='display: none']) .card-box__title, .operator-adjustment-sop .card-box__title",
-      "radioPill": "section.main-box:not([style*='display: none']) .radio-pill, .operator-adjustment-sop .radio-pill",
-      "alert": "section.main-box:not([style*='display: none']) .alert, .operator-adjustment-sop .alert"
+    "gate": {
+      "failOnConsoleError": true
     }
   }
 ]

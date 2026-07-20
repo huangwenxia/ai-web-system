@@ -22,7 +22,7 @@
 
 <style>
 /* ────────────────────────────────────────────
- * Design DNA — 完整 token（来自 SKILL.md §2.1）
+ * Design DNA — 完整 token（来自 references/base-spec.md §2）
  * ──────────────────────────────────────────── */
 :root {
   --ui-topnav-bg:          #1a1025;
@@ -305,7 +305,7 @@ html, body {
 .type-demo { color: var(--ui-text-primary); }
 
 /* ────────────────────────────────────────────
- * 锁定层组件 CSS（来自 SKILL.md §5.0.1 / §5.0.3 / §5.0.5）
+ * 锁定层组件 CSS（API 见 design-system/api-cheatsheet.md）
  * ──────────────────────────────────────────── */
 
 /* ── Badge（基础） ── */
@@ -374,7 +374,6 @@ html, body {
 .header-box__top { padding: var(--ui-space-lg) 28px; display: flex; justify-content: space-between; align-items: flex-start; gap: var(--ui-space-base); }
 .header-box__title-wrap { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .header-box__title { font-family: var(--ui-font-heading); font-size: 20px; font-weight: 700; line-height: 1.2; color: var(--ui-text-primary); }
-.header-box__subtitle { font-size: 13px; color: var(--ui-text-muted); }
 .header-box__right { display: flex; align-items: center; gap: var(--ui-space-sm); flex-shrink: 0; }
 .header-box__content { padding: var(--ui-space-base) 28px; border-top: 1px solid var(--ui-border-soft); }
 
@@ -519,7 +518,6 @@ html, body {
 .page-header__top { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--ui-space-base); }
 .page-header__title-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .page-header__title { font-family: var(--ui-font-heading); font-size: 20px; font-weight: 700; color: var(--ui-text-primary); line-height: 1.2; display: flex; align-items: center; gap: var(--ui-space-sm); }
-.page-header__subtitle { font-size: 13px; color: var(--ui-text-muted); line-height: 1.6; }
 .page-header__actions { display: flex; align-items: center; gap: var(--ui-space-sm); flex-shrink: 0; }
 
 /* ── SectionTitle（Form 分组标题） ── */
@@ -790,8 +788,8 @@ html, body {
 .ease-compare__ball--spring   { background: var(--ui-color-success);        animation: ease-compare-roll 2.4s var(--ui-ease-spring) infinite alternate; }
 
 /* ============================================================
- * Form Modern · 生产标准（已选定方案 B · 入 SKILL）
- * 所有表单必须用 .form-modern 类包裹；SKILL.md §1.4 规则 9 强制
+ * Form Modern · 生产标准（已选定方案 B · Strict L2）
+ * 所有表单必须用 .form-modern 类包裹；见 references/components-and-forms.md
  * ============================================================ */
 .form-modern .el-form { display: flex; flex-direction: column; gap: var(--ui-space-md); }
 .form-modern .el-form-item { display: block !important; margin-bottom: 24px; }
@@ -843,9 +841,9 @@ html, body {
 .form-actions { display: flex; justify-content: flex-end; gap: var(--ui-space-sm); padding-top: var(--ui-space-md); margin-top: var(--ui-space-md); border-top: 1px solid var(--ui-border-soft); }
 
 /* ============================================================
- * I18nField · 最终决定版（生产组件，已选定 · 入 SKILL）
+ * I18nField · 最终决定版（生产组件，已选定 · Strict L2）
  * 无旗帜，仅圆点状态：绿✓ 已填 / 灰○ 未填 / 红⚠ 必填未填（脉动）
- * 这是 SKILL.md L2 推荐组件 <I18nField> 的视觉来源
+ * 这是 strict L2 推荐组件 <I18nField> 的视觉来源
  * ============================================================ */
 .i18n-field { display: flex; flex-direction: column; gap: 6px; }
 .i18n-field__tabs { display: inline-flex; gap: 2px; padding: 3px; background: var(--ui-accent); border-radius: var(--ui-radius-md); align-self: flex-start; max-width: 100%; flex-wrap: wrap; }
@@ -860,7 +858,7 @@ html, body {
 .i18n-field__progress--has-missing [data-lucide] { color: var(--ui-color-destructive); }
 
 /* ────────────────────────────────────────────
- * Radio · 4 种 variant 生产组件（已入 SKILL.md L2）
+ * Radio · 4 种 variant 生产组件（Strict L2）
  * .radio-circle (默认 L1)  · .radio-pill / .radio-segmented / .radio-card (L2)
  * 按数据特性选 variant，详见 §F2c 选型规则
  * ──────────────────────────────────────────── */
@@ -956,7 +954,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
         <div class="nav-meta">
           <span>v1.0</span>
           <span style="opacity:.5">·</span>
-          <span>基于 <strong>SKILL.md v3.7</strong></span>
+          <span>基于 <strong>AGIOne UI Base Spec</strong></span>
         </div>
       </div>
       <div class="topnav-right">
@@ -1111,7 +1109,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
             <span class="ds-hero-eyebrow"><i data-lucide="sparkles"></i>AGIOne Design System · v1.0</span>
             <h1 class="ds-hero-title">面向同事的可视化原型组件库 + 选型规范</h1>
             <p class="ds-hero-desc">
-              这份文档把 <code class="token">SKILL.md v3.7</code> 里的设计 DNA、组件契约和真实业务原型沉淀的视觉模式，
+              这份文档把共享 Base Spec、strict 组件契约和真实业务原型沉淀的视觉模式，
               整合成一个可视化、可复制的单文件参考。每个 token 都有色块/尺寸样例，每个组件都有 Live Preview 和 HTML 代码块——
               你想看什么、抄什么、贴到原型里，三秒搞定。
             </p>
@@ -1162,7 +1160,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
             <div class="alert alert-info">
               <i data-lucide="info" class="alert-icon"></i>
               <div class="alert-body">
-                <p class="alert-title">三个最重要的红线（来自 SKILL.md）</p>
+                <p class="alert-title">三个最重要的 Base Spec 红线</p>
                 <p class="alert-desc">
                   ① Chrome（TopBar/Sidebar）必须从 <code class="token">agione-console-shell-sample-v1.html</code> 逐字复制；<br/>
                   ② 颜色 / 间距 / 圆角 / 阴影 / 动效 / 字族 / 图标尺寸 / z-index 必须用 <code class="token">var(--*)</code>，禁止硬编码；<br/>
@@ -1324,14 +1322,14 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
               </div>
             </div>
 
-            <!-- ✅ Type Utility Class · 强制用法（已入 SKILL.md §1.4 规则 11） -->
+            <!-- ✅ Type Utility Class · 强制用法（见 references/base-spec.md §3） -->
             <div class="card-box" style="margin-top: var(--ui-space-xl); border-color: var(--ui-color-success); box-shadow: 0 0 0 3px var(--ui-color-success-subtle);">
               <div class="card-box__head" style="background: var(--ui-color-success-subtle);">
                 <div class="card-box__title" style="display: flex; align-items: center; gap: 8px; color: var(--ui-color-success);">
                   <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
                   ✅ Type Utility Class · 8 个 .type-* class（强制用，禁止手写 font-size/weight/line-height）
                 </div>
-                <span class="badge badge-green">L1 · 入 SKILL.md</span>
+                <span class="badge badge-green">L1 · Base Spec</span>
               </div>
               <div class="card-box__body" style="padding: var(--ui-space-xl);">
                 <p style="font-size: 13px; color: var(--ui-text-secondary); line-height: 1.7; margin-bottom: var(--ui-space-base);">
@@ -1380,7 +1378,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                 </div>
 
                 <div class="ds-block-when" style="margin-top: var(--ui-space-base); background: var(--ui-color-warning-subtle); border-left-color: var(--ui-color-warning);">
-                  <strong>关键约束（SKILL.md §1.4 规则 11）</strong>
+                  <strong>关键约束（references/base-spec.md §3）</strong>
                   ① <strong>禁止手写</strong> <code class="token">font-size / font-weight / line-height / font-family</code>，必须用 <code class="token">.type-*</code> class<br>
                   ② <strong>颜色与字型解耦</strong>：颜色用 <code class="token">var(--*)</code> token 单独设置（如 <code class="token">color: var(--ui-text-muted)</code>），让 caption 也能用 foreground 色，灵活搭配<br>
                   ③ <strong>极少数例外</strong>（如 KPI 巨数字 / Hero 营销字）：先升级 §2.2 字型表，加新 <code class="token">.type-*</code> class，禁止现场写<br>
@@ -2626,7 +2624,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                     <div class="header-box__top">
                       <div class="header-box__title-wrap">
                         <h1 class="header-box__title">License 管理</h1>
-                        <p class="header-box__subtitle">管理租户的 License 套餐、配额和有效期</p>
                       </div>
                       <div class="header-box__right">
                         <el-button>导出</el-button>
@@ -2659,7 +2656,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
   &lt;div class="header-box__top"&gt;
     &lt;div class="header-box__title-wrap"&gt;
       &lt;h1 class="header-box__title"&gt;License 管理&lt;/h1&gt;
-      &lt;p class="header-box__subtitle"&gt;管理租户的 License 套餐、配额和有效期&lt;/p&gt;
     &lt;/div&gt;
     &lt;div class="header-box__right"&gt;
       &lt;el-button&gt;导出&lt;/el-button&gt;
@@ -3317,8 +3313,8 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                   <div class="alert alert-info">
                     <i data-lucide="info" class="alert-icon"></i>
                     <div class="alert-body">
-                      <p class="alert-title">这个原型基于 SKILL.md v3.7 生成</p>
-                      <p class="alert-desc">需要调整 token 时请先修改 SKILL.md，再同步到原型，避免 chrome 漂移。</p>
+                      <p class="alert-title">维护窗口已安排</p>
+                      <p class="alert-desc">维护期间部分操作可能短暂不可用，请保存当前工作。</p>
                     </div>
                   </div>
                   <div class="alert alert-success">
@@ -3529,7 +3525,7 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                 <div class="ds-block-name">
                   <h3>Standard List Page</h3>
                   <span class="ds-block-tag layout">pattern</span>
-                  <span class="ds-block-tag ver">SKILL §5.0.2</span>
+                  <span class="ds-block-tag ver">Strict L0</span>
                 </div>
                 <p class="ds-block-desc">90% 的列表页可以直接套用这个模板，只改字段、列定义、Mock 数据。</p>
                 <div class="ds-block-when">
@@ -3548,7 +3544,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                       <div class="header-box__top">
                         <div class="header-box__title-wrap">
                           <h1 class="header-box__title" style="font-size: 22px;">License 管理</h1>
-                          <p class="header-box__subtitle">12 个套餐 · 8 个 Active · 2 个即将到期</p>
                         </div>
                         <div class="header-box__right">
                           <el-button size="small">导出</el-button>
@@ -3613,7 +3608,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
     &lt;div class="header-box__top"&gt;
       &lt;div class="header-box__title-wrap"&gt;
         &lt;h1 class="header-box__title"&gt;{{ pageTitle }}&lt;/h1&gt;
-        &lt;p class="header-box__subtitle"&gt;{{ pageSubtitle }}&lt;/p&gt;
       &lt;/div&gt;
       &lt;div class="header-box__right"&gt;
         &lt;el-button&gt;导出&lt;/el-button&gt;
@@ -4207,7 +4201,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                   <tbody>
                     <tr><td><code>.page-header__breadcrumb</code></td><td>面包屑（可选）</td></tr>
                     <tr><td><code>.page-header__title</code></td><td>标题区，可内嵌状态 badge</td></tr>
-                    <tr><td><code>.page-header__subtitle</code></td><td>副标题</td></tr>
                     <tr><td><code>.page-header__actions</code></td><td>右侧操作槽</td></tr>
                   </tbody>
                 </table>
@@ -4220,7 +4213,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                     <div class="page-header__top">
                       <div class="page-header__title-wrap">
                         <h1 class="page-header__title">qwen2.5-7b-finetune <span class="status-badge badge-green"><span class="status-badge__dot"></span><span>Deployed</span></span></h1>
-                        <p class="page-header__subtitle">7B 参数 · Conversation · 由 deepseek-r1-distill-qwen-7b 微调而来</p>
                       </div>
                       <div class="page-header__actions">
                         <el-button size="small"><i data-lucide="pencil" style="width:13px;height:13px;margin-right:4px;"></i>编辑</el-button>
@@ -4246,7 +4238,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
           &lt;span class="status-badge__dot"&gt;&lt;/span&gt;&lt;span&gt;Deployed&lt;/span&gt;
         &lt;/span&gt;
       &lt;/h1&gt;
-      &lt;p class="page-header__subtitle"&gt;7B 参数 · Conversation&lt;/p&gt;
     &lt;/div&gt;
     &lt;div class="page-header__actions"&gt;
       &lt;el-button&gt;编辑&lt;/el-button&gt;
@@ -4542,7 +4533,6 @@ code.token { font-family: var(--ui-font-mono); font-size: 12px; padding: 2px 8px
                         <div style="display:flex;align-items:center;gap:var(--ui-space-sm);"><button class="btn-back"><i data-lucide="arrow-left"></i></button>
                           <div class="page-header__title-wrap">
                             <h1 class="page-header__title" style="font-size:20px;">qwen2.5-7b-finetune <span class="status-badge badge-green"><span class="status-badge__dot"></span><span>Deployed</span></span></h1>
-                            <p class="page-header__subtitle" style="font-family:var(--ui-font-mono);font-size:11px;">model-7f3a92e1 · v1.2 · 2026-04-12 部署</p>
                           </div>
                         </div>
                         <div class="page-header__actions"><el-button size="small">编辑</el-button><el-button type="primary" size="small">部署新版本</el-button></div>
@@ -5360,7 +5350,7 @@ try {
                ============================================================ -->
           <section id="form-modern" class="ds-section">
             <div class="ds-section-head">
-              <div class="ds-section-eyebrow">Form · v3.10 · 已入 SKILL.md L2</div>
+              <div class="ds-section-eyebrow">Form · v3.10 · Strict L2</div>
               <h2 class="ds-section-title">Form Modern · 生产标准（已选定 B）</h2>
               <p class="ds-section-desc">
                 <strong>已选定方案 B（中度现代化）作为生产标准</strong>。所有表单都<strong>必须</strong>用 <code class="token">&lt;div class="form-modern"&gt;</code> 包裹（含 <code class="token">.form-group</code> 卡片化分组 + <code class="token">.form-helper</code> 字段描述 + <code class="token">.form-actions</code> 提交区），禁止使用 EP 默认 label 右对齐的旧风格。
@@ -5374,7 +5364,7 @@ try {
                   <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
                   已选定 · B 中度现代化（label 顶部 + helper + Form Group + ring focus）
                 </div>
-                <span class="badge badge-green">L2 · 入 SKILL.md</span>
+                <span class="badge badge-green">L2 · Strict</span>
               </div>
               <div class="card-box__body" style="padding: var(--ui-space-xl);">
                 <div class="form-modern" style="max-width: 640px;">
@@ -5509,7 +5499,7 @@ try {
                ============================================================ -->
           <section id="i18n-field" class="ds-section">
             <div class="ds-section-head">
-              <div class="ds-section-eyebrow">Form · v3.10 · 已入 SKILL.md L2</div>
+              <div class="ds-section-eyebrow">Form · v3.10 · Strict L2</div>
               <h2 class="ds-section-title">i18n 多语言字段 · <code>&lt;I18nField&gt;</code></h2>
               <p class="ds-section-desc">
                 <strong>已选定方案 A（无旗帜版）作为生产组件</strong>。所有表单里需要支持多语言填写的字段（套餐名 / 模型介绍 / 政策标题等），<strong>必须</strong>使用 <code class="token">&lt;I18nField&gt;</code> 组件，禁止自己拼 input 数组或 tab 切换。
@@ -5523,7 +5513,7 @@ try {
                   <i data-lucide="check-circle-2" style="width: 18px; height: 18px;"></i>
                   已选定 · 这就是要用的版本（无旗帜，圆点状态指示）
                 </div>
-                <span class="badge badge-green">L2 · 入 SKILL.md</span>
+                <span class="badge badge-green">L2 · Strict</span>
               </div>
               <div class="card-box__body" style="padding: var(--ui-space-xl);">
                 <div style="font-size: 13px; font-weight: 600; color: var(--ui-text-primary); margin-bottom: 4px;">套餐名称</div>
@@ -5606,7 +5596,7 @@ try {
                ============================================================ -->
           <section id="radio-modern" class="ds-section">
             <div class="ds-section-head">
-              <div class="ds-section-eyebrow">Form · v3.10 · 已入 SKILL.md L2</div>
+              <div class="ds-section-eyebrow">Form · v3.10 · Strict L2</div>
               <h2 class="ds-section-title">Radio · 4 种 variant 按场景选</h2>
               <p class="ds-section-desc">
                 生产组件库提供 4 种 Radio variant，<strong>按数据特性选</strong>：默认用 <code class="token">.radio-circle</code>（A 圆环 · L1）；横排紧凑用 <code class="token">.radio-pill</code>（B）；2-4 互斥状态用 <code class="token">.radio-segmented</code>（C）；含描述的关键决策用 <code class="token">.radio-card</code>（D）。下面用同一组「套餐选项」mock 数据展示 4 版手感，方便选型对照。
@@ -6334,7 +6324,7 @@ try {
               <span class="nav-brand-mark" style="width: 18px; height: 18px; font-size: 10px;">A1</span>
               <span>AGIOne Design System v1.0</span>
               <span style="opacity: .4">·</span>
-              <span>基于 SKILL.md v3.7 + 真实业务原型沉淀</span>
+              <span>基于 AGIOne UI Base Spec + 真实业务原型沉淀</span>
               <span style="opacity: .4">·</span>
               <span>2026-05-09</span>
             </div>

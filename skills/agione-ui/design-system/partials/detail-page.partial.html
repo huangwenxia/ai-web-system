@@ -44,14 +44,14 @@
   </PageHeader>
 
   <!-- MetricsStrip：5-cell 等分指标条（数据型详情页推荐；配置类详情页可删除此段） -->
-  <MetricsStrip :items="detailMetrics" />
+  <MetricsStrip :items="detailMetrics"></MetricsStrip>
 
   <!-- Tabs：切换详情子模块 -->
   <Tabs
     :options="detailTabs"
     v-model="detailTab"
     variant="underline"
-  />
+  ></Tabs>
 
   <!-- 内容滚动区：每个 Tab 一个 v-show 区块；每块内用 DetailSection 分组 -->
   <el-scrollbar>
@@ -60,7 +60,7 @@
       <!-- Tab 1：概览 -->
       <section v-show="detailTab === 'overview'" class="flex-col" style="gap: var(--ui-space-xl);">
         <DetailSection :title="t.sectionMetaTitle">
-          <KvCard :items="detailMeta" />
+          <KvCard :items="detailMeta"></KvCard>
         </DetailSection>
 
         <DetailSection :title="t.sectionAboutTitle">

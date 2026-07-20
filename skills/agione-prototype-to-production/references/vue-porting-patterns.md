@@ -2,13 +2,13 @@
 
 > **通用 vs 举例**：archetype 判断、骨架结构、表格三选一是**通用模式**；类名（`.ps-`/`.pc-`/`.operator-<page>`）是举例，按你的页面命名。
 
-§2 的「表格用 CurdTable、弹窗用 FormDialog」是面向**标准 CRUD 列表页**的。但 agione-ui 原型里很多是**仪表盘/诊断型页面**（operator dashboard、月度总览、对账中心、调账 SOP…），它们的视觉权威是原型的 bespoke 区块组件，不是 CurdTable。先判断 archetype 再选骨架。
+“优先共享表格/弹窗组件”只适用于**标准 CRUD 列表页**。agione-ui 原型里也有大量**仪表盘/诊断型页面**（operator dashboard、月度总览、对账中心、调账 SOP 等），它们的视觉权威是原型的 bespoke 区块组件，不是某个表格组件的默认样式。先判断 archetype 再选骨架。
 
 ## A. CRUD 列表页 → 共享四件套
-有筛选 + 分页 + 增删改的标准列表。用 `CurdTable` / `FilterBox` / `FormDialog` / `useTableHook`。范本：`apps/financial/src/views/index/customers/top-ups/orders/`。（细节见 §2）
+有筛选 + 分页 + 增删改的标准列表。优先使用目标仓库当前推荐的 `CurdTable` / `FilterBox` / `FormDialog` / table hook。设置 `APP=financial`（按任务替换），再用 `rg --files "apps/$APP/src/views"` 找同 app 的成熟范本，不写死历史路径。
 
 ## B. 仪表盘/诊断页 → 复刻原型 bespoke 区块
-hero/KPI/卡片/诊断表/空态为主，**1:1 复刻原型的 section 结构**。这类页面 operator 6 页全是。
+hero/KPI/卡片/诊断表/空态为主，按 Gate B 复刻原型的 section 结构；历史 operator 六页案例都属于这一类。
 
 ### 页面骨架
 ```vue
@@ -54,7 +54,7 @@ hero/KPI/卡片/诊断表/空态为主，**1:1 复刻原型的 section 结构**�
   <CheckCircleIcon class="empty-state__icon" /><p class="empty-state__title">No pending items</p>
 </div>
 ```
-> CardBox 标题用 `.card-box__title` / 插槽，别用 `:title` prop（§2.8）。
+> CardBox 的 title prop/slot 以目标仓库当前组件源码为准；若默认标题结构无法匹配原型，使用组件公开 slot 和 page-scoped 样式调整，不猜历史 API。
 
 ### 表格三选一（别一刀切"禁 el-table"）
 | 场景 | 用什么 |
@@ -68,10 +68,10 @@ bespoke 表 dark 下补：
 .operator-<page>-table th.type-table-header { padding: 12px 0; }
 .operator-<page>-table td { padding: 12px 0; border-bottom: 1px solid var(--ui-border-soft); }
 ```
-> 生产页可以比原型 mock **多出查真实数据所必需的筛选**（如 settlement-list 的 Provider / 账期筛选）——这是生产功能刚需，不是 §0 说的"擅自加装饰元素"。判据：**查真实数据所必需 = 合法;纯装饰/冗余工具栏 = 砍**。
+> 生产页可以比原型 mock **多出查真实数据所必需的筛选**（如 settlement-list 的 Provider / 账期筛选）——这是 Gate A 的生产功能刚需。判据：**查真实数据所必需 = 合法；纯装饰/冗余工具栏 = 不增加**。
 
-## 真实数据纪律（与 §0 一致）
-- 行数据是 computed，来自**真实 API**（保留 AI 调的接口契约，核对参数 §2.14）。
+## 真实数据纪律（Gate A）
+- 行数据来自**真实 API**；按 SKILL Gate A 核对生成类型、后端语义和每个参数。
 - 无数据走 empty-state，**不造 mock**。
-- 真实首屏行数和原型静态行数不同会拉高 mismatch：把真实查询首屏 `pageSize` 收敛到原型行数（如原型 3 行就 `pageSize:3`），让遮罩后的表格高度对齐。详见 `troubleshooting.md`。
-- icon 用 `lucide-vue-next` **静态具名导入**（`import { CopyIcon } from "lucide-vue-next"`）；动态 import 易触发 Vite optimize 504，见 `troubleshooting.md`。
+- 真实首屏行数和原型静态行数不同会拉高 mismatch：对称 mask 动态表体，并分别验证表头、列结构、行样式、空态和分页。**不要只为降低 mismatch 擅改生产 pageSize**；只有产品口径本来就要求该首屏行数时才调整。
+- icon 使用目标仓库当前 `AGENTS.md` 指定的包并静态具名导入。不要从历史页面或本 skill 的旧案例推断包名；核对方法见 `project-mamba-adaptation.md`。

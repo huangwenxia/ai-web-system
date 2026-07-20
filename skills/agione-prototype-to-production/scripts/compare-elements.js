@@ -9,12 +9,12 @@
  *      必须读 computed style 数值。这是把"还原原型"从 8 轮压到 2-3 轮的关键。
  *
  * 三个函数：
- *   dumpTextLeaves(rootSelector)  —— 遍历容器内所有文字叶子：文案 + 字体/字号/字重/颜色
+ *   dumpTextLeaves(rootSelector)  —— 遍历容器内所有文字叶子：文案 + 完整排版/颜色
  *                                    （一次性抓出 文案差异 + 字体混排是否正确）
  *   dumpBoxModel(selectorList)    —— 一组元素的 shadow/border/radius/padding/margin/gap/宽高
  *                                    （抓 阴影、圆角、间距、卡片尺寸）
- *   dumpIcons(rootSelector)       —— 容器内每个 svg 的 尺寸/color/path/相邻文案
- *                                    （抓 图标尺寸、语义色、变体差异）
+ *   dumpIcons(rootSelector)       —— 容器内每个 svg 的 尺寸/stroke/fill/完整几何签名
+ *                                    （抓 图标尺寸、语义色、stroke 和变体差异）
  *
  * 注意：实现页常是 dark 模式 + 需登录；原型页是静态 HTML、可能要先切语言态。
  *      跑之前先确认两边在同一主题/语言下，否则颜色对不上是正常的。
@@ -32,7 +32,17 @@ function dumpTextLeaves(rootSelector) {
         const t = node.textContent.trim()
         if (t) {
           const cs = getComputedStyle(el)
-          out.push({ text: t.slice(0, 40), font: ff(cs), size: cs.fontSize, weight: cs.fontWeight, color: cs.color })
+          out.push({
+            text: t.slice(0, 80),
+            font: ff(cs),
+            size: cs.fontSize,
+            weight: cs.fontWeight,
+            lineHeight: cs.lineHeight,
+            letterSpacing: cs.letterSpacing,
+            textTransform: cs.textTransform,
+            whiteSpace: cs.whiteSpace,
+            color: cs.color,
+          })
         }
       } else if (node.nodeType === 1) {
         walk(node)
@@ -50,18 +60,63 @@ function dumpBoxModel(selectorList) {
     if (!el) return { selector: sel, error: "not found" }
     const cs = getComputedStyle(el)
     const r = el.getBoundingClientRect()
+    const pseudo = (name) => {
+      const style = getComputedStyle(el, name)
+      return {
+        content: style.content,
+        background: style.background,
+        border: style.border,
+        boxShadow: style.boxShadow,
+        width: style.width,
+        height: style.height,
+      }
+    }
     return {
       selector: sel,
-      w: Math.round(r.width),
-      h: Math.round(r.height),
+      left: Math.round(r.left * 100) / 100,
+      top: Math.round(r.top * 100) / 100,
+      w: Math.round(r.width * 100) / 100,
+      h: Math.round(r.height * 100) / 100,
       boxShadow: cs.boxShadow === "none" ? "none" : cs.boxShadow,
-      border: `${cs.borderTopWidth} ${cs.borderTopStyle} ${cs.borderTopColor}`,
+      borderTop: cs.borderTop,
+      borderRight: cs.borderRight,
+      borderBottom: cs.borderBottom,
+      borderLeft: cs.borderLeft,
       radius: cs.borderRadius,
       padding: cs.padding,
       margin: cs.margin,
       gap: cs.gap !== "normal" ? cs.gap : undefined,
+      rowGap: cs.rowGap,
+      columnGap: cs.columnGap,
       bg: cs.backgroundColor,
       bgImage: cs.backgroundImage === "none" ? "none" : cs.backgroundImage,
+      bgSize: cs.backgroundSize,
+      bgPosition: cs.backgroundPosition,
+      bgRepeat: cs.backgroundRepeat,
+      opacity: cs.opacity,
+      filter: cs.filter,
+      backdropFilter: cs.backdropFilter,
+      display: cs.display,
+      position: cs.position,
+      alignItems: cs.alignItems,
+      justifyContent: cs.justifyContent,
+      flexDirection: cs.flexDirection,
+      gridTemplateColumns: cs.gridTemplateColumns,
+      overflow: cs.overflow,
+      transform: cs.transform,
+      transitionProperty: cs.transitionProperty,
+      transitionDuration: cs.transitionDuration,
+      transitionDelay: cs.transitionDelay,
+      transitionTimingFunction: cs.transitionTimingFunction,
+      animationName: cs.animationName,
+      animationDuration: cs.animationDuration,
+      animationDelay: cs.animationDelay,
+      animationTimingFunction: cs.animationTimingFunction,
+      animationIterationCount: cs.animationIterationCount,
+      animationDirection: cs.animationDirection,
+      animationFillMode: cs.animationFillMode,
+      before: pseudo("::before"),
+      after: pseudo("::after"),
     }
   }
   return { url: location.href, boxes: (Array.isArray(selectorList) ? selectorList : [selectorList]).map(box) }
@@ -71,17 +126,30 @@ function dumpBoxModel(selectorList) {
 function dumpIcons(rootSelector) {
   const root = document.querySelector(rootSelector)
   if (!root) return { error: "not found: " + rootSelector, url: location.href }
+  const shapeAttrs = ["d", "x", "y", "x1", "y1", "x2", "y2", "cx", "cy", "r", "rx", "ry", "width", "height", "points"]
   const icons = [...root.querySelectorAll("svg")].map((svg) => {
     const cs = getComputedStyle(svg)
-    // 原型 lucide 是 data-lucide 名；实现是 inline svg，靠 path 区分变体
-    const firstPath = svg.querySelector("path")?.getAttribute("d") || ""
+    const signature = [...svg.querySelectorAll("path,circle,line,polyline,polygon,rect,ellipse")]
+      .map((shape) => {
+        const attrs = shapeAttrs
+          .filter((name) => shape.hasAttribute(name))
+          .map((name) => `${name}=${shape.getAttribute(name)}`)
+          .join(",")
+        const shapeStyle = getComputedStyle(shape)
+        return `${shape.tagName.toLowerCase()}(${attrs}){stroke=${shapeStyle.stroke},strokeWidth=${shapeStyle.strokeWidth},fill=${shapeStyle.fill}}`
+      })
+      .join("|")
     return {
       lucide: svg.getAttribute("data-lucide") || undefined,
+      viewBox: svg.getAttribute("viewBox") || "",
       w: cs.width,
       h: cs.height,
       color: cs.color,
-      pathStart: firstPath.slice(0, 40),
-      near: (svg.parentElement?.textContent || "").trim().slice(0, 16),
+      stroke: cs.stroke,
+      strokeWidth: cs.strokeWidth,
+      fill: cs.fill,
+      signature,
+      near: (svg.parentElement?.textContent || "").trim().slice(0, 32),
     }
   })
   return { url: location.href, count: icons.length, icons }

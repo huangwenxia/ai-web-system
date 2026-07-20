@@ -54,10 +54,10 @@
         :page-size="listPageSize"
       >
         <template #status="{ row }">
-          <StatusBadge :status="row.status" />
+          <StatusBadge :status="row.status"></StatusBadge>
         </template>
         <template #operations="{ row }">
-          <TableActions :actions="rowActions(row)" />
+          <TableActions :actions="rowActions(row)"></TableActions>
         </template>
       </DataTable>
 

@@ -85,7 +85,7 @@ Layer 5: Card（.ds-ov-card / .ds-stat-card / .ds-chart-card / .ds-detail-rows�
 | 默认克制 ② 外壳沿边 ≤ 1 | `.ds-section-header` border-bottom 豁免；其余卡守 ≤ 1 |
 | Chrome 字号豁免 | `.ds-*` 前缀整族豁免（audit-typography 已实现）|
 | Layer A .type-* 12 个 | `.type-hero-data` 是第 12 个 |
-| 数据表 ⊂ 卡片（如大盘含明细表）| 走 AI-USAGE §②.1「双线重合防治」——首选 `.data-table`/`<DataTable>`；手搓 `<table>` 必须卡片 `overflow:hidden` + 表格 `border:none` + `border-collapse:collapse` |
+| 数据表 ⊂ 卡片（如大盘含明细表）| 守 `references/base-spec.md` §7 单边界规则——首选 `.data-table`/`<DataTable>`；手搓 `<table>` 必须卡片 `overflow:hidden` + 表格 `border:none` + `border-collapse:collapse` |
 
 ## §11.6 Chart Family 5 模板
 

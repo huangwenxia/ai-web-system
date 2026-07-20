@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "workflow": "semi-automatic",
+  "requiredCoverage": [
+    "crud-list",
+    "dashboard-hero",
+    "detail-dialog",
+    "step-form",
+    "incremental-edit",
+    "state-matrix",
+    "real-data-contract"
+  ],
+  "cases": [
+    {
+      "id": "01-crud-list",
+      "prompt": "prompts/01-crud-list.md",
+      "coverage": ["crud-list", "state-matrix", "real-data-contract"],
+      "assertions": ["authority-map", "typed-api", "no-mock", "project-components", "full-style-probes", "runtime-handoff"]
+    },
+    {
+      "id": "02-dashboard-hero",
+      "prompt": "prompts/02-dashboard-hero.md",
+      "coverage": ["dashboard-hero", "state-matrix", "real-data-contract"],
+      "assertions": ["gradient-shadow", "font-mix", "svg-signature", "masked-region-review", "motion-disclosure"]
+    },
+    {
+      "id": "03-detail-dialog",
+      "prompt": "prompts/03-detail-dialog.md",
+      "coverage": ["detail-dialog", "state-matrix", "real-data-contract"],
+      "assertions": ["dialog-state", "focus-state", "long-content", "real-detail-data", "no-unexplained-elements"]
+    },
+    {
+      "id": "04-step-form",
+      "prompt": "prompts/04-step-form.md",
+      "coverage": ["step-form", "state-matrix", "real-data-contract"],
+      "assertions": ["step-state", "validation-state", "api-parameter-contract", "disabled-loading", "no-fake-preview"]
+    },
+    {
+      "id": "05-incremental-edit",
+      "prompt": "prompts/05-incremental-edit.md",
+      "coverage": ["incremental-edit", "state-matrix"],
+      "assertions": ["preserve-existing-behavior", "preserve-i18n", "preserve-api", "surgical-diff", "no-visual-regression"]
+    }
+  ]
+}

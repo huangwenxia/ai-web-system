@@ -1,60 +1,136 @@
-# targets.json 配置详解（自动化保真闭环）
+# Fidelity target 配置
 
-> **通用 vs 举例**：字段定义、mask/probe 写法、跨角色 auth 机制都是**通用**的；文中的 operator targets、`capture-fast.mjs` 角色（创作者/运营…）、nav 选择器、`:8030`/`:8088` URL 都是 **AGIOne FO 案例**，按你的原型与环境替换。
+`scripts/fidelity/compare.mjs` 读取 JSON 数组。每个 target 描述同一页面的原型侧、实现侧、动态 mask、必需 probe、状态矩阵和机械 Gate。
 
-`scripts/fidelity/compare.mjs` 读 `targets.json`（数组，每个元素 = 一页对比配置），对原型和实现各截图、遮蔽动态数据、pixel-diff、抓 computed-style delta，产出 `report/`。完整可运行示例见 `scripts/fidelity/targets.example.json`（operator 6 页真实配置）。
+完整起点见 `scripts/fidelity/targets.example.json`。
 
-## 字段
+## 目录
+
+- 页面字段
+- proto / impl 字段
+- 状态矩阵
+- Probe
+- Mask
+- Gate 与退出码
+
+## 页面字段
 
 | 字段 | 说明 |
 |---|---|
-| `name` | 页面标识，决定输出文件名 `report/shots/<name>-*.png` |
-| `viewport` | `{width,height}`，两边一致（通常 1440×900） |
-| `fullPage` | 整页截图（默认 true）。整页高度不一致会进 height 报警 = 结构性缺件 |
-| `settleMs` | 截图前等待（ms）。有 ECharts/动画的页面给到 3000~3500 |
-| `proto` | 原型侧：`url` / `click` / `waitFor` / `mask` |
-| `impl` | 实现侧：`url` / `waitFor` / `waitForGone` / `mask` |
-| `mask` | 顶层共享 mask（proto+impl 都涂），放动态数据区 |
-| `probe` | `{别名: selector}`，抓关键结构元素的 computed style 做精确 delta |
+| `name` | 唯一文件名，只用字母、数字、点、下划线和连字符 |
+| `viewport` | 两侧一致的 `{width,height}` |
+| `fullPage` | 默认 `true`；整页高度差是结构信号 |
+| `settleMs` | 等数据、字体和图表稳定的时间 |
+| `proto` / `impl` | 双侧 URL、登录、状态、导航和等待配置 |
+| `mask` | 双侧共享的动态像素 selector |
+| `probe` | 必需样式、几何、结构或 SVG 探针 |
+| `states` | 可选状态矩阵；展开成 `<name>--<state>` |
+| `gate` | 可选 console/mismatch 机械限制 |
 
-### proto / impl 子字段
-- `url`：原型是静态服地址（`http://localhost:8088/operator/operator-v3-premium.html`）；实现是 dev server 路由（`http://localhost:8030/billing/admin/...`）。
-- `click`（仅原型常用）：单文件原型靠 sidebar 切页，进页后点导航。例：`"button.nav-item:has-text('Reconciliation')"`。
-- `waitFor`：能证明目标页已渲染的 selector（原型用 section 文案锚点，实现用根 class）。
-- `waitForGone`（仅实现）：等加载遮罩消失，**否则会截到 loading 态** → 误报。固定写 `".<page-root> .el-loading-mask"`。
+## proto / impl 字段
 
-## 两条核心写法
+- `url`：HTTP(S)、`file:`，或相对 fidelity 目录的本地 HTML 路径。
+- `waitFor`：证明目标页已正确渲染的**可见**稳定 selector；双侧必填，缺失会在配置阶段退出，超时直接 ERROR。
+- `waitForGone`：loading mask 等必须消失的 selector；超时直接 ERROR。
+- `storageState`：相对 fidelity 目录或绝对路径。实现侧默认尝试 `auth.json`。
+- `requiresAuth`：为 `true` 时缺失 storage state 直接 ERROR，避免误截登录页。
+- `state.localStorage` / `state.sessionStorage`：在页面脚本前写入精确 key/value；对象值会 JSON 序列化，`null` 表示删除。
+- `state.htmlClasses` / `removeHtmlClasses`：补充或删除 `<html>` class。先确认应用真实状态机制，不能只改 class 冒充状态切换。
+- `setup`：字符串表示 click；对象支持 `click`、`hover`、`focus`、`waitFor`，可带 `timeout`、`settleMs` 和 `optional`。
+- `click` / `hover` / `focus`：单步兼容写法。
+- `mask`：该侧额外动态区域。
 
-### 1. mask = 对称遮蔽动态数据
-真实数据 ≠ 原型 mock，逐像素必然差。把**数字/日期/图表/表格 body** 在**两边都**涂掉，让 mismatch% 只衡量**布局/样式**而非 live 值。原型和实现共享类名（实现是从原型 port 的），一份 mask 常两边通用；两边各自多出来的用 `proto.mask` / `impl.mask` 补。
+`waitFor` 必须同时证明“路由正确”和“目标内容已出现”。只等 `.main-box`、`.el-table` 等跨页通用 selector 不够。
+
+## 状态矩阵
+
+`states` 继承 target 的 proto/impl/mask/probe，再叠加本状态配置：
 
 ```json
-"mask": [".type-display-sm", ".card-box__body", ".el-table__body-wrapper", ".el-pagination"]
+"states": [
+  {
+    "name": "en-light",
+    "impl": {
+      "state": {
+        "localStorage": {
+          "__REPLACE_LOCALE_KEY__": "en",
+          "__REPLACE_THEME_KEY__": "light"
+        },
+        "removeHtmlClasses": ["dark"]
+      }
+    }
+  },
+  {
+    "name": "dialog-open",
+    "proto": { "setup": [{ "type": "click", "selector": "button:has-text('Create')" }] },
+    "impl": { "setup": [{ "type": "click", "selector": "button:has-text('Create')" }] }
+  }
+]
 ```
 
-### 2. probe = 同时命中原型和实现的双侧选择器
-probe 抓 style/geometry（与文案无关，免疫动态数据）。原型和实现类名多数相同；不同处用**逗号选择器**两边都覆盖，并用 `section.main-box:not([style*='display: none'])` 把原型限定到**当前可见页**（单文件原型多页共存 DOM）：
+把占位 key 换成目标 app 初始化代码中的真实 key/value 格式。状态不适用时从矩阵移除并在验收记录写 N/A，不要静默漏测。
+
+## Probe
+
+旧写法仍可用，会比较完整默认字段集并只取第一个可见元素：
 
 ```json
-"probe": {
-  "headerTitle": "section.main-box:not([style*='display: none']) .header-box__title, .operator-reconciliation .header-box__title",
-  "cardBox":     "section.main-box:not([style*='display: none']) .card-box, .operator-reconciliation .card-box"
+"pageTitle": ".page-title"
+```
+
+严格写法支持双侧 selector、重复元素和字段白名单：
+
+```json
+"cards": {
+  "proto": "section.prototype-page .metric-card",
+  "impl": ".production-page .metric-card",
+  "all": true,
+  "required": true,
+  "fields": ["fontFamily", "fontSize", "lineHeight", "backgroundImage", "boxShadow", "borderRadius", "width", "height"]
+},
+"icons": {
+  "selector": ".metric-card svg",
+  "all": true,
+  "fields": ["width", "height", "svgViewBox", "svgSignature", "stroke", "strokeWidth", "fill"]
 }
 ```
 
-> 给实现根节点加稳定 class（如 `.operator-reconciliation`）能让 probe/waitFor/waitForGone 都好写。
+- `required` 默认 `true`；任一侧缺失会失败。
+- `all` 默认 `false`；重复卡片、行、按钮和 icon 必须设为 `true`，按 DOM 顺序比较并检查数量。
+- `compareText: true` 会增加 `text` 字段；动态文案不要开启。
+- `visibleOnly` 默认 `true`，避免单文件原型隐藏页面污染结果。
+- `fields` 不写时比较字体、排版、背景、盒模型、布局、`left/top/width/height`、transition/animation 属性和 SVG 签名的默认全集。
+- `svgSignature` 同时包含 shape 几何和每个 shape 的 computed `stroke` / `strokeWidth` / `fill`，可发现颜色写在子节点而不是 `<svg>` 根节点上的差异。
 
-## 输出怎么读
-- `report/fidelity-report.md`：mismatch% + height + 每个 probe 的 style delta（`fontSize: proto=52px impl=40px` → 直接把实现改成 proto 值）。
-- `shots/<name>-sidebyside.png`：proto ｜ impl 并排（**视觉 agent 一眼看出哪不像**）。
-- `shots/<name>-diff.png`：masked 差异图，🟣 品红=被遮蔽动态数据→忽略，其它颜色才是真差异。
-- `shots/<name>-proto.png` / `-impl.png`：全分辨率单图，看细节。
+探针要覆盖所有视觉家族，而不是只放一个标题和第一张卡。mask 过的表格、图表和动态卡片必须另配 shell/表头/legend/空态等 probe。
 
-停止条件：**硬门 = style delta=0 且 height match 且并排目检 OK**；mismatch<2% 是参考信号（残差先按 `troubleshooting.md` §8 分类，真数据/locale 残差可接受）。详见 `scripts/fidelity/GOAL-MODE.md`。
+## Mask
 
-## 跨角色 auth + 状态对齐（实战必踩）
-不同角色的页面要对应角色登录，**用错角色会被路由守卫重定向**（operator auth 进 `/provider/*` → 跳 admin Customer Accounts；EU 进 → 跳 `/my/account`）——此时 side-by-side 的 impl 侧是「跑错页」，不是页面坏了。
-- **`node capture-fast.mjs <角色>`**（dev 有 `VITE_FAST_LOGIN_USERS` + `VITE_LOGIN_DEMO=1` 才行）：`创作者`=provider / `运营`=operator / `普通用户`=EU / `管理员`=admin。走登录页角色卡 → 存 storageState 到 auth.json，免手动登录。**auth.json 一次只一个角色，切角色重跑该脚本即可**。
-- **状态对齐**：fast-login 新会话默认 **en + light**，正好对齐原型默认（`lang = ref('en')` + `isDark = ref(false)`）——多数情况无需再切。坑：手动登录的浏览器会话可能带账号偏好（如 provider_onepro 默认 zh + dark），与 comparator 的 fast-login 会话不一致；**一切以 comparator 实际渲染为准**（看 side-by-side 是哪个语言/主题，别凭 Preview 会话推断）。
-- **`setup`（proto 多步预点击）**：proto 需要先切语言/主题或多级导航时，在 `proto`/`impl` 加 `"setup": [选择器1, 选择器2]`（在 `click` 前依次点）。原型开关：`button.nav-icon-btn[title='Language']`（切语言）、`button.nav-icon-btn[title='Toggle theme']`（切主题）。
-- **nav 图标常不唯一**（如 settlements 与 topupOrders 都用 `receipt`，`:first()` 会点错）→ 切语言后用**文案选择器** `button.nav-item:has-text('<nav文案>')`，别用图标选择器。
+只遮蔽真实值不可避免不同的像素，例如金额、日期、图表数据点和表格 body 文案。两侧必须对称。
+
+不要：
+
+- mask 整个页面或整张业务卡后直接宣称保真。
+- mask 原型有而实现缺失的结构。
+- 为压 mismatch 扩大 mask。
+
+被 mask 区域仍要在未遮罩 side-by-side、probe 和 Gate C 中检查结构与交互。
+
+## Gate 与退出码
+
+`node compare.mjs --gate` 默认检查 required probe、元素数量、字段差异和 full-page height。
+
+```json
+"gate": {
+  "failOnConsoleError": true,
+  "maxMismatchPct": 2
+}
+```
+
+`maxMismatchPct` 默认不启用；只有动态残差已稳定分类、mask 设计可靠时才配置。
+
+- `0`：机械 Gate 无差异，报告状态仍是 `REVIEW_REQUIRED`，必须目检与运行态验收。
+- `1`：机械差异存在。
+- `2`：配置、导航、auth、selector 或截图准备失败。
+
+报告同时写 `report/fidelity-report.md` 和 `report/fidelity-report.json`。

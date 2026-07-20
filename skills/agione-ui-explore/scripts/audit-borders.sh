@@ -14,7 +14,7 @@
 #   - grid 容器（.ds-stats-row / .ds-overview-grid / .ds-chart-grid）无边框，天然不触发
 #   - 父容器类匹配用 [ "] 边界，ds-stat-card 不会误中 stat-card 模式
 #
-# 规则参考：SKILL.md §2.5 外壳克制 / AI-USAGE.md §默认克制 ② / dashboard.md §11.3
+# 规则参考：references/base-spec.md §7 Shared product semantics
 #
 # 用法：
 #   bash scripts/audit-borders.sh <prototype.html>
@@ -96,7 +96,7 @@ VIOLATIONS=$(awk -v list="$SELF_BORDER_COMPONENTS" -v cls="$SELF_BORDER_CLASSES"
 #   <main> 内有裸 <table>（非 .data-table / DataTable 包裹）时：
 #   - 缺 border-collapse: collapse → 单元格/表头边线翻倍重合（硬伤，必报）
 #   - 提示优先用 DataTable/.data-table（内置 overflow:hidden + 防双线配方）
-#   规则参考：AI-USAGE.md §②.1 数据表 ⊂ 卡片 双线重合防治
+#   规则参考：references/base-spec.md §7
 # ──────────────────────────────────────────────────────────────────
 TABLE_VIOLATION=""
 RAW_TABLE_LINES=$(awk '
@@ -118,7 +118,7 @@ fi
 #   状态走 StatusBadge/dot/Tag，不进卡的边。
 #   豁免：仅 .alert（severity 条是 alert 语义）。
 #   v6.9.3: 标题 accent 条（detail-section）也禁了 → 去掉 detail-section 豁免。
-#   规则参考：AI-USAGE.md §默认克制 ③ 卡片/标题禁用左侧色条
+#   规则参考：references/base-spec.md §7
 #   命中源：① <style> 内非豁免 selector 的 border-left ≥2px solid 带色
 #           ② <main> 内 inline style 的 border-left ≥2px
 # ──────────────────────────────────────────────────────────────────
@@ -176,7 +176,7 @@ if [[ -n "$VIOLATIONS" ]]; then
   echo "  · 自带边框物（FilterBox / DataTable / KpiCard / ds-stat-card / ds-ov-card /"
   echo "    ds-chart-card 等）外面不要再套带 border 的容器，二选一即可。"
   echo "  · .ds-section-header 的 border-bottom 是分隔器豁免（dashboard.md §11.3）"
-  echo "  · 详见 AI-USAGE.md §默认克制 ② / SKILL.md §2.5 外壳克制"
+  echo "  · 详见 references/base-spec.md §7"
   echo "  · 自检：沿任一区数 border 必须 = 1"
   echo
 fi
@@ -187,14 +187,14 @@ if [[ "$TABLE_VIOLATION" == "missing-collapse" ]]; then
   echo
   echo "$RAW_TABLE_LINES" | head -10
   echo
-  echo "修复建议（AI-USAGE.md §②.1 数据表 ⊂ 卡片 双线防治）："
+  echo "修复建议（references/base-spec.md §7）："
   echo "  · 首选用 <DataTable> / .data-table（已内置 overflow:hidden + 防双线配方）"
   echo "  · 必须手搓时三件套：卡片 overflow:hidden + 表格 border:none + border-collapse:collapse"
   echo "  · 表头只留一条 thead th border-bottom；别让卡片外框跟表头线贴成双线"
   echo
 elif [[ -n "$RAW_TABLE_LINES" ]]; then
   echo "ℹ️  检测到手搓 <table>（已含 border-collapse）。仍建议数据表优先走 DataTable/.data-table，"
-  echo "    并确认卡片 overflow:hidden + 表格 border:none（详见 AI-USAGE.md §②.1）。"
+  echo "    并确认卡片 overflow:hidden + 表格 border:none（见 references/base-spec.md §7）。"
   echo
 fi
 
@@ -205,7 +205,7 @@ if [[ -n "$STRIPE_HITS" ]]; then
   echo
   echo "$STRIPE_HITS" | head -20
   echo
-  echo "修复建议（AI-USAGE.md §默认克制 ③ 卡片/标题禁用左侧色条）："
+  echo "修复建议（references/base-spec.md §7）："
   echo "  · 状态 → <StatusBadge> / .status-badge（药丸 + dot）；分类 → <Tag>；强调 → 标题色 / bg subtle"
   echo "  · 卡片只留四边等框 border + radius；section 标题靠字重/字号强调，不靠左色条"
   echo "  · 唯一例外：.alert severity 条（那是 alert 语义，不是卡片/标题装饰）"

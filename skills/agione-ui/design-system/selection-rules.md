@@ -1,7 +1,7 @@
 # Component Selection Rules — 决策树（v6.9.1）
 
 > AI 必读时机：catalog.md 的 `signal` 列指向 `TREE-N` 时，Read 本文件对应章节。
-> 单候选（signal=STOP）/ SKILL.md 已明文 / prototype 已指定 → 跳过本文件。
+> 单候选（signal=STOP）/ active skill 已明文 / prototype 已指定 → 跳过本文件。
 >
 > 本文件 ~4.5k token，覆盖 12 个决策点（Layer 0 页面骨架 + ① 到 ⑩ 组件选型 + ⑪ Dashboard 页型；v6.9.1 加 ⑪）。
 > 每棵树固定结构：**决策问 → 分支表 → 默认 → 反模式**。
@@ -131,7 +131,7 @@
 
 ## ⑥ 单选输入：Radio 4-variant
 
-> 已在 SKILL.md §1.4 规则 10 明文，此处仅 mirror。文件：`components/L2/radio-variants.html`
+> 共享约束见 `references/components-and-forms.md` 的 Radio and choice controls。文件：`components/L2/radio-variants.html`
 
 | 触发条件 | 选 | 标识 |
 |---------|-----|------|
@@ -256,7 +256,7 @@
 
 | 触发条件（任一命中即可） | 选 | 文件 / 章节 |
 |---|---|---|
-| 用户 brief 里有 "dashboard / 大盘 / 监控 / overview / analytics / 看板" | **Dashboard 章节** | `design-system/AI-USAGE.md §11` |
+| 用户 brief 里有 "dashboard / 大盘 / 监控 / overview / analytics / 看板" | **Dashboard 章节** | `design-system/dashboard.md` |
 | 主体由 ≥ 3 个 KPI / 图表块 grid 组成 | **Dashboard 章节** | 同上 |
 | 含时间范围筛选 + 多 section 切片视觉 | **Dashboard 章节** | 同上 |
 | 含 chart（line / area / bar / donut / gauge）作为主信息载体 | **Dashboard 章节** | 同上 |

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AGIOne UI 视觉探索"
+  short_description: "逐页逐组件探索 AGIOne Console 的布局、交互与多风格方向"
+  default_prompt: "使用 $agione-ui-explore，先逐页盘点关键设计决策，再逐个组件和交互点给出可视化候选；全部确认后生成 2-3 份多风格设计稿。"

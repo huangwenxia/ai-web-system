@@ -1,0 +1,18 @@
+[
+  {
+    "name": "fixture-pass",
+    "viewport": { "width": 800, "height": 600 },
+    "fullPage": true,
+    "settleMs": 0,
+    "proto": { "url": "fixtures/proto.html", "waitFor": ".fixture-page", "storageState": false },
+    "impl": { "url": "fixtures/impl-match.html", "waitFor": ".fixture-page", "storageState": false },
+    "probe": {
+      "page": { "selector": ".fixture-page" },
+      "title": { "selector": ".fixture-title", "compareText": true },
+      "cards": { "selector": ".fixture-card", "all": true },
+      "icons": { "selector": ".fixture-icon", "all": true, "fields": ["width", "height", "svgViewBox", "svgSignature", "stroke", "strokeWidth", "fill"] },
+      "values": { "selector": ".fixture-value", "all": true, "fields": ["fontFamily", "fontSize", "fontWeight", "lineHeight"] }
+    },
+    "gate": { "maxMismatchPct": 0 }
+  }
+]
