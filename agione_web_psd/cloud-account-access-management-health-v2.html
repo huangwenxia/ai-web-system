@@ -1,62 +1,44 @@
 <!DOCTYPE html>
 <!--AI-NOTES
-convergence:
-  source: cloud-account-self-check-dialog-v7.html
-  source-sha256: 6E60E55C1AC4F78A0838D0BA47E206A6D19BCEA5DF39A3D84EF755B0FA2EE05D
-  business-role: InfraHub EndUser
-  page-type: list-management
-  primary-task: assess cloud account deployment health and add one cloud account
-  secondary-task: detect cloud account status on demand
-  skeleton: StandardListPage
-  repeated-content: DataTable
-  header: HeaderBox
-  filters: FilterBox
-  row-state: StatusBadge
-  row-actions: TableActions without generic detail action
-  add-interaction: Modal with credential fields and two account-access checks
-  detection-interaction: manual all-account and row-level detection
-  business-facts-check: aligned with metis-xcloud account validation and metis-hashrate deployment lifecycle needs
-  state-coverage-check: healthy and action-required status, exact detection timestamps, detection activity, add validation, required setup gaps, unclassified result, and success
-  visual-focal-points: merged account status with conclusion and recovery action, latest detection time, and the single add-account primary action
-  visual-fidelity-check: not-run
-  visual-coherence-check: static-only
-  browser-comparison: not-run; browser automation was not authorized
-  chrome-context: ai-infrastructure
-  top-nav-index: 1
-  balance-action: preserved
-  balance-visibility: hidden because this task has no defensible balance value
-  business-rule-change: every completed manual or backend-triggered detection updates the same latest-detection timestamp and status
-  automatic-detection-rule: scheduling is backend-owned and has no customer-facing settings
-  in-progress-row-rule: account-level detection replaces the timestamp while running; the timestamp returns only after the run finishes
-  admission-rule: a new cloud account may be saved as pending confirmation only after credentials and cloud identity pass while a later successful response remains unclassified; identity uncertainty or technical check failure cannot be saved
-  unconfirmed-rule: persisted account health may be pending confirmation after the admission escape hatch or after a later inspection cannot replace the last confirmed result
-  classification-escape-rule: Unable to classify means the check returned normally but no reliable category matched; technical failures stay outside customer-visible business states and do not produce a saveable result
-  technical-failure-rule: provider or platform detection failures remain backend concerns and do not overwrite the latest valid customer-visible status or timestamp
-  health-rule-change: remove the unsupported auxiliary-capability aggregate state; optional monitoring or logging access does not affect deployment readiness unless a future confirmed contract makes it required
-  add-precheck-rule: add-account precheck covers cloud identity and credentials plus cloud product access and account-level permissions; deployment-context prerequisites move to deployment preflight
-  state-coverage-change: collapse persisted status to Healthy or Action required; UNKNOWN maps to Action required with Recheck as its recovery action
-  removed-or-downgraded: remove the cloud-account health detail drawer and generic View details action; remove the add-flow Operations & cleanup check because admission cannot prove mutating lifecycle permissions without real resources
-  hierarchy-change: merge aggregate status, its highest-priority conclusion, and recovery action into one Status column
-  attention-priority-color: confirmed account unavailability uses red, known configuration work uses action violet, and an unconfirmed cause uses information blue; visible reason text remains the non-color priority evidence
-  terminology-change: use detection for customer-triggered refresh actions; reserve check wording for capability checks inside the add-account flow
-  mock-time-assumption: completed sample rows share the scheduled batch completion at 2026-07-24 09:00 CST; interactive inspections use the browser clock
-  mock-action-required-coverage: separate persisted rows demonstrate AI cloud product setup required and model deployment prerequisites missing under the same aggregate health
-  mock-unclassified-coverage: a completed UNKNOWN row maps to Action required, shows no duplicate inline detection action, and retains boundary help plus the normal detection timestamp
-  conclusion-help: setup-required, account-unavailable, and no-valid-result conclusions expose hover/focus information popovers; each starts with a boundary Alert before listing possible causes, while recovery actions remain separate
-  provider-guidance: actionable check states open the selected provider official documentation or console
-rule-gap:
-  - rule: future backend contract
-    scene: current API collapses provider validation exceptions
-    decision: prototype target-state design
-    reason: the product requires stable actionable deployment-health categories before production implementation
-browser-review: blocked-by-user-opt-in-policy
 decision-source: model-direct
-AI-NOTES-->
+business-contract:
+  role: AI infrastructure cloud-account administrator
+  primary-task: find a connected cloud account and act on its health state
+  secondary-task: add a cloud account
+  page-type: list-management
+  preserved-layout: page header, filter panel, two-column account cards, pagination
+  mock-policy: deterministic scenario data; timestamps are mock last-detection facts; no invented scores or rates
+  health-terminal-states: healthy, action-required
+  action-required-priority: high, medium, low; priority is not a separate health state
+  action-required-mocks: product not enabled, permission missing, credential disabled, cause unclassified
+selection-summary:
+  page-skeleton: StandardListPage structure with owner-locked card representation
+  repeated-content: ListCardItem; 3-5 fields plus provider logo
+  page-header: HeaderBox
+  feedback: StatusBadge
+  row-actions: three inline actions with separators; destructive action remains overflow
+  unresolved-material-decisions: 0
+source-references:
+  access-page: codex-clipboard-4760d14f-4bb0-4e7e-bb4a-b81f73617c21.png
+  interaction-state: codex-clipboard-9d5aa76b-e2d1-4d97-8634-7b60808dcc0a.png
+  health-content: cloud-account-self-check-dialog-v8.html
+  health-content-sha256: baa797d05e8a2cb3c9a271c97ce139b33874ed0fddb301cf6bb5a163059c5c03
+browser-review: blocked-by-owner-opt-in-rule
+visual-coherence-check: static-only
+redesign:
+  source: cloud-account-access-management-health-v1.html
+  source-sha256: a2c883a29adbadadddf3e5452aebd52389d0ec2a1bf389fd2be37c320662efaf
+  reason: move status to the top-right and consolidate time plus row actions in a fixed footer
+  new-approach: identity/status header, fixed reason/action workspace, divider, time/action footer
+  business-rule-change: none
+  state-coverage-change: none
+  removed-or-downgraded: none
+-->
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<!-- AGIONE_EDIT_TITLE_START · ⚠️ 改业务页面双语标题 --><title>AGIOne Console — Cloud Accounts v8</title><!-- AGIONE_EDIT_TITLE_END -->
+<!-- AGIONE_EDIT_TITLE_START · ⚠️ 改业务页面双语标题 --><title>接入管理 · 云账号健康状态 — AGIOne</title><!-- AGIONE_EDIT_TITLE_END -->
 
 <!-- Vue 3 -->
 <script src="https://unpkg.com/vue@3.5.34/dist/vue.global.prod.js"></script>
@@ -215,6 +197,12 @@ AI-NOTES-->
   --ui-ease-in:     cubic-bezier(0.4, 0, 1, 1);      /* 退出 / 离场（v3.10） */
   --ui-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);  /* 切换 / 双向（v3.10） */
   --ui-ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* 强调反馈（v3.10） */
+
+  /* Business Drawer 容量档：按内容拓扑选型，禁止模型生成中间魔法宽度 */
+  --ui-drawer-compact: min(680px, calc(100vw - 48px));
+  --ui-drawer-standard: min(800px, calc(100vw - 48px));
+  --ui-drawer-wide: min(960px, calc(100vw - 320px));
+  --ui-drawer-workspace: min(1120px, calc(100vw - 320px));
 
   /* Avatar */
   --ui-avatar-bg: #7c3aed;
@@ -708,6 +696,12 @@ html, body {
 .layout-overlay { display: none; }
 
 @media (max-width: 1023px) {
+  :root {
+    --ui-drawer-compact: 100vw;
+    --ui-drawer-standard: 100vw;
+    --ui-drawer-wide: 100vw;
+    --ui-drawer-workspace: 100vw;
+  }
   html, body { background: var(--ui-bg-page); }
   .body { border-radius: 0; }
   .topnav { gap: 8px; }
@@ -997,7 +991,7 @@ html, body {
 /* ── DetailSection (v3.5) ── */
 .detail-section { display: flex; flex-direction: column; gap: var(--ui-space-md); }
 .detail-section__head {
-  /* v6.9.3: 去掉左色条（border-left accent）——标题强调走字重/字号，不靠色条 */
+  /* Owner rule: 业务容器与标题禁止任意方向贴边色条；强调走字重/字号，不靠 edge accent */
   display: flex; justify-content: space-between; align-items: center;
   min-height: 20px;
 }
@@ -1650,7 +1644,9 @@ html, body {
 /* 系统设置 prefers-reduced-motion 时关掉装饰动画（保留必要状态） */
 @media (prefers-reduced-motion: reduce) {
   .anim-fade-in, .anim-fade-out, .anim-slide-in-right, .anim-slide-in-up,
-  .anim-scale-in, .anim-stagger > * { animation: none !important; }
+  .anim-scale-in, .anim-stagger > *, .balance-pill__icon--skeleton,
+  .skeleton-bar, .skeleton-circle,
+  .el-skeleton.is-animated .el-skeleton__item { animation: none !important; }
 }
 
 /* ──────────────────────────────────────────────────────────────────
@@ -1909,755 +1905,84 @@ html, body {
 }
 
 /* AGIONE_EDIT_BUSINESS_CSS_START · 业务 CSS 只能写在这里，禁止写入 Vue runtime template */
-:root {
-  --ui-drawer-compact: min(680px, calc(100vw - 48px));
-  --ui-drawer-standard: min(800px, calc(100vw - 48px));
-  --ui-drawer-wide: min(960px, calc(100vw - 320px));
-  --ui-drawer-workspace: min(1120px, calc(100vw - 320px));
+.access-page { min-height: 100%; }
+.access-page .header-box__content { padding-top: 0; }
+.access-filter { display: flex; flex-direction: column; gap: var(--ui-space-control); }
+.provider-tabs { display: flex; align-items: center; gap: var(--ui-space-xs); width: fit-content; max-width: 100%; padding: var(--ui-space-xs); border-radius: var(--ui-radius-control); background: var(--ui-bg-muted); overflow-x: auto; }
+.provider-tab { display: inline-flex; align-items: center; gap: var(--ui-space-inline); min-height: 36px; padding: 0 var(--ui-space-control); border: 0; border-radius: calc(var(--ui-radius-control) - 2px); background: transparent; color: var(--ui-text-secondary); white-space: nowrap; cursor: pointer; transition: color var(--ui-transition-fast), background var(--ui-transition-fast), box-shadow var(--ui-transition-fast); }
+.provider-tab:hover { color: var(--ui-text-primary); }
+.provider-tab.is-active { color: var(--ui-color-primary); background: var(--ui-bg-card); box-shadow: var(--ui-shadow-xs); font-weight: 600; }
+.provider-tab__mark { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; font-weight: 700; }
+/* Provider brand colors are scoped to their marks only. */
+.provider-tab__mark.is-agione { color: var(--ui-color-primary); }
+.provider-tab__mark.is-aliyun { color: var(--biz-provider-aliyun-fg); }
+.provider-tab__mark.is-aws { color: var(--biz-provider-aws-fg); font-size: 11px; text-decoration: underline; text-decoration-color: var(--biz-provider-aws-accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+.provider-tab__mark.is-google { color: var(--biz-provider-google-fg); }
+.provider-tab__mark.is-huawei { color: var(--biz-provider-huawei-fg); }
+.access-filter__row { display: flex; align-items: center; gap: var(--ui-space-control); }
+.access-search { width: min(360px, 100%); }
+.access-filter__actions { display: flex; align-items: center; gap: var(--ui-space-inline); margin-left: auto; }
+.button-with-icon { gap: 6px; }
+.control-icon { width: 16px; height: 16px; }
+.account-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--ui-space-base); }
+.account-card { display: flex; flex-direction: column; height: 220px; padding: var(--ui-space-card); border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-card); background: var(--ui-bg-card); transition: border-color var(--ui-transition-fast), box-shadow var(--ui-transition-fast); }
+.account-card:hover { border-color: var(--ui-border-interactive); box-shadow: var(--ui-shadow-sm); }
+.account-card__top { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: start; gap: var(--ui-space-control); width: 100%; }
+.account-provider { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; flex: 0 0 44px; border: 1px solid var(--ui-border-default); border-radius: 50%; background: var(--ui-bg-muted); }
+.account-provider__mark { font-weight: 700; }
+.account-provider.is-aws .account-provider__mark { color: var(--biz-provider-aws-fg); font-size: 12px; text-decoration: underline; text-decoration-color: var(--biz-provider-aws-accent); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.account-provider.is-aliyun .account-provider__mark { display: inline-block; color: var(--biz-provider-aliyun-fg); font-size: 23px; letter-spacing: -5px; transform: translateX(-2px); }
+.account-provider.is-agione .account-provider__mark { color: var(--ui-color-primary); }
+.account-provider.is-google .account-provider__mark { color: var(--biz-provider-google-fg); font-size: 18px; }
+.account-provider.is-huawei .account-provider__mark { color: var(--biz-provider-huawei-fg); font-size: 18px; }
+.account-card__identity { display: flex; min-width: 0; flex-direction: column; gap: var(--ui-space-xs); }
+.account-card__name { overflow: hidden; color: var(--ui-text-primary); text-overflow: ellipsis; white-space: nowrap; }
+.account-card__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; color: var(--ui-text-muted); }
+.account-card__meta-dot { color: var(--ui-border-strong); }
+.account-card__status { display: flex; align-items: flex-start; justify-content: flex-end; min-width: 0; }
+.account-card__middle { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: start; gap: var(--ui-space-control); width: 100%; min-height: 52px; margin-top: var(--ui-space-base); }
+.account-card__reason { display: -webkit-box; overflow: hidden; color: var(--ui-text-primary); -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; }
+.account-card__reason.is-healthy { color: var(--ui-text-secondary); }
+.account-card__context-action { min-height: 28px; white-space: nowrap; }
+.account-card__divider { width: 100%; height: 1px; margin-top: auto; background: var(--ui-border-default); }
+.account-card__footer { display: flex; align-items: center; justify-content: space-between; gap: var(--ui-space-control); width: 100%; padding-top: var(--ui-space-control); }
+.inspection-time { display: flex; align-items: center; min-width: 0; gap: 6px; color: var(--ui-text-muted); white-space: nowrap; }
+.inspection-time__icon { width: 16px; height: 16px; flex: 0 0 16px; }
+.inspection-time__context { color: var(--ui-text-muted); }
+.health-spinner { width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: account-spin 800ms linear infinite; }
+@keyframes account-spin { to { transform: rotate(360deg); } }
+.account-card__actions { display: flex; align-items: center; flex: 0 0 auto; white-space: nowrap; }
+.account-action { min-height: 32px; padding: 0 var(--ui-space-inline); border: 0; background: transparent; color: var(--ui-text-secondary); cursor: pointer; }
+.account-action:hover { color: var(--ui-color-primary); }
+.account-action:disabled { color: var(--ui-text-disabled); cursor: not-allowed; }
+.account-action-separator { width: 1px; height: 16px; background: var(--ui-border-default); }
+.account-more { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--ui-radius-control); background: transparent; color: var(--ui-text-muted); cursor: pointer; }
+.account-more:hover { color: var(--ui-color-primary); background: var(--ui-bg-muted); }
+.account-more__icon { width: 16px; height: 16px; }
+.account-list-empty { border: 1px solid var(--ui-border-default); border-radius: var(--ui-radius-card); background: var(--ui-bg-card); }
+.account-pagination { display: flex; align-items: center; justify-content: flex-end; gap: var(--ui-space-control); padding-top: var(--ui-space-base); }
+.danger-menu-item { color: var(--ui-color-destructive); }
+@media (max-width: 1280px) {
+  .account-card { height: 232px; }
+  .account-card__footer { align-items: flex-start; }
+  .inspection-time { align-items: flex-start; flex-wrap: wrap; white-space: normal; }
 }
-.state-machine-mock {
-  display: grid;
-  gap: 8px;
-  padding-top: 10px;
-  border-top: 1px solid var(--border-subtle);
-}
-.state-machine-mock__tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 6px;
-}
-.state-machine-mock__select {
-  width: 100%;
-  min-height: 34px;
-  padding: 0 30px 0 10px;
-  border: 1px solid var(--border-default);
-  border-radius: 8px;
-  color: var(--text-primary);
-  background: var(--surface-raised);
-  font: inherit;
-}
-
-.cloud-account-page {
-  min-height: 100%;
-}
-
-.cloud-account-filter {
-  display: flex;
-  align-items: center;
-  gap: var(--ui-space-sm);
-  flex-wrap: wrap;
-}
-
-.cloud-account-filter .el-input { width: 240px; }
-.cloud-account-filter .el-select { width: 176px; }
-
-.cloud-account-cell {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-
-.cloud-account-cell__name {
-  color: var(--ui-text-primary);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.cloud-account-cell__meta,
-.health-dimension,
-.inspection-time {
-  color: var(--ui-text-secondary);
-}
-
-.health-dimension {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.health-dimension svg { width: 14px; height: 14px; }
-.health-dimension.is-pass { color: var(--ui-color-success); }
-.health-dimension.is-action { color: var(--ui-color-action); }
-.health-dimension.is-error { color: var(--ui-color-destructive); }
-.health-dimension.is-unknown { color: var(--ui-text-muted); }
-
-.account-health-stack {
-  display: grid;
-  justify-items: start;
-  gap: 4px;
-}
-
-.account-status-cell {
-  display: grid;
-  grid-template-columns: max-content max-content;
-  justify-items: start;
-  gap: 4px 2px;
-  min-width: 0;
-}
-
-.account-status-cell__conclusion {
-  display: contents;
-}
-
-.account-status-cell__conclusion > .type-body-sm {
-  grid-column: 1 / -1;
-  grid-row: 2;
-  min-width: 0;
-  color: var(--ui-text-primary);
-}
-
-.account-status-cell__status-trigger {
-  grid-column: 1 / -1;
-  grid-row: 1;
-  align-self: center;
-  border: 0;
-  cursor: help;
-}
-
-.account-status-cell__status-trigger svg {
-  width: 13px;
-  height: 13px;
-  flex: 0 0 13px;
-}
-
-.account-status-cell > .check-conclusion__action,
-.account-status-cell__guidance {
-  grid-column: 1 / -1;
-}
-
-.account-status-cell__guidance {
-  color: var(--ui-text-muted);
-}
-
-.account-health-stack__current,
-.check-conclusion__history {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.account-health-stack__current {
-  min-height: 24px;
-}
-
-.account-health-stack__current > .type-caption,
-.check-conclusion__current-label {
-  color: var(--ui-text-secondary);
-}
-
-.account-health-stack__previous,
-.check-conclusion__context {
-  color: var(--ui-text-muted);
-}
-
-.check-conclusion__current {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 24px;
-}
-
-.check-conclusion__current-value {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--ui-color-action);
-}
-
-.check-conclusion__current-icon {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
-}
-
-.check-conclusion {
-  display: grid;
-  justify-items: start;
-  gap: 4px;
-  min-width: 0;
-}
-
-.check-conclusion__summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  max-width: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--ui-text-primary);
-  text-align: left;
-}
-
-.check-conclusion__info-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--ui-radius-md);
-  background: transparent;
-  color: var(--ui-text-muted);
-  cursor: help;
-}
-
-.check-conclusion__info-trigger:hover,
-.check-conclusion__info-trigger:focus-visible {
-  background: var(--ui-color-action-subtle);
-  color: var(--ui-color-action);
-}
-
-.check-conclusion__info-trigger svg {
-  width: 16px;
-  height: 16px;
-}
-
-.cloud-account-rule-popover__content {
-  display: grid;
-  gap: var(--ui-space-sm);
-}
-
-.cloud-account-rule-popover__title {
-  color: var(--ui-text-primary);
-}
-
-.cloud-account-rule-popover__groups,
-.cloud-account-rule-popover__group {
-  display: grid;
-}
-
-.cloud-account-rule-popover__groups { gap: var(--ui-space-sm); }
-.cloud-account-rule-popover__group { gap: 4px; }
-.cloud-account-rule-popover__group-title { color: var(--ui-text-primary); }
-
-.cloud-account-rule-popover__list {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding-left: 18px;
-  list-style: disc;
-  color: var(--ui-text-secondary);
-}
-
-.cloud-account-rule-popover__list li::marker {
-  color: var(--ui-color-action);
-}
-
-.check-conclusion__status-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 14px;
-  height: 14px;
-  flex: 0 0 14px;
-  border: 1.5px solid currentColor;
-  border-radius: 50%;
-}
-
-.check-conclusion__summary.is-pass .check-conclusion__status-icon { color: var(--ui-color-success); }
-.check-conclusion__summary.is-action .check-conclusion__status-icon { color: var(--ui-color-action); }
-.check-conclusion__summary.is-error .check-conclusion__status-icon { color: var(--ui-color-destructive); }
-.check-conclusion__summary.is-unknown .check-conclusion__status-icon { color: var(--ui-text-muted); }
-
-.check-conclusion.is-inspection-failed .check-conclusion__history {
-  gap: 4px;
-  color: var(--ui-text-muted);
-}
-
-.check-conclusion.is-inspection-failed .check-conclusion__summary {
-  gap: 4px;
-  color: var(--ui-text-muted);
-}
-
-.check-conclusion.is-inspection-failed .check-conclusion__status-icon {
-  width: 12px;
-  height: 12px;
-  flex-basis: 12px;
-  border-width: 1px;
-  color: var(--ui-text-muted);
-}
-
-.check-conclusion__action {
-  min-height: 24px;
-  height: 24px;
-  padding: 2px 8px;
-}
-
-.inspection-time {
-  display: grid;
-  gap: 3px;
-}
-
-.inspection-activity {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  color: var(--ui-color-action);
-}
-
-.inspection-activity .cloud-account-check-spinner { width: 12px; height: 12px; }
-
-.inspection-failure {
-  display: grid;
-  justify-items: start;
-  gap: 4px;
-}
-
-.inspection-failure__summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--ui-color-destructive);
-  cursor: pointer;
-}
-
-.inspection-failure__summary .check-conclusion__status-icon { color: var(--ui-color-destructive); }
-
-.inspection-failed { color: var(--ui-color-destructive); }
-.inspection-reason { color: var(--ui-text-muted); }
-
-.cloud-account-dialog {
-  border-radius: var(--ui-radius-2xl);
-  overflow: hidden;
-}
-
-.cloud-account-dialog .el-dialog__header {
-  margin: 0;
-  padding: var(--ui-space-lg) var(--ui-space-xl) var(--ui-space-base);
-  border-bottom: 1px solid var(--ui-border-soft);
-}
-
-.cloud-account-dialog .el-dialog__title {
-  font-family: var(--ui-font-heading);
-  color: var(--ui-text-primary);
-}
-
-.cloud-account-dialog .el-dialog__body {
-  padding: var(--ui-space-lg) var(--ui-space-xl);
-  max-height: min(72vh, 680px);
-  overflow-y: auto;
-}
-
-.cloud-account-dialog .el-dialog__footer {
-  padding: var(--ui-space-base) var(--ui-space-xl) var(--ui-space-lg);
-  border-top: 1px solid var(--ui-border-soft);
-}
-
-.cloud-account-form-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0 var(--ui-space-base);
-}
-
-.cloud-account-form-grid .el-form-item {
-  margin-bottom: var(--ui-space-lg);
-}
-
-.cloud-account-checks {
-  display: grid;
-  gap: var(--ui-space-md);
-  padding-top: var(--ui-space-lg);
-  border-top: 1px solid var(--ui-border-soft);
-}
-
-.cloud-account-check-row {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: var(--ui-space-sm);
-  align-items: start;
-  position: relative;
-}
-
-.cloud-account-check-row:not(:last-child)::before {
-  content: "";
-  position: absolute;
-  top: 20px;
-  bottom: calc(-1 * var(--ui-space-md));
-  left: 9px;
-  width: 1px;
-  background: var(--ui-border-soft);
-}
-
-.cloud-account-check-mark {
-  width: 20px;
-  height: 20px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--ui-text-muted);
-  position: relative;
-  z-index: 1;
-  background: var(--ui-bg-card);
-}
-
-.cloud-account-check-row.is-passed .cloud-account-check-mark {
-  color: var(--ui-color-success);
-}
-
-.cloud-account-check-row.is-running .cloud-account-check-mark {
-  color: var(--ui-color-action);
-}
-
-.cloud-account-check-row.is-unavailable .cloud-account-check-mark,
-.cloud-account-check-row.is-action .cloud-account-check-mark {
-  color: var(--ui-color-action);
-}
-
-.cloud-account-check-row.is-unknown .cloud-account-check-mark {
-  color: var(--ui-text-muted);
-}
-
-.cloud-account-check-row.is-error .cloud-account-check-mark {
-  color: var(--ui-color-destructive);
-}
-
-.cloud-account-check-spinner {
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--ui-border-default);
-  border-top-color: currentColor;
-  border-radius: 50%;
-  animation: cloud-account-spin 700ms linear infinite;
-}
-
-.cloud-account-check-copy {
-  display: grid;
-  gap: var(--ui-space-xs);
-  min-width: 0;
-}
-
-.cloud-account-check-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ui-space-sm);
-}
-
-.cloud-account-check-detail {
-  color: var(--ui-text-secondary);
-}
-
-.cloud-account-issue {
-  display: grid;
-  gap: var(--ui-space-sm);
-  margin-top: 2px;
-  padding: var(--ui-space-md);
-  border-radius: var(--ui-radius-lg);
-  background: var(--ui-bg-subtle);
-  border: 1px solid var(--ui-border-soft);
-}
-
-.cloud-account-issue.is-error { border-color: color-mix(in srgb, var(--ui-color-destructive) 28%, var(--ui-border-soft)); }
-.cloud-account-issue.is-action { border-color: color-mix(in srgb, var(--ui-color-action) 30%, var(--ui-border-soft)); }
-.cloud-account-issue.is-info { border-color: color-mix(in srgb, var(--ui-color-info) 30%, var(--ui-border-soft)); }
-
-.cloud-account-issue__action {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-}
-
-.cloud-account-result {
-  margin-bottom: var(--ui-space-md);
-}
-
-.cloud-account-dialog-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--ui-space-sm);
-}
-
-.inspection-log-drawer .el-drawer__header,
-.inspection-task-drawer .el-drawer__header {
-  margin-bottom: 0;
-  padding-bottom: var(--ui-space-base);
-  border-bottom: 1px solid var(--ui-border-soft);
-}
-
-.inspection-log-drawer .el-drawer__body,
-.inspection-task-drawer .el-drawer__body {
-  padding: var(--ui-space-lg);
-}
-
-.inspection-log-content,
-.inspection-task-content {
-  display: grid;
-  gap: var(--ui-space-base);
-}
-
-.inspection-task-section {
-  display: grid;
-  gap: var(--ui-space-sm);
-  padding: var(--ui-space-base);
-  border: 1px solid var(--ui-border-soft);
-  border-radius: var(--ui-radius-xl);
-  background: var(--ui-bg-card);
-}
-
-.inspection-task-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ui-space-base);
-}
-
-.inspection-task-section__head,
-.inspection-rule-row,
-.inspection-rule-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--ui-space-sm);
-}
-
-.inspection-task-section__head,
-.inspection-rule-row { justify-content: space-between; }
-
-.inspection-rule-list {
-  display: grid;
-  gap: var(--ui-space-sm);
-}
-
-.inspection-rule-row {
-  padding: var(--ui-space-sm) 0;
-  border-bottom: 1px solid var(--ui-border-soft);
-}
-
-.inspection-rule-row:last-child { border-bottom: 0; }
-
-.inspection-rule-summary {
-  display: grid;
-  gap: 3px;
-  min-width: 0;
-}
-
-.inspection-rule-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--ui-space-sm);
-  padding: var(--ui-space-base);
-  border: 1px solid var(--ui-border-soft);
-  border-radius: var(--ui-radius-lg);
-  background: var(--ui-bg-subtle);
-}
-
-.inspection-rule-form__account { grid-column: 1 / -1; }
-
-.inspection-rule-form__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--ui-space-sm);
-  grid-column: 1 / -1;
-}
-
-.inspection-log-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ui-space-base);
-}
-
-.inspection-log-drawer__header-main {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ui-space-base);
-  width: 100%;
-  padding-right: var(--ui-space-sm);
-}
-
-.inspection-log-drawer__header-actions {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--ui-space-sm);
-}
-
-.inspection-log-drawer__close {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--ui-radius-md);
-  background: transparent;
-  color: var(--ui-text-secondary);
-  cursor: pointer;
-}
-
-.inspection-log-drawer__close:hover {
-  background: var(--ui-bg-muted);
-  color: var(--ui-text-primary);
-}
-
-.inspection-log-drawer__close svg {
-  width: 16px;
-  height: 16px;
-}
-
-.inspection-log-drawer__header-title {
-  color: var(--ui-text-primary);
-}
-
-.inspection-log-main {
-  min-height: 360px;
-}
-
-.inspection-terminal {
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--ui-topnav-foreground) 16%, transparent);
-  border-radius: var(--ui-radius-xl);
-  background: var(--ui-topnav-bg);
-  box-shadow: var(--ui-shadow-sm);
-}
-
-.inspection-terminal__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--ui-space-base);
-  padding: 10px var(--ui-space-base);
-  border-bottom: 1px solid color-mix(in srgb, var(--ui-topnav-foreground) 14%, transparent);
-  color: var(--ui-topnav-muted);
-}
-
-.inspection-terminal__stream {
-  display: grid;
-  gap: 10px;
-  min-height: 320px;
-  padding: var(--ui-space-base);
-  overflow: auto;
-}
-
-.inspection-terminal__line {
-  display: grid;
-  grid-template-columns: 128px 48px minmax(0, 1fr);
-  align-items: start;
-  gap: 10px;
-  color: var(--ui-topnav-foreground);
-}
-
-.inspection-terminal__time { color: var(--ui-topnav-muted); }
-.inspection-terminal__level { font-weight: 700; }
-.inspection-terminal__level.is-info { color: var(--ui-color-info); }
-.inspection-terminal__level.is-action { color: var(--ui-color-action); }
-.inspection-terminal__level.is-error { color: var(--ui-color-destructive); }
-.inspection-terminal__message { min-width: 0; overflow-wrap: anywhere; }
-
-.inspection-log-diagnostic {
-  display: grid;
-  align-content: start;
-  min-height: 360px;
-  overflow: hidden;
-  border: 1px solid var(--ui-border-soft);
-  border-radius: var(--ui-radius-xl);
-  background: var(--ui-bg-card);
-}
-
-.inspection-log-diagnostic__head {
-  display: flex;
-  align-items: center;
-  gap: var(--ui-space-sm);
-  padding: var(--ui-space-base);
-  border-bottom: 1px solid var(--ui-border-soft);
-  color: var(--ui-color-destructive);
-}
-
-.inspection-log-diagnostic__head svg {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 16px;
-}
-
-.inspection-log-diagnostic__row {
-  display: grid;
-  gap: 6px;
-  margin: 0;
-  padding: var(--ui-space-lg) var(--ui-space-base);
-}
-
-.inspection-log-diagnostic__row + .inspection-log-diagnostic__row {
-  border-top: 1px solid var(--ui-border-soft);
-}
-
-.inspection-log-diagnostic__row dt { color: var(--ui-text-muted); }
-.inspection-log-diagnostic__row dd { margin: 0; color: var(--ui-text-primary); }
-
-@media (max-width: 720px) {
-  .inspection-terminal__bar {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .inspection-terminal__line {
-    grid-template-columns: 1fr;
-    gap: 2px;
-  }
-}
-
-.drawer-footer-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--ui-space-sm);
-  padding-top: var(--ui-space-base);
-}
-
-@keyframes cloud-account-spin {
-  to { transform: rotate(360deg); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cloud-account-check-spinner { animation: none; }
-}
-
 @media (max-width: 1023px) {
-  :root {
-    --ui-drawer-compact: 100vw;
-    --ui-drawer-standard: 100vw;
-    --ui-drawer-wide: 100vw;
-    --ui-drawer-workspace: 100vw;
-  }
+  .account-grid { grid-template-columns: 1fr; }
 }
-
 @media (max-width: 640px) {
-  .cloud-account-dialog {
-    width: calc(100vw - 32px) !important;
-    margin-top: 5vh !important;
-  }
-
-  .cloud-account-form-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cloud-account-dialog .el-dialog__body {
-    max-height: 70vh;
-  }
-
-  .cloud-account-filter,
-  .cloud-account-filter .el-input,
-  .cloud-account-filter .el-select { width: 100%; }
-
-  .inspection-log-drawer,
-  .inspection-task-drawer { width: 100% !important; }
-
-  .inspection-rule-form { grid-template-columns: 1fr; }
-  .inspection-rule-form__actions { grid-column: 1; }
-
-  .cloud-account-dialog-actions {
-    width: 100%;
-  }
-
-  .cloud-account-dialog-actions .el-button {
-    flex: 1;
-  }
+  .access-filter__row { align-items: stretch; flex-direction: column; }
+  .access-search { width: 100%; }
+  .access-filter__actions { margin-left: 0; }
+  .account-card { height: auto; min-height: 236px; }
+  .account-card__top { grid-template-columns: 44px minmax(0, 1fr); }
+  .account-card__status { grid-column: 2; justify-content: flex-start; }
+  .account-card__middle { grid-template-columns: 1fr; }
+  .account-card__footer { align-items: flex-start; flex-direction: column; }
+  .account-card__actions { width: 100%; justify-content: flex-end; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .health-spinner { animation: none; border-right-color: currentColor; }
 }
 /* AGIONE_EDIT_BUSINESS_CSS_END */
 
@@ -2769,6 +2094,11 @@ const darkVars = {
   '--el-disabled-border-color': '#414243',
   '--el-mask-color':            'rgba(0,0,0,0.8)',
   '--ui-ring':                     '#d4d4d8',
+  '--biz-provider-aliyun-fg':      '#ff6a00',
+  '--biz-provider-aws-fg':         '#f8fafc',
+  '--biz-provider-aws-accent':     '#ff9900',
+  '--biz-provider-google-fg':      '#4285f4',
+  '--biz-provider-huawei-fg':      '#e41f2b',
 };
 const lightVars = {
   // TopBar — Light
@@ -2846,6 +2176,11 @@ const lightVars = {
   '--ui-color-destructive':   '#ef4444',
   '--ui-color-destructive-hover':  '#dc2626',
   '--ui-color-destructive-active': '#b91c1c',
+  '--biz-provider-aliyun-fg':      '#ff6a00',
+  '--biz-provider-aws-fg':         '#232f3e',
+  '--biz-provider-aws-accent':     '#ff9900',
+  '--biz-provider-google-fg':      '#4285f4',
+  '--biz-provider-huawei-fg':      '#c7000b',
 };
 // AGIONE_EDIT_THEME_VARS_END
 
@@ -2854,517 +2189,99 @@ const lightVars = {
 const i18n = {
   zh: {
     tabs:        ['模型服务', 'AI 基础设施', '财务', '用户空间'],
-    search:      '搜索',
-    discover:    '发现',
-    models:      '模型广场',
-    playground:  'Playground',
-    apiKeys:     'API 密钥',
-    docs:        '文档',
-    appLabel:    '应用',
-    text:        '文本',
-    images:      '图像',
-    video:       '视频',
-    audio:       '音频',
-    management:  '管理',
-    myModels:    '我的模型',
-    knowledge:   '知识库',
-    tools:       '工具',
-    infrastructure: '基础设施',
-    access:      '接入管理',
-    cloudAccounts: '云账号',
-    cloudAccount: {
-      pageTitle: '云账号',
-      add: '添加云账号',
-      inspectAll: '检测全部账号',
-      empty: '暂无云账号',
-      searchPlaceholder: '搜索账号名称',
-      allProviders: '全部云平台',
-      allHealth: '全部状态',
-      accountColumn: '云账号',
-      deploymentStatusColumn: '状态',
-      checkedAtColumn: '最近检测时间',
-      operations: '操作',
-      ready: '健康',
-      actionRequired: '需处理',
-      priorityHigh: '高',
-      priorityMedium: '中',
-      priorityLow: '低',
-      priorityHighBoundary: '高优先级表示云账号或访问凭证已确认不可用，当前无法继续检测部署条件，也不可用于部署模型。更新凭证或恢复账号后重新检测。',
-      priorityMediumBoundary: '中优先级表示云账号与凭证有效，但已确认存在明确的部署阻塞项，当前不可用于部署模型。按列表中的具体原因处理，后续检测通过后状态将更新。',
-      priorityLowBoundary: '低优先级表示暂无法确认具体原因，建议后续重新检测；该情况可能影响模型部署。',
-      unavailable: '账号不可用',
-      unknown: '待重新巡检',
-      pendingConfirmation: '待确认',
-      unknownFilter: '待确认',
-      currentHealth: '本次健康',
-      lastHealth: '上次健康',
-      currentConclusion: '本次结论',
-      lastConclusion: '上次结论',
-      noValidConclusion: '未产生有效结论',
-      noValidConclusionBoundary: '仅表示本次巡检没有形成新的有效健康结论，不会覆盖上次已确认的账号健康和巡检结论；不能据此判断账号或部署能力发生异常。',
-      noValidConclusionCases: ['云平台接口请求超时', '云平台限流或暂时不可用', '网络、DNS 或 TLS 连接异常', '云平台响应缺少必要字段或格式无法解析', '巡检任务被中断或执行异常'],
-      identityValid: '有效',
-      identityInvalid: '已失效',
-      identityUnknown: '待确认',
-      permissionReady: '完整',
-      permissionMissing: '缺少必要权限',
-      permissionUnknown: '待确认',
-      checking: '正在检测',
-      notInspected: '尚未检测',
-      inspectionFailed: '巡检失败',
-      viewInspectionLog: '查看日志',
-      inspectionLogTitle: '巡检日志',
-      reinspect: '重新巡检',
-      logOutput: '运行日志',
-      diagnosticResult: '诊断结果',
-      logStarted: '开始巡检：',
-      logConnectingProvider: '连接云平台并请求账号状态',
-      logProviderMetadataMissing: '云平台未返回错误码和请求 ID',
-      logHealthNotUpdated: '未生成有效结论，账号健康状态未更新',
-      logRetrySuggested: '稍后重新巡检；持续失败时联系平台管理员',
-      inspectionAccount: '巡检账号',
-      inspectionTime: '执行时间',
-      inspectionStatus: '执行状态',
-      failureStage: '失败阶段',
-      failureReason: '失败原因',
-      providerErrorCode: '云平台错误码',
-      requestId: '请求 ID',
-      errorDetail: '错误详情',
-      handlingSuggestion: '处理建议',
-      connectingProvider: '连接云平台',
-      providerRequestTimeout: '云平台接口请求超时',
-      providerDidNotReturnCode: '云平台未返回',
-      closePanel: '关闭',
-      inspectionTimeoutDetail: '云平台接口未返回有效结果，本次巡检未能更新账号健康状态。',
-      inspectionTimeoutSuggestion: '稍后重新巡检；持续失败时联系平台管理员。',
-      allRequiredChecksPassed: '全部必要检测通过',
-      updateCredential: '更新凭证',
-      notChecked: '未检测',
-      inspectNow: '重新检测',
-      detectAgain: '重新检测',
-      readyGuidance: '可用于部署模型',
-      edit: '编辑',
-      dialogTitle: '添加云账号',
-      accountName: '账号名称',
-      provider: '选择云平台',
-      accessKeyId: 'Access Key ID',
-      accessKeySecret: 'Access Key Secret',
-      aliyun: '阿里云',
-      aws: '亚马逊云科技',
-      google: 'Google Cloud',
-      huawei: '华为云',
-      cancel: '取消',
-      validateAndAdd: '检测并添加',
-      validating: '正在检测…',
-      saveAccount: '保存云账号',
-      retryValidation: '重新检测',
-      updateCredentialThenRetry: '更新凭证后重新检测',
-      close: '完成',
-      selfCheck: '云账号接入检测',
-      identityCheck: '云身份与凭证',
-      productCheck: '云产品访问与权限',
-      deployCheck: 'AI模型部署条件',
-      operationCheck: '运维与回收能力',
-      waiting: '等待检测',
-      notDetected: '未检测',
-      temporarilyNotDetected: '暂未检测',
-      checkCompleted: '检测已完成',
-      checkingIdentity: '正在确认云身份与凭证',
-      checkingProduct: '正在确认云产品访问与权限',
-      checkingDeploy: '正在确认部署所需权限',
-      checkingOperation: '正在确认运维与回收权限',
-      passed: '检测通过',
-      credentialInvalid: '云身份与凭证',
-      aliyunKeyInvalid: 'Access Key ID 无效',
-      aliyunSecretInvalid: 'Access Key Secret 无效',
-      awsKeyInvalid: 'Access Key ID 无效',
-      awsSignatureInvalid: 'Access Key Secret 无效',
-      awsAuthenticationFailed: 'AWS 凭证认证失败',
-      googleProjectMismatch: 'Project ID 与 Service Account 不一致',
-      googleServiceAccountInvalid: 'Service Account 无效',
-      huaweiAuthenticationFailed: '华为云凭证认证失败',
-      cloudIdentityUnresolved: '无法确认云身份',
-      identityUnclassified: '云商返回的身份检测结果暂未适配',
-      identityTechnicalFailure: '暂时无法完成云身份与凭证检测',
-      productNotImplemented: '当前暂未提供云产品访问检测',
-      productAccessDenied: '当前身份无权访问目标云产品',
-      awsSageMakerNotEnabled: 'AWS SageMaker 未开通或不可访问',
-      googleVertexNotEnabled: 'Google Cloud Vertex AI API 未启用',
-      huaweiModelArtsNotEnabled: '华为云 ModelArts 未开通',
-      aliyunProductDenied: '当前 RAM 身份无权访问 PAI/EAS',
-      awsProductDenied: '当前 IAM 身份无权访问 SageMaker',
-      googleProductDenied: '当前 Service Account 无权访问 Vertex AI',
-      huaweiProductDenied: '当前 IAM 身份无权访问 ModelArts',
-      productUnclassified: '云产品接口返回的检测结果暂未适配',
-      productTechnicalFailure: '暂时无法完成云产品访问与权限检测',
-      updateAccessKeyId: '更新 Access Key ID',
-      updateAccessKeySecret: '更新 Access Key Secret',
-      updateProjectId: '修改 Project ID',
-      updateServiceAccount: '更新 Service Account',
-      huaweiAccessKeyDisabled: '华为云 Access Key 已停用',
-      credentialInvalidHint: '更新 Access Key ID 或 Secret 后重新检测',
-      accountUnavailableBoundary: '只有云商返回明确的认证失败、身份停用或绑定 ID 不一致证据时，才判定账号不可用；权限不足、网络超时和临时故障不属于此结论。',
-      accountUnavailableGroups: [
-        { title: '凭证已失效', items: ['Access Key 或 Secret 错误', 'Access Key 被删除或停用', 'Service Account 密钥失效', '临时凭证已过期（如使用临时凭证）'] },
-        { title: '云身份不可用', items: ['RAM/IAM 用户或 Service Account 被删除、停用', '云项目、租户或主账号被关闭、冻结', '云厂商明确返回账号已停用或受限'] },
-        { title: '绑定账号不一致', items: ['更新后的凭证属于另一个云账号', 'Project ID、Account ID 或 Domain ID 与已绑定记录不一致'] },
-      ],
-      productUnavailable: '云产品未开通或不可访问',
-      aliyunEasNotEnabled: '阿里云 PAI/EAS 服务未开通',
-      productUnavailableHint: '开通目标云产品，或补齐当前身份的访问与账号级必要权限',
-      productBoundary: '仅检测云产品是否启用、基础访问和账号级必要权限；不检测工作空间、地域、模型、规格、配额、存储和网络等部署参数。',
-      productSetupCases: {
-        aliyun: ['PAI/EAS 未开通', 'PAI 工作空间未创建或不存在', '当前 RAM 身份无权访问 PAI/EAS 或目标工作空间', '资源目录或组织管控策略限制访问 PAI/EAS', '目标地域未启用或不支持 EAS'],
-        aws: ['目标地域不支持 SageMaker', '组织策略或账号限制阻止访问 SageMaker'],
-        google: ['Vertex AI API 未启用', 'Google Cloud 项目不存在或当前服务账号不可访问', '目标区域不支持对应 Vertex AI 服务'],
-        huawei: ['ModelArts 未开通', '华为云项目不存在或当前账号不可访问', '目标区域不支持对应 ModelArts 服务'],
-      },
-      deploymentPermissionMissing: 'AI模型部署条件未满足',
-      googleVertexEndpointPermissionMissing: 'Service Account 缺少 aiplatform.endpoints.create 权限',
-      deploymentPermissionMissingHint: '检测部署权限、模型存储访问和可用计算规格',
-      deploymentBoundary: '仅在云产品已经可以访问后判断；部署权限、模型存储、镜像、计算规格、配额和网络资源问题归入此结论。',
-      deploymentConditionCases: {
-        aliyun: ['缺少 EAS 服务创建或管理权限', '无法访问 OSS 模型文件或容器镜像', '目标 EAS 计算规格不可用或配额不足', '部署所需的 VPC、交换机或安全组不可访问'],
-        aws: ['SageMaker 执行角色未配置或权限不足', '无法访问 S3 模型文件或 ECR 镜像', '目标实例规格不可用或服务配额不足', '部署所需的 VPC、子网或安全组不可访问'],
-        google: ['Service Account 缺少 Vertex AI 部署权限', 'Model Garden 模型在目标区域不可用', '目标机器类型不可用或配额不足', '无法访问模型存储或容器镜像'],
-        huawei: ['缺少 ModelArts 服务创建或管理权限', '预置模型 asset_id 缺失或不可访问', '目标实例规格不可用或配额不足', '无法访问 OBS 模型文件或 SWR 镜像'],
-      },
-      possibleConditionsTitle: '可能存在以下情况：',
-      viewPossibleConditions: '查看可能情况',
-      viewStatusBoundary: '查看状态说明',
-      operationPermissionMissing: '缺少运维与回收权限',
-      operationPermissionMissingHint: '账号可保存，补齐权限后才能安全管理实例',
-      unableToVerify: '暂无法确认具体原因',
-      unableToVerifyHint: '检测结果暂无法归入已有原因，暂无对应处理措施',
-      unclassifiedBackendLead: '云产品接口可访问，',
-      unclassifiedBackendReason: '后端没有归因统一记录的原因',
-      saveableNotDeployable: '可添加云账号，暂不可用于部署模型',
-      productSaveableHint: '保存后可在云账号列表查看开通路径并重新检测',
-      deploymentSaveableHint: '保存后可在云账号列表查看所需配置并重新检测',
-      unclassifiedSaveableHint: '建议保存后重新检测，该情况可能影响模型部署',
-      unclassifiedResultTitle: '检测已完成',
-      unclassifiedResultDesc: '建议保存后重新检测，该情况可能影响模型部署',
-      unclassifiedBoundary: '暂无法确认具体原因，建议后续重新检测；该情况可能影响模型部署。',
-      unclassifiedCases: ['云商返回了系统尚未适配的新错误码', '返回证据不足以区分凭证、权限或账号限制', '多个检测结果互相冲突', '云商语义暂时无法映射到现有分类'],
-      checkIncomplete: '检测未完成',
-      checkIncompleteHint: '本次检测未产生有效结论，输入已保留，可重新检测',
-      savedPendingConfirmation: '云账号已保存，建议重新检测确认状态',
-      accountReady: '部署检测全部通过',
-      accountReadyHint: '云账号已添加，可用于模型部署',
-      openProductGuide: '查看开通路径',
-      viewPermission: '查看所需权限',
-      goCloudConsole: '前往云平台',
-      contactAdmin: '联系云账号管理员',
-      added: '云账号已添加',
-      savedForConfig: '云账号已保存，完成配置后可用于部署',
-      duplicateName: '账号名称已存在',
-      requiredName: '请输入账号名称',
-      requiredKey: '请输入 Access Key ID',
-      requiredSecret: '请输入 Access Key Secret',
-      inspectionTitle: '自动巡检设置',
-      inspectionEnabled: '启用自动巡检',
-      inspectionScope: '巡检范围',
-      inspectionScopeAll: '全部云账号',
-      inspectionScopeRemaining: '未单独设置的云账号',
-      defaultInspectionRule: '默认巡检规则',
-      individualInspectionRules: '单账号设置',
-      addIndividualRule: '添加单账号设置',
-      noIndividualRules: '暂无单账号设置',
-      individualRuleHint: '单独设置账号不执行默认规则',
-      selectCloudAccount: '选择云账号',
-      selectFrequency: '选择巡检频率',
-      addRule: '添加设置',
-      saveRule: '保存设置',
-      removeRule: '移除',
-      selectRuleAccountFirst: '请选择云账号',
-      selectRuleFrequencyFirst: '请选择巡检频率',
-      selectRuleWeekdayFirst: '请选择执行日期',
-      selectRuleTimeFirst: '请选择执行时间',
-      inspectionFrequency: '巡检频率',
-      executionDay: '执行日期',
-      executionTime: '执行时间',
-      timeZone: '时区',
-      systemTimeZone: '系统时区',
-      weekdays: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
-      selectWeekday: '选择执行日期',
-      selectTime: '选择执行时间',
-      notConfigured: '未配置',
-      daily: '每日',
-      weekly: '每周',
-      lastRun: '上次执行',
-      nextRun: '下次执行',
-      notScheduled: '未安排',
-      runNow: '立即执行',
-      history: '查看历史',
-      notifications: '异常通知',
-      notifyOwner: '通知账号负责人',
-      saveTask: '保存设置',
-      taskSaved: '巡检设置已保存',
-      inspectionStarted: '已开始检测',
-      inspectionCompleted: '检测已完成',
-      detailTitle: '云账号健康详情',
-      checkResult: '检测结果',
-    },
-    stageChip:   'Shell 评审模式',
-    stageTitle:  '主内容区故意留空',
-    stageDesc:   '本页面用于评审控制台 Chrome 层的视觉表现，包括 TopBar、SideNav、Light/Dark 切换和双语切换。业务主内容不参与本轮评审。',
+    modelServices: '模型服务',
+    quickDeploy: '快速部署',
+    myDeployments: '我的部署',
+    accessGroup: '接入管理',
+    accessManagement: '接入管理',
+    addCloudAccount: '添加云账号',
+    all: '全部',
+    private: 'AGIOne Private',
+    aliyun: '阿里云',
+    aws: '亚马逊云科技',
+    google: 'Google Cloud',
+    huawei: '华为云',
+    namePlaceholder: '名称',
+    search: '搜索',
+    reset: '重置',
+    healthLabel: '健康状态',
+    healthy: '健康',
+    actionRequired: '需处理',
+    priorityHigh: '高',
+    priorityMedium: '中',
+    priorityLow: '低',
+    aliyunEasNotEnabled: '阿里云 PAI/EAS 服务未开通',
+    googlePermissionMissing: 'Service Account 缺少 aiplatform.endpoints.create 权限',
+    huaweiAccessKeyDisabled: '华为云 Access Key 已停用',
+    unableToVerify: '暂无法确认具体原因',
+    openProductGuide: '查看开通路径',
+    viewPermission: '查看所需权限',
+    updateCredential: '更新凭证',
+    allChecksPassed: '所有必要检测已通过',
+    checking: '检测中',
+    lastChecked: '最近检测',
+    recheck: '重新检测',
+    edit: '编辑',
+    delete: '删除',
+    moreActions: '更多操作',
+    totalPrefix: '共',
+    totalSuffix: '条',
+    emptyTitle: '暂无云账号',
+    emptyHint: '添加云账号后可查看健康状态',
+    mixedScenario: '混合状态',
+    checkingScenario: '检测中',
+    healthyScenario: '全部健康',
+    actionScenario: '全部需处理',
+    emptyScenario: '空态',
+    scenarioGroup: '列表状态',
   },
   en: {
     tabs:        ['Model Services', 'AI Infrastructure', 'Finance', 'User Space'],
-    search:      'Search',
-    discover:    'Discover',
-    models:      'Models',
-    playground:  'Playground',
-    apiKeys:     'API Keys',
-    docs:        'Documentation',
-    appLabel:    'Playground',
-    text:        'Text',
-    images:      'Images',
-    video:       'Video',
-    audio:       'Audio',
-    management:  'Management',
-    myModels:    'My Models',
-    knowledge:   'Knowledge Bases',
-    tools:       'Tools',
-    infrastructure: 'Infrastructure',
-    access:      'Access management',
-    cloudAccounts: 'Cloud accounts',
-    cloudAccount: {
-      pageTitle: 'Cloud accounts',
-      add: 'Add cloud account',
-      inspectAll: 'Detect all accounts',
-      empty: 'No cloud accounts',
-      searchPlaceholder: 'Search account name',
-      allProviders: 'All cloud platforms',
-      allHealth: 'All statuses',
-      accountColumn: 'Cloud account',
-      deploymentStatusColumn: 'Status',
-      checkedAtColumn: 'Last detected at',
-      operations: 'Actions',
-      ready: 'Healthy',
-      actionRequired: 'Action required',
-      priorityHigh: 'High',
-      priorityMedium: 'Medium',
-      priorityLow: 'Low',
-      priorityHighBoundary: 'High priority means the cloud account or access credentials are confirmed unavailable. Deployment prerequisites cannot be checked and the account cannot deploy models. Update the credentials or restore the account, then detect it again.',
-      priorityMediumBoundary: 'Medium priority means the cloud account and credentials are valid, but a specific deployment blocker has been confirmed. Resolve the listed cause; the status will update after a later detection passes.',
-      priorityLowBoundary: 'Low priority means the specific cause cannot be confirmed. Detect the account again later; this condition may affect model deployment.',
-      unavailable: 'Account unavailable',
-      unknown: 'Pending reinspection',
-      pendingConfirmation: 'Pending confirmation',
-      unknownFilter: 'Pending confirmation',
-      currentHealth: 'Current health',
-      lastHealth: 'Previous health',
-      currentConclusion: 'Current result',
-      lastConclusion: 'Previous result',
-      noValidConclusion: 'No valid result produced',
-      noValidConclusionBoundary: 'This means the current inspection did not produce a new valid health result. It does not overwrite the previously confirmed health or result and does not prove that the account or deployment capability failed.',
-      noValidConclusionCases: ['The cloud platform request timed out', 'The cloud platform was rate-limited or temporarily unavailable', 'A network, DNS, or TLS connection failed', 'The provider response missed required fields or could not be parsed', 'The inspection task was interrupted or failed during execution'],
-      identityValid: 'Valid',
-      identityInvalid: 'Invalid',
-      identityUnknown: 'Unconfirmed',
-      permissionReady: 'Complete',
-      permissionMissing: 'Required permissions missing',
-      permissionUnknown: 'Unconfirmed',
-      checking: 'Detecting',
-      notInspected: 'Not detected',
-      inspectionFailed: 'Inspection failed',
-      viewInspectionLog: 'View log',
-      inspectionLogTitle: 'Inspection log',
-      reinspect: 'Inspect again',
-      logOutput: 'Run log',
-      diagnosticResult: 'Diagnostic result',
-      logStarted: 'Inspection started: ',
-      logConnectingProvider: 'Connecting to the cloud platform and requesting account status',
-      logProviderMetadataMissing: 'The cloud platform did not return an error code or request ID',
-      logHealthNotUpdated: 'No valid result was produced; account health was not updated',
-      logRetrySuggested: 'Inspect again later; contact the platform administrator if failures continue',
-      inspectionAccount: 'Cloud account',
-      inspectionTime: 'Run time',
-      inspectionStatus: 'Run status',
-      failureStage: 'Failed stage',
-      failureReason: 'Failure reason',
-      providerErrorCode: 'Provider error code',
-      requestId: 'Request ID',
-      errorDetail: 'Error details',
-      handlingSuggestion: 'Recommended action',
-      connectingProvider: 'Connecting to cloud platform',
-      providerRequestTimeout: 'Cloud platform request timed out',
-      providerDidNotReturnCode: 'Not returned by cloud platform',
-      closePanel: 'Close',
-      inspectionTimeoutDetail: 'The cloud platform did not return a valid result, so this inspection could not update account health.',
-      inspectionTimeoutSuggestion: 'Inspect again later. Contact the platform administrator if the failure continues.',
-      allRequiredChecksPassed: 'All required checks passed',
-      updateCredential: 'Update credentials',
-      notChecked: 'Not checked',
-      inspectNow: 'Detect again',
-      detectAgain: 'Detect again',
-      readyGuidance: 'Ready for model deployment',
-      edit: 'Edit',
-      dialogTitle: 'Add cloud account',
-      accountName: 'Account name',
-      provider: 'Cloud platform',
-      accessKeyId: 'Access Key ID',
-      accessKeySecret: 'Access Key Secret',
-      aliyun: 'Alibaba Cloud',
-      aws: 'Amazon Web Services',
-      google: 'Google Cloud',
-      huawei: 'Huawei Cloud',
-      cancel: 'Cancel',
-      validateAndAdd: 'Check and add',
-      validating: 'Checking…',
-      saveAccount: 'Save cloud account',
-      retryValidation: 'Check again',
-      updateCredentialThenRetry: 'Update credentials, then check again',
-      close: 'Done',
-      selfCheck: 'Cloud account access checks',
-      identityCheck: 'Cloud identity & credentials',
-      productCheck: 'Cloud product access & permissions',
-      deployCheck: 'AI model deployment prerequisites',
-      operationCheck: 'Operations & cleanup capability',
-      waiting: 'Waiting',
-      notDetected: 'Not checked',
-      temporarilyNotDetected: 'Not checked yet',
-      checkCompleted: 'Detection completed',
-      checkingIdentity: 'Confirming cloud identity and credentials',
-      checkingProduct: 'Confirming cloud product access and permissions',
-      checkingDeploy: 'Checking deployment permissions',
-      checkingOperation: 'Checking operations and cleanup permissions',
-      passed: 'Passed',
-      credentialInvalid: 'Cloud identity & credentials',
-      aliyunKeyInvalid: 'Access Key ID is invalid',
-      aliyunSecretInvalid: 'Access Key Secret is invalid',
-      awsKeyInvalid: 'Access Key ID is invalid',
-      awsSignatureInvalid: 'Access Key Secret is invalid',
-      awsAuthenticationFailed: 'AWS credential authentication failed',
-      googleProjectMismatch: 'Project ID does not match the service account',
-      googleServiceAccountInvalid: 'Service Account is invalid',
-      huaweiAuthenticationFailed: 'Huawei Cloud credential authentication failed',
-      cloudIdentityUnresolved: 'Cloud identity cannot be confirmed',
-      identityUnclassified: 'The provider returned an identity result that is not mapped yet',
-      identityTechnicalFailure: 'Cloud identity and credential detection is temporarily unavailable',
-      productNotImplemented: 'Cloud product access detection is not available yet',
-      productAccessDenied: 'The current identity cannot access the target cloud product',
-      awsSageMakerNotEnabled: 'AWS SageMaker is not enabled or accessible',
-      googleVertexNotEnabled: 'Google Cloud Vertex AI API is not enabled',
-      huaweiModelArtsNotEnabled: 'Huawei Cloud ModelArts is not enabled',
-      aliyunProductDenied: 'The current RAM identity cannot access PAI/EAS',
-      awsProductDenied: 'The current IAM identity cannot access SageMaker',
-      googleProductDenied: 'The current service account cannot access Vertex AI',
-      huaweiProductDenied: 'The current IAM identity cannot access ModelArts',
-      productUnclassified: 'The cloud product API returned a result that is not mapped yet',
-      productTechnicalFailure: 'Cloud product access detection is temporarily unavailable',
-      updateAccessKeyId: 'Update Access Key ID',
-      updateAccessKeySecret: 'Update Access Key Secret',
-      updateProjectId: 'Update Project ID',
-      updateServiceAccount: 'Update Service Account',
-      huaweiAccessKeyDisabled: 'The Huawei Cloud access key is disabled',
-      credentialInvalidHint: 'Update the access key ID or secret, then check again',
-      accountUnavailableBoundary: 'Mark an account unavailable only when the provider returns definitive evidence of authentication failure, a disabled identity, or a mismatched bound ID. Permission denial, network timeout, and temporary failures are excluded.',
-      accountUnavailableGroups: [
-        { title: 'Credential expired or invalid', items: ['The access key or secret is incorrect', 'The access key was deleted or disabled', 'The service account key is invalid', 'Temporary credentials expired, when temporary credentials are used'] },
-        { title: 'Cloud identity unavailable', items: ['The RAM/IAM user or service account was deleted or disabled', 'The cloud project, tenant, or main account was closed or frozen', 'The provider explicitly reports that the account is disabled or restricted'] },
-        { title: 'Bound account mismatch', items: ['The updated credentials belong to another cloud account', 'The project ID, account ID, or domain ID differs from the bound record'] },
-      ],
-      productUnavailable: 'Cloud product is not enabled or accessible',
-      aliyunEasNotEnabled: 'Alibaba Cloud PAI/EAS is not enabled',
-      productUnavailableHint: 'Enable the target cloud product or grant the current identity the required account-level access',
-      productBoundary: 'This check covers product enablement, basic access, and required account-level permissions. Workspace, region, model, specification, quota, storage, and network parameters belong to deployment preflight.',
-      productSetupCases: {
-        aliyun: ['PAI/EAS is not enabled', 'The PAI workspace is missing or inaccessible to this account', 'EAS is not enabled or supported in the target region'],
-        aws: ['SageMaker is unavailable in the target region', 'An organization policy or account restriction blocks SageMaker access'],
-        google: ['Vertex AI API is not enabled', 'The Google Cloud project is missing or inaccessible to the service account', 'The target region does not support the required Vertex AI service'],
-        huawei: ['ModelArts is not enabled', 'The Huawei Cloud project is missing or inaccessible to this account', 'The target region does not support the required ModelArts service'],
-      },
-      deploymentPermissionMissing: 'AI model deployment prerequisites not met',
-      googleVertexEndpointPermissionMissing: 'The service account lacks the aiplatform.endpoints.create permission',
-      deploymentPermissionMissingHint: 'Check deployment permissions, model storage access, and available compute specifications',
-      deploymentBoundary: 'This result is evaluated only after the cloud product is accessible. Deployment permissions, model storage, images, compute specifications, quota, and network resources belong here.',
-      deploymentConditionCases: {
-        aliyun: ['EAS service creation or management permissions are missing', 'OSS model files or container images are inaccessible', 'The target EAS compute specification is unavailable or quota is insufficient', 'The required VPC, vSwitch, or security group is inaccessible'],
-        aws: ['The SageMaker execution role is missing or lacks permissions', 'S3 model files or ECR images are inaccessible', 'The target instance type is unavailable or service quota is insufficient', 'The required VPC, subnet, or security group is inaccessible'],
-        google: ['The service account lacks Vertex AI deployment permissions', 'The Model Garden model is unavailable in the target region', 'The target machine type is unavailable or quota is insufficient', 'Model storage or container images are inaccessible'],
-        huawei: ['ModelArts service creation or management permissions are missing', 'The preset model asset_id is missing or inaccessible', 'The target instance specification is unavailable or quota is insufficient', 'OBS model files or SWR images are inaccessible'],
-      },
-      possibleConditionsTitle: 'Possible conditions:',
-      viewPossibleConditions: 'View possible conditions',
-      viewStatusBoundary: 'View status guidance',
-      operationPermissionMissing: 'Operations and cleanup permissions missing',
-      operationPermissionMissingHint: 'The account can be saved; add permissions for safe lifecycle management',
-      unableToVerify: 'Specific cause cannot be confirmed',
-      unableToVerifyHint: 'The result cannot be mapped to an existing cause and no specific action is available.',
-      unclassifiedBackendLead: 'The cloud product API is accessible, ',
-      unclassifiedBackendReason: 'but the backend has not mapped this cause to a unified category.',
-      saveableNotDeployable: 'Cloud account can be added but is not ready for model deployment',
-      productSaveableHint: 'Save it, then view the enablement path and detect it again from the cloud account list',
-      deploymentSaveableHint: 'Save it, then view the required setup and detect it again from the cloud account list',
-      unclassifiedSaveableHint: 'Detect the account again after saving; this condition may affect model deployment.',
-      unclassifiedResultTitle: 'Detection completed',
-      unclassifiedResultDesc: 'Detect the account again after saving; this condition may affect model deployment.',
-      unclassifiedBoundary: 'The specific cause cannot be confirmed. Detect the account again later; this condition may affect model deployment.',
-      unclassifiedCases: ['The provider returned a new error code that is not mapped yet', 'The evidence cannot distinguish credential, permission, or account restriction causes', 'Multiple check results conflict', 'Provider semantics cannot yet be mapped to the current categories'],
-      checkIncomplete: 'Check incomplete',
-      checkIncompleteHint: 'This check produced no valid result. Inputs are preserved and the check can be retried.',
-      savedPendingConfirmation: 'Cloud account saved; detect it again to confirm its status',
-      accountReady: 'All deployment checks passed',
-      accountReadyHint: 'Cloud account added and ready for deployment',
-      openProductGuide: 'View enablement guide',
-      viewPermission: 'View required permissions',
-      goCloudConsole: 'Open cloud console',
-      contactAdmin: 'Contact cloud account admin',
-      added: 'Cloud account added',
-      savedForConfig: 'Cloud account saved; complete setup before deployment',
-      duplicateName: 'Account name already exists',
-      requiredName: 'Enter an account name',
-      requiredKey: 'Enter an Access Key ID',
-      requiredSecret: 'Enter an Access Key Secret',
-      inspectionTitle: 'Automatic inspection settings',
-      inspectionEnabled: 'Enable automatic inspection',
-      inspectionScope: 'Scope',
-      inspectionScopeAll: 'All cloud accounts',
-      inspectionScopeRemaining: 'Accounts without individual settings',
-      defaultInspectionRule: 'Default inspection rule',
-      individualInspectionRules: 'Individual account settings',
-      addIndividualRule: 'Add individual setting',
-      noIndividualRules: 'No individual account settings',
-      individualRuleHint: 'Individually configured accounts skip the default rule',
-      selectCloudAccount: 'Select cloud account',
-      selectFrequency: 'Select inspection frequency',
-      addRule: 'Add setting',
-      saveRule: 'Save setting',
-      removeRule: 'Remove',
-      selectRuleAccountFirst: 'Select a cloud account',
-      selectRuleFrequencyFirst: 'Select an inspection frequency',
-      selectRuleWeekdayFirst: 'Select a run day',
-      selectRuleTimeFirst: 'Select a run time',
-      inspectionFrequency: 'Frequency',
-      executionDay: 'Run day',
-      executionTime: 'Run time',
-      timeZone: 'Time zone',
-      systemTimeZone: 'System time zone',
-      weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-      selectWeekday: 'Select a run day',
-      selectTime: 'Select a run time',
-      notConfigured: 'Not configured',
-      daily: 'Daily',
-      weekly: 'Weekly',
-      lastRun: 'Last run',
-      nextRun: 'Next run',
-      notScheduled: 'Not scheduled',
-      runNow: 'Run now',
-      history: 'View history',
-      notifications: 'Failure notification',
-      notifyOwner: 'Notify account owner',
-      saveTask: 'Save settings',
-      taskSaved: 'Inspection settings saved',
-      inspectionStarted: 'Detection started',
-      inspectionCompleted: 'Detection completed',
-      detailTitle: 'Cloud account health details',
-      checkResult: 'Check result',
-    },
-    stageChip:   'Shell Review Mode',
-    stageTitle:  'Main content intentionally omitted',
-    stageDesc:   'This page is for reviewing the console chrome — TopBar, SideNav, Light/Dark theme and bilingual toggle. Business content is intentionally excluded.',
+    modelServices: 'Model Services',
+    quickDeploy: 'Quick Deploy',
+    myDeployments: 'My Deployments',
+    accessGroup: 'Access Management',
+    accessManagement: 'Access Management',
+    addCloudAccount: 'Add Cloud Account',
+    all: 'All',
+    private: 'AGIOne Private',
+    aliyun: 'Alibaba Cloud',
+    aws: 'AWS',
+    google: 'Google Cloud',
+    huawei: 'Huawei Cloud',
+    namePlaceholder: 'Name',
+    search: 'Search',
+    reset: 'Reset',
+    healthLabel: 'Health',
+    healthy: 'Healthy',
+    actionRequired: 'Action required',
+    priorityHigh: 'High',
+    priorityMedium: 'Medium',
+    priorityLow: 'Low',
+    aliyunEasNotEnabled: 'Alibaba Cloud PAI/EAS is not enabled',
+    googlePermissionMissing: 'Service Account lacks the aiplatform.endpoints.create permission',
+    huaweiAccessKeyDisabled: 'Huawei Cloud Access Key is disabled',
+    unableToVerify: 'Unable to identify a specific cause',
+    openProductGuide: 'View setup path',
+    viewPermission: 'View required permissions',
+    updateCredential: 'Update credentials',
+    allChecksPassed: 'All required checks passed',
+    checking: 'Checking',
+    lastChecked: 'Last checked',
+    recheck: 'Check again',
+    edit: 'Edit',
+    delete: 'Delete',
+    moreActions: 'More actions',
+    totalPrefix: '',
+    totalSuffix: ' total',
+    emptyTitle: 'No cloud accounts',
+    emptyHint: 'Add a cloud account to view its health',
+    mixedScenario: 'Mixed states',
+    checkingScenario: 'Checking',
+    healthyScenario: 'All healthy',
+    actionScenario: 'All action required',
+    emptyScenario: 'Empty',
+    scenarioGroup: 'List states',
   },
 };
 // AGIONE_EDIT_I18N_END
@@ -4262,229 +3179,151 @@ const LOGO_LIGHT = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABE4AAAE+CAYAAA
 const app = createApp({
   setup() {
     const isDark    = ref(false);
-    const lang      = ref('en');
+    const lang      = ref('zh');
     const activeTab = ref(1);
     // AGIONE_EDIT_SETUP_DATA_START · ⚠️ 业务 ref / reactive 数据写在这里（filterKeyword / tableData / formModel 等）
     // chrome 自带的 activeNav / mobileNavOpen / lang / isDark / scenarios / balance 不动，业务 ref 增量加在 activeNav 后面
-    const activeNav = ref('models');
+    const activeNav = ref('access-management');
     const mobileNavOpen = ref(false);
     const t = computed(() => i18n[lang.value]);
-    lang.value = 'zh';
-    activeTab.value = 1;
-    activeNav.value = 'cloudAccounts';
+    const providerFilter = ref('all');
+    const keywordInput = ref('');
+    const appliedKeyword = ref('');
+    const currentPage = ref(1);
+    const checkingAccountIds = reactive(new Set());
+    const detectionOverrides = reactive({});
+    const recheckTimers = [];
 
-    const dialogVisible = ref(false);
-    const inspectionTaskVisible = ref(false);
-    const inspectionLogVisible = ref(false);
-    const inspectionLogMode = ref('output');
-    const selectedInspectionLogAccount = ref(null);
-    const checkingAccountId = ref('');
-    const filterKeyword = ref('');
-    const providerFilter = ref('');
-    const healthFilter = ref('');
-    const accountAdded = ref(false);
-    const credentialInput = ref(null);
-    const credentialSecretInput = ref(null);
-    const rejectedCredentialSnapshot = reactive({ accessKeyId: '', accessKeySecret: '' });
-    const formModel = reactive({
-      name: '生产环境账号',
-      provider: 'aliyun',
-      accessKeyId: 'LTAI••••••••8K2P',
-      accessKeySecret: 'example-secret',
-    });
-    const formErrors = reactive({ name: '', accessKeyId: '', accessKeySecret: '' });
-    const inspectionTask = reactive({
-      enabled: true,
-      frequency: 'weekly',
-      notifyOwner: true,
-      lastRunAt: '2026-07-24 09:00',
-      nextRunAt: '2026-07-31 09:00',
-      weekday: 5,
-      runTime: '09:00',
-    });
-    const individualInspectionRules = ref([]);
-    const individualRuleEditorVisible = ref(false);
-    const individualRuleEditIndex = ref(-1);
-    const individualRuleForm = reactive({ accountId: '', frequency: '', weekday: 5, runTime: '09:00' });
-    let inspectionTaskSnapshot = null;
-    let validationRun = 0;
-    let validationTimers = [];
-    let inspectionTimer = null;
+    const accountRecords = reactive([
+      { id: 'cloud-ready', name: '生产推理账号', provider: 'aliyun', cloudType: { zh: '公有云', en: 'Public cloud' }, health: 'READY', nextHealth: 'READY', lastChecked: '2026-07-27 10:03:00' },
+      { id: 'cloud-product-setup', name: '预发布模型账号', provider: 'aliyun', cloudType: { zh: '公有云', en: 'Public cloud' }, health: 'ACTION_REQUIRED', priority: 'medium', reasonKey: 'aliyunEasNotEnabled', healthAction: 'openProductGuide', nextHealth: 'READY', lastChecked: '2026-07-24 09:00:00' },
+      { id: 'cloud-permission', name: '模型服务账号', provider: 'google', cloudType: { zh: '公有云', en: 'Public cloud' }, health: 'ACTION_REQUIRED', priority: 'medium', reasonKey: 'googlePermissionMissing', healthAction: 'viewPermission', nextHealth: 'ACTION_REQUIRED', lastChecked: '2026-07-24 09:00:00' },
+      { id: 'cloud-credential', name: '历史部署账号', provider: 'huawei', cloudType: { zh: '公有云', en: 'Public cloud' }, health: 'ACTION_REQUIRED', priority: 'high', reasonKey: 'huaweiAccessKeyDisabled', healthAction: 'updateCredential', nextHealth: 'ACTION_REQUIRED', lastChecked: '2026-07-24 09:00:00' },
+      { id: 'cloud-unclassified', name: '新接入模型账号', provider: 'aws', cloudType: { zh: '公有云', en: 'Public cloud' }, health: 'ACTION_REQUIRED', priority: 'low', reasonKey: 'unableToVerify', healthAction: '', nextHealth: 'ACTION_REQUIRED', lastChecked: '2026-07-24 09:00:00' },
+    ]);
 
-    const cloudAccountColumns = computed(() => [
-      { prop: 'name', label: t.value.cloudAccount.accountColumn, minWidth: 210, slot: 'account' },
-      { prop: 'health', label: t.value.cloudAccount.deploymentStatusColumn, minWidth: 360, slot: 'health' },
-      { prop: 'checkedAt', label: t.value.cloudAccount.checkedAtColumn, minWidth: 150, slot: 'checkedAt' },
+    const providerOptions = computed(() => [
+      { key: 'all', label: t.value.all, mark: '', markClass: '' },
+      { key: 'agione', label: t.value.private, mark: 'A1', markClass: 'is-agione' },
+      { key: 'aliyun', label: t.value.aliyun, mark: '〔〕', markClass: 'is-aliyun' },
+      { key: 'aws', label: t.value.aws, mark: 'aws', markClass: 'is-aws' },
+      { key: 'google', label: t.value.google, mark: 'G', markClass: 'is-google' },
+      { key: 'huawei', label: t.value.huawei, mark: 'H', markClass: 'is-huawei' },
     ]);
-    const accountRecords = ref([
-      { id: 'cloud-ready', name: '生产推理账号', provider: 'aliyun', health: 'READY', identity: 'valid', permission: 'ready', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
-      { id: 'cloud-product-setup', name: '预发布模型账号', provider: 'aliyun', health: 'ACTION_REQUIRED', conclusionKey: 'productUnavailable', conclusionReasonKey: 'aliyunEasNotEnabled', identity: 'valid', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
-      { id: 'cloud-action', name: '模型服务账号', provider: 'google', health: 'ACTION_REQUIRED', conclusionReasonKey: 'googleVertexEndpointPermissionMissing', identity: 'valid', permission: 'missing', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
-      { id: 'cloud-unavailable', name: '历史部署账号', provider: 'huawei', health: 'UNAVAILABLE', conclusionReasonKey: 'huaweiAccessKeyDisabled', identity: 'invalid', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
-      { id: 'cloud-unclassified', name: '新接入模型账号', provider: 'aws', health: 'UNKNOWN', identity: 'valid', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
-    ]);
-    const providerLabel = (provider) => t.value.cloudAccount[provider] || provider;
-    const inspectionLogLines = computed(() => {
-      const row = selectedInspectionLogAccount.value;
-      if (!row) return [];
-      const time = row.lastAttemptedAt || row.lastInspectedAt || '';
-      const copy = t.value.cloudAccount;
-      return [
-        { time, level: 'INFO', tone: 'info', message: copy.logStarted + row.name + ' · ' + providerLabel(row.provider) },
-        { time, level: 'INFO', tone: 'info', message: copy.logConnectingProvider },
-        { time, level: 'ERROR', tone: 'error', message: copy[row.failureReasonKey || 'providerRequestTimeout'] },
-        { time, level: 'WARN', tone: 'action', message: copy.logProviderMetadataMissing },
-        { time, level: 'WARN', tone: 'action', message: copy.logHealthNotUpdated },
-        { time, level: 'INFO', tone: 'info', message: copy.logRetrySuggested },
-      ];
-    });
-    const healthMeta = computed(() => ({
-      READY: { status: 'active', label: t.value.cloudAccount.ready },
-      ACTION_REQUIRED: { status: 'pending', label: t.value.cloudAccount.actionRequired },
-      UNAVAILABLE: { status: 'pending', label: t.value.cloudAccount.actionRequired },
-      UNKNOWN: { status: 'pending', label: t.value.cloudAccount.actionRequired },
-    }));
-    const healthMetaFor = (row) => healthMeta.value[row.health];
-    const attentionBadgeClass = (row) => {
-      if (row.health === 'UNAVAILABLE') return 'badge-red';
-      if (row.health === 'UNKNOWN') return 'badge-blue';
-      return 'badge-action';
-    };
-    const attentionPriorityLabel = (row) => {
-      if (row.health === 'UNAVAILABLE') return t.value.cloudAccount.priorityHigh;
-      if (row.health === 'UNKNOWN') return t.value.cloudAccount.priorityLow;
-      return t.value.cloudAccount.priorityMedium;
-    };
-    const attentionStatusLabel = (row) => lang.value === 'zh'
-      ? healthMetaFor(row).label + '（' + attentionPriorityLabel(row) + '）'
-      : healthMetaFor(row).label + ' (' + attentionPriorityLabel(row) + ')';
-    const dimensionMeta = computed(() => ({
-      identity: {
-        valid: { icon: 'circle-check', className: 'is-pass', label: t.value.cloudAccount.identityValid },
-        invalid: { icon: 'circle-x', className: 'is-error', label: t.value.cloudAccount.identityInvalid },
-        unknown: { icon: 'circle-help', className: 'is-unknown', label: t.value.cloudAccount.identityUnknown },
-      },
-      permission: {
-        ready: { icon: 'circle-check', className: 'is-pass', label: t.value.cloudAccount.permissionReady },
-        missing: { icon: 'circle-alert', className: 'is-action', label: t.value.cloudAccount.permissionMissing },
-        unknown: { icon: 'circle-help', className: 'is-unknown', label: t.value.cloudAccount.permissionUnknown },
-      },
-    }));
-    function conclusionMeta(row) {
-      if (row.health === 'READY') {
-        return { mark: '✓', className: 'is-pass', label: t.value.cloudAccount.allRequiredChecksPassed, guidance: t.value.cloudAccount.readyGuidance, actionLabel: '', action: '' };
-      }
-      if (row.health === 'ACTION_REQUIRED') {
-        if (row.conclusionKey === 'productUnavailable') {
-          return {
-            mark: '!', className: 'is-action', label: t.value.cloudAccount[row.conclusionReasonKey] || t.value.cloudAccount.productUnavailable,
-            helpItems: t.value.cloudAccount.productSetupCases[row.provider] || [],
-            helpBoundary: t.value.cloudAccount.priorityMediumBoundary,
-            actionLabel: t.value.cloudAccount.openProductGuide, action: 'product',
-          };
-        }
-        return {
-          mark: '!', className: 'is-action', label: t.value.cloudAccount[row.conclusionReasonKey] || t.value.cloudAccount.deploymentPermissionMissing,
-          helpItems: t.value.cloudAccount.deploymentConditionCases[row.provider] || [],
-          helpBoundary: t.value.cloudAccount.priorityMediumBoundary,
-          actionLabel: t.value.cloudAccount.viewPermission, action: 'permission',
-        };
-      }
-      if (row.health === 'UNAVAILABLE') {
-        return {
-          mark: '×', className: 'is-error', label: t.value.cloudAccount[row.conclusionReasonKey] || t.value.cloudAccount.credentialInvalid,
-          helpGroups: t.value.cloudAccount.accountUnavailableGroups,
-          helpBoundary: t.value.cloudAccount.priorityHighBoundary,
-          actionLabel: t.value.cloudAccount.updateCredential, action: 'edit',
-        };
-      }
+
+    const providerLabel = (provider) => ({
+      agione: t.value.private,
+      aliyun: t.value.aliyun,
+      aws: t.value.aws,
+      google: t.value.google,
+      huawei: t.value.huawei,
+    }[provider] || provider);
+
+    const healthMeta = (account) => {
+      if (account.health === 'READY') return { status: 'active', label: t.value.healthy };
+      if (account.health === 'CHECKING') return { status: 'inactive', label: t.value.checking };
+      const priorityLabel = {
+        high: t.value.priorityHigh,
+        medium: t.value.priorityMedium,
+        low: t.value.priorityLow,
+      }[account.priority || 'medium'];
       return {
-        mark: '?', className: 'is-unknown', label: t.value.cloudAccount.unableToVerify,
-        helpItems: t.value.cloudAccount.unclassifiedCases,
-        helpBoundary: t.value.cloudAccount.priorityLowBoundary,
-        actionLabel: '', action: '',
+        status: 'pending',
+        label: lang.value === 'zh'
+          ? `${t.value.actionRequired}（${priorityLabel}）`
+          : `${t.value.actionRequired} (${priorityLabel})`,
       };
+    };
+
+    const attentionBadgeClass = (account) => ({
+      high: 'badge-red',
+      medium: 'badge-action',
+      low: 'badge-blue',
+    }[account.priority || 'medium']);
+
+    const healthReason = (account) => t.value[account.reasonKey || 'unableToVerify'];
+    const healthActionLabel = (account) => account.healthAction ? t.value[account.healthAction] : '';
+
+    const scenarioAccounts = computed(() => {
+      if (scenarioData.value.mode === 'empty') return [];
+      return accountRecords.map((account, index) => {
+        const override = detectionOverrides[account.id] || {};
+        let health = override.health || account.health;
+        let lastChecked = override.lastChecked ?? account.lastChecked;
+        if (scenarioData.value.mode === 'checking' && index === 0) health = 'CHECKING';
+        if (scenarioData.value.mode === 'healthy') health = 'READY';
+        if (scenarioData.value.mode === 'action') health = 'ACTION_REQUIRED';
+        if (checkingAccountIds.has(account.id)) health = 'CHECKING';
+        const result = { ...account, health, lastChecked };
+        if (health === 'ACTION_REQUIRED' && !result.reasonKey) {
+          result.priority = 'low';
+          result.reasonKey = 'unableToVerify';
+          result.healthAction = '';
+        }
+        return result;
+      });
+    });
+
+    const visibleAccounts = computed(() => {
+      const keyword = appliedKeyword.value.trim().toLowerCase();
+      return scenarioAccounts.value.filter((account) => {
+        const providerMatch = providerFilter.value === 'all' || account.provider === providerFilter.value;
+        const keywordMatch = !keyword || account.name.toLowerCase().includes(keyword);
+        return providerMatch && keywordMatch;
+      });
+    });
+
+    function runSearch() {
+      appliedKeyword.value = keywordInput.value;
+      currentPage.value = 1;
     }
-    const scenarioFilteredRecords = computed(() => {
-      const key = activeScenario.value;
-      if (key === 'listAction') return accountRecords.value.filter((row) => row.health !== 'READY');
-      if (key === 'listUnavailable') return accountRecords.value.filter((row) => row.health === 'UNAVAILABLE');
-      return accountRecords.value;
-    });
-    const accountRows = computed(() => scenarioFilteredRecords.value.filter((row) => {
-      const keywordMatched = !filterKeyword.value || row.name.toLowerCase().includes(filterKeyword.value.trim().toLowerCase());
-      const providerMatched = !providerFilter.value || row.provider === providerFilter.value;
-      const healthMatched = !healthFilter.value
-        || (healthFilter.value === 'HEALTHY' ? row.health === 'READY' : row.health !== 'READY');
-      return keywordMatched && providerMatched && healthMatched;
-    }));
-    const defaultInspectionScopeLabel = computed(() => individualInspectionRules.value.length
-      ? t.value.cloudAccount.inspectionScopeRemaining
-      : t.value.cloudAccount.inspectionScopeAll);
-    const availableIndividualRuleAccounts = computed(() => {
-      const editingAccountId = individualRuleEditIndex.value >= 0
-        ? individualInspectionRules.value[individualRuleEditIndex.value]?.accountId
-        : '';
-      const configuredAccountIds = new Set(individualInspectionRules.value.map((rule) => rule.accountId));
-      return accountRecords.value.filter((row) => !configuredAccountIds.has(row.id) || row.id === editingAccountId);
-    });
-    const individualRuleAccountLabel = (accountId) => accountRecords.value.find((row) => row.id === accountId)?.name || accountId;
-    const inspectionFrequencyLabel = (frequency) => t.value.cloudAccount[frequency] || frequency;
-    const weekdayLabel = (weekday) => t.value.cloudAccount.weekdays[weekday] || '';
-    const individualRuleScheduleLabel = (rule) => [
-      inspectionFrequencyLabel(rule.frequency),
-      rule.frequency === 'weekly' ? weekdayLabel(rule.weekday) : '',
-      rule.runTime,
-    ].filter(Boolean).join(' · ');
+
+    function resetFilters() {
+      providerFilter.value = 'all';
+      keywordInput.value = '';
+      appliedKeyword.value = '';
+      currentPage.value = 1;
+    }
+
+    function selectProvider(key) {
+      providerFilter.value = key;
+      currentPage.value = 1;
+    }
+
+    function runRecheck(account) {
+      if (checkingAccountIds.has(account.id)) return;
+      checkingAccountIds.add(account.id);
+      const timer = window.setTimeout(() => {
+        checkingAccountIds.delete(account.id);
+        detectionOverrides[account.id] = {
+          health: account.nextHealth,
+          lastChecked: '2026-07-27 10:08:00',
+        };
+      }, 1400);
+      recheckTimers.push(timer);
+    }
+
+    onBeforeUnmount(() => recheckTimers.forEach((timer) => window.clearTimeout(timer)));
 
     // BalanceBox (v4.8) — chrome 常驻，默认显示 normal 状态余额；AI 仅在需要切换状态/数值时覆盖
     // 覆盖示例：balance.value = { balance: 213.5, level: 'low', currency: 'credits', showTopUp: true }
     // 显式隐藏（极少数情况）：balance.value = null
-    const balance = ref(null);
-
-    // 原型状态机切换器 —— 默认空对象；涉及场景或状态切换时填充（至少 2 个状态）
-    const scenarios = reactive({
-      listMixed: { group: { zh: '列表状态', en: 'List status' }, label: { zh: '默认混合状态', en: 'Mixed status' }, data: { surface: 'list' } },
-      listInspecting: { group: { zh: '列表状态', en: 'List status' }, label: { zh: '检测中', en: 'Detecting' }, data: { surface: 'list' } },
-      listAction: { group: { zh: '列表状态', en: 'List status' }, label: { zh: '需处理', en: 'Action required' }, data: { surface: 'list' } },
-      listUnavailable: { group: { zh: '列表状态', en: 'List status' }, label: { zh: '云身份与凭证', en: 'Cloud identity & credentials' }, data: { surface: 'list' } },
-      addDefault: { group: { zh: '添加流程', en: 'Add flow' }, label: { zh: '默认填写', en: 'Default form' }, data: { surface: 'dialog' } },
-      formError: { group: { zh: '添加流程', en: 'Add flow' }, label: { zh: '必填错误', en: 'Required errors' }, data: { surface: 'dialog' } },
-      duplicateName: { group: { zh: '添加流程', en: 'Add flow' }, label: { zh: '名称重复', en: 'Duplicate name' }, data: { surface: 'dialog' } },
-      addChecking: { group: { zh: '添加流程', en: 'Add flow' }, label: { zh: '检测中', en: 'Checking' }, data: { surface: 'dialog' } },
-      addReady: { group: { zh: '添加流程', en: 'Add flow' }, label: { zh: '全部必要检测通过', en: 'All required checks passed' }, data: { surface: 'dialog' } },
-      addSuccess: { group: { zh: '添加流程', en: 'Add flow' }, label: { zh: '添加完成', en: 'Added' }, data: { surface: 'dialog' } },
-      identityWaiting: { label: { zh: '默认 · 等待检测', en: 'Default · Waiting' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      identityChecking: { label: { zh: '检测中', en: 'Detecting' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      identityPassed: { label: { zh: '检测通过', en: 'Passed' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      credentialInvalid: { label: { zh: '阿里云 · Access Key ID 无效', en: 'Alibaba Cloud · Invalid Access Key ID' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aliyun' } },
-      identityAliyunSecret: { label: { zh: '阿里云 · Secret 无效', en: 'Alibaba Cloud · Invalid secret' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aliyun' } },
-      identityAwsKey: { label: { zh: 'AWS · Access Key ID 无效', en: 'AWS · Invalid Access Key ID' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aws' } },
-      identityAwsSignature: { label: { zh: 'AWS · 签名不一致', en: 'AWS · Signature mismatch' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aws' } },
-      identityAwsAuth: { label: { zh: 'AWS · 通用认证失败', en: 'AWS · Authentication failed' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aws' } },
-      identityGoogleProject: { label: { zh: 'Google · Project ID 不一致', en: 'Google · Project ID mismatch' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'google' } },
-      identityGoogleService: { label: { zh: 'Google · Service Account 无效', en: 'Google · Invalid Service Account' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'google' } },
-      identityHuaweiAuth: { label: { zh: '华为云 · 认证失败', en: 'Huawei Cloud · Authentication failed' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'huawei' } },
-      identityUnresolved: { label: { zh: '云身份无法确认', en: 'Cloud identity unresolved' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      identityUnknown: { label: { zh: '未归因', en: 'Unclassified' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      identityTechnical: { label: { zh: '技术失败', en: 'Technical failure' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      productWaiting: { label: { zh: '等待前项', en: 'Waiting for previous check' }, data: { surface: 'dialog', mockCheck: 'product' } },
-      productBlocked: { label: { zh: '被前项阻断', en: 'Blocked by previous check' }, data: { surface: 'dialog', mockCheck: 'product' } },
-      productSkipped: { label: { zh: '当前能力未实现', en: 'Detection not implemented' }, data: { surface: 'dialog', mockCheck: 'product' } },
-      productChecking: { label: { zh: '检测中', en: 'Detecting' }, data: { surface: 'dialog', mockCheck: 'product' } },
-      productPassed: { label: { zh: '检测通过', en: 'Passed' }, data: { surface: 'dialog', mockCheck: 'product' } },
-      productMissing: { label: { zh: '阿里云 · PAI/EAS 未开通', en: 'Alibaba Cloud · PAI/EAS not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aliyun' } },
-      productAwsMissing: { label: { zh: 'AWS · SageMaker 未开通', en: 'AWS · SageMaker not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aws' } },
-      productGoogleMissing: { label: { zh: 'Google · Vertex AI 未启用', en: 'Google · Vertex AI not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'google' } },
-      productHuaweiMissing: { label: { zh: '华为云 · ModelArts 未开通', en: 'Huawei Cloud · ModelArts not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'huawei' } },
-      productDenied: { label: { zh: '阿里云 · PAI/EAS 不可访问', en: 'Alibaba Cloud · PAI/EAS inaccessible' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aliyun' } },
-      productAwsDenied: { label: { zh: 'AWS · SageMaker 不可访问', en: 'AWS · SageMaker inaccessible' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aws' } },
-      productGoogleDenied: { label: { zh: 'Google · Vertex AI 不可访问', en: 'Google · Vertex AI inaccessible' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'google' } },
-      productHuaweiDenied: { label: { zh: '华为云 · ModelArts 不可访问', en: 'Huawei Cloud · ModelArts inaccessible' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'huawei' } },
-      productUnknown: { label: { zh: '未归因', en: 'Unclassified' }, data: { surface: 'dialog', mockCheck: 'product' } },
-      productTechnical: { label: { zh: '技术失败', en: 'Technical failure' }, data: { surface: 'dialog', mockCheck: 'product' } },
+    const balance = ref({
+      balance:   15311.79,
+      level:     'normal',
+      currency:  'credits',
+      showTopUp: true,
     });
-    const defaultScenario = 'listMixed';
+
+// 原型状态机切换器 —— 默认空对象；涉及场景或状态切换时填充（至少 2 个状态）
+    const scenarios = reactive({
+      normal: { group: { zh: '列表状态', en: 'List states' }, label: { zh: '混合状态', en: 'Mixed states' }, data: { mode: 'mixed' } },
+      checking: { group: { zh: '列表状态', en: 'List states' }, label: { zh: '检测中', en: 'Checking' }, data: { mode: 'checking' } },
+      healthy: { group: { zh: '列表状态', en: 'List states' }, label: { zh: '全部健康', en: 'All healthy' }, data: { mode: 'healthy' } },
+      action: { group: { zh: '列表状态', en: 'List states' }, label: { zh: '全部需处理', en: 'All action required' }, data: { mode: 'action' } },
+      empty: { group: { zh: '列表状态', en: 'List states' }, label: { zh: '空态', en: 'Empty' }, data: { mode: 'empty' } },
+    });
+    const defaultScenario = 'normal';
     const activeScenario = ref(defaultScenario);
     const stateMachineControl = ref(null);
     const stateMachineCollapsed = ref(false);
@@ -4504,7 +3343,7 @@ const app = createApp({
       const fallbackLabel = lang.value === 'zh' ? '业务状态' : 'Business states';
       const groups = [];
       const groupIndex = new Map();
-      Object.entries(scenarios).filter(([, scenario]) => !scenario.data?.mockCheck).forEach(([key, scenario]) => {
+      Object.entries(scenarios).forEach(([key, scenario]) => {
         const groupLabel = scenario.group?.[lang.value] || fallbackLabel;
         let group = groupIndex.get(groupLabel);
         if (!group) {
@@ -4516,25 +3355,6 @@ const app = createApp({
       });
       return groups;
     });
-    const activeMockCheck = ref('identity');
-    const mockCheckOptions = computed(() => [
-      { key: 'identity', label: t.value.cloudAccount.identityCheck },
-      { key: 'product', label: t.value.cloudAccount.productCheck },
-    ]);
-    const mockCaseOptions = computed(() => Object.entries(scenarios)
-      .filter(([, scenario]) => scenario.data?.mockCheck === activeMockCheck.value)
-      .map(([key, scenario]) => ({ key, label: scenario.label?.[lang.value] || key })));
-    const activeMockCase = computed({
-      get: () => scenarioData.value.mockCheck === activeMockCheck.value
-        ? activeScenario.value
-        : (mockCaseOptions.value[0]?.key || ''),
-      set: (key) => { if (key) activeScenario.value = key; },
-    });
-    function selectMockCheck(key) {
-      activeMockCheck.value = key;
-      const firstCase = Object.entries(scenarios).find(([, scenario]) => scenario.data?.mockCheck === key);
-      if (firstCase) activeScenario.value = firstCase[0];
-    }
     const stateMachinePositionStyle = computed(() => {
       if (!Number.isFinite(stateMachinePosition.left) || !Number.isFinite(stateMachinePosition.top)) return {};
       return {
@@ -4623,11 +3443,7 @@ const app = createApp({
     }
 
     onMounted(() => window.addEventListener('resize', handleStateMachineViewportResize, { passive: true }));
-    onBeforeUnmount(() => {
-      window.removeEventListener('resize', handleStateMachineViewportResize);
-      clearValidationTimers();
-      if (inspectionTimer) window.clearTimeout(inspectionTimer);
-    });
+    onBeforeUnmount(() => window.removeEventListener('resize', handleStateMachineViewportResize));
 
     function toggleTheme() {
       isDark.value = !isDark.value;
@@ -4665,535 +3481,6 @@ const app = createApp({
     watch(mobileNavOpen, () => {
       nextTick(() => lucide.createIcons());
     });
-    watch([dialogVisible, inspectionTaskVisible, inspectionLogVisible, checkingAccountId, filterKeyword, providerFilter, healthFilter], () => {
-      nextTick(() => lucide.createIcons());
-    });
-
-    const checkingStates = ['addChecking', 'identityChecking', 'productChecking'];
-    const identityBlockingStates = ['credentialInvalid', 'identityAliyunSecret', 'identityAwsKey', 'identityAwsSignature', 'identityAwsAuth', 'identityGoogleProject', 'identityGoogleService', 'identityHuaweiAuth', 'identityUnresolved'];
-    const retryStates = ['identityUnknown', 'identityTechnical', 'productTechnical'];
-    const saveableIssueStates = ['productMissing', 'productAwsMissing', 'productGoogleMissing', 'productHuaweiMissing', 'productDenied', 'productAwsDenied', 'productGoogleDenied', 'productHuaweiDenied', 'productSkipped', 'productUnknown'];
-    const isChecking = computed(() => checkingStates.includes(activeScenario.value));
-    const showCheckZone = computed(() => Boolean(scenarioData.value.mockCheck)
-      || ['addChecking', 'addReady', 'addSuccess'].includes(activeScenario.value));
-    const primaryLabel = computed(() => {
-      if (isChecking.value) return t.value.cloudAccount.validating;
-      if (identityBlockingStates.includes(activeScenario.value)) return t.value.cloudAccount.updateCredentialThenRetry;
-      if (retryStates.includes(activeScenario.value)) return t.value.cloudAccount.retryValidation;
-      if (saveableIssueStates.includes(activeScenario.value)) return t.value.cloudAccount.saveAccount;
-      if (activeScenario.value === 'addSuccess') return t.value.cloudAccount.close;
-      return t.value.cloudAccount.validateAndAdd;
-    });
-    const credentialsChangedAfterRejection = computed(() => (
-      formModel.accessKeyId !== rejectedCredentialSnapshot.accessKeyId
-      || formModel.accessKeySecret !== rejectedCredentialSnapshot.accessKeySecret
-    ));
-    const primaryDisabled = computed(() => (
-      identityBlockingStates.includes(activeScenario.value) && !credentialsChangedAfterRejection.value
-    ));
-    const checkItems = computed(() => {
-      const current = activeScenario.value;
-      const outcomes = {
-        addChecking: [['running', 'checkingIdentity'], ['idle', 'waiting']],
-        identityWaiting: [['idle', 'waiting'], ['idle', 'waiting']],
-        identityChecking: [['running', 'checkingIdentity'], ['idle', 'waiting']],
-        identityPassed: [['passed', 'passed'], ['idle', 'waiting']],
-        credentialInvalid: [['error', 'aliyunKeyInvalid'], ['idle', 'notDetected']],
-        identityAliyunSecret: [['error', 'aliyunSecretInvalid'], ['idle', 'notDetected']],
-        identityAwsKey: [['error', 'awsKeyInvalid'], ['idle', 'notDetected']],
-        identityAwsSignature: [['error', 'awsSignatureInvalid'], ['idle', 'notDetected']],
-        identityAwsAuth: [['error', 'awsAuthenticationFailed'], ['idle', 'notDetected']],
-        identityGoogleProject: [['error', 'googleProjectMismatch'], ['idle', 'notDetected']],
-        identityGoogleService: [['error', 'googleServiceAccountInvalid'], ['idle', 'notDetected']],
-        identityHuaweiAuth: [['error', 'huaweiAuthenticationFailed'], ['idle', 'notDetected']],
-        identityUnresolved: [['error', 'cloudIdentityUnresolved'], ['idle', 'notDetected']],
-        identityUnknown: [['unknown', 'identityUnclassified'], ['idle', 'notDetected']],
-        identityTechnical: [['unknown', 'identityTechnicalFailure'], ['idle', 'notDetected']],
-        productWaiting: [['running', 'checkingIdentity'], ['idle', 'waiting']],
-        productBlocked: [['error', 'cloudIdentityUnresolved'], ['idle', 'notDetected']],
-        productSkipped: [['passed', 'passed'], ['idle', 'temporarilyNotDetected']],
-        productChecking: [['passed', 'passed'], ['running', 'checkingProduct']],
-        productPassed: [['passed', 'passed'], ['passed', 'passed']],
-        productMissing: [['passed', 'passed'], ['action', 'aliyunEasNotEnabled']],
-        productAwsMissing: [['passed', 'passed'], ['action', 'awsSageMakerNotEnabled']],
-        productGoogleMissing: [['passed', 'passed'], ['action', 'googleVertexNotEnabled']],
-        productHuaweiMissing: [['passed', 'passed'], ['action', 'huaweiModelArtsNotEnabled']],
-        productDenied: [['passed', 'passed'], ['action', 'aliyunProductDenied']],
-        productAwsDenied: [['passed', 'passed'], ['action', 'awsProductDenied']],
-        productGoogleDenied: [['passed', 'passed'], ['action', 'googleProductDenied']],
-        productHuaweiDenied: [['passed', 'passed'], ['action', 'huaweiProductDenied']],
-        productUnknown: [['passed', 'passed'], ['unknown', 'productUnclassified']],
-        productTechnical: [['passed', 'passed'], ['unknown', 'productTechnicalFailure']],
-        addReady: [['passed', 'passed'], ['passed', 'passed']],
-        addSuccess: [['passed', 'passed'], ['passed', 'passed']],
-      }[current] || [['idle', 'waiting'], ['idle', 'waiting']];
-      const labels = [
-        t.value.cloudAccount.identityCheck,
-        t.value.cloudAccount.productCheck,
-      ];
-      const issueConfig = {
-        aliyunKeyInvalid: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeyId', action: 'credential-id', icon: 'pencil' },
-        aliyunSecretInvalid: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeySecret', action: 'credential-secret', icon: 'pencil' },
-        awsKeyInvalid: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeyId', action: 'credential-id', icon: 'pencil' },
-        awsSignatureInvalid: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeySecret', action: 'credential-secret', icon: 'pencil' },
-        awsAuthenticationFailed: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
-        googleProjectMismatch: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateProjectId', action: 'credential-id', icon: 'pencil' },
-        googleServiceAccountInvalid: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateServiceAccount', action: 'credential-secret', icon: 'pencil' },
-        huaweiAuthenticationFailed: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
-        cloudIdentityUnresolved: { variant: 'error', hintKey: 'credentialInvalidHint', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
-        identityUnclassified: { variant: 'info', hintKey: 'identityUnclassified', summaryKey: 'checkCompleted', showTitle: false, actionKey: '', action: '', icon: '' },
-        identityTechnicalFailure: { variant: 'info', hintKey: 'identityTechnicalFailure', summaryKey: 'checkCompleted', showTitle: false, actionKey: '', action: '', icon: '' },
-        aliyunEasNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product' },
-        awsSageMakerNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product' },
-        googleVertexNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product' },
-        huaweiModelArtsNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product' },
-        aliyunProductDenied: { variant: 'action', hintKey: 'aliyunProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission' },
-        awsProductDenied: { variant: 'action', hintKey: 'awsProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission' },
-        googleProductDenied: { variant: 'action', hintKey: 'googleProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission' },
-        huaweiProductDenied: { variant: 'action', hintKey: 'huaweiProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission' },
-        productUnclassified: { variant: 'info', hintKey: 'productUnclassified', summaryKey: 'checkCompleted', showTitle: false, actionKey: '', action: '', icon: '' },
-        productTechnicalFailure: { variant: 'info', hintKey: 'productTechnicalFailure', summaryKey: 'checkCompleted', showTitle: false, actionKey: '', action: '', icon: '' },
-      };
-      return labels.map((label, index) => {
-        const [state, detailKey] = outcomes[index];
-        const issue = issueConfig[detailKey];
-        return {
-          key: ['identity', 'product'][index],
-          label,
-          state,
-          detail: t.value.cloudAccount[detailKey],
-          issue: Boolean(issue),
-          issueVariant: issue?.variant || '',
-          issueLead: issue?.leadKey ? t.value.cloudAccount[issue.leadKey] : '',
-          issueDesc: issue ? t.value.cloudAccount[issue.hintKey] : '',
-          summaryDetail: issue?.summaryKey ? t.value.cloudAccount[issue.summaryKey] : (!issue ? t.value.cloudAccount[detailKey] : ''),
-          showIssueTitle: Boolean(issue) && issue.showTitle !== false && label !== t.value.cloudAccount[detailKey],
-          actionLabel: issue ? t.value.cloudAccount[issue.actionKey] : '',
-          action: issue?.action || '',
-          actionIcon: issue?.icon || 'external-link',
-        };
-      });
-    });
-    const dialogResult = computed(() => {
-      const resultMap = {
-        productMissing: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productAwsMissing: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productGoogleMissing: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productHuaweiMissing: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productDenied: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productAwsDenied: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productGoogleDenied: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productHuaweiDenied: { variant: 'action', title: t.value.cloudAccount.saveableNotDeployable, desc: t.value.cloudAccount.productSaveableHint },
-        productSkipped: { variant: 'info', title: t.value.cloudAccount.temporarilyNotDetected, desc: '' },
-        productUnknown: { variant: 'info', title: t.value.cloudAccount.unclassifiedResultDesc, desc: '' },
-        addReady: { variant: 'success', title: t.value.cloudAccount.ready, desc: t.value.cloudAccount.accountReadyHint },
-        addSuccess: { variant: 'success', title: t.value.cloudAccount.accountReady, desc: t.value.cloudAccount.accountReadyHint },
-      };
-      return resultMap[activeScenario.value] || null;
-    });
-
-    function clearValidationTimers() {
-      validationTimers.forEach((timer) => window.clearTimeout(timer));
-      validationTimers = [];
-    }
-
-    let internalScenarioTarget = null;
-    function setScenario(state) {
-      internalScenarioTarget = state;
-      activeScenario.value = state;
-    }
-
-    function setFormErrors() {
-      formErrors.name = formModel.name.trim() ? '' : t.value.cloudAccount.requiredName;
-      formErrors.accessKeyId = formModel.accessKeyId.trim() ? '' : t.value.cloudAccount.requiredKey;
-      formErrors.accessKeySecret = formModel.accessKeySecret.trim() ? '' : t.value.cloudAccount.requiredSecret;
-      return !formErrors.name && !formErrors.accessKeyId && !formErrors.accessKeySecret;
-    }
-
-    function startValidation() {
-      if (!setFormErrors()) {
-        setScenario('formError');
-        return;
-      }
-      clearValidationTimers();
-      const runId = ++validationRun;
-      setScenario('addChecking');
-      validationTimers.push(window.setTimeout(() => {
-        if (runId !== validationRun) return;
-        setScenario('addReady');
-      }, 900));
-      validationTimers.push(window.setTimeout(() => {
-        if (runId !== validationRun) return;
-        commitAccount('READY', t.value.cloudAccount.added);
-        setScenario('addSuccess');
-        ElementPlus.ElMessage.success(t.value.cloudAccount.added);
-      }, 1700));
-    }
-
-    function handlePrimaryAction() {
-      if (activeScenario.value === 'addSuccess') {
-        cancelDialog();
-        return;
-      }
-      const saveMap = {
-        productMissing: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productAwsMissing: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productGoogleMissing: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productHuaweiMissing: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productDenied: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productAwsDenied: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productGoogleDenied: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productHuaweiDenied: ['ACTION_REQUIRED', t.value.cloudAccount.savedForConfig, 'productUnavailable'],
-        productSkipped: ['UNKNOWN', t.value.cloudAccount.savedPendingConfirmation, 'unableToVerify'],
-        productUnknown: ['UNKNOWN', t.value.cloudAccount.savedPendingConfirmation, 'unableToVerify'],
-      };
-      if (saveMap[activeScenario.value]) {
-        const [health, message, conclusionKey] = saveMap[activeScenario.value];
-        commitAccount(health, message, conclusionKey);
-        dialogVisible.value = false;
-        setScenario('listMixed');
-        ElementPlus.ElMessage.success(message);
-        return;
-      }
-      if (identityBlockingStates.includes(activeScenario.value) && !credentialsChangedAfterRejection.value) return;
-      startValidation();
-    }
-
-    function commitAccount(health, message, conclusionKey = '') {
-      const identity = 'valid';
-      const permission = health === 'READY' ? 'ready' : (health === 'UNKNOWN' ? 'unknown' : 'missing');
-      const inspectedAt = formatDateTime(new Date());
-      const nextRecord = {
-        id: 'cloud-added', name: formModel.name, provider: formModel.provider, health,
-        identity, permission, conclusionKey,
-        lastInspectedAt: inspectedAt,
-        lastAttemptedAt: '',
-        inspectionStatus: 'completed',
-        inspectionReasonKey: '',
-        failureReasonKey: '',
-      };
-      const existingIndex = accountRecords.value.findIndex((row) => row.id === nextRecord.id);
-      if (existingIndex >= 0) accountRecords.value.splice(existingIndex, 1, nextRecord);
-      else accountRecords.value.unshift(nextRecord);
-      accountAdded.value = true;
-      return message;
-    }
-
-    function cancelDialog() {
-      validationRun += 1;
-      clearValidationTimers();
-      dialogVisible.value = false;
-      if (scenarios[activeScenario.value]?.data?.surface === 'dialog') setScenario('listMixed');
-    }
-
-    function openDialog() {
-      validationRun += 1;
-      clearValidationTimers();
-      setScenario('addDefault');
-      dialogVisible.value = true;
-      inspectionTaskVisible.value = false;
-      inspectionLogVisible.value = false;
-      formErrors.name = '';
-      formErrors.accessKeyId = '';
-      formErrors.accessKeySecret = '';
-    }
-
-    function openInspectionTask() {
-      inspectionTaskSnapshot = {
-        task: { ...inspectionTask },
-        rules: individualInspectionRules.value.map((rule) => ({ ...rule })),
-      };
-      inspectionTaskVisible.value = true;
-      inspectionLogVisible.value = false;
-      dialogVisible.value = false;
-      closeIndividualRuleEditor();
-    }
-
-    function closeIndividualRuleEditor() {
-      individualRuleEditorVisible.value = false;
-      individualRuleEditIndex.value = -1;
-      individualRuleForm.accountId = '';
-      individualRuleForm.frequency = '';
-      individualRuleForm.weekday = inspectionTask.weekday;
-      individualRuleForm.runTime = inspectionTask.runTime;
-    }
-
-    function addIndividualRule() {
-      closeIndividualRuleEditor();
-      individualRuleEditorVisible.value = true;
-    }
-
-    function editIndividualRule(rule, index) {
-      individualRuleEditIndex.value = index;
-      individualRuleForm.accountId = rule.accountId;
-      individualRuleForm.frequency = rule.frequency;
-      individualRuleForm.weekday = rule.weekday;
-      individualRuleForm.runTime = rule.runTime;
-      individualRuleEditorVisible.value = true;
-    }
-
-    function saveIndividualRule() {
-      if (!individualRuleForm.accountId) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleAccountFirst);
-        return;
-      }
-      if (!individualRuleForm.frequency) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleFrequencyFirst);
-        return;
-      }
-      if (individualRuleForm.frequency === 'weekly' && (individualRuleForm.weekday === '' || individualRuleForm.weekday == null)) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleWeekdayFirst);
-        return;
-      }
-      if (!individualRuleForm.runTime) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleTimeFirst);
-        return;
-      }
-      const nextRule = {
-        accountId: individualRuleForm.accountId,
-        frequency: individualRuleForm.frequency,
-        weekday: individualRuleForm.weekday,
-        runTime: individualRuleForm.runTime,
-      };
-      if (individualRuleEditIndex.value >= 0) individualInspectionRules.value.splice(individualRuleEditIndex.value, 1, nextRule);
-      else individualInspectionRules.value.push(nextRule);
-      closeIndividualRuleEditor();
-    }
-
-    function removeIndividualRule(index) {
-      individualInspectionRules.value.splice(index, 1);
-      if (individualRuleEditIndex.value === index) closeIndividualRuleEditor();
-    }
-
-    function cancelInspectionTask() {
-      if (inspectionTaskSnapshot) {
-        Object.assign(inspectionTask, inspectionTaskSnapshot.task);
-        individualInspectionRules.value.splice(0, individualInspectionRules.value.length, ...inspectionTaskSnapshot.rules.map((rule) => ({ ...rule })));
-      }
-      inspectionTaskSnapshot = null;
-      closeIndividualRuleEditor();
-      inspectionTaskVisible.value = false;
-    }
-
-    function formatDateTime(value) {
-      const date = value instanceof Date ? value : new Date(value);
-      const pad = (part) => String(part).padStart(2, '0');
-      return date.getFullYear() + '-' + pad(date.getMonth() + 1) + '-' + pad(date.getDate())
-        + ' ' + pad(date.getHours()) + ':' + pad(date.getMinutes());
-    }
-
-    function calculateNextInspectionAt(base = new Date()) {
-      const next = new Date(base);
-      const [runHour, runMinute] = inspectionTask.runTime.split(':').map(Number);
-      next.setHours(runHour, runMinute, 0, 0);
-      if (inspectionTask.frequency === 'daily') {
-        if (next <= base) next.setDate(next.getDate() + 1);
-      } else {
-        const daysUntilRun = (inspectionTask.weekday - next.getDay() + 7) % 7;
-        next.setDate(next.getDate() + daysUntilRun);
-        if (next <= base) next.setDate(next.getDate() + 7);
-      }
-      return formatDateTime(next);
-    }
-
-    function completeInspection(row, inspectedAt) {
-      row.lastInspectedAt = inspectedAt;
-      row.lastAttemptedAt = '';
-      row.inspectionStatus = 'completed';
-      row.inspectionReasonKey = '';
-      row.failureReasonKey = '';
-    }
-
-    function saveInspectionTask() {
-      if (inspectionTask.enabled && !inspectionTask.frequency) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleFrequencyFirst);
-        return;
-      }
-      if (inspectionTask.enabled && inspectionTask.frequency === 'weekly' && (inspectionTask.weekday === '' || inspectionTask.weekday == null)) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleWeekdayFirst);
-        return;
-      }
-      if (inspectionTask.enabled && !inspectionTask.runTime) {
-        ElementPlus.ElMessage.error(t.value.cloudAccount.selectRuleTimeFirst);
-        return;
-      }
-      inspectionTask.nextRunAt = inspectionTask.enabled && inspectionTask.frequency
-        ? calculateNextInspectionAt(new Date())
-        : '';
-      inspectionTaskVisible.value = false;
-      inspectionTaskSnapshot = null;
-      closeIndividualRuleEditor();
-      setScenario('listMixed');
-      ElementPlus.ElMessage.success(t.value.cloudAccount.taskSaved);
-    }
-
-    function runAllInspection() {
-      setScenario('listInspecting');
-      inspectionTaskVisible.value = false;
-      checkingAccountId.value = '*';
-      ElementPlus.ElMessage.success(t.value.cloudAccount.inspectionStarted);
-      if (inspectionTimer) window.clearTimeout(inspectionTimer);
-      inspectionTimer = window.setTimeout(() => {
-        const inspectedAt = formatDateTime(new Date());
-        accountRecords.value.forEach((row) => completeInspection(row, inspectedAt));
-        inspectionTask.lastRunAt = inspectedAt;
-        inspectionTask.nextRunAt = inspectionTask.enabled && inspectionTask.frequency
-          ? calculateNextInspectionAt(new Date())
-          : '';
-        checkingAccountId.value = '';
-        setScenario('listMixed');
-        ElementPlus.ElMessage.success(t.value.cloudAccount.inspectionCompleted);
-      }, 1400);
-    }
-
-    function openInspectionLog(row) {
-      selectedInspectionLogAccount.value = row;
-      inspectionLogMode.value = 'output';
-      inspectionLogVisible.value = true;
-      inspectionTaskVisible.value = false;
-    }
-
-    function runRowInspection(row) {
-      checkingAccountId.value = row.id;
-      ElementPlus.ElMessage.success(t.value.cloudAccount.inspectionStarted);
-      if (inspectionTimer) window.clearTimeout(inspectionTimer);
-      inspectionTimer = window.setTimeout(() => {
-        completeInspection(row, formatDateTime(new Date()));
-        checkingAccountId.value = '';
-        ElementPlus.ElMessage.success(t.value.cloudAccount.inspectionCompleted);
-      }, 1400);
-    }
-
-    function editAccount(row) {
-      formModel.name = row.name;
-      formModel.provider = row.provider;
-      openDialog();
-    }
-
-    function rowActions(row) {
-      return [
-        { label: t.value.cloudAccount.inspectNow, onClick: () => runRowInspection(row) },
-        { label: t.value.cloudAccount.edit, onClick: () => editAccount(row) },
-      ];
-    }
-
-    function handleConclusionAction(row, action) {
-      if (action === 'inspect') return runRowInspection(row);
-      if (action === 'edit') return editAccount(row);
-      if (action === 'product') return openProviderAction('product', row.provider);
-      if (action === 'permission') return openProviderAction('permission', row.provider);
-      if (action === 'log') return openInspectionLog(row);
-    }
-
-    function openProviderAction(action, provider = formModel.provider) {
-      if (action === 'credential' || action === 'credential-id') {
-        credentialInput.value?.focus?.();
-        return;
-      }
-      if (action === 'credential-secret') {
-        credentialSecretInput.value?.focus?.();
-        return;
-      }
-      if (action === 'contact') {
-        ElementPlus.ElMessage.info(t.value.cloudAccount.contactAdmin);
-        return;
-      }
-      const links = {
-        aliyun: {
-          product: 'https://help.aliyun.com/zh/pai/getting-started/activate-pai-and-create-a-default-workspace',
-          permission: 'https://help.aliyun.com/zh/ram/user-guide/grant-permissions-to-the-ram-user',
-          console: 'https://home.console.aliyun.com/',
-        },
-        aws: {
-          product: 'https://docs.aws.amazon.com/sagemaker/latest/dg/gs-set-up.html',
-          permission: 'https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html',
-          console: 'https://console.aws.amazon.com/',
-        },
-        google: {
-          product: 'https://cloud.google.com/vertex-ai/docs/start/cloud-environment',
-          permission: 'https://cloud.google.com/iam/docs/granting-changing-revoking-access',
-          console: 'https://console.cloud.google.com/',
-        },
-        huawei: {
-          product: 'https://support.huaweicloud.com/modelarts/index.html',
-          permission: 'https://support.huaweicloud.com/usermanual-iam/iam_01_0652.html',
-          console: 'https://console.huaweicloud.com/',
-        },
-      };
-      window.open(links[provider]?.[action] || links.aliyun[action], '_blank', 'noopener,noreferrer');
-    }
-
-    watch(() => formModel.provider, (provider) => {
-      validationRun += 1;
-      clearValidationTimers();
-      setScenario('addDefault');
-      const examples = {
-        aliyun: { accessKeyId: 'LTAI••••••••8K2P', accessKeySecret: 'example-secret' },
-        aws: { accessKeyId: 'AKIAEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
-        google: { accessKeyId: 'EXAMPLEPROJECT', accessKeySecret: 'example-secret' },
-        huawei: { accessKeyId: 'HWCEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
-      }[provider];
-      formModel.accessKeyId = examples.accessKeyId;
-      formModel.accessKeySecret = examples.accessKeySecret;
-      formErrors.accessKeyId = '';
-      formErrors.accessKeySecret = '';
-    });
-
-    watch(activeScenario, (next, previous) => {
-      const mockProvider = scenarios[next]?.data?.provider;
-      const mockCheck = scenarios[next]?.data?.mockCheck;
-      if (mockCheck) activeMockCheck.value = mockCheck;
-      if (mockProvider) formModel.provider = mockProvider;
-      const isInternal = next === internalScenarioTarget;
-      internalScenarioTarget = null;
-      if (!isInternal) {
-        validationRun += 1;
-        clearValidationTimers();
-        const surface = scenarios[next]?.data?.surface;
-        dialogVisible.value = surface === 'dialog';
-        inspectionTaskVisible.value = surface === 'task';
-        inspectionLogVisible.value = surface === 'log';
-        if (surface === 'log') {
-          selectedInspectionLogAccount.value = accountRecords.value.find((row) => row.inspectionStatus === 'failed') || null;
-          inspectionLogMode.value = scenarios[next]?.data?.logMode || 'output';
-        }
-        checkingAccountId.value = next === 'listInspecting' ? '*' : '';
-      }
-      if (next === 'formError') {
-        formModel.name = '';
-        formModel.accessKeyId = '';
-        formModel.accessKeySecret = '';
-        formErrors.name = t.value.cloudAccount.requiredName;
-        formErrors.accessKeyId = t.value.cloudAccount.requiredKey;
-        formErrors.accessKeySecret = t.value.cloudAccount.requiredSecret;
-      } else if (next === 'duplicateName') {
-        formErrors.name = t.value.cloudAccount.duplicateName;
-        formErrors.accessKeyId = '';
-        formErrors.accessKeySecret = '';
-      } else if (previous === 'formError' || previous === 'duplicateName') {
-        formModel.name = '生产环境账号';
-        const examples = {
-          aliyun: { accessKeyId: 'LTAI••••••••8K2P', accessKeySecret: 'example-secret' },
-          aws: { accessKeyId: 'AKIAEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
-          google: { accessKeyId: 'EXAMPLEPROJECT', accessKeySecret: 'example-secret' },
-          huawei: { accessKeyId: 'HWCEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
-        }[formModel.provider];
-        formModel.accessKeyId = examples.accessKeyId;
-        formModel.accessKeySecret = examples.accessKeySecret;
-        formErrors.name = '';
-        formErrors.accessKeyId = '';
-        formErrors.accessKeySecret = '';
-      }
-      if (identityBlockingStates.includes(next)) {
-        rejectedCredentialSnapshot.accessKeyId = formModel.accessKeyId;
-        rejectedCredentialSnapshot.accessKeySecret = formModel.accessKeySecret;
-      }
-      if (next === 'addDefault') {
-        formErrors.name = '';
-        formErrors.accessKeyId = '';
-        formErrors.accessKeySecret = '';
-      }
-    });
 
     // logo: TopNav 永远 dark 背景，用 dark logo；其余区域跟随主题
     const logoSrc = computed(() => isDark.value ? LOGO_DARK : LOGO_DARK);
@@ -5206,19 +3493,11 @@ const app = createApp({
       scenarios, activeScenario, defaultScenario,
       balance,
       hasScenarios, scenarioData, scenarioGroups, currentScenarioLabel,
-      activeMockCheck, mockCheckOptions, mockCaseOptions, activeMockCase, selectMockCheck,
       stateMachineControl, stateMachineCollapsed, stateMachineDragging, stateMachinePositionStyle,
       toggleStateMachineCollapsed, startStateMachineDrag, moveStateMachineDrag, endStateMachineDrag, handleStateMachineHandleKeydown,
-      dialogVisible, inspectionTaskVisible, inspectionLogVisible, inspectionLogMode, inspectionLogLines, selectedInspectionLogAccount, checkingAccountId,
-      filterKeyword, providerFilter, healthFilter, accountAdded, formModel, formErrors, inspectionTask, credentialInput, credentialSecretInput,
-      individualInspectionRules, individualRuleEditorVisible, individualRuleEditIndex, individualRuleForm,
-      defaultInspectionScopeLabel, availableIndividualRuleAccounts, individualRuleAccountLabel, inspectionFrequencyLabel,
-      weekdayLabel, individualRuleScheduleLabel,
-      cloudAccountColumns, accountRows, providerLabel, healthMeta, healthMetaFor, attentionBadgeClass, attentionPriorityLabel, attentionStatusLabel, dimensionMeta, conclusionMeta,
-      isChecking, showCheckZone, primaryLabel, primaryDisabled, checkItems, dialogResult,
-      handlePrimaryAction, cancelDialog, openDialog, openInspectionTask, cancelInspectionTask, saveInspectionTask, runAllInspection,
-      addIndividualRule, editIndividualRule, saveIndividualRule, removeIndividualRule, closeIndividualRuleEditor,
-      openInspectionLog, runRowInspection, editAccount, rowActions, handleConclusionAction, openProviderAction,
+      providerFilter, keywordInput, currentPage, providerOptions, visibleAccounts,
+      providerLabel, healthMeta, attentionBadgeClass, healthReason, healthActionLabel,
+      runSearch, resetFilters, selectProvider, runRecheck,
       // AGIONE_EDIT_SETUP_RETURN_END · 上面 setup return 结束（业务 key 增量加在状态机 handlers 后）
     };
   },
@@ -5292,16 +3571,18 @@ const app = createApp({
             </button>
           </div>
           <div class="sidebar-section">
-            <div class="sidebar-section-title">{{ t.infrastructure }}</div>
-            <button class="nav-item" :class="{ active: activeNav === 'cloudAccounts' }" @click="selectNav('cloudAccounts')">
-              <i data-lucide="cloud-cog"></i>{{ t.cloudAccounts }}
+            <div class="sidebar-section-title">{{ t.modelServices }}</div>
+            <button class="nav-item" :class="{ active: activeNav === 'quick-deploy' }" @click="selectNav('quick-deploy')">
+              <i data-lucide="rocket"></i>{{ t.quickDeploy }}
+            </button>
+            <button class="nav-item" :class="{ active: activeNav === 'my-deployments' }" @click="selectNav('my-deployments')">
+              <i data-lucide="boxes"></i>{{ t.myDeployments }}
             </button>
           </div>
-
           <div class="sidebar-section">
-            <div class="sidebar-section-title">{{ t.access }}</div>
-            <button class="nav-item" :class="{ active: activeNav === 'apikeys' }" @click="selectNav('apikeys')">
-              <i data-lucide="key-round"></i>{{ t.apiKeys }}
+            <div class="sidebar-section-title">{{ t.accessGroup }}</div>
+            <button class="nav-item" :class="{ active: activeNav === 'access-management' }" @click="selectNav('access-management')">
+              <i data-lucide="shield-check"></i>{{ t.accessManagement }}
             </button>
           </div>
         </aside>
@@ -5317,513 +3598,136 @@ const app = createApp({
         <!-- Main — Shell-only Stage（占位，AI 生成原型时替换为业务内容） -->
         <!-- AGIONE_EDIT_MAIN_START · ⚠️ 主战场：业务内容写在这里 · Edit 前 rg -n "AGIONE_EDIT_MAIN" 定位 + Read offset/limit 局部 -->
         <main class="main" role="main">
-          <div class="main-box cloud-account-page" data-component="cloud-account-management-page">
-            <HeaderBox :title="t.cloudAccount.pageTitle">
+          <div class="main-box access-page" data-component="cloud-account-access-management-page">
+            <HeaderBox :title="t.accessManagement">
               <template #actions>
-                <el-button :loading="checkingAccountId === '*'" @click="runAllInspection">{{ t.cloudAccount.inspectAll }}</el-button>
-                <el-button type="primary" @click="openDialog">{{ t.cloudAccount.add }}</el-button>
+                <el-button class="button-with-icon" type="primary" size="large">
+                  <i data-lucide="plus" class="control-icon"></i>
+                  {{ t.addCloudAccount }}
+                </el-button>
               </template>
+
+              <FilterBox>
+                <div class="access-filter">
+                  <div class="provider-tabs" role="tablist" :aria-label="t.accessManagement">
+                    <button
+                      v-for="provider in providerOptions"
+                      :key="provider.key"
+                      type="button"
+                      class="provider-tab type-body-sm"
+                      :class="{ 'is-active': providerFilter === provider.key }"
+                      role="tab"
+                      :aria-selected="String(providerFilter === provider.key)"
+                      @click="selectProvider(provider.key)"
+                    >
+                      <span v-if="provider.mark" class="provider-tab__mark" :class="provider.markClass" aria-hidden="true">{{ provider.mark }}</span>
+                      <span>{{ provider.label }}</span>
+                    </button>
+                  </div>
+
+                  <div class="access-filter__row">
+                    <el-input v-model="keywordInput" class="access-search" size="large" :placeholder="t.namePlaceholder" clearable @keyup.enter="runSearch"></el-input>
+                    <div class="access-filter__actions">
+                      <el-button class="button-with-icon" type="primary" size="large" @click="runSearch">
+                        <i data-lucide="search" class="control-icon"></i>
+                        {{ t.search }}
+                      </el-button>
+                      <el-button size="large" @click="resetFilters">{{ t.reset }}</el-button>
+                    </div>
+                  </div>
+                </div>
+              </FilterBox>
             </HeaderBox>
 
-            <el-scrollbar>
-              <div class="scroll-box-inner" data-scroll-box>
-                <FilterBox variant="three-zone">
-                  <div class="cloud-account-filter">
-                    <el-input v-model="filterKeyword" clearable :placeholder="t.cloudAccount.searchPlaceholder">
-                      <template #prefix><i data-lucide="search" style="width:16px;height:16px;"></i></template>
-                    </el-input>
-                    <el-select v-model="providerFilter" :placeholder="t.cloudAccount.allProviders" clearable>
-                      <el-option :label="t.cloudAccount.aliyun" value="aliyun"></el-option>
-                      <el-option :label="t.cloudAccount.aws" value="aws"></el-option>
-                      <el-option :label="t.cloudAccount.google" value="google"></el-option>
-                      <el-option :label="t.cloudAccount.huawei" value="huawei"></el-option>
-                    </el-select>
-                    <el-select v-model="healthFilter" :placeholder="t.cloudAccount.allHealth" clearable>
-                      <el-option :label="t.cloudAccount.ready" value="HEALTHY"></el-option>
-                      <el-option :label="t.cloudAccount.actionRequired" value="NEEDS_ACTION"></el-option>
-                    </el-select>
-                  </div>
-                </FilterBox>
-
-                <DataTable
-                  :columns="cloudAccountColumns"
-                  :data="accountRows"
-                  :total="accountRows.length"
-                  :show-pagination="false"
-                  :empty-text="t.cloudAccount.empty"
-                  :operations-label="t.cloudAccount.operations"
-                  operations-width="168"
-                >
-                  <template #account="{ row }">
-                    <div class="cloud-account-cell">
-                      <span class="cloud-account-cell__name type-body-sm">{{ row.name }}</span>
-                      <span class="cloud-account-cell__meta type-caption">{{ providerLabel(row.provider) }}</span>
-                    </div>
-                  </template>
-                  <template #health="{ row }">
-                    <div class="account-status-cell">
-                      <StatusBadge v-if="row.health === 'READY'" :status="healthMetaFor(row).status" :label="healthMetaFor(row).label"></StatusBadge>
-                      <template v-if="row.health !== 'READY'">
-                        <div class="account-status-cell__conclusion">
-                          <span class="type-body-sm">{{ conclusionMeta(row).label }}</span>
-                          <el-popover
-                            v-if="conclusionMeta(row).helpBoundary"
-                            trigger="hover"
-                            placement="top-start"
-                            :width="360"
-                            popper-class="cloud-account-rule-popover"
-                          >
-                            <div class="cloud-account-rule-popover__content" data-component="status-boundary-help">
-                              <el-alert
-                                class="cloud-account-rule-popover__boundary"
-                                type="info"
-                                :closable="false"
-                                show-icon
-                                :title="conclusionMeta(row).helpBoundary"
-                              ></el-alert>
-                            </div>
-                            <template #reference>
-                              <button
-                                class="status-badge account-status-cell__status-trigger"
-                                :class="attentionBadgeClass(row)"
-                                type="button"
-                                :aria-label="t.cloudAccount.viewStatusBoundary"
-                                @click.stop
-                              >
-                                <span class="status-badge__dot" aria-hidden="true"></span>
-                                <span>{{ attentionStatusLabel(row) }}</span>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                  <circle cx="12" cy="12" r="10"></circle>
-                                  <path d="M12 16v-4"></path>
-                                  <path d="M12 8h.01"></path>
-                                </svg>
-                              </button>
-                            </template>
-                          </el-popover>
-                        </div>
-                        <el-button
-                          v-if="conclusionMeta(row).action"
-                          class="check-conclusion__action"
-                          plain
-                          size="small"
-                          type="primary"
-                          @click="handleConclusionAction(row, conclusionMeta(row).action)"
-                        >{{ conclusionMeta(row).actionLabel }}</el-button>
-                        <span v-else-if="conclusionMeta(row).guidance" class="account-status-cell__guidance type-caption">{{ conclusionMeta(row).guidance }}</span>
-                      </template>
-                    </div>
-                  </template>
-                  <template #conclusion="{ row }">
-                    <div class="check-conclusion" :class="{ 'is-inspection-failed': row.inspectionStatus === 'failed' }">
-                      <div v-if="conclusionMeta(row).currentLabel" class="check-conclusion__current">
-                        <span class="check-conclusion__current-label type-caption">{{ conclusionMeta(row).currentLabel }}：</span>
-                        <strong class="check-conclusion__current-value type-body-sm">
-                          <i data-lucide="circle-help" class="check-conclusion__current-icon" aria-hidden="true"></i>
-                          {{ conclusionMeta(row).currentValue }}
-                        </strong>
-                        <el-popover
-                          v-if="conclusionMeta(row).helpItems?.length"
-                          trigger="hover"
-                          placement="top-start"
-                          :width="360"
-                          popper-class="cloud-account-rule-popover"
-                        >
-                          <div class="cloud-account-rule-popover__content" data-component="current-conclusion-possible-conditions">
-                            <el-alert
-                              v-if="conclusionMeta(row).helpBoundary"
-                              class="cloud-account-rule-popover__boundary"
-                              type="info"
-                              :closable="false"
-                              show-icon
-                              :title="conclusionMeta(row).helpBoundary"
-                            ></el-alert>
-                            <strong class="cloud-account-rule-popover__title type-body-sm">{{ t.cloudAccount.possibleConditionsTitle }}</strong>
-                            <ul class="cloud-account-rule-popover__list type-caption">
-                              <li v-for="item in conclusionMeta(row).helpItems" :key="item">{{ item }}</li>
-                            </ul>
-                          </div>
-                          <template #reference>
-                            <button
-                              class="check-conclusion__info-trigger"
-                              type="button"
-                              style="width:32px;height:32px;min-width:32px;"
-                              :aria-label="t.cloudAccount.viewPossibleConditions"
-                              @click.stop
-                            >
-                              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M12 16v-4"></path>
-                                <path d="M12 8h.01"></path>
-                              </svg>
-                            </button>
-                          </template>
-                        </el-popover>
-                      </div>
-                      <div class="check-conclusion__history">
-                        <span v-if="conclusionMeta(row).contextLabel" class="check-conclusion__context type-caption">{{ conclusionMeta(row).contextLabel }}：</span>
-                        <span class="check-conclusion__summary" :class="[conclusionMeta(row).className, row.inspectionStatus === 'failed' ? 'type-caption' : 'type-body-sm']">
-                          <span class="check-conclusion__status-icon type-caption" aria-hidden="true">{{ conclusionMeta(row).mark }}</span>
-                          <span>{{ conclusionMeta(row).label }}</span>
+            <div class="scroll-box">
+              <div class="scroll-box-inner">
+                <div v-if="visibleAccounts.length" class="account-grid" data-component="cloud-account-card-list">
+                  <article v-for="account in visibleAccounts" :key="account.id" class="account-card" data-component="cloud-account-list-card">
+                    <div class="account-card__top">
+                      <div class="account-provider" :class="'is-' + account.provider" aria-hidden="true">
+                        <span class="account-provider__mark">
+                          {{ account.provider === 'aws' ? 'aws' : account.provider === 'aliyun' ? '〔〕' : account.provider === 'google' ? 'G' : account.provider === 'huawei' ? 'H' : 'A1' }}
                         </span>
-                        <el-popover
-                          v-if="!conclusionMeta(row).currentLabel && (conclusionMeta(row).helpItems?.length || conclusionMeta(row).helpGroups?.length)"
-                          trigger="hover"
-                          placement="top-start"
-                          :width="360"
-                          popper-class="cloud-account-rule-popover"
-                        >
-                          <div class="cloud-account-rule-popover__content" data-component="conclusion-possible-conditions">
-                            <el-alert
-                              v-if="conclusionMeta(row).helpBoundary"
-                              class="cloud-account-rule-popover__boundary"
-                              type="info"
-                              :closable="false"
-                              show-icon
-                              :title="conclusionMeta(row).helpBoundary"
-                            ></el-alert>
-                            <strong class="cloud-account-rule-popover__title type-body-sm">{{ t.cloudAccount.possibleConditionsTitle }}</strong>
-                            <div v-if="conclusionMeta(row).helpGroups?.length" class="cloud-account-rule-popover__groups">
-                              <section v-for="group in conclusionMeta(row).helpGroups" :key="group.title" class="cloud-account-rule-popover__group">
-                                <strong class="cloud-account-rule-popover__group-title type-caption">{{ group.title }}</strong>
-                                <ul class="cloud-account-rule-popover__list type-caption">
-                                  <li v-for="item in group.items" :key="item">{{ item }}</li>
-                                </ul>
-                              </section>
-                            </div>
-                            <ul v-else class="cloud-account-rule-popover__list type-caption">
-                              <li v-for="item in conclusionMeta(row).helpItems" :key="item">{{ item }}</li>
-                            </ul>
-                          </div>
-                          <template #reference>
-                            <button
-                              class="check-conclusion__info-trigger"
-                              type="button"
-                              style="width:32px;height:32px;min-width:32px;"
-                              :aria-label="t.cloudAccount.viewPossibleConditions"
-                              @click.stop
-                            >
-                              <svg style="width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <path d="M12 16v-4"></path>
-                                <path d="M12 8h.01"></path>
-                              </svg>
-                            </button>
-                          </template>
-                        </el-popover>
                       </div>
+                      <div class="account-card__identity">
+                        <strong class="account-card__name type-body">{{ account.name }}</strong>
+                        <div class="account-card__meta type-caption">
+                          <span>{{ providerLabel(account.provider) }}</span>
+                          <span class="account-card__meta-dot" aria-hidden="true">·</span>
+                          <span>{{ account.cloudType[lang] }}</span>
+                        </div>
+                      </div>
+                      <div class="account-card__status">
+                        <span v-if="account.health === 'CHECKING'" class="status-badge badge-muted" role="status" aria-live="polite">
+                          <span class="health-spinner" aria-hidden="true"></span>
+                          <span>{{ t.checking }}</span>
+                        </span>
+                        <StatusBadge v-else-if="account.health === 'READY'" status="active" :label="t.healthy"></StatusBadge>
+                        <span v-else class="status-badge" :class="attentionBadgeClass(account)">
+                          <span class="status-badge__dot" aria-hidden="true"></span>
+                          <span>{{ healthMeta(account).label }}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="account-card__middle">
+                      <span v-if="account.health === 'ACTION_REQUIRED'" class="account-card__reason type-body-sm">{{ healthReason(account) }}</span>
+                      <span v-else-if="account.health === 'READY'" class="account-card__reason is-healthy type-body-sm">{{ t.allChecksPassed }}</span>
+                      <span v-else class="account-card__reason type-body-sm">{{ t.checking }}</span>
                       <el-button
-                        v-if="conclusionMeta(row).action"
-                        class="check-conclusion__action"
+                        v-if="account.health === 'ACTION_REQUIRED' && healthActionLabel(account)"
+                        class="account-card__context-action"
                         plain
                         size="small"
                         type="primary"
-                        @click="handleConclusionAction(row, conclusionMeta(row).action)"
-                      >{{ conclusionMeta(row).actionLabel }}</el-button>
+                      >{{ healthActionLabel(account) }}</el-button>
                     </div>
-                  </template>
-                  <template #checkedAt="{ row }">
-                    <div class="inspection-time type-caption">
-                      <template v-if="checkingAccountId === '*' || checkingAccountId === row.id">
-                        <span class="inspection-activity">
-                          <span class="cloud-account-check-spinner"></span>{{ t.cloudAccount.checking }}
-                        </span>
-                      </template>
-                      <template v-else-if="row.inspectionStatus === 'completed'">
-                        <span class="type-data">{{ row.lastInspectedAt }}</span>
-                      </template>
-                      <template v-else-if="row.inspectionStatus === 'failed'">
-                        <div class="inspection-failure">
-                          <button class="inspection-failure__summary type-body-sm" type="button" @click="openInspectionLog(row)">
-                            <span class="check-conclusion__status-icon type-caption" aria-hidden="true">×</span>
-                            <span>{{ t.cloudAccount.inspectionFailed }}</span>
+
+                    <div class="account-card__divider" aria-hidden="true"></div>
+
+                    <footer class="account-card__footer">
+                      <div class="inspection-time">
+                        <i data-lucide="clock-3" class="inspection-time__icon" aria-hidden="true"></i>
+                        <span class="type-data">{{ account.lastChecked }}</span>
+                        <span class="inspection-time__context type-caption">{{ lang === 'zh' ? '（' + t.lastChecked + '）' : '(' + t.lastChecked + ')' }}</span>
+                      </div>
+                      <div class="account-card__actions" :aria-label="account.name">
+                        <button class="account-action type-body-sm" type="button" :disabled="account.health === 'CHECKING'" @click="runRecheck(account)">
+                          {{ account.health === 'CHECKING' ? t.checking : t.recheck }}
+                        </button>
+                        <span class="account-action-separator" aria-hidden="true"></span>
+                        <button class="account-action type-body-sm" type="button">{{ t.edit }}</button>
+                        <span class="account-action-separator" aria-hidden="true"></span>
+                        <el-dropdown trigger="click">
+                          <button class="account-more" type="button" :aria-label="t.moreActions">
+                            <i data-lucide="ellipsis" class="account-more__icon"></i>
                           </button>
-                          <el-button class="check-conclusion__action" plain size="small" type="primary" @click="openInspectionLog(row)">{{ t.cloudAccount.viewInspectionLog }}</el-button>
-                        </div>
-                      </template>
-                      <template v-else>
-                        <span class="inspection-reason">{{ t.cloudAccount[row.inspectionReasonKey || 'notInspected'] }}</span>
-                      </template>
-                    </div>
-                  </template>
-                  <template #operations="{ row }">
-                    <TableActions :actions="rowActions(row)" :max="2"></TableActions>
-                  </template>
-                </DataTable>
+                          <template #dropdown>
+                            <el-dropdown-menu>
+                              <el-dropdown-item class="danger-menu-item">{{ t.delete }}</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </template>
+                        </el-dropdown>
+                      </div>
+                    </footer>
+                  </article>
+                </div>
+
+                <div v-else class="account-list-empty">
+                  <EmptyState icon="cloud" :title="t.emptyTitle" :hint="t.emptyHint">
+                    <template #action>
+                      <el-button type="primary">{{ t.addCloudAccount }}</el-button>
+                    </template>
+                  </EmptyState>
+                </div>
+
+                <div v-if="visibleAccounts.length" class="account-pagination">
+                  <el-pagination v-model:current-page="currentPage" background layout="prev, pager, next, jumper" :page-size="6" :total="visibleAccounts.length"></el-pagination>
+                  <span class="type-body-sm">{{ t.totalPrefix }} {{ visibleAccounts.length }} {{ t.totalSuffix }}</span>
+                </div>
               </div>
-            </el-scrollbar>
+            </div>
           </div>
-
-          <el-dialog
-            class="cloud-account-dialog"
-            data-component="cloud-account-form-dialog"
-            :model-value="dialogVisible"
-            :title="t.cloudAccount.dialogTitle"
-            width="720px"
-            append-to-body
-            :close-on-click-modal="false"
-            :close-on-press-escape="!isChecking"
-            :show-close="!isChecking"
-            @close="cancelDialog"
-          >
-            <div v-if="dialogResult" class="cloud-account-result">
-              <Alert :variant="dialogResult.variant" :title="dialogResult.title" :desc="dialogResult.desc"></Alert>
-            </div>
-
-            <el-form class="form-modern" label-position="top" size="large" :model="formModel">
-              <div class="form-group cloud-account-form-grid">
-                <el-form-item :label="t.cloudAccount.accountName" required :error="formErrors.name">
-                  <el-input v-model="formModel.name" :disabled="isChecking"></el-input>
-                </el-form-item>
-                <el-form-item :label="t.cloudAccount.provider" required>
-                  <el-select v-model="formModel.provider" :disabled="isChecking" style="width: 100%;">
-                    <el-option :label="t.cloudAccount.aliyun" value="aliyun"></el-option>
-                    <el-option :label="t.cloudAccount.aws" value="aws"></el-option>
-                    <el-option :label="t.cloudAccount.google" value="google"></el-option>
-                    <el-option :label="t.cloudAccount.huawei" value="huawei"></el-option>
-                  </el-select>
-                </el-form-item>
-                <el-form-item :label="t.cloudAccount.accessKeyId" required :error="formErrors.accessKeyId">
-                  <el-input ref="credentialInput" v-model="formModel.accessKeyId" :disabled="isChecking"></el-input>
-                </el-form-item>
-                <el-form-item :label="t.cloudAccount.accessKeySecret" required :error="formErrors.accessKeySecret">
-                  <el-input ref="credentialSecretInput" v-model="formModel.accessKeySecret" type="password" show-password :disabled="isChecking"></el-input>
-                </el-form-item>
-              </div>
-            </el-form>
-
-            <section v-if="showCheckZone" class="cloud-account-checks" data-component="cloud-account-self-check" :aria-label="t.cloudAccount.selfCheck" aria-live="polite">
-              <div
-                v-for="item in checkItems"
-                :key="item.key"
-                class="cloud-account-check-row"
-                :class="'is-' + item.state"
-              >
-                <span class="cloud-account-check-mark" aria-hidden="true">
-                  <span v-if="item.state === 'running'" class="cloud-account-check-spinner"></span>
-                  <span v-else-if="item.state === 'passed'">✓</span>
-                  <span v-else-if="item.state === 'error'">!</span>
-                  <span v-else-if="item.state === 'action'">!</span>
-                  <span v-else-if="item.state === 'unknown'">?</span>
-                  <span v-else>○</span>
-                </span>
-                <div class="cloud-account-check-copy">
-                  <div class="cloud-account-check-summary">
-                    <strong class="type-body-sm">{{ item.label }}</strong>
-                    <span v-if="item.summaryDetail" class="cloud-account-check-detail type-caption">{{ item.summaryDetail }}</span>
-                  </div>
-                  <div v-if="item.issue" class="cloud-account-issue" :class="'is-' + item.issueVariant" data-component="check-issue-action">
-                    <div>
-                      <strong v-if="item.showIssueTitle" class="type-body-sm">{{ item.detail }}</strong>
-                      <div class="cloud-account-check-detail type-caption"><strong v-if="item.issueLead">{{ item.issueLead }}</strong>{{ item.issueDesc }}</div>
-                    </div>
-                    <div v-if="item.actionLabel" class="cloud-account-issue__action">
-                      <el-button link type="primary" @click="openProviderAction(item.action)">
-                        {{ item.actionLabel }}<i :data-lucide="item.actionIcon" style="width:14px;height:14px;margin-left:4px;"></i>
-                      </el-button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <template #footer>
-              <div class="cloud-account-dialog-actions">
-                <el-button :disabled="isChecking" @click="cancelDialog">{{ t.cloudAccount.cancel }}</el-button>
-                <el-button type="primary" :loading="isChecking" :disabled="primaryDisabled" @click="handlePrimaryAction">{{ primaryLabel }}</el-button>
-              </div>
-            </template>
-          </el-dialog>
-
-          <el-drawer
-            v-if="false"
-            v-model="inspectionTaskVisible"
-            class="inspection-task-drawer"
-            :title="t.cloudAccount.inspectionTitle"
-            size="var(--ui-drawer-standard)"
-            append-to-body
-          >
-            <div class="inspection-task-content" data-component="inspection-task-settings">
-              <section class="inspection-task-section">
-                <div class="inspection-task-row">
-                  <strong>{{ t.cloudAccount.inspectionEnabled }}</strong>
-                  <el-switch v-model="inspectionTask.enabled"></el-switch>
-                </div>
-              </section>
-              <section class="inspection-task-section">
-                <strong>{{ t.cloudAccount.defaultInspectionRule }}</strong>
-                <div class="inspection-task-row">
-                  <span>{{ t.cloudAccount.inspectionScope }}</span>
-                  <strong>{{ defaultInspectionScopeLabel }}</strong>
-                </div>
-                <div class="inspection-task-row">
-                  <span>{{ t.cloudAccount.inspectionFrequency }}</span>
-                  <el-select v-model="inspectionTask.frequency" :disabled="!inspectionTask.enabled" style="width: 148px;">
-                    <el-option :label="t.cloudAccount.notConfigured" value=""></el-option>
-                    <el-option :label="t.cloudAccount.daily" value="daily"></el-option>
-                    <el-option :label="t.cloudAccount.weekly" value="weekly"></el-option>
-                  </el-select>
-                </div>
-                <div v-if="inspectionTask.frequency === 'weekly'" class="inspection-task-row">
-                  <span>{{ t.cloudAccount.executionDay }}</span>
-                  <el-select v-model="inspectionTask.weekday" :disabled="!inspectionTask.enabled" style="width: 148px;">
-                    <el-option v-for="(day, index) in t.cloudAccount.weekdays" :key="day" :label="day" :value="index"></el-option>
-                  </el-select>
-                </div>
-                <div class="inspection-task-row">
-                  <span>{{ t.cloudAccount.executionTime }}</span>
-                  <el-time-select
-                    v-model="inspectionTask.runTime"
-                    :disabled="!inspectionTask.enabled"
-                    start="00:00"
-                    step="00:30"
-                    end="23:30"
-                    :placeholder="t.cloudAccount.selectTime"
-                    style="width: 148px;"
-                  ></el-time-select>
-                </div>
-                <div class="inspection-task-row">
-                  <span>{{ t.cloudAccount.timeZone }}</span>
-                  <strong>{{ t.cloudAccount.systemTimeZone }}</strong>
-                </div>
-                <div class="inspection-task-row">
-                  <span>{{ t.cloudAccount.lastRun }}</span>
-                  <span class="type-data">{{ inspectionTask.lastRunAt || t.cloudAccount.notInspected }}</span>
-                </div>
-                <div class="inspection-task-row">
-                  <span>{{ t.cloudAccount.nextRun }}</span>
-                  <span class="type-data">{{ inspectionTask.enabled && inspectionTask.nextRunAt ? inspectionTask.nextRunAt : t.cloudAccount.notScheduled }}</span>
-                </div>
-              </section>
-              <section class="inspection-task-section">
-                <div class="inspection-task-section__head">
-                  <strong>{{ t.cloudAccount.individualInspectionRules }}</strong>
-                  <el-button link type="primary" :disabled="!inspectionTask.enabled" @click="addIndividualRule">{{ t.cloudAccount.addIndividualRule }}</el-button>
-                </div>
-                <span class="cloud-account-cell__meta type-caption">{{ t.cloudAccount.individualRuleHint }}</span>
-
-                <span v-if="!individualInspectionRules.length && !individualRuleEditorVisible" class="inspection-reason type-caption">{{ t.cloudAccount.noIndividualRules }}</span>
-                <div v-if="individualInspectionRules.length" class="inspection-rule-list">
-                  <div v-for="(rule, index) in individualInspectionRules" :key="rule.accountId" class="inspection-rule-row">
-                    <div class="inspection-rule-summary">
-                      <strong class="type-body-sm">{{ individualRuleAccountLabel(rule.accountId) }}</strong>
-                      <span class="cloud-account-cell__meta type-caption">{{ individualRuleScheduleLabel(rule) }}</span>
-                    </div>
-                    <div class="inspection-rule-actions">
-                      <el-button link type="primary" @click="editIndividualRule(rule, index)">{{ t.cloudAccount.edit }}</el-button>
-                      <el-button link type="danger" @click="removeIndividualRule(index)">{{ t.cloudAccount.removeRule }}</el-button>
-                    </div>
-                  </div>
-                </div>
-
-                <div v-if="individualRuleEditorVisible" class="inspection-rule-form" data-component="individual-inspection-rule-editor">
-                  <el-select class="inspection-rule-form__account" v-model="individualRuleForm.accountId" :placeholder="t.cloudAccount.selectCloudAccount">
-                    <el-option
-                      v-for="account in availableIndividualRuleAccounts"
-                      :key="account.id"
-                      :label="account.name + ' · ' + providerLabel(account.provider)"
-                      :value="account.id"
-                    ></el-option>
-                  </el-select>
-                  <el-select v-model="individualRuleForm.frequency" :placeholder="t.cloudAccount.selectFrequency">
-                    <el-option :label="t.cloudAccount.daily" value="daily"></el-option>
-                    <el-option :label="t.cloudAccount.weekly" value="weekly"></el-option>
-                  </el-select>
-                  <el-select v-if="individualRuleForm.frequency === 'weekly'" v-model="individualRuleForm.weekday" :placeholder="t.cloudAccount.selectWeekday">
-                    <el-option v-for="(day, index) in t.cloudAccount.weekdays" :key="day" :label="day" :value="index"></el-option>
-                  </el-select>
-                  <el-time-select
-                    v-model="individualRuleForm.runTime"
-                    start="00:00"
-                    step="00:30"
-                    end="23:30"
-                    :placeholder="t.cloudAccount.selectTime"
-                  ></el-time-select>
-                  <div class="inspection-rule-form__actions">
-                    <el-button @click="closeIndividualRuleEditor">{{ t.cloudAccount.cancel }}</el-button>
-                    <el-button type="primary" @click="saveIndividualRule">{{ individualRuleEditIndex >= 0 ? t.cloudAccount.saveRule : t.cloudAccount.addRule }}</el-button>
-                  </div>
-                </div>
-              </section>
-              <section class="inspection-task-section">
-                <div class="inspection-task-row">
-                  <strong>{{ t.cloudAccount.notifications }}</strong>
-                  <el-switch v-model="inspectionTask.notifyOwner"></el-switch>
-                </div>
-                <span class="cloud-account-cell__meta type-caption">{{ t.cloudAccount.notifyOwner }}</span>
-              </section>
-              <div class="drawer-footer-actions">
-                <el-button @click="cancelInspectionTask">{{ t.cloudAccount.cancel }}</el-button>
-                <el-button type="primary" @click="saveInspectionTask">{{ t.cloudAccount.saveTask }}</el-button>
-              </div>
-            </div>
-          </el-drawer>
-
-          <el-drawer
-            v-if="false"
-            v-model="inspectionLogVisible"
-            class="inspection-log-drawer"
-            size="var(--ui-drawer-standard)"
-            :show-close="false"
-            append-to-body
-          >
-            <template #header>
-              <div class="inspection-log-drawer__header-main">
-                <strong class="inspection-log-drawer__header-title type-h3">{{ t.cloudAccount.inspectionLogTitle }}</strong>
-                <div class="inspection-log-drawer__header-actions">
-                  <el-button
-                    v-if="selectedInspectionLogAccount"
-                    plain
-                    type="primary"
-                    @click="runRowInspection(selectedInspectionLogAccount); inspectionLogVisible = false"
-                  >{{ t.cloudAccount.reinspect }}</el-button>
-                  <button class="inspection-log-drawer__close" type="button" style="width:32px;height:32px;min-width:32px;" :aria-label="t.cloudAccount.closePanel" @click="inspectionLogVisible = false">
-                    <i data-lucide="x" style="width:16px;height:16px;" aria-hidden="true"></i>
-                  </button>
-                </div>
-              </div>
-            </template>
-            <div v-if="selectedInspectionLogAccount" class="inspection-log-content" data-component="inspection-log-detail">
-              <div class="inspection-log-summary">
-                <div class="cloud-account-cell">
-                  <strong class="cloud-account-cell__name type-body-sm">{{ selectedInspectionLogAccount.name }}</strong>
-                  <span class="cloud-account-cell__meta type-caption">{{ providerLabel(selectedInspectionLogAccount.provider) }}</span>
-                </div>
-                <StatusBadge status="error" :label="t.cloudAccount.inspectionFailed"></StatusBadge>
-              </div>
-
-              <div class="inspection-log-main">
-                <section v-if="inspectionLogMode === 'output'" class="inspection-terminal" :aria-label="t.cloudAccount.logOutput">
-                  <div class="inspection-terminal__bar type-caption">
-                    <span>{{ t.cloudAccount.logOutput }}</span>
-                    <span class="type-data">{{ selectedInspectionLogAccount.lastAttemptedAt }}</span>
-                  </div>
-                  <div class="inspection-terminal__stream" role="log" aria-live="polite">
-                    <div v-for="(line, index) in inspectionLogLines" :key="index" class="inspection-terminal__line type-data">
-                      <span class="inspection-terminal__time">{{ line.time }}</span>
-                      <span class="inspection-terminal__level" :class="'is-' + line.tone">{{ line.level }}</span>
-                      <span class="inspection-terminal__message">{{ line.message }}</span>
-                    </div>
-                  </div>
-                </section>
-
-                <section v-else class="inspection-log-diagnostic" :aria-label="t.cloudAccount.diagnosticResult">
-                  <div class="inspection-log-diagnostic__head">
-                    <i data-lucide="circle-alert" aria-hidden="true"></i>
-                    <strong class="type-body-sm">{{ t.cloudAccount[selectedInspectionLogAccount.failureReasonKey || 'providerRequestTimeout'] }}</strong>
-                  </div>
-                  <dl class="inspection-log-diagnostic__row">
-                    <dt class="type-caption">{{ t.cloudAccount.errorDetail }}</dt>
-                    <dd class="type-body-sm">{{ t.cloudAccount.inspectionTimeoutDetail }}</dd>
-                  </dl>
-                  <dl class="inspection-log-diagnostic__row">
-                    <dt class="type-caption">{{ t.cloudAccount.handlingSuggestion }}</dt>
-                    <dd class="type-body-sm">{{ t.cloudAccount.inspectionTimeoutSuggestion }}</dd>
-                  </dl>
-                </section>
-              </div>
-            </div>
-          </el-drawer>
-
         </main>
         <!-- AGIONE_EDIT_MAIN_END -->
 
@@ -5899,25 +3803,6 @@ const app = createApp({
                   {{ scenario.label }}
                 </button>
               </div>
-            </div>
-            <div class="state-machine-mock">
-              <div class="state-machine-group__label">{{ lang === 'zh' ? '检测项' : 'Check item' }}</div>
-              <div class="state-machine-mock__tabs" role="group" :aria-label="lang === 'zh' ? '检测项' : 'Check item'">
-                <button
-                  v-for="option in mockCheckOptions"
-                  :key="option.key"
-                  class="state-machine-option"
-                  type="button"
-                  :aria-pressed="String(activeMockCheck === option.key)"
-                  @click="selectMockCheck(option.key)"
-                >
-                  {{ option.label }}
-                </button>
-              </div>
-              <label class="state-machine-group__label" for="prototype-mock-case">{{ lang === 'zh' ? 'Mock 情况' : 'Mock case' }}</label>
-              <select id="prototype-mock-case" v-model="activeMockCase" class="state-machine-mock__select">
-                <option v-for="option in mockCaseOptions" :key="option.key" :value="option.key">{{ option.label }}</option>
-              </select>
             </div>
           </div>
         </div>
