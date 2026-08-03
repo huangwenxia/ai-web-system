@@ -12,7 +12,7 @@ convergence:
   header: HeaderBox
   filters: FilterBox
   row-state: StatusBadge
-  row-actions: redetect, edit, and overflow delete
+  row-actions: direct edit, with low-frequency redetection and delete in the overflow menu
   add-interaction: one shared Create/Update modal with account fields and three account-configuration checks
   detection-interaction: manual all-account and row-level detection
   business-facts-check: aligned with metis-xcloud account validation and metis-hashrate deployment lifecycle needs
@@ -37,7 +37,7 @@ convergence:
   state-coverage-change: collapse persisted status to Healthy or Action required; UNKNOWN maps to Action required with Recheck as its recovery action
   removed-or-downgraded: remove the cloud-account health detail drawer and generic View details action; remove the add-flow Operations & cleanup check because admission cannot prove mutating lifecycle permissions without real resources
   hierarchy-change: merge aggregate status, its primary actionable conclusion, and recovery action into one Status column
-  attention-status-color: confirmed account unavailability uses red, known configuration work uses action violet, and an unconfirmed cause uses information blue; color distinguishes the conclusion type rather than a customer-visible priority level
+  attention-status-color: every customer-visible Action required badge uses the same destructive red treatment; the reason and recovery action carry the detailed distinction
   terminology-change: use detection for customer-triggered refresh actions; reserve check wording for capability checks inside the add-account flow
   mock-time-assumption: completed sample rows share the scheduled batch completion at 2026-07-24 09:00 CST; interactive inspections use the browser clock
   mock-action-required-coverage: customer-visible list reasons are limited to mechanically verified identity/credential mappings; unverified product and deployment candidates are not emitted
@@ -3035,9 +3035,9 @@ const i18n = {
       inspectNow: '重新检测',
       detectAgain: '重新检测',
       readyGuidance: '可用于部署模型',
-      edit: '编辑基本信息',
+      edit: '编辑',
       dialogTitle: '添加云账号',
-      editDialogTitle: '编辑基本信息',
+      editDialogTitle: '编辑云账号',
       updateCredentialDialogTitle: '更新访问凭证',
       accountName: '账号名称',
       provider: '选择云平台',
@@ -3050,9 +3050,9 @@ const i18n = {
       cancel: '取消',
       detectionCanceled: '检测已取消',
       validateAndAdd: '检测并添加',
-      saveBasicInfo: '保存基本信息',
+      saveBasicInfo: '保存',
       checkAndUpdateCredential: '检测并更新凭证',
-      basicInfoUpdated: '基本信息已更新',
+      basicInfoUpdated: '云账号已更新',
       validating: '正在检测…',
       saveAccount: '保存云账号',
       retryValidation: '重新检测',
@@ -3304,9 +3304,9 @@ const i18n = {
       inspectNow: 'Detect again',
       detectAgain: 'Detect again',
       readyGuidance: 'Ready for model deployment',
-      edit: 'Edit basic information',
+      edit: 'Edit',
       dialogTitle: 'Add cloud account',
-      editDialogTitle: 'Edit basic information',
+      editDialogTitle: 'Edit cloud account',
       updateCredentialDialogTitle: 'Update access credentials',
       accountName: 'Account name',
       provider: 'Cloud platform',
@@ -3319,9 +3319,9 @@ const i18n = {
       cancel: 'Cancel',
       detectionCanceled: 'Detection canceled',
       validateAndAdd: 'Check and add',
-      saveBasicInfo: 'Save basic information',
+      saveBasicInfo: 'Save',
       checkAndUpdateCredential: 'Detect and update credentials',
-      basicInfoUpdated: 'Basic information updated',
+      basicInfoUpdated: 'Cloud account updated',
       validating: 'Checking…',
       saveAccount: 'Save cloud account',
       retryValidation: 'Check again',
@@ -4479,11 +4479,7 @@ const app = createApp({
       UNKNOWN: { status: 'pending', label: t.value.cloudAccount.actionRequired },
     }));
     const healthMetaFor = (row) => healthMeta.value[row.health];
-    const attentionBadgeClass = (row) => {
-      if (row.health === 'UNAVAILABLE') return 'badge-red';
-      if (row.health === 'UNKNOWN') return 'badge-blue';
-      return 'badge-action';
-    };
+    const attentionBadgeClass = () => 'badge-red';
     const dimensionMeta = computed(() => ({
       identity: {
         valid: { icon: 'circle-check', className: 'is-pass', label: t.value.cloudAccount.identityValid },
@@ -5243,8 +5239,8 @@ const app = createApp({
 
     function rowActions(row) {
       return [
-        { label: t.value.cloudAccount.inspectNow, onClick: () => runRowInspection(row) },
         { label: t.value.cloudAccount.edit, onClick: () => editAccount(row) },
+        { label: t.value.cloudAccount.inspectNow, onClick: () => runRowInspection(row) },
       ];
     }
 
@@ -5575,13 +5571,16 @@ const app = createApp({
                         <i data-lucide="clock-3" aria-hidden="true"></i><span class="type-data">{{ row.lastInspectedAt }}</span><span>{{ t.cloudAccount.checkedAtColumn }}</span>
                       </div>
                       <div class="account-card-v9__actions" :aria-label="row.name">
-                        <button class="account-action-v9 type-body-sm" type="button" :disabled="checkingAccountId === '*' || checkingAccountId === row.id" @click="runRowInspection(row)">{{ t.cloudAccount.inspectNow }}</button>
-                        <span class="account-action-v9__separator" aria-hidden="true"></span>
                         <button class="account-action-v9 type-body-sm" type="button" @click="editAccount(row)">{{ t.cloudAccount.edit }}</button>
                         <span class="account-action-v9__separator" aria-hidden="true"></span>
                         <el-dropdown trigger="click">
                           <button class="account-more-v9" style="width:32px;height:32px;min-width:32px;" type="button" :aria-label="t.cloudAccount.moreActions"><i data-lucide="ellipsis" style="width:16px;height:16px;" aria-hidden="true"></i></button>
-                          <template #dropdown><el-dropdown-menu><el-dropdown-item>{{ t.cloudAccount.delete }}</el-dropdown-item></el-dropdown-menu></template>
+                          <template #dropdown>
+                            <el-dropdown-menu>
+                              <el-dropdown-item :disabled="checkingAccountId === '*' || checkingAccountId === row.id" @click="runRowInspection(row)">{{ t.cloudAccount.inspectNow }}</el-dropdown-item>
+                              <el-dropdown-item divided>{{ t.cloudAccount.delete }}</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </template>
                         </el-dropdown>
                       </div>
                     </footer>
