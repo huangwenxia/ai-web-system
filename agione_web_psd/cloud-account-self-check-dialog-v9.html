@@ -47,6 +47,7 @@ convergence:
   mock-rendering-rule: every selectable mock case has an explicit detection-item outcome mapping; provider synchronization must not reset the selected mock scenario
   copy-compression: credential findings show the concrete reason and field-specific update action without the repeated instruction sentence
   operation-rule: every configuration dialog renders the stable three-check UI catalog; before a run all rows are not started, then backend-returned items own runtime status while absent items become not applicable for this change
+  detection-cancel-rule: closing or canceling the dialog during detection aborts the current run, closes the dialog, and shows one lightweight cancellation message without confirmation or saved side effects
 rule-gap:
   - rule: future backend contract
     scene: current API collapses provider validation exceptions
@@ -3047,6 +3048,7 @@ const i18n = {
       google: 'Google Cloud',
       huawei: '华为云',
       cancel: '取消',
+      detectionCanceled: '检测已取消',
       validateAndAdd: '检测并添加',
       saveBasicInfo: '保存基本信息',
       checkAndUpdateCredential: '检测并更新凭证',
@@ -3315,6 +3317,7 @@ const i18n = {
       google: 'Google Cloud',
       huawei: 'Huawei Cloud',
       cancel: 'Cancel',
+      detectionCanceled: 'Detection canceled',
       validateAndAdd: 'Check and add',
       saveBasicInfo: 'Save basic information',
       checkAndUpdateCredential: 'Detect and update credentials',
@@ -5012,10 +5015,12 @@ const app = createApp({
     }
 
     function cancelDialog() {
+      const wasChecking = isChecking.value;
       validationRun += 1;
       clearValidationTimers();
       dialogVisible.value = false;
       if (scenarios[activeScenario.value]?.data?.surface === 'dialog') setScenario('listMixed');
+      if (wasChecking) ElementPlus.ElMessage.info(t.value.cloudAccount.detectionCanceled);
     }
 
     function openDialog() {
@@ -5601,7 +5606,7 @@ const app = createApp({
             append-to-body
             :close-on-click-modal="false"
             :close-on-press-escape="!isChecking"
-            :show-close="!isChecking"
+            :show-close="true"
             @close="cancelDialog"
           >
             <div v-if="dialogResult" class="cloud-account-result">
@@ -5668,7 +5673,7 @@ const app = createApp({
 
             <template #footer>
               <div class="cloud-account-dialog-actions">
-                <el-button :disabled="isChecking" @click="cancelDialog">{{ t.cloudAccount.cancel }}</el-button>
+                <el-button @click="cancelDialog">{{ t.cloudAccount.cancel }}</el-button>
                 <el-button type="primary" :loading="isChecking" :disabled="primaryDisabled" @click="handlePrimaryAction">{{ primaryLabel }}</el-button>
               </div>
             </template>
