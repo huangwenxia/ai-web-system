@@ -16,7 +16,7 @@ convergence:
   add-interaction: one shared Create/Update modal with account fields and three account-configuration checks
   detection-interaction: manual all-account and row-level detection
   business-facts-check: aligned with metis-xcloud account validation and metis-hashrate deployment lifecycle needs
-  state-coverage-check: healthy, configuration-check not-started/pending/checking/pass/not-applicable/name-conflict, credential authentication failure, already-connected identity finding, credential-update subject mismatch, unclassified result, transient detection failure, exact detection timestamps, product-access skipped, and success
+  state-coverage-check: healthy, configuration-check not-started/pending/checking/pass/not-applicable/name-conflict, credential authentication failure, already-connected identity finding, credential-update subject mismatch, transient detection failure, exact detection timestamps, product-access skipped, and success
   visual-focal-points: merged account status with conclusion and recovery action, latest detection time, and the single add-account primary action
   visual-fidelity-check: not-run
   visual-coherence-check: static-only
@@ -28,10 +28,11 @@ convergence:
   business-rule-change: every completed manual or backend-triggered detection updates the same latest-detection timestamp and status
   automatic-detection-rule: scheduling is backend-owned and has no customer-facing settings
   in-progress-row-rule: account-level detection replaces the timestamp while running; the timestamp returns only after the run finishes
-  admission-rule: a new cloud account may be saved as pending confirmation only after credentials and cloud identity pass while a later successful response remains unclassified; identity uncertainty or technical check failure cannot be saved
-  unconfirmed-rule: persisted account health may be pending confirmation after the admission escape hatch or after a later inspection cannot replace the last confirmed result
-  classification-escape-rule: Unable to classify means the check returned normally but no reliable category matched; technical failures stay outside customer-visible business states and do not produce a saveable result
+  admission-rule: a new cloud account may be saved only after credentials and cloud identity pass; known product-access setup issues may be saved as Action required, while technical check failures cannot be saved
+  unconfirmed-rule: a later technical inspection failure cannot replace the last confirmed customer-visible result
+  classification-escape-rule: unsupported provider result categories are treated as backend technical failures and never become a customer-visible business state
   technical-failure-rule: provider or platform detection failures remain backend concerns and do not overwrite the latest valid customer-visible status or timestamp
+  technical-failure-action-rule: identity or product detection failures render as Error with an exclamation mark and disable saving; known product setup or permission findings remain saveable as Action required
   health-rule-change: remove the unsupported auxiliary-capability aggregate state; optional monitoring or logging access does not affect deployment readiness unless a future confirmed contract makes it required
   add-precheck-rule: add-account precheck covers XCloud account information, cloud identity and credentials, plus cloud product access and account-level permissions; deployment-context prerequisites move to deployment preflight
   state-coverage-change: collapse persisted status to Healthy or Action required; UNKNOWN maps to Action required with Recheck as its recovery action
@@ -40,8 +41,7 @@ convergence:
   attention-status-color: every customer-visible Action required badge uses the same destructive red treatment; the reason and recovery action carry the detailed distinction
   terminology-change: use detection for customer-triggered refresh actions; reserve check wording for capability checks inside the add-account flow
   mock-time-assumption: completed sample rows share the scheduled batch completion at 2026-07-24 09:00 CST; interactive inspections use the browser clock
-  mock-action-required-coverage: customer-visible list reasons are limited to mechanically verified identity/credential mappings; unverified product and deployment candidates are not emitted
-  mock-unclassified-coverage: a completed UNKNOWN row maps to Action required, shows no duplicate inline detection action, and retains boundary help plus the normal detection timestamp
+  mock-action-required-coverage: verified cloud-product not-enabled and access-denied results may be saved; the new account enters Action required and keeps the concrete provider reason
   conclusion-help: setup-required, account-unavailable, and no-valid-result conclusions expose hover/focus information popovers; each starts with a boundary Alert before listing possible causes, while recovery actions remain separate
   provider-guidance: credential findings route to the dedicated UPDATE_CREDENTIALS form; UPDATE_BASIC_INFO does not submit or recheck credentials
   mock-rendering-rule: every selectable mock case has an explicit detection-item outcome mapping; provider synchronization must not reset the selected mock scenario
@@ -52,7 +52,7 @@ rule-gap:
   - rule: future backend contract
     scene: current API collapses provider validation exceptions
     decision: prototype target-state design
-    reason: the product requires stable actionable deployment-health categories before production implementation
+    reason: the product requires stable actionable cloud-account health categories before production implementation
 browser-review: blocked-by-user-opt-in-policy
 decision-source: model-direct
 AI-NOTES-->
@@ -2351,6 +2351,10 @@ html, body {
   margin-bottom: var(--ui-space-lg);
 }
 
+.cloud-account-form-item--wide {
+  grid-column: 1 / -1;
+}
+
 .cloud-account-checks {
   display: grid;
   gap: var(--ui-space-md);
@@ -2388,6 +2392,12 @@ html, body {
   background: var(--ui-bg-card);
 }
 
+.cloud-account-check-mark svg {
+  width: 14px;
+  height: 14px;
+  stroke-width: 2;
+}
+
 .cloud-account-check-row.is-passed .cloud-account-check-mark {
   color: var(--ui-color-success);
 }
@@ -2414,6 +2424,10 @@ html, body {
   color: var(--ui-color-destructive);
 }
 
+.cloud-account-check-row.is-failed .cloud-account-check-mark {
+  color: var(--ui-color-destructive);
+}
+
 .cloud-account-check-spinner {
   width: 14px;
   height: 14px;
@@ -2434,6 +2448,14 @@ html, body {
   align-items: center;
   justify-content: space-between;
   gap: var(--ui-space-sm);
+  min-height: 20px;
+}
+
+.cloud-account-check-summary > strong,
+.cloud-account-check-summary > .cloud-account-check-detail {
+  display: inline-flex;
+  align-items: center;
+  min-height: 20px;
 }
 
 .cloud-account-check-detail {
@@ -3043,6 +3065,7 @@ const i18n = {
       provider: '选择云平台',
       accessKeyId: 'Access Key ID',
       accessKeySecret: 'Access Key Secret',
+      iamRoleArn: 'IAM 角色 ARN',
       aliyun: '阿里云',
       aws: '亚马逊云科技',
       google: 'Google Cloud',
@@ -3086,14 +3109,13 @@ const i18n = {
       awsKeyInvalid: 'Access Key ID 无效',
       awsSignatureInvalid: 'Access Key Secret 无效',
       awsAuthenticationFailed: 'AWS 凭证认证失败',
-      googleProjectMismatch: 'Project ID 与 Service Account 不一致',
-      googleServiceAccountInvalid: 'Service Account 无效',
+      googleKeyInvalid: 'Access Key ID 无效',
+      googleSecretInvalid: 'Access Key Secret 无效',
       huaweiAuthenticationFailed: '华为云凭证认证失败',
       cloudIdentityUnresolved: '无法确认云身份',
       accountAlreadyConnected: '该云账号已接入',
       viewExistingAccount: '查看已有账号',
-      identityUnclassified: '云商返回的身份检测结果暂未适配',
-      identityTechnicalFailure: '暂时无法完成云身份与凭证检测',
+      identityTechnicalFailure: '云平台身份认证接口请求超时',
       productNotImplemented: '当前暂未提供云产品访问检测',
       productAccessDenied: '当前身份无权访问目标云产品',
       awsSageMakerNotEnabled: 'AWS SageMaker 未开通或不可访问',
@@ -3103,13 +3125,16 @@ const i18n = {
       awsProductDenied: '当前 IAM 身份无权访问 SageMaker',
       googleProductDenied: '当前 Service Account 无权访问 Vertex AI',
       huaweiProductDenied: '当前 IAM 身份无权访问 ModelArts',
-      productUnclassified: '云产品接口返回的检测结果暂未适配',
-      productTechnicalFailure: '暂时无法完成云产品访问与权限检测',
+      productTechnicalFailure: '云产品访问接口请求超时',
+      defaultDetectionHint: '添加云账号时会进行必要检测，帮助提前发现可能影响后续部署的云账号配置问题。',
+      credentialUpdateDetectionHint: '更新访问凭证时会重新检测云账号，帮助提前发现可能影响后续部署的云账号配置问题。',
+      productCheckSaveableTitle: '云产品访问与权限未通过，仍可保存，保存后账号将标记为“需处理”',
+      productCheckUpdateSaveableTitle: '云产品访问与权限未通过，仍可更新凭证，更新后账号将标记为“需处理”',
+      productCheckUnavailableSaveableTitle: '云产品访问与权限暂未检测，仍可保存，保存后账号将标记为“需处理”',
+      accountSavedActionRequired: '云账号已保存，当前状态为需处理',
       updateAccessKeyId: '更新 Access Key ID',
       updateAccessKeySecret: '更新 Access Key Secret',
       modifyAccountName: '修改账号名称',
-      updateProjectId: '修改 Project ID',
-      updateServiceAccount: '更新 Service Account',
       huaweiAccessKeyDisabled: '华为云 Access Key 已停用',
       accountUnavailableBoundary: '只有云商返回明确的认证失败、身份停用或绑定 ID 不一致证据时，才判定账号不可用；权限不足、网络超时和临时故障不属于此结论。',
       accountUnavailableGroups: [
@@ -3142,21 +3167,11 @@ const i18n = {
       viewStatusBoundary: '查看状态说明',
       operationPermissionMissing: '缺少运维与回收权限',
       operationPermissionMissingHint: '账号可保存，补齐权限后才能安全管理实例',
-      unableToVerify: '暂无法确认具体原因',
-      unableToVerifyHint: '检测结果暂无法归入已有原因，暂无对应处理措施',
-      unclassifiedBackendLead: '云产品接口可访问，',
-      unclassifiedBackendReason: '后端没有归因统一记录的原因',
       saveableNotDeployable: '可添加云账号，暂不可用于部署模型',
       productSaveableHint: '保存后可在云账号列表查看开通路径并重新检测',
       deploymentSaveableHint: '保存后可在云账号列表查看所需配置并重新检测',
-      unclassifiedSaveableHint: '建议保存后重新检测，该情况可能影响模型部署',
-      unclassifiedResultTitle: '检测已完成',
-      unclassifiedResultDesc: '建议保存后重新检测，该情况可能影响模型部署',
-      unclassifiedBoundary: '暂无法确认具体原因，建议后续重新检测；该情况可能影响模型部署。',
-      unclassifiedCases: ['云商返回了系统尚未适配的新错误码', '返回证据不足以区分凭证、权限或账号限制', '多个检测结果互相冲突', '云商语义暂时无法映射到现有分类'],
       checkIncomplete: '检测未完成',
       checkIncompleteHint: '本次检测未产生有效结论，输入已保留，可重新检测',
-      savedPendingConfirmation: '云账号已保存，建议重新检测确认状态',
       accountReady: '部署检测全部通过',
       accountReadyHint: '云账号已添加，可用于模型部署',
       openProductGuide: '查看开通路径',
@@ -3169,6 +3184,7 @@ const i18n = {
       requiredName: '请输入账号名称',
       requiredKey: '请输入 Access Key ID',
       requiredSecret: '请输入 Access Key Secret',
+      requiredIamRoleArn: '请输入 IAM 角色 ARN',
       inspectionTitle: '自动巡检设置',
       inspectionEnabled: '启用自动巡检',
       inspectionScope: '巡检范围',
@@ -3312,6 +3328,7 @@ const i18n = {
       provider: 'Cloud platform',
       accessKeyId: 'Access Key ID',
       accessKeySecret: 'Access Key Secret',
+      iamRoleArn: 'IAM role ARN',
       aliyun: 'Alibaba Cloud',
       aws: 'Amazon Web Services',
       google: 'Google Cloud',
@@ -3355,14 +3372,13 @@ const i18n = {
       awsKeyInvalid: 'Access Key ID is invalid',
       awsSignatureInvalid: 'Access Key Secret is invalid',
       awsAuthenticationFailed: 'AWS credential authentication failed',
-      googleProjectMismatch: 'Project ID does not match the service account',
-      googleServiceAccountInvalid: 'Service Account is invalid',
+      googleKeyInvalid: 'Access Key ID is invalid',
+      googleSecretInvalid: 'Access Key Secret is invalid',
       huaweiAuthenticationFailed: 'Huawei Cloud credential authentication failed',
       cloudIdentityUnresolved: 'Cloud identity cannot be confirmed',
       accountAlreadyConnected: 'This cloud account is already connected',
       viewExistingAccount: 'View existing account',
-      identityUnclassified: 'The provider returned an identity result that is not mapped yet',
-      identityTechnicalFailure: 'Cloud identity and credential detection is temporarily unavailable',
+      identityTechnicalFailure: 'The cloud identity authentication request timed out',
       productNotImplemented: 'Cloud product access detection is not available yet',
       productAccessDenied: 'The current identity cannot access the target cloud product',
       awsSageMakerNotEnabled: 'AWS SageMaker is not enabled or accessible',
@@ -3372,13 +3388,16 @@ const i18n = {
       awsProductDenied: 'The current IAM identity cannot access SageMaker',
       googleProductDenied: 'The current service account cannot access Vertex AI',
       huaweiProductDenied: 'The current IAM identity cannot access ModelArts',
-      productUnclassified: 'The cloud product API returned a result that is not mapped yet',
-      productTechnicalFailure: 'Cloud product access detection is temporarily unavailable',
+      productTechnicalFailure: 'The cloud product access request timed out',
+      defaultDetectionHint: 'Cloud accounts are checked when added to help identify configuration issues that may affect subsequent deployments.',
+      credentialUpdateDetectionHint: 'Cloud accounts are rechecked when access credentials are updated to help identify configuration issues that may affect subsequent deployments.',
+      productCheckSaveableTitle: 'Cloud product access check failed, but the account can still be saved with Action required status',
+      productCheckUpdateSaveableTitle: 'Cloud product access check failed, but credentials can still be updated with Action required status',
+      productCheckUnavailableSaveableTitle: 'Cloud product access was not checked, but the account can still be saved with Action required status',
+      accountSavedActionRequired: 'Cloud account saved with Action required status',
       updateAccessKeyId: 'Update Access Key ID',
       updateAccessKeySecret: 'Update Access Key Secret',
       modifyAccountName: 'Change account name',
-      updateProjectId: 'Update Project ID',
-      updateServiceAccount: 'Update Service Account',
       huaweiAccessKeyDisabled: 'The Huawei Cloud access key is disabled',
       accountUnavailableBoundary: 'Mark an account unavailable only when the provider returns definitive evidence of authentication failure, a disabled identity, or a mismatched bound ID. Permission denial, network timeout, and temporary failures are excluded.',
       accountUnavailableGroups: [
@@ -3411,21 +3430,11 @@ const i18n = {
       viewStatusBoundary: 'View status guidance',
       operationPermissionMissing: 'Operations and cleanup permissions missing',
       operationPermissionMissingHint: 'The account can be saved; add permissions for safe lifecycle management',
-      unableToVerify: 'Specific cause cannot be confirmed',
-      unableToVerifyHint: 'The result cannot be mapped to an existing cause and no specific action is available.',
-      unclassifiedBackendLead: 'The cloud product API is accessible, ',
-      unclassifiedBackendReason: 'but the backend has not mapped this cause to a unified category.',
       saveableNotDeployable: 'Cloud account can be added but is not ready for model deployment',
       productSaveableHint: 'Save it, then view the enablement path and detect it again from the cloud account list',
       deploymentSaveableHint: 'Save it, then view the required setup and detect it again from the cloud account list',
-      unclassifiedSaveableHint: 'Detect the account again after saving; this condition may affect model deployment.',
-      unclassifiedResultTitle: 'Detection completed',
-      unclassifiedResultDesc: 'Detect the account again after saving; this condition may affect model deployment.',
-      unclassifiedBoundary: 'The specific cause cannot be confirmed. Detect the account again later; this condition may affect model deployment.',
-      unclassifiedCases: ['The provider returned a new error code that is not mapped yet', 'The evidence cannot distinguish credential, permission, or account restriction causes', 'Multiple check results conflict', 'Provider semantics cannot yet be mapped to the current categories'],
       checkIncomplete: 'Check incomplete',
       checkIncompleteHint: 'This check produced no valid result. Inputs are preserved and the check can be retried.',
-      savedPendingConfirmation: 'Cloud account saved; detect it again to confirm its status',
       accountReady: 'All deployment checks passed',
       accountReadyHint: 'Cloud account added and ready for deployment',
       openProductGuide: 'View enablement guide',
@@ -3438,6 +3447,7 @@ const i18n = {
       requiredName: 'Enter an account name',
       requiredKey: 'Enter an Access Key ID',
       requiredSecret: 'Enter an Access Key Secret',
+      requiredIamRoleArn: 'Enter an IAM role ARN',
       inspectionTitle: 'Automatic inspection settings',
       inspectionEnabled: 'Enable automatic inspection',
       inspectionScope: 'Scope',
@@ -3597,11 +3607,13 @@ const PrototypeComponents = {
       variant:  { type: String, default: 'info' },
       title:    { type: String, required: true },
       desc:     { type: String, default: '' },
+      icon:     { type: String, default: '' },
       closable: { type: Boolean, default: false },
     },
     data() { return { visible: true }; },
     computed: {
       iconName() {
+        if (this.icon) return this.icon;
         return {
           success: 'circle-check',
           action: 'clock-3',
@@ -4414,8 +4426,9 @@ const app = createApp({
       provider: 'aliyun',
       accessKeyId: 'LTAI••••••••8K2P',
       accessKeySecret: 'example-secret',
+      iamRoleArn: 'arn:aws:iam::123456789012:role/service-role/AmazonSageMakerExecutionRole',
     });
-    const formErrors = reactive({ name: '', accessKeyId: '', accessKeySecret: '' });
+    const formErrors = reactive({ name: '', accessKeyId: '', accessKeySecret: '', iamRoleArn: '' });
     const inspectionTask = reactive({
       enabled: true,
       frequency: 'weekly',
@@ -4443,7 +4456,6 @@ const app = createApp({
       { id: 'cloud-ready', name: '生产推理账号', provider: 'aliyun', health: 'READY', identity: 'valid', permission: 'ready', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
       { id: 'cloud-auth-failed', name: '历史部署账号', provider: 'aws', health: 'UNAVAILABLE', conclusionReasonKey: 'credentialAuthenticationFailed', identity: 'invalid', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
       { id: 'cloud-binding-mismatch', name: '模型服务账号', provider: 'google', health: 'UNAVAILABLE', conclusionReasonKey: 'boundAccountMismatch', identity: 'invalid', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
-      { id: 'cloud-unclassified', name: '新接入模型账号', provider: 'huawei', health: 'UNKNOWN', identity: 'valid', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', inspectionStatus: 'completed' },
       { id: 'cloud-transient', name: '批量推理账号', provider: 'aliyun', health: 'UNKNOWN', conclusionReasonKey: 'detectionTemporarilyFailed', identity: 'unknown', permission: 'unknown', lastInspectedAt: '2026-07-24 09:00', lastAttemptedAt: '2026-07-24 09:00', inspectionStatus: 'failed', failureReasonKey: 'providerRequestTimeout' },
     ]);
     const providerLabel = (provider) => t.value.cloudAccount[provider] || provider;
@@ -4483,7 +4495,7 @@ const app = createApp({
     const dimensionMeta = computed(() => ({
       identity: {
         valid: { icon: 'circle-check', className: 'is-pass', label: t.value.cloudAccount.identityValid },
-        invalid: { icon: 'circle-x', className: 'is-error', label: t.value.cloudAccount.identityInvalid },
+        invalid: { icon: 'circle-alert', className: 'is-error', label: t.value.cloudAccount.identityInvalid },
         unknown: { icon: 'circle-help', className: 'is-unknown', label: t.value.cloudAccount.identityUnknown },
       },
       permission: {
@@ -4497,6 +4509,12 @@ const app = createApp({
         return { mark: '✓', className: 'is-pass', label: t.value.cloudAccount.allRequiredChecksPassed, guidance: t.value.cloudAccount.readyGuidance, actionLabel: '', action: '' };
       }
       if (row.health === 'ACTION_REQUIRED') {
+        if (row.conclusionKey === 'productCheckUnavailable') {
+          return {
+            mark: '!', className: 'is-action', label: t.value.cloudAccount.productNotImplemented,
+            actionLabel: t.value.cloudAccount.detectAgain, action: 'inspect',
+          };
+        }
         if (row.conclusionKey === 'productUnavailable') {
           return {
             mark: '!', className: 'is-action', label: t.value.cloudAccount[row.conclusionReasonKey] || t.value.cloudAccount.productUnavailable,
@@ -4514,7 +4532,7 @@ const app = createApp({
       }
       if (row.health === 'UNAVAILABLE') {
         return {
-          mark: '×', className: 'is-error', label: t.value.cloudAccount[row.conclusionReasonKey] || t.value.cloudAccount.credentialInvalid,
+          mark: '!', className: 'is-error', label: t.value.cloudAccount[row.conclusionReasonKey] || t.value.cloudAccount.credentialInvalid,
           helpGroups: t.value.cloudAccount.accountUnavailableGroups,
           helpBoundary: t.value.cloudAccount.accountUnavailableBoundary,
           actionLabel: t.value.cloudAccount.updateCredential, action: 'update-credentials',
@@ -4529,9 +4547,9 @@ const app = createApp({
         };
       }
       return {
-        mark: '?', className: 'is-unknown', label: t.value.cloudAccount.unableToVerify,
-        helpItems: t.value.cloudAccount.unclassifiedCases,
-        helpBoundary: t.value.cloudAccount.unclassifiedBoundary,
+        mark: '?', className: 'is-unknown', label: t.value.cloudAccount.detectionTemporarilyFailed,
+        helpItems: t.value.cloudAccount.noValidConclusionCases,
+        helpBoundary: t.value.cloudAccount.noValidConclusionBoundary,
         actionLabel: t.value.cloudAccount.detectAgain, action: 'inspect',
       };
     }
@@ -4595,16 +4613,26 @@ const app = createApp({
       identityAwsKey: { label: { zh: 'AWS · Access Key ID 无效', en: 'AWS · Invalid Access Key ID' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aws' } },
       identityAwsSignature: { label: { zh: 'AWS · 签名不一致', en: 'AWS · Signature mismatch' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aws' } },
       identityAwsAuth: { label: { zh: 'AWS · 通用认证失败', en: 'AWS · Authentication failed' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'aws' } },
-      identityGoogleProject: { label: { zh: 'Google · Project ID 不一致', en: 'Google · Project ID mismatch' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'google' } },
-      identityGoogleService: { label: { zh: 'Google · Service Account 无效', en: 'Google · Invalid Service Account' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'google' } },
+      identityGoogleKey: { label: { zh: 'Google · Access Key ID 无效', en: 'Google · Invalid Access Key ID' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'google' } },
+      identityGoogleSecret: { label: { zh: 'Google · Access Key Secret 无效', en: 'Google · Invalid Access Key Secret' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'google' } },
       identityHuaweiAuth: { label: { zh: '华为云 · 认证失败', en: 'Huawei Cloud · Authentication failed' }, data: { surface: 'dialog', mockCheck: 'identity', provider: 'huawei' } },
       identityBindingMismatch: { label: { zh: '更新凭证 · 云账号不一致', en: 'Credential update · Cloud account mismatch' }, data: { surface: 'dialog', mockCheck: 'identity', operation: 'UPDATE_CREDENTIALS' } },
       identityUnresolved: { label: { zh: '云身份无法确认', en: 'Cloud identity unresolved' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      identityUnknown: { label: { zh: '未归因', en: 'Unclassified' }, data: { surface: 'dialog', mockCheck: 'identity' } },
-      identityTechnical: { label: { zh: '技术失败', en: 'Technical failure' }, data: { surface: 'dialog', mockCheck: 'identity' } },
+      identityTechnical: { label: { zh: '身份认证接口超时', en: 'Identity authentication timeout' }, data: { surface: 'dialog', mockCheck: 'identity' } },
       productWaiting: { label: { zh: '等待前项', en: 'Waiting for previous check' }, data: { surface: 'dialog', mockCheck: 'product' } },
       productBlocked: { label: { zh: '被前项阻断', en: 'Blocked by previous check' }, data: { surface: 'dialog', mockCheck: 'product' } },
       productSkipped: { label: { zh: '当前能力未实现', en: 'Detection not implemented' }, data: { surface: 'dialog', mockCheck: 'product' } },
+      productChecking: { label: { zh: '检测中', en: 'Detecting' }, data: { surface: 'dialog', mockCheck: 'product' } },
+      productPassed: { label: { zh: '检测通过', en: 'Passed' }, data: { surface: 'dialog', mockCheck: 'product' } },
+      productMissing: { label: { zh: '阿里云 · PAI/EAS 未开通', en: 'Alibaba Cloud · PAI/EAS not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aliyun' } },
+      productAwsMissing: { label: { zh: 'AWS · SageMaker 未开通', en: 'AWS · SageMaker not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aws' } },
+      productGoogleMissing: { label: { zh: 'Google · Vertex AI 未启用', en: 'Google · Vertex AI not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'google' } },
+      productHuaweiMissing: { label: { zh: '华为云 · ModelArts 未开通', en: 'Huawei Cloud · ModelArts not enabled' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'huawei' } },
+      productDenied: { label: { zh: '阿里云 · PAI/EAS 无权访问', en: 'Alibaba Cloud · PAI/EAS access denied' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aliyun' } },
+      productAwsDenied: { label: { zh: 'AWS · SageMaker 无权访问', en: 'AWS · SageMaker access denied' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'aws' } },
+      productGoogleDenied: { label: { zh: 'Google · Vertex AI 无权访问', en: 'Google · Vertex AI access denied' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'google' } },
+      productHuaweiDenied: { label: { zh: '华为云 · ModelArts 无权访问', en: 'Huawei Cloud · ModelArts access denied' }, data: { surface: 'dialog', mockCheck: 'product', provider: 'huawei' } },
+      productTechnical: { label: { zh: '云产品接口超时', en: 'Cloud product API timeout' }, data: { surface: 'dialog', mockCheck: 'product' } },
     });
     const defaultScenario = 'listMixed';
     const activeScenario = ref(defaultScenario);
@@ -4792,20 +4820,24 @@ const app = createApp({
       nextTick(() => lucide.createIcons());
     });
 
-    const checkingStates = ['addChecking', 'accountInfoChecking', 'identityChecking'];
+    const checkingStates = ['addChecking', 'accountInfoChecking', 'identityChecking', 'productWaiting', 'productChecking'];
     const accountInfoBlockingStates = ['duplicateName'];
-    const identityBlockingStates = ['credentialInvalid', 'identityAliyunSecret', 'identityAwsKey', 'identityAwsSignature', 'identityAwsAuth', 'identityGoogleProject', 'identityGoogleService', 'identityHuaweiAuth', 'identityBindingMismatch', 'identityUnresolved'];
-    const retryStates = ['identityUnknown', 'identityTechnical'];
-    const saveableIssueStates = ['productSkipped'];
+    const identityBlockingStates = ['credentialInvalid', 'identityAliyunSecret', 'identityAwsKey', 'identityAwsSignature', 'identityAwsAuth', 'identityGoogleKey', 'identityGoogleSecret', 'identityHuaweiAuth', 'identityBindingMismatch', 'identityUnresolved'];
+    const technicalFailureStates = ['identityTechnical', 'productTechnical'];
+    const saveableIssueStates = ['productMissing', 'productAwsMissing', 'productGoogleMissing', 'productHuaweiMissing', 'productDenied', 'productAwsDenied', 'productGoogleDenied', 'productHuaweiDenied', 'productSkipped'];
     const isChecking = computed(() => checkingStates.includes(activeScenario.value));
     const showCheckZone = computed(() => dialogVisible.value);
     const primaryLabel = computed(() => {
       if (isChecking.value) return t.value.cloudAccount.validating;
       if (dialogOperation.value === 'UPDATE_BASIC_INFO') return t.value.cloudAccount.saveBasicInfo;
+      if (technicalFailureStates.includes(activeScenario.value)) {
+        return dialogOperation.value === 'UPDATE_CREDENTIALS'
+          ? t.value.cloudAccount.checkAndUpdateCredential
+          : t.value.cloudAccount.validateAndAdd;
+      }
       if (accountInfoBlockingStates.includes(activeScenario.value)) return t.value.cloudAccount.retryValidation;
       if (activeScenario.value === 'identityAlreadyConnected') return t.value.cloudAccount.viewExistingAccount;
       if (identityBlockingStates.includes(activeScenario.value)) return t.value.cloudAccount.updateCredentialThenRetry;
-      if (retryStates.includes(activeScenario.value)) return t.value.cloudAccount.retryValidation;
       if (saveableIssueStates.includes(activeScenario.value) && dialogOperation.value === 'UPDATE_CREDENTIALS') return t.value.cloudAccount.checkAndUpdateCredential;
       if (saveableIssueStates.includes(activeScenario.value)) return t.value.cloudAccount.saveAccount;
       if (activeScenario.value === 'addSuccess') return t.value.cloudAccount.close;
@@ -4817,7 +4849,9 @@ const app = createApp({
       || formModel.accessKeySecret !== rejectedCredentialSnapshot.accessKeySecret
     ));
     const primaryDisabled = computed(() => (
-      identityBlockingStates.includes(activeScenario.value) && !credentialsChangedAfterRejection.value
+      isChecking.value
+      || technicalFailureStates.includes(activeScenario.value)
+      || (identityBlockingStates.includes(activeScenario.value) && !credentialsChangedAfterRejection.value)
     ));
     const checkItems = computed(() => {
       const current = activeScenario.value;
@@ -4826,26 +4860,36 @@ const app = createApp({
         accountInfoInitial: [['idle', 'notInspected'], ['idle', 'notInspected'], ['idle', 'notInspected']],
         accountInfoChecking: [['running', 'checkingAccountInfo'], ['not-applicable', 'notApplicable'], ['not-applicable', 'notApplicable']],
         accountInfoPassed: [['passed', 'passed'], ['not-applicable', 'notApplicable'], ['not-applicable', 'notApplicable']],
-        duplicateName: [['error', 'duplicateName'], ['idle', 'notDetected'], ['idle', 'notDetected']],
+        duplicateName: [['failed', 'duplicateName'], ['idle', 'notDetected'], ['idle', 'notDetected']],
         identityInitial: [['idle', 'notInspected'], ['idle', 'notInspected'], ['idle', 'notInspected']],
         identityChecking: [['passed', 'passed'], ['running', 'checkingIdentity'], ['pending', 'waiting']],
         identityPassed: [['passed', 'passed'], ['passed', 'passed'], ['pending', 'waiting']],
         identityAlreadyConnected: [['passed', 'passed'], ['action', 'accountAlreadyConnected'], ['idle', 'notDetected']],
-        credentialInvalid: [['passed', 'passed'], ['error', 'aliyunKeyInvalid'], ['idle', 'notDetected']],
-        identityAliyunSecret: [['passed', 'passed'], ['error', 'aliyunSecretInvalid'], ['idle', 'notDetected']],
-        identityAwsKey: [['passed', 'passed'], ['error', 'awsKeyInvalid'], ['idle', 'notDetected']],
-        identityAwsSignature: [['passed', 'passed'], ['error', 'awsSignatureInvalid'], ['idle', 'notDetected']],
-        identityAwsAuth: [['passed', 'passed'], ['error', 'awsAuthenticationFailed'], ['idle', 'notDetected']],
-        identityGoogleProject: [['passed', 'passed'], ['error', 'googleProjectMismatch'], ['idle', 'notDetected']],
-        identityGoogleService: [['passed', 'passed'], ['error', 'googleServiceAccountInvalid'], ['idle', 'notDetected']],
-        identityHuaweiAuth: [['passed', 'passed'], ['error', 'huaweiAuthenticationFailed'], ['idle', 'notDetected']],
-        identityBindingMismatch: [['passed', 'passed'], ['error', 'boundAccountMismatch'], ['idle', 'notDetected']],
-        identityUnresolved: [['passed', 'passed'], ['error', 'cloudIdentityUnresolved'], ['idle', 'notDetected']],
-        identityUnknown: [['passed', 'passed'], ['unknown', 'identityUnclassified'], ['idle', 'notDetected']],
-        identityTechnical: [['passed', 'passed'], ['unknown', 'identityTechnicalFailure'], ['idle', 'notDetected']],
+        credentialInvalid: [['passed', 'passed'], ['failed', 'aliyunKeyInvalid'], ['idle', 'notDetected']],
+        identityAliyunSecret: [['passed', 'passed'], ['failed', 'aliyunSecretInvalid'], ['idle', 'notDetected']],
+        identityAwsKey: [['passed', 'passed'], ['failed', 'awsKeyInvalid'], ['idle', 'notDetected']],
+        identityAwsSignature: [['passed', 'passed'], ['failed', 'awsSignatureInvalid'], ['idle', 'notDetected']],
+        identityAwsAuth: [['passed', 'passed'], ['failed', 'awsAuthenticationFailed'], ['idle', 'notDetected']],
+        identityGoogleKey: [['passed', 'passed'], ['failed', 'googleKeyInvalid'], ['idle', 'notDetected']],
+        identityGoogleSecret: [['passed', 'passed'], ['failed', 'googleSecretInvalid'], ['idle', 'notDetected']],
+        identityHuaweiAuth: [['passed', 'passed'], ['failed', 'huaweiAuthenticationFailed'], ['idle', 'notDetected']],
+        identityBindingMismatch: [['passed', 'passed'], ['failed', 'boundAccountMismatch'], ['idle', 'notDetected']],
+        identityUnresolved: [['passed', 'passed'], ['failed', 'cloudIdentityUnresolved'], ['idle', 'notDetected']],
+        identityTechnical: [['passed', 'passed'], ['error', 'identityTechnicalFailure'], ['idle', 'notDetected']],
         productWaiting: [['passed', 'passed'], ['running', 'checkingIdentity'], ['pending', 'waiting']],
-        productBlocked: [['passed', 'passed'], ['error', 'cloudIdentityUnresolved'], ['idle', 'notDetected']],
+        productBlocked: [['passed', 'passed'], ['failed', 'cloudIdentityUnresolved'], ['idle', 'notDetected']],
         productSkipped: [['passed', 'passed'], ['passed', 'passed'], ['idle', 'temporarilyNotDetected']],
+        productChecking: [['passed', 'passed'], ['passed', 'passed'], ['running', 'checkingProduct']],
+        productPassed: [['passed', 'passed'], ['passed', 'passed'], ['passed', 'passed']],
+        productMissing: [['passed', 'passed'], ['passed', 'passed'], ['action', 'aliyunEasNotEnabled']],
+        productAwsMissing: [['passed', 'passed'], ['passed', 'passed'], ['action', 'awsSageMakerNotEnabled']],
+        productGoogleMissing: [['passed', 'passed'], ['passed', 'passed'], ['action', 'googleVertexNotEnabled']],
+        productHuaweiMissing: [['passed', 'passed'], ['passed', 'passed'], ['action', 'huaweiModelArtsNotEnabled']],
+        productDenied: [['passed', 'passed'], ['passed', 'passed'], ['action', 'aliyunProductDenied']],
+        productAwsDenied: [['passed', 'passed'], ['passed', 'passed'], ['action', 'awsProductDenied']],
+        productGoogleDenied: [['passed', 'passed'], ['passed', 'passed'], ['action', 'googleProductDenied']],
+        productHuaweiDenied: [['passed', 'passed'], ['passed', 'passed'], ['action', 'huaweiProductDenied']],
+        productTechnical: [['passed', 'passed'], ['passed', 'passed'], ['error', 'productTechnicalFailure']],
         addReady: [['passed', 'passed'], ['passed', 'passed'], ['passed', 'passed']],
         addSuccess: [['passed', 'passed'], ['passed', 'passed'], ['passed', 'passed']],
       }[current] || [['idle', 'notInspected'], ['idle', 'notInspected'], ['idle', 'notInspected']];
@@ -4862,13 +4906,21 @@ const app = createApp({
         awsKeyInvalid: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeyId', action: 'credential-id', icon: 'pencil' },
         awsSignatureInvalid: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeySecret', action: 'credential-secret', icon: 'pencil' },
         awsAuthenticationFailed: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
-        googleProjectMismatch: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateProjectId', action: 'credential-id', icon: 'pencil' },
-        googleServiceAccountInvalid: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateServiceAccount', action: 'credential-secret', icon: 'pencil' },
+        googleKeyInvalid: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeyId', action: 'credential-id', icon: 'pencil' },
+        googleSecretInvalid: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateAccessKeySecret', action: 'credential-secret', icon: 'pencil' },
         huaweiAuthenticationFailed: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
         boundAccountMismatch: { variant: 'error', hintKey: 'boundAccountMismatch', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
         cloudIdentityUnresolved: { variant: 'error', hintKey: '', summaryKey: 'checkCompleted', actionKey: 'updateCredential', action: 'credential-id', icon: 'pencil' },
-        identityUnclassified: { variant: 'info', hintKey: 'identityUnclassified', summaryKey: 'checkCompleted', showTitle: false, actionKey: '', action: '', icon: '' },
-        identityTechnicalFailure: { variant: 'info', hintKey: 'identityTechnicalFailure', summaryKey: 'checkCompleted', showTitle: false, actionKey: '', action: '', icon: '' },
+        identityTechnicalFailure: { variant: 'error', hintKey: 'identityTechnicalFailure', summaryKey: 'checkIncomplete', showTitle: false, actionKey: '', action: '', icon: '' },
+        aliyunEasNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product', icon: 'external-link' },
+        awsSageMakerNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product', icon: 'external-link' },
+        googleVertexNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product', icon: 'external-link' },
+        huaweiModelArtsNotEnabled: { variant: 'action', hintKey: 'productUnavailableHint', summaryKey: 'checkCompleted', actionKey: 'openProductGuide', action: 'product', icon: 'external-link' },
+        aliyunProductDenied: { variant: 'action', hintKey: 'aliyunProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission', icon: 'external-link' },
+        awsProductDenied: { variant: 'action', hintKey: 'awsProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission', icon: 'external-link' },
+        googleProductDenied: { variant: 'action', hintKey: 'googleProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission', icon: 'external-link' },
+        huaweiProductDenied: { variant: 'action', hintKey: 'huaweiProductDenied', summaryKey: 'checkCompleted', showTitle: false, actionKey: 'viewPermission', action: 'permission', icon: 'external-link' },
+        productTechnicalFailure: { variant: 'error', hintKey: 'productTechnicalFailure', summaryKey: 'checkIncomplete', showTitle: false, actionKey: '', action: '', icon: '' },
       };
       const items = labels.map((label, index) => {
         const [state, detailKey] = outcomes[index];
@@ -4911,10 +4963,23 @@ const app = createApp({
       return items;
     });
     const dialogResult = computed(() => {
-      const resultMap = {
-        productSkipped: { variant: 'info', title: t.value.cloudAccount.temporarilyNotDetected, desc: '' },
-      };
-      return resultMap[activeScenario.value] || null;
+      if (saveableIssueStates.includes(activeScenario.value)) {
+        if (activeScenario.value === 'productSkipped') {
+          return { variant: 'action', icon: 'circle-alert', title: t.value.cloudAccount.productCheckUnavailableSaveableTitle, desc: '' };
+        }
+        const titleKey = dialogOperation.value === 'UPDATE_CREDENTIALS'
+          ? 'productCheckUpdateSaveableTitle'
+          : 'productCheckSaveableTitle';
+        return { variant: 'action', icon: 'circle-alert', title: t.value.cloudAccount[titleKey], desc: '' };
+      }
+      if (technicalFailureStates.includes(activeScenario.value)) return null;
+      const titleKey = {
+        CREATE: 'defaultDetectionHint',
+        UPDATE_CREDENTIALS: 'credentialUpdateDetectionHint',
+      }[dialogOperation.value];
+      return titleKey
+        ? { variant: 'info', icon: 'info', title: t.value.cloudAccount[titleKey], desc: '' }
+        : null;
     });
 
     function clearValidationTimers() {
@@ -4934,7 +4999,8 @@ const app = createApp({
       formErrors.name = !checksBasicInfo || formModel.name.trim() ? '' : t.value.cloudAccount.requiredName;
       formErrors.accessKeyId = !checksCredentials || formModel.accessKeyId.trim() ? '' : t.value.cloudAccount.requiredKey;
       formErrors.accessKeySecret = !checksCredentials || formModel.accessKeySecret.trim() ? '' : t.value.cloudAccount.requiredSecret;
-      return !formErrors.name && !formErrors.accessKeyId && !formErrors.accessKeySecret;
+      formErrors.iamRoleArn = !checksCredentials || formModel.provider !== 'aws' || formModel.iamRoleArn.trim() ? '' : t.value.cloudAccount.requiredIamRoleArn;
+      return !formErrors.name && !formErrors.accessKeyId && !formErrors.accessKeySecret && !formErrors.iamRoleArn;
     }
 
     function startValidation() {
@@ -4969,6 +5035,7 @@ const app = createApp({
     }
 
     function handlePrimaryAction() {
+      if (isChecking.value) return;
       if (activeScenario.value === 'identityAlreadyConnected') {
         dialogVisible.value = false;
         filterKeyword.value = formModel.name;
@@ -4976,11 +5043,19 @@ const app = createApp({
         return;
       }
       const saveMap = {
-        productSkipped: ['UNKNOWN', t.value.cloudAccount.savedPendingConfirmation, 'unableToVerify'],
+        productMissing: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'aliyunEasNotEnabled'],
+        productAwsMissing: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'awsSageMakerNotEnabled'],
+        productGoogleMissing: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'googleVertexNotEnabled'],
+        productHuaweiMissing: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'huaweiModelArtsNotEnabled'],
+        productDenied: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'aliyunProductDenied'],
+        productAwsDenied: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'awsProductDenied'],
+        productGoogleDenied: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'googleProductDenied'],
+        productHuaweiDenied: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productUnavailable', 'huaweiProductDenied'],
+        productSkipped: ['ACTION_REQUIRED', t.value.cloudAccount.accountSavedActionRequired, 'productCheckUnavailable', 'productNotImplemented'],
       };
       if (saveMap[activeScenario.value]) {
-        const [health, message, conclusionKey] = saveMap[activeScenario.value];
-        commitAccount(health, message, conclusionKey);
+        const [health, message, conclusionKey, conclusionReasonKey = ''] = saveMap[activeScenario.value];
+        commitAccount(health, message, conclusionKey, conclusionReasonKey);
         dialogVisible.value = false;
         setScenario('listMixed');
         ElementPlus.ElMessage.success(message);
@@ -4990,13 +5065,13 @@ const app = createApp({
       startValidation();
     }
 
-    function commitAccount(health, message, conclusionKey = '') {
+    function commitAccount(health, message, conclusionKey = '', conclusionReasonKey = '') {
       const identity = 'valid';
       const permission = health === 'READY' ? 'ready' : (health === 'UNKNOWN' ? 'unknown' : 'missing');
       const inspectedAt = formatDateTime(new Date());
       const nextRecord = {
         id: dialogOperation.value !== 'CREATE' ? editingAccountId.value : 'cloud-added', name: formModel.name, provider: formModel.provider, health,
-        identity, permission, conclusionKey,
+        identity, permission, conclusionKey, conclusionReasonKey,
         lastInspectedAt: inspectedAt,
         lastAttemptedAt: '',
         inspectionStatus: 'completed',
@@ -5026,6 +5101,7 @@ const app = createApp({
       editingAccountId.value = '';
       formModel.name = '生产环境账号';
       formModel.provider = 'aliyun';
+      formModel.iamRoleArn = 'arn:aws:iam::123456789012:role/service-role/AmazonSageMakerExecutionRole';
       setScenario('addDefault');
       dialogVisible.value = true;
       inspectionTaskVisible.value = false;
@@ -5033,6 +5109,7 @@ const app = createApp({
       formErrors.name = '';
       formErrors.accessKeyId = '';
       formErrors.accessKeySecret = '';
+      formErrors.iamRoleArn = '';
     }
 
     function openInspectionTask() {
@@ -5213,6 +5290,7 @@ const app = createApp({
       formErrors.name = '';
       formErrors.accessKeyId = '';
       formErrors.accessKeySecret = '';
+      formErrors.iamRoleArn = '';
       setScenario('editDefault');
       dialogVisible.value = true;
       inspectionTaskVisible.value = false;
@@ -5231,6 +5309,7 @@ const app = createApp({
       formErrors.name = '';
       formErrors.accessKeyId = '';
       formErrors.accessKeySecret = '';
+      formErrors.iamRoleArn = '';
       setScenario('identityInitial');
       dialogVisible.value = true;
       inspectionTaskVisible.value = false;
@@ -5298,18 +5377,25 @@ const app = createApp({
     watch(() => formModel.provider, (provider) => {
       validationRun += 1;
       clearValidationTimers();
+      if (dialogOperation.value !== 'CREATE') {
+        formErrors.accessKeyId = '';
+        formErrors.accessKeySecret = '';
+        formErrors.iamRoleArn = '';
+        return;
+      }
       const scenarioProvider = scenarios[activeScenario.value]?.data?.provider;
-      if (scenarioProvider !== provider) setScenario('addDefault');
+      if (scenarioProvider && scenarioProvider !== provider) setScenario('addDefault');
       const examples = {
         aliyun: { accessKeyId: 'LTAI••••••••8K2P', accessKeySecret: 'example-secret' },
         aws: { accessKeyId: 'AKIAEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
-        google: { accessKeyId: 'EXAMPLEPROJECT', accessKeySecret: 'example-secret' },
+        google: { accessKeyId: 'GOOGEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
         huawei: { accessKeyId: 'HWCEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
       }[provider];
       formModel.accessKeyId = examples.accessKeyId;
       formModel.accessKeySecret = examples.accessKeySecret;
       formErrors.accessKeyId = '';
       formErrors.accessKeySecret = '';
+      formErrors.iamRoleArn = '';
     });
 
     watch(activeScenario, (next, previous) => {
@@ -5342,16 +5428,12 @@ const app = createApp({
         formErrors.name = t.value.cloudAccount.requiredName;
         formErrors.accessKeyId = t.value.cloudAccount.requiredKey;
         formErrors.accessKeySecret = t.value.cloudAccount.requiredSecret;
-      } else if (next === 'duplicateName') {
-        formErrors.name = t.value.cloudAccount.duplicateName;
-        formErrors.accessKeyId = '';
-        formErrors.accessKeySecret = '';
-      } else if (previous === 'formError' || previous === 'duplicateName') {
+      } else if (previous === 'formError') {
         formModel.name = '生产环境账号';
         const examples = {
           aliyun: { accessKeyId: 'LTAI••••••••8K2P', accessKeySecret: 'example-secret' },
           aws: { accessKeyId: 'AKIAEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
-          google: { accessKeyId: 'EXAMPLEPROJECT', accessKeySecret: 'example-secret' },
+          google: { accessKeyId: 'GOOGEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
           huawei: { accessKeyId: 'HWCEXAMPLEACCESSKEY', accessKeySecret: 'example-secret' },
         }[formModel.provider];
         formModel.accessKeyId = examples.accessKeyId;
@@ -5609,13 +5691,13 @@ const app = createApp({
             @close="cancelDialog"
           >
             <div v-if="dialogResult" class="cloud-account-result">
-              <Alert :variant="dialogResult.variant" :title="dialogResult.title" :desc="dialogResult.desc"></Alert>
+              <Alert :variant="dialogResult.variant" :icon="dialogResult.icon || ''" :title="dialogResult.title" :desc="dialogResult.desc"></Alert>
             </div>
 
             <el-form class="form-modern" label-position="top" size="large" :model="formModel">
               <div class="form-group cloud-account-form-grid">
-                <el-form-item v-if="dialogOperation !== 'UPDATE_CREDENTIALS'" :label="t.cloudAccount.accountName" required :error="formErrors.name">
-                  <el-input ref="accountNameInput" v-model="formModel.name" :disabled="isChecking"></el-input>
+                <el-form-item :label="t.cloudAccount.accountName" required :error="formErrors.name">
+                  <el-input ref="accountNameInput" v-model="formModel.name" :disabled="isChecking || dialogOperation === 'UPDATE_CREDENTIALS'"></el-input>
                 </el-form-item>
                 <el-form-item :label="t.cloudAccount.provider" required>
                   <el-select v-model="formModel.provider" :disabled="isChecking || dialogOperation !== 'CREATE'" style="width: 100%;">
@@ -5631,6 +5713,9 @@ const app = createApp({
                 <el-form-item v-if="dialogOperation !== 'UPDATE_BASIC_INFO'" :label="t.cloudAccount.accessKeySecret" required :error="formErrors.accessKeySecret">
                   <el-input ref="credentialSecretInput" v-model="formModel.accessKeySecret" type="password" show-password :disabled="isChecking"></el-input>
                 </el-form-item>
+                <el-form-item v-if="formModel.provider === 'aws' && dialogOperation !== 'UPDATE_BASIC_INFO'" class="cloud-account-form-item--wide" :label="t.cloudAccount.iamRoleArn" required :error="formErrors.iamRoleArn">
+                  <el-input v-model="formModel.iamRoleArn" :disabled="isChecking"></el-input>
+                </el-form-item>
               </div>
             </el-form>
 
@@ -5644,10 +5729,11 @@ const app = createApp({
                 <span class="cloud-account-check-mark" aria-hidden="true">
                   <span v-if="item.state === 'running'" class="cloud-account-check-spinner"></span>
                   <span v-else-if="item.state === 'passed'">✓</span>
-                  <span v-else-if="item.state === 'error'">!</span>
+                  <i v-else-if="item.state === 'failed'" data-lucide="circle-alert"></i>
+                  <i v-else-if="item.state === 'error'" data-lucide="circle-x"></i>
                    <span v-else-if="item.state === 'action'">!</span>
                    <span v-else-if="item.state === 'unknown'">?</span>
-                   <span v-else-if="item.state === 'not-applicable' || item.state === 'skipped'">—</span>
+                   <i v-else-if="item.state === 'not-applicable' || item.state === 'skipped'" data-lucide="circle-minus"></i>
                    <span v-else>○</span>
                 </span>
                 <div class="cloud-account-check-copy">
