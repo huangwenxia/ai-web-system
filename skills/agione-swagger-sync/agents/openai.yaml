@@ -1,0 +1,7 @@
+interface:
+  display_name: "AGIOne Swagger Sync"
+  short_description: "定向同步 AGIOne 前端生成 API 并清理手写接口桥接"
+  default_prompt: "Use $agione-swagger-sync to confirm the target branch, Swagger source, and API path, then generate the scoped frontend API safely."
+
+policy:
+  allow_implicit_invocation: true
