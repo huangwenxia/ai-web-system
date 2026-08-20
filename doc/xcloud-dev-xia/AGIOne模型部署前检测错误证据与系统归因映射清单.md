@@ -16,9 +16,9 @@
 
 ## 2. 基线与范围
 
-- 核验日期：2026-08-17。
-- Hashrate 基线：`hashrate-dev-xia@ad6c7d150268c26a8668a7f964e635bc5ad95e0e`。
-- XCloud 基线：`xcloud-dev-xia@cf155c7797eff4c371dd589f0350e1209f048c9d`。
+- 核验日期：2026-08-19。
+- Hashrate 基线：`hashrate-dev-xia`，已接入 XCloud `checkReadiness`。
+- XCloud 基线：`xcloud-dev-xia`，已提供无副作用只读检测。
 - 业务入口：`POST /cloudInferenceJob/deployment-precheck`。
 - 正式部署入口：`POST /cloudInferenceJob/confirmDeploy`。
 - 检测范围：账号与凭证、产品与授权、模型与依赖、资源与配额。
@@ -67,51 +67,41 @@ reasonCode + reasonMessage + admissionStatus + actionType + actionHint
 
 ### 3.3 部署前检测系统归因
 
-部署前检测系统归因是前端稳定依赖的业务契约：
+部署前检测系统归因是前端稳定依赖的业务契约。后端只返回原因和操作说明，不返回动作类型：
 
 ```text
 checkCode
-status: PASSED / BLOCKED / UNVERIFIED / SKIPPED
-classificationStatus
+status: PASSED / BLOCKED / UNVERIFIED
 reasonCode
 reasonMessage
 reasonParams
 errorCode
-retryable
-actionType
-actionLabel
 actionHint
-actionTarget
 checkedAt
 ```
 
-Hashrate 负责聚合总体 `PASSED / BLOCKED / UNVERIFIED`，前端不自行聚合。
+Hashrate 负责聚合总体 `PASSED / BLOCKED / UNVERIFIED`。是否显示按钮、显示哪个按钮、跳到哪里，全部由前端按 `reasonCode` 和单项 `status` 控制。
 
 ## 4. 部署页统一操作目录
 
-部署前检测页面只允许出现以下 4 种处理动作。不同云商、不同错误码可以归入同一种操作，但不得临时新增同义文案。
+后端只返回统一操作说明 `actionHint`。部署页只允许以下 4 种处理动作，由前端决定是否显示：
 
-| `actionType` | 页面操作 | 统一操作说明 `actionHint` | 适用范围 |
-| --- | --- | --- | --- |
-| `OPEN_CLOUD_ACCOUNT_MANAGEMENT` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 | 已选云账号的身份、凭证、账号主体、云产品访问或账号侧连通问题 |
-| `MODIFY_DEPLOYMENT_CONFIGURATION` | 修改部署配置 | 请修改部署配置后重新检测 | 模型、框架版本、地域、规格、实例数量或云账号选择不匹配 |
-| `RETRY_DEPLOYMENT_PRECHECK` | 重新检测 | 请稍后重新检测 | 限流、超时、云商服务暂时不可用等可重试技术异常 |
-| `CONTACT_PLATFORM_ADMIN` | 联系平台管理员 | 若问题持续，请联系平台管理员处理 | License 超额、平台配置缺失、检测能力未实现、响应异常或平台内部错误 |
+| 页面操作 | 统一操作说明 `actionHint` | 前端何时显示 |
+| --- | --- | --- |
+| 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 | 已选云账号本身的身份、凭证、主体或账号侧连通问题；以及云产品访问未授权 |
+| 修改部署配置 | 请修改部署配置后重新检测 | 模型、框架版本、地域、规格或云账号选择不匹配 |
+| 重新检测 | 请稍后重新检测 | 页脚主/次操作；限流、超时、调用失败等可重试技术异常 |
+| 联系平台管理员 | 若问题持续，请联系平台管理员处理 | License 超额、平台配置缺失、检测能力未实现或平台内部错误 |
 
 ### 4.1 账号与凭证的场景转换规则
 
-XCloud 云账号健康页可以显示“刷新连通状态”类操作。部署前检测页不得复用该操作及其说明，因为部署页不是云账号排障和健康维护入口。
+XCloud 云账号健康页可以显示“刷新连通状态”类操作。部署前检测页不得复用该操作及其说明。
 
-只要问题属于“当前已选云账号本身”，无论 XCloud 返回的是更新凭证、刷新连通状态还是账号侧技术错误，部署页统一转换为：
+只要问题属于“当前已选云账号本身”，无论 XCloud 返回的是凭证失败还是账号侧技术错误：
 
-```text
-actionType = OPEN_CLOUD_ACCOUNT_MANAGEMENT
-actionLabel = 前往接入管理
-actionHint = 请前往云账号接入管理处理，完成后返回当前页面重新检测
-actionTarget = CLOUD_ACCOUNT_MANAGEMENT
-```
-
-部署页保留 XCloud 返回的 `reasonCode / reasonMessage / reasonParams / errorCode / retryable`，只转换操作语义，不改写账号归因。
+- 保留 XCloud 的 `reasonCode / reasonMessage / reasonParams / errorCode`
+- `actionHint` 统一写成“请前往云账号接入管理处理，完成后返回当前页面重新检测”
+- 前端显示“前往接入管理”，不显示“刷新连通状态”
 
 以下情况不属于“已选账号本身的问题”，因此不前往接入管理：
 
@@ -121,7 +111,7 @@ actionTarget = CLOUD_ACCOUNT_MANAGEMENT
 
 ### 4.2 不属于处理动作的页面控制
 
-“确认风险并继续部署”是总体状态为 `UNVERIFIED` 时的页面级准入控制，不是某个检测项的处理动作，不进入 `actionType` 目录。
+“确认风险并继续部署”是总体状态为 `UNVERIFIED` 时的页面级准入控制，不是某个检测项的处理动作。
 
 以下情况禁止出现风险继续：
 
@@ -146,7 +136,6 @@ actionTarget = CLOUD_ACCOUNT_MANAGEMENT
 | 原始证据 | 当前中间码 | 系统归因码 | 系统归因中文 | 状态 | 操作 | 操作说明 |
 | --- | --- | --- | --- | --- | --- | --- |
 | 当前租户下找不到 `cloudAccountId` | `ACCOUNT_NOT_READY` | `DEPLOYMENT_CLOUD_ACCOUNT_NOT_FOUND` | 所选云账号不可用 | `BLOCKED` | 修改部署配置 | 请修改部署配置后重新检测 |
-| 账号缺少必要凭证字段 | `ACCOUNT_NOT_READY` | `CREDENTIAL_FORMAT_INVALID` | 云账号凭证信息不完整 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
 | 账号云类型与部署方案不一致 | `ACCOUNT_NOT_READY` | `DEPLOYMENT_CLOUD_ACCOUNT_TYPE_MISMATCH` | 所选云账号与目标云类型不一致 | `BLOCKED` | 修改部署配置 | 请修改部署配置后重新检测 |
 | 查询 XCloud 账号服务失败且没有取得账号归因 | `TECHNICAL_UNVERIFIED` | `ACCOUNT_READINESS_SERVICE_UNAVAILABLE` | 暂时无法检查云账号状态 | `UNVERIFIED` | 重新检测 | 请稍后重新检测 |
 
@@ -185,8 +174,7 @@ actionTarget = CLOUD_ACCOUNT_MANAGEMENT
 | --- | --- | --- | --- | --- | --- | --- |
 | AI Infra License 明确不允许再创建实例 | `LICENSE_EXCEEDED` | `LICENSE_CAPACITY_EXCEEDED` | AI Infra 授权额度不足 | `BLOCKED` | 联系平台管理员 | 若问题持续，请联系平台管理员处理 |
 | License 服务调用超时或不可用 | `TECHNICAL_UNVERIFIED` | `LICENSE_SERVICE_UNAVAILABLE` | 暂时无法检查授权额度 | `UNVERIFIED` | 重新检测 | 请稍后重新检测 |
-| 云商明确返回凭证认证失败 | `CREDENTIAL_INVALID` | 复用 XCloud 对应账号归因 | 对应 XCloud 归因中文 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
-| 云商明确返回产品访问被拒绝 | `PRODUCT_UNAUTHORIZED` | `CLOUD_PRODUCT_ACCESS_DENIED` | 云产品访问未授权 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
+| 云商规格探针返回产品访问被拒绝，含华为 ModelArts `401/403` | `PRODUCT_UNAUTHORIZED` | `CLOUD_PRODUCT_ACCESS_DENIED` | 云产品访问未授权 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
 | 云商返回 429 | 当前压入 `TECHNICAL_UNVERIFIED` | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | `UNVERIFIED` | 重新检测 | 请稍后重新检测 |
 | 云商返回 5xx | 当前压入 `TECHNICAL_UNVERIFIED` | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | `UNVERIFIED` | 重新检测 | 请稍后重新检测 |
 | 云商明确返回错误但证据不足以精确归因 | 当前可能归为 `PRODUCT_UNAUTHORIZED` | `CLOUD_PRODUCT_ERROR_UNCLASSIFIED` | 云产品访问异常 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
@@ -220,8 +208,7 @@ actionTarget = CLOUD_ACCOUNT_MANAGEMENT
 | ModelArts 规格列表中找不到目标 `specId` | `SPEC_NOT_FOUND` | `SPECIFICATION_NOT_FOUND` | 当前地域不支持所选规格 | `BLOCKED` | 修改部署配置 | 请修改部署配置后重新检测 |
 | 目标规格存在但 `soldOut` 或不可用 | `SPEC_SOLD_OUT` | `SPECIFICATION_SOLD_OUT` | 所选规格当前无可用库存 | `BLOCKED` | 修改部署配置 | 请修改部署配置后重新检测 |
 | 目标规格存在且可用 | `PASSED` | 无失败归因 | 资源规格可用 | `PASSED` | 无 | 无 |
-| HTTP 401 | `CREDENTIAL_INVALID` | 复用 XCloud 对应账号归因 | 对应 XCloud 归因中文 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
-| 明确的产品访问拒绝 | `PRODUCT_UNAUTHORIZED` | `CLOUD_PRODUCT_ACCESS_DENIED` | 云产品访问未授权 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
+| HTTP `401/403` | `PRODUCT_UNAUTHORIZED` | `CLOUD_PRODUCT_ACCESS_DENIED` | 云产品访问未授权 | `BLOCKED` | 前往接入管理 | 请前往云账号接入管理处理，完成后返回当前页面重新检测 |
 | HTTP 429、5xx 或 SDK 技术异常 | `TECHNICAL_ERROR` | 对应技术归因 | 对应技术归因中文 | `UNVERIFIED` | 重新检测 | 请稍后重新检测 |
 
 ### 9.2 当前尚未真实检查的能力
@@ -229,7 +216,7 @@ actionTarget = CLOUD_ACCOUNT_MANAGEMENT
 | 原始事实 | 当前中间码 | 目标系统归因码 | 系统归因中文 | 状态 | 操作 | 操作说明 |
 | --- | --- | --- | --- | --- | --- | --- |
 | 当前云商使用默认 `checkFlavorAvailability`，未执行实时规格检查 | `NOT_SUPPORTED`，最终压入 `TECHNICAL_UNVERIFIED` | `REALTIME_RESOURCE_CHECK_NOT_SUPPORTED` | 当前云类型尚未完成实时资源检查 | `UNVERIFIED` | 联系平台管理员 | 若问题持续，请联系平台管理员处理 |
-| 未调用真实云配额 API | 当前没有独立中间码 | 不返回 `QUOTA_INSUFFICIENT` | 配额状态未验证 | `UNVERIFIED` | 联系平台管理员 | 若问题持续，请联系平台管理员处理 |
+| 未调用真实云配额 API | `QUOTA_STATUS_UNVERIFIED` | `QUOTA_STATUS_UNVERIFIED` | 云资源配额尚未验证，确认风险后仍可继续部署。 | `UNVERIFIED` | 无单项操作，页脚确认风险后返回部署 | 无 |
 | 真实配额 API 明确返回额度不足，目标能力落地后 | 当前未实现 | `QUOTA_INSUFFICIENT` | 云资源配额不足 | `BLOCKED` | 修改部署配置 | 请修改部署配置后重新检测 |
 | 云商有明确实时容量证据且当前容量不足，目标能力落地后 | 当前未实现 | `CAPACITY_UNAVAILABLE` | 当前资源容量不足 | `BLOCKED` | 修改部署配置 | 请修改部署配置后重新检测 |
 
@@ -264,8 +251,9 @@ actionTarget = CLOUD_ACCOUNT_MANAGEMENT
 
 ```text
 XCloud 明确返回账号归因
-→ 保留 XCloud reasonCode / reasonMessage / reasonParams / errorCode / retryable
-→ actionType 统一转换为 OPEN_CLOUD_ACCOUNT_MANAGEMENT
+→ 保留 XCloud reasonCode / reasonMessage / reasonParams / errorCode
+→ actionHint 统一转换为“请前往云账号接入管理处理，完成后返回当前页面重新检测”
+→ 前端自行显示“前往接入管理”
 ```
 
 ### 11.2 Hashrate 部署域归因码
@@ -329,8 +317,7 @@ BLOCKED > UNVERIFIED > PASSED
 {
   "reasonCode": "PROVIDER_READ_TIMEOUT",
   "reasonMessage": "云服务响应超时",
-  "retryable": true,
-  "actionType": "REFRESH_CONNECTIVITY_STATUS"
+  "retryable": true
 }
 ```
 
@@ -342,11 +329,7 @@ BLOCKED > UNVERIFIED > PASSED
   "status": "UNVERIFIED",
   "reasonCode": "PROVIDER_READ_TIMEOUT",
   "reasonMessage": "云服务响应超时",
-  "retryable": true,
-  "actionType": "OPEN_CLOUD_ACCOUNT_MANAGEMENT",
-  "actionLabel": "前往接入管理",
-  "actionHint": "请前往云账号接入管理处理，完成后返回当前页面重新检测",
-  "actionTarget": "CLOUD_ACCOUNT_MANAGEMENT"
+  "actionHint": "请前往云账号接入管理处理，完成后返回当前页面重新检测"
 }
 ```
 
@@ -357,8 +340,7 @@ BLOCKED > UNVERIFIED > PASSED
 - 不返回 AK、SK、Token、Authorization、Password、Private Key 等敏感信息。
 - 不返回完整云商响应体、请求头、异常堆栈和未经处理的异常文本。
 - `reasonParams` 只保留脱敏、限长的云商错误码、错误摘要和 requestId。
-- 前端只依赖 `reasonCode`、`status` 和 `actionType`，不解析云商原始错误码。
-- `actionTarget` 只能是前端已登记目标，不允许后端下发任意 URL。
+- 前端只依赖 `reasonCode`、`status` 和 `actionHint`，不解析云商原始错误码，也不消费动作类型。
 - 账号问题跳转接入管理时只携带非敏感 `cloudAccountId`，接入管理仍需重新校验租户和权限。
 
 ## 15. 统一归因原则
@@ -375,17 +357,13 @@ BLOCKED > UNVERIFIED > PASSED
 
 ## 16. 当前实现与目标差异
 
-| 项目 | 当前实现 | 本文目标 |
-| --- | --- | --- |
-| 单项字段 | `category / status / code / message` | 增加归因、证据、重试和结构化操作字段 |
-| 账号检测 | Hashrate 主要做账号存在、凭证非空和华为 401 判断 | 调用 XCloud 权威检测并复用账号归因 |
-| 账号操作 | 当前无结构化操作 | 统一“前往接入管理” |
-| 模型配置失败 | 统一 `MODEL_CONFIG_MISSING` | 按真实失败检查点归因 |
-| 技术异常 | 统一 `TECHNICAL_UNVERIFIED` | 按超时、限流、服务不可用、配置和内部错误归因 |
-| 后项依赖 | 可能继续显示 `UNVERIFIED` | 前项阻断后返回 `SKIPPED` |
-| 配额说明 | 分组名包含配额 | 未执行真实配额 API 时明确“未验证” |
-
-本文中的目标系统归因码、操作类型和操作说明需要后端实现后才能作为前端正式契约；当前代码尚未全部返回这些字段。
+| 项目 | 当前实现 |
+| --- | --- |
+| 单项字段 | `checkCode / status / reasonCode / reasonMessage / reasonParams / errorCode / actionHint` |
+| 账号检测 | Hashrate 先做租户归属和云类型校验，再调用 XCloud `checkReadiness` |
+| 规格探针 | 只表达产品接口、规格和库存；不再用华为 `401` 回写账号项 |
+| 账号操作 | 后端只给接入管理说明，前端按归因码决定是否显示“前往接入管理” |
+| 配额说明 | 规格可用但未查真实配额时返回 `QUOTA_STATUS_UNVERIFIED`，允许确认风险继续 |
 
 ## 17. 代码事实来源
 
@@ -407,3 +385,4 @@ XCloud：
 - 账号统一分类器：`CloudAccountReasonClassifier.java`
 - 原因与操作文案：`CloudAccountHealthMessageResolver.java`
 - 健康检测契约：`CloudAccountHealthService.java`
+- 只读就绪性检测：`CloudAccountHealthService.checkReadiness`
