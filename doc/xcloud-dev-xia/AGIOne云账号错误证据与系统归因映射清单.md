@@ -16,7 +16,7 @@
 - 核验日期：2026-08-14。
 - 代码基线：`E:\work\agione-backend\metis-xcloud` 当前本地工作树。
 - 当前工作树包含尚未提交的 `PROVIDER_ACCESS_DENIED`、`PROVIDER_ERROR_UNCLASSIFIED`、云商证据摘要等改动，本文按当前代码事实记录。
-- 业务范围：接入管理列表中已接入云账号的定时巡检与手动刷新连通状态。
+- 业务范围：接入管理列表中已接入云账号的定时巡检与手动同步状态。
 - 不包含：模型部署前的就绪性检测、账单/订单同步、云资源管理和云产品能力接口等其他业务调用的错误码。
 
 ## 3. 三层错误模型
@@ -81,10 +81,10 @@ CREDENTIAL_AUTH_FAILED
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `InvalidAccessKeyId.NotFound` | AccessKey ID 不存在 | `aliyun.key.secret.error` | 阿里云 Key 或 Secret 无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | `UPDATE_CREDENTIALS` 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `SDK.InvalidAccessKeySecret` | AccessKey Secret 无效 | `aliyun.key.secret.error` | 阿里云 Key 或 Secret 无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| 错误码包含 `Throttling` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | `REFRESH_CONNECTIVITY_STATUS` 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 错误码包含 `ServiceUnavailable` 或 `InternalError` | 云服务暂不可用/云商内部异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 错误码包含 `AccessDenied`、`Forbidden`、`NotAuthorized` 或 `NoPermission` | 云端访问被拒绝 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 其他 `ClientException` | 云商已返回错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| 错误码包含 `Throttling` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| 错误码包含 `ServiceUnavailable` 或 `InternalError` | 云服务暂不可用/云商内部异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 错误码包含 `AccessDenied`、`Forbidden`、`NotAuthorized` 或 `NoPermission` | 云端访问被拒绝 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 其他 `ClientException` | 云商已返回错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | `NotApplicable` | 当前身份检测不适用 | `cloud.account.check.validate.exception` | 检测执行异常 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 | STS 响应无法解析 | 云商响应格式异常 | `cloud.account.provider.response.invalid` | 云服务身份响应异常 | `PROVIDER_RESPONSE_INVALID` | 云服务身份响应异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 | 响应中没有 `AccountId` | 无法确定云账号主体 | `cloud.account.identity.unresolved` | 无法确认云账号主体 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
@@ -100,10 +100,10 @@ CREDENTIAL_AUTH_FAILED
 | `UnrecognizedClientException` | 客户端身份无法识别 | `aws.key.secret.error` | AWS Key 或 Secret 无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `ExpiredToken` | 临时令牌已过期 | `aws.key.secret.error` | AWS Key 或 Secret 无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `IncompleteSignature` | 请求签名不完整 | `aws.key.secret.error` | AWS Key 或 Secret 无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| HTTP `429` 或 `ThrottlingException` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `5xx` | AWS 服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `403` | AWS 拒绝当前身份访问 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 其他 `StsException` | AWS 已返回错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| HTTP `429` 或 `ThrottlingException` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `5xx` | AWS 服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `403` | AWS 拒绝当前身份访问 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 其他 `StsException` | AWS 已返回错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | 非 `StsException` 的其他异常 | SDK 构建、调用或本地执行异常 | `aws.validate.error` | AWS 校验异常 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 | HTTP 非 200 或返回账号为空 | 无法确定 AWS 账号主体 | `cloud.account.identity.unresolved` | 无法确认云账号主体 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 
@@ -118,11 +118,11 @@ CREDENTIAL_AUTH_FAILED
 | JSON 结构、类型、私钥或邮箱不合法 | Service Account JSON 无效 | `google.account.service.account.invalid` | Google Service Account 凭证无效 | `CREDENTIAL_FORMAT_INVALID` | 凭证格式不正确 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | JSON 中 `project_id` 与填写值不同 | 项目与服务账号不匹配 | `google.account.project.id.mismatch` | Project ID 与 Service Account 所属项目不一致 | `CREDENTIAL_PROJECT_MISMATCH` | 项目 ID 与服务账号不一致 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | HTTP `401` | Google 凭证认证失败 | `google.account.authentication.failed` | Google Service Account 凭证认证失败 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| HTTP `403` | Google 拒绝访问 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `429` | Google 请求限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `5xx` | Google 服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 其他 `HttpResponseException` | Google 已返回 HTTP 错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 配置代理且发生连接失败 | 代理无法完成 Google 连接 | `cloud.account.proxy.unavailable` | 云服务代理不可用 | `PROXY_UNAVAILABLE` | 网络代理不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| HTTP `403` | Google 拒绝访问 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `429` | Google 请求限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `5xx` | Google 服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 其他 `HttpResponseException` | Google 已返回 HTTP 错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 配置代理且发生连接失败 | 代理无法完成 Google 连接 | `cloud.account.proxy.unavailable` | 云服务代理不可用 | `PROXY_UNAVAILABLE` | 网络代理不可用 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | 没有明确 HTTP 响应的其他异常 | Google SDK 或平台执行异常 | `google.account.validate.error` | Google 校验异常 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 
 ### 5.4 华为云
@@ -132,11 +132,11 @@ CREDENTIAL_AUTH_FAILED
 | 云商原始证据 | 原始证据中文 | AGIOne 中间错误码 | 中间码中文 | 系统归因码 | 系统归因中文 | 操作 | 操作说明 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | HTTP `401` | AK/SK 认证失败 | `huawei.key.secret.error` | 华为云 Key 或 Secret 无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| HTTP `403` | IAM 访问被拒绝 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `429` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `5xx` | 华为云服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 其他 `ServiceResponseException` | 华为云已返回错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `ConnectionException` | 无法连接华为云接口 | `cloud.account.provider.request.failed` | 云服务请求失败 | `PROVIDER_REQUEST_FAILED` | 云服务请求失败 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| HTTP `403` | IAM 访问被拒绝 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `429` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `5xx` | 华为云服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 其他 `ServiceResponseException` | 华为云已返回错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `ConnectionException` | 无法连接华为云接口 | `cloud.account.provider.request.failed` | 云服务请求失败 | `PROVIDER_REQUEST_FAILED` | 云服务请求失败 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | 其他异常 | SDK、本地配置或检测程序异常 | `huawei.validate.error` | 华为云校验异常 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 | IAM 没有返回 Domain | 无法确定华为云账号主体 | `cloud.account.identity.unresolved` | 无法确认云账号主体 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 
@@ -149,12 +149,12 @@ CREDENTIAL_AUTH_FAILED
 | HTTP `401` | 访问凭证未通过认证 | `infracube.key.secret.error` | Infracube 访问凭证无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | HTTP `403` 且消息包含 `AccessKeyInvalid` | Access Key 无效 | `infracube.key.secret.error` | Infracube 访问凭证无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | HTTP `403` 且消息包含 `SignatureInvalid` | 签名无效 | `infracube.key.secret.error` | Infracube 访问凭证无效 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| 其他 HTTP `403` | 接口访问被拒绝 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `429` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| HTTP `5xx` | Infracube 服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| 其他非成功状态 | 云商已返回业务错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| 其他 HTTP `403` | 接口访问被拒绝 | `cloud.account.provider.access.denied` | 访问被拒绝 | `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `429` | 请求被限流 | `cloud.account.provider.rate.limited` | 云服务请求受限 | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| HTTP `5xx` | Infracube 服务端异常 | `cloud.account.provider.service.unavailable` | 云服务暂时不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| 其他非成功状态 | 云商已返回业务错误，但系统没有更细分类 | `cloud.account.provider.error.unclassified` | 云服务请求异常 | `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | 返回对象为 `null` | 云商响应结构无效 | `cloud.account.provider.response.invalid` | 云服务身份响应异常 | `PROVIDER_RESPONSE_INVALID` | 云服务身份响应异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
-| 调用抛出可识别网络异常 | 连接、超时、DNS、TLS 等问题 | 见第 6 节 | 对应网络中间码 | 对应技术归因 | 对应中文 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| 调用抛出可识别网络异常 | 连接、超时、DNS、TLS 等问题 | 见第 6 节 | 对应网络中间码 | 对应技术归因 | 对应中文 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | 其他运行时/本地异常 | SDK 或检测程序异常 | `cloud.account.check.validate.exception` 或异常本身 | 检测执行异常 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 
 ## 6. 跨云商网络与技术异常映射
@@ -163,15 +163,15 @@ CREDENTIAL_AUTH_FAILED
 
 | 原始证据 | 原始证据中文 | 平台中间/技术错误码 | 系统归因码 | 系统归因中文 | 自动重试 | 健康页操作 | 操作说明 |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| `HttpConnectTimeoutException` | 建立连接超时 | `PROVIDER_CONNECT_TIMEOUT` | `PROVIDER_CONNECT_TIMEOUT` | 连接云服务超时 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `ConnectException` | TCP/网络连接失败 | `PROVIDER_CONNECTION_FAILED` | `PROVIDER_CONNECTION_FAILED` | 无法连接云服务 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `SocketTimeoutException`、`HttpTimeoutException` | 等待云商响应超时 | `PROVIDER_READ_TIMEOUT` | `PROVIDER_READ_TIMEOUT` | 云服务响应超时 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `UnknownHostException` | 域名无法解析 | `PROVIDER_DNS_RESOLUTION_FAILED` | `PROVIDER_DNS_RESOLUTION_FAILED` | 云服务域名解析失败 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `SSLException` | TLS/证书握手失败 | `TLS_HANDSHAKE_FAILED` | `TLS_HANDSHAKE_FAILED` | 无法与云服务建立安全连接 | 否 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `cloud.account.provider.rate.limited` | 云商限流 | `PROVIDER_RATE_LIMITED` | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `cloud.account.provider.service.unavailable` | 云商服务不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `cloud.account.provider.request.failed` | 云商请求失败 | `PROVIDER_REQUEST_FAILED` | `PROVIDER_REQUEST_FAILED` | 云服务请求失败 | 最多 3 次 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `cloud.account.proxy.unavailable` | 网络代理不可用 | `PROXY_UNAVAILABLE` | `PROXY_UNAVAILABLE` | 网络代理不可用 | 否 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| `HttpConnectTimeoutException` | 建立连接超时 | `PROVIDER_CONNECT_TIMEOUT` | `PROVIDER_CONNECT_TIMEOUT` | 连接云服务超时 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `ConnectException` | TCP/网络连接失败 | `PROVIDER_CONNECTION_FAILED` | `PROVIDER_CONNECTION_FAILED` | 无法连接云服务 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `SocketTimeoutException`、`HttpTimeoutException` | 等待云商响应超时 | `PROVIDER_READ_TIMEOUT` | `PROVIDER_READ_TIMEOUT` | 云服务响应超时 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `UnknownHostException` | 域名无法解析 | `PROVIDER_DNS_RESOLUTION_FAILED` | `PROVIDER_DNS_RESOLUTION_FAILED` | 云服务域名解析失败 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `SSLException` | TLS/证书握手失败 | `TLS_HANDSHAKE_FAILED` | `TLS_HANDSHAKE_FAILED` | 无法与云服务建立安全连接 | 否 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `cloud.account.provider.rate.limited` | 云商限流 | `PROVIDER_RATE_LIMITED` | `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `cloud.account.provider.service.unavailable` | 云商服务不可用 | `PROVIDER_SERVICE_UNAVAILABLE` | `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `cloud.account.provider.request.failed` | 云商请求失败 | `PROVIDER_REQUEST_FAILED` | `PROVIDER_REQUEST_FAILED` | 云服务请求失败 | 最多 3 次 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
+| `cloud.account.proxy.unavailable` | 网络代理不可用 | `PROXY_UNAVAILABLE` | `PROXY_UNAVAILABLE` | 网络代理不可用 | 否 | 同步状态 | 问题排查并解决后，可执行同步状态复测 |
 | `cloud.account.detection.configuration.missing` | 检测服务缺少配置 | `DETECTION_CONFIGURATION_MISSING` | `DETECTION_CONFIGURATION_MISSING` | 系统检测配置异常 | 否 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 | `cloud.account.provider.response.invalid` | 云商响应无法解析 | `PROVIDER_RESPONSE_INVALID` | `PROVIDER_RESPONSE_INVALID` | 云服务身份响应异常 | 否 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
 | `cloud.account.component.not.found` | 当前云商没有检测组件 | `DETECTION_INTERNAL_ERROR` | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 否 | 无定向操作 | 若问题持续，请联系平台管理员处理 |
@@ -186,7 +186,7 @@ CREDENTIAL_AUTH_FAILED
 | --- | --- | --- | --- | --- | --- |
 | 当前凭证解析出的账号 ID 与原绑定账号不同 | `cloud.account.binding.mismatch`，兼容旧码 `aliyun.account.changed.error`、`aws.account.changed.error`、`huawei.account.changed.error` | `CREDENTIAL_ACCOUNT_MISMATCH` | 当前凭证不属于原绑定云账号 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | 无法从凭证解析云账号身份 | `cloud.account.identity.unresolved` | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| 云账号缺少初始化健康快照 | 无云商中间码，由快照服务生成 | `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 刷新连通状态 | 初始化快照缺失，可刷新连通状态重新检测 |
+| 云账号缺少初始化健康快照 | 无云商中间码，由快照服务生成 | `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 同步状态（页面级命令） | 初始化快照缺失，可执行同步状态重新检测 |
 
 ## 8. 系统归因码总目录
 
@@ -197,25 +197,25 @@ CREDENTIAL_AUTH_FAILED
 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `CREDENTIAL_ACCOUNT_MISMATCH` | 当前凭证不属于原绑定云账号 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 刷新连通状态 | 初始化快照缺失，可刷新连通状态重新检测 |
-| `PROVIDER_CONNECT_TIMEOUT` | 连接云服务超时 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_CONNECTION_FAILED` | 无法连接云服务 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_READ_TIMEOUT` | 云服务响应超时 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_DNS_RESOLUTION_FAILED` | 云服务域名解析失败 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_REQUEST_FAILED` | 云服务请求失败 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `PROXY_UNAVAILABLE` | 网络代理不可用 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
-| `TLS_HANDSHAKE_FAILED` | 无法与云服务建立安全连接 | 刷新连通状态 | 问题排查并解决后，可刷新连通状态复测 |
+| `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 同步状态（页面级命令） | 初始化快照缺失，可执行同步状态重新检测 |
+| `PROVIDER_CONNECT_TIMEOUT` | 连接云服务超时 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_CONNECTION_FAILED` | 无法连接云服务 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_READ_TIMEOUT` | 云服务响应超时 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_DNS_RESOLUTION_FAILED` | 云服务域名解析失败 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_RATE_LIMITED` | 云服务请求受限 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_SERVICE_UNAVAILABLE` | 云服务暂时不可用 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_REQUEST_FAILED` | 云服务请求失败 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_ACCESS_DENIED` | 访问被拒绝 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROVIDER_ERROR_UNCLASSIFIED` | 云服务请求异常 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `PROXY_UNAVAILABLE` | 网络代理不可用 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
+| `TLS_HANDSHAKE_FAILED` | 无法与云服务建立安全连接 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
 | `DETECTION_CONFIGURATION_MISSING` | 系统检测配置异常 | 无 | 若问题持续，请联系平台管理员处理 |
 | `PROVIDER_RESPONSE_INVALID` | 云服务身份响应异常 | 无 | 若问题持续，请联系平台管理员处理 |
 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无 | 若问题持续，请联系平台管理员处理 |
 
-> 实现差异：上述 `HEALTH_SNAPSHOT_MISSING` 操作说明为确认后的目标口径；当前后端 `applyMissingSnapshot` 仍将 `actionType`、`actionLabel` 和 `actionHint` 置空，尚未返回刷新连通状态操作。
+> “同步状态”是页面级独立命令，不属于健康原因的 `actionType`。当前后端 `applyMissingSnapshot` 将 `actionType`、`actionLabel` 和 `actionHint` 置空，符合该边界。
 
-## 9. 自动重试与手动刷新关系
+## 9. 自动重试与手动同步关系
 
 后端单次检测最多尝试 3 次的范围：
 
@@ -232,7 +232,7 @@ CREDENTIAL_AUTH_FAILED
 - 代理不可用、TLS 握手失败。
 - 云商响应格式异常、平台检测配置异常、平台内部异常。
 
-“最多自动检测 3 次”只解决本次瞬时失败，不代表外部问题恢复后状态会立即改变。云商服务、权限、网络或限流恢复后，用户仍可通过“刷新连通状态”立即发起新一轮检测。
+“最多自动检测 3 次”只解决本次瞬时失败，不代表外部问题恢复后状态会立即改变。云商服务、权限、网络或限流恢复后，用户仍可通过页面级“同步状态”命令立即发起新一轮检测。
 
 ## 10. 后端返回字段与安全边界
 
@@ -247,8 +247,8 @@ CREDENTIAL_AUTH_FAILED
     "providerErrorMessage": "脱敏并限长后的云商错误摘要",
     "providerRequestId": "脱敏请求标识"
   },
-  "actionType": "REFRESH_CONNECTIVITY_STATUS",
-  "actionHint": "请根据云商返回信息排查或联系云服务商支持，问题解决后可刷新连通状态复测"
+  "actionType": null,
+  "actionHint": null
 }
 ```
 
@@ -261,7 +261,7 @@ CREDENTIAL_AUTH_FAILED
 | `providerErrorCode` | 云商返回，经 AGIOne 脱敏和限长 | 排障证据，不作为前端业务分支依据 |
 | `providerErrorMessage` | 云商返回，经 AGIOne 脱敏和限长 | 为未知云商错误提供可理解摘要 |
 | `providerRequestId` | 云商返回，经 AGIOne 脱敏和限长 | 联系云商工单时辅助定位 |
-| `actionType` | AGIOne 统一分类器 | 决定前端是否显示更新凭证或刷新连通状态 |
+| `actionType` | AGIOne 统一分类器 | 健康原因需要定向处理时只返回 `UPDATE_CREDENTIALS`；页面级“同步状态”命令不通过该字段表达 |
 | `actionHint` | AGIOne i18n | 解释操作时机，不替代操作本身 |
 
 安全约束：
