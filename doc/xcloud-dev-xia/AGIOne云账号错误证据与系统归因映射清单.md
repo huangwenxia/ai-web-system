@@ -213,7 +213,9 @@ CREDENTIAL_AUTH_FAILED
 | `PROVIDER_RESPONSE_INVALID` | 云服务身份响应异常 | 无 | 若问题持续，请联系平台管理员处理 |
 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无 | 若问题持续，请联系平台管理员处理 |
 
-> “同步状态”是页面级独立命令，不属于健康原因的 `actionType`。当前后端 `applyMissingSnapshot` 将 `actionType`、`actionLabel` 和 `actionHint` 置空，符合该边界。
+`HEALTH_SNAPSHOT_MISSING` 不代表云商错误或账号不可用，也不新增独立后端或前端健康状态。接口继续返回 `healthStatus=ACTION_REQUIRED`、`detectionActivity=IDLE` 和 `actionType=REFRESH_CONNECTIVITY_STATUS`；状态标签仍显示“需处理”。前端只针对该原因码将原因行显示为 warning 黄色并使用刷新图标，其他 `ACTION_REQUIRED` 的原因行仍使用 error 红色。
+
+> “同步状态”是页面级命令；`HEALTH_SNAPSHOT_MISSING` 可返回现有 `REFRESH_CONNECTIVITY_STATUS` 动作以支持卡片内入口，不代表新增后端状态。其他原因是否提供专属动作仍按原因码契约处理。
 
 ## 9. 自动重试与手动同步关系
 
@@ -241,7 +243,7 @@ CREDENTIAL_AUTH_FAILED
 ```json
 {
   "reasonCode": "PROVIDER_ERROR_UNCLASSIFIED",
-  "reasonMessage": "云服务请求异常",
+  "reasonMessage": "云服务请求异常：ExampleProviderCode · 脱敏并限长后的云商错误摘要（请求 ID：脱敏请求标识）",
   "reasonParams": {
     "providerErrorCode": "ExampleProviderCode",
     "providerErrorMessage": "脱敏并限长后的云商错误摘要",
@@ -257,10 +259,10 @@ CREDENTIAL_AUTH_FAILED
 | 字段 | 提供方 | 用途 |
 | --- | --- | --- |
 | `reasonCode` | AGIOne 统一分类器 | 前端业务判断、状态展示和统计聚合的稳定依据 |
-| `reasonMessage` | AGIOne i18n | 用户可见统一原因 |
-| `providerErrorCode` | 云商返回，经 AGIOne 脱敏和限长 | 排障证据，不作为前端业务分支依据 |
-| `providerErrorMessage` | 云商返回，经 AGIOne 脱敏和限长 | 为未知云商错误提供可理解摘要 |
-| `providerRequestId` | 云商返回，经 AGIOne 脱敏和限长 | 联系云商工单时辅助定位 |
+| `reasonMessage` | AGIOne i18n 与后端组合器 | 用户可见完整原因；有云商证据时已包含系统归因和安全证据摘要 |
+| `reasonParams.providerErrorCode` | 云商返回，经 AGIOne 脱敏和限长 | 排障证据，不作为前端业务分支依据 |
+| `reasonParams.providerErrorMessage` | 云商返回，经 AGIOne 脱敏和限长 | 为云商错误提供可理解摘要，保留脱敏后的原文，不强制翻译 |
+| `reasonParams.providerRequestId` | 云商返回，经 AGIOne 脱敏和限长 | 联系云商工单时辅助定位 |
 | `actionType` | AGIOne 统一分类器 | 健康原因需要定向处理时只返回 `UPDATE_CREDENTIALS`；页面级“同步状态”命令不通过该字段表达 |
 | `actionHint` | AGIOne i18n | 解释操作时机，不替代操作本身 |
 
@@ -271,7 +273,9 @@ CREDENTIAL_AUTH_FAILED
 - `providerErrorCode` 最长 96 字符。
 - `providerErrorMessage` 脱敏后最长 240 字符。
 - `providerRequestId` 最长 128 字符。
-- 前端只展示后端已经处理过的安全字段，不自行解析完整云商响应。
+- 后端按请求语言组合最终 `reasonMessage`：中文使用 `系统归因：code · message（请求 ID：id）`，英文使用 `System reason: code · message (Request ID: id)`；code 或 message 缺失时只拼接存在的字段。
+- `providerErrorCode` 与 `providerErrorMessage` 都不存在时，即使存在 request ID 也不单独追加云商证据；网络、DNS、TLS、本地配置或程序异常等没有云商响应的情况只展示系统归因。
+- 前端只展示后端生成的 `reasonMessage`，不再读取 `reasonParams` 二次拼接或自行解析完整云商响应。
 
 ## 11. 统一归因原则
 
@@ -280,7 +284,7 @@ CREDENTIAL_AUTH_FAILED
 3. 明确 403 或访问拒绝证据归为 `PROVIDER_ACCESS_DENIED`，不再与凭证失效混为一类。
 4. 云商明确返回错误但无法细分时归为 `PROVIDER_ERROR_UNCLASSIFIED`，不冒充平台内部异常。
 5. 没有云商响应证据的 SDK、本地配置、解析或程序错误归为 `DETECTION_INTERNAL_ERROR`。
-6. 前端只依赖系统归因码和 `actionType`；云商原始证据只用于解释和排障。
+6. 前端只依赖系统归因码、后端生成的 `reasonMessage` 和 `actionType`；结构化云商原始证据只用于解释和排障，不由展示层二次拼接。
 7. 新增云商时，必须在云商适配器中完成“原始证据 → 平台中间码”的映射，并由公共分类器统一输出系统归因，禁止让前端直接识别各云商错误码。
 
 ## 12. 代码事实来源
