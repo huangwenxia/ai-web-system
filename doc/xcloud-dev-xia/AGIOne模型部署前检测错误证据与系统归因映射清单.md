@@ -222,3 +222,7 @@ Hashrate 只做租户归属、云类型和部署页动作转换，不复制 XClo
 - XCloud `CloudAccountHealthService.checkReadiness`：账号就绪性来源。
 
 本文仅声明静态代码和已有测试源码对齐；未声明真实云环境、浏览器联调或部署发布已验证。
+
+## 云商错误证据展示统一补充
+
+只要云商返回的错误证据中任意存在 providerReasonCode、providerReasonMessage 或 providerRequestId，后端将其拼接进最终 reasonMessage，格式为“reasonMessage：providerReasonCode providerReasonMessage（请求 ID：providerRequestId）”；缺少的片段不显示，provider message 与系统归因完全相同时不重复消息文本。三个顶层 provider 字段始终返回，未取得云商证据时返回空字符串；reasonParams 同时保留兼容字段。前端和 Mock 只展示后端最终 reasonMessage，不再单独渲染或二次拼接 provider 证据。

@@ -186,7 +186,7 @@ CREDENTIAL_AUTH_FAILED
 | --- | --- | --- | --- | --- | --- |
 | 当前凭证解析出的账号 ID 与原绑定账号不同 | `cloud.account.binding.mismatch`，兼容旧码 `aliyun.account.changed.error`、`aws.account.changed.error`、`huawei.account.changed.error` | `CREDENTIAL_ACCOUNT_MISMATCH` | 当前凭证不属于原绑定云账号 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | 无法从凭证解析云账号身份 | `cloud.account.identity.unresolved` | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| 云账号缺少初始化健康快照 | 无云商中间码，由快照服务生成 | `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 同步状态（页面级命令） | 初始化快照缺失，可执行同步状态重新检测 |
+| 云账号缺少初始化健康快照 | 无云商中间码，由快照服务生成 | `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 刷新连通状态 | 初始化快照缺失，可刷新连通状态重新检测 |
 
 ## 8. 系统归因码总目录
 
@@ -197,7 +197,7 @@ CREDENTIAL_AUTH_FAILED
 | `CREDENTIAL_AUTH_FAILED` | 云身份与凭证认证失败 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` | 暂时无法确认具体身份原因 | 更新凭证 | 请编辑云账号，修正凭证信息 |
 | `CREDENTIAL_ACCOUNT_MISMATCH` | 当前凭证不属于原绑定云账号 | 更新凭证 | 请编辑云账号，修正凭证信息 |
-| `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 同步状态（页面级命令） | 初始化快照缺失，可执行同步状态重新检测 |
+| `HEALTH_SNAPSHOT_MISSING` | 状态待同步 | 刷新连通状态 | 初始化快照缺失，可刷新连通状态重新检测 |
 | `PROVIDER_CONNECT_TIMEOUT` | 连接云服务超时 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
 | `PROVIDER_CONNECTION_FAILED` | 无法连接云服务 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
 | `PROVIDER_READ_TIMEOUT` | 云服务响应超时 | 同步状态（页面级命令） | 问题排查并解决后，可执行同步状态复测 |
@@ -213,9 +213,9 @@ CREDENTIAL_AUTH_FAILED
 | `PROVIDER_RESPONSE_INVALID` | 云服务身份响应异常 | 无 | 若问题持续，请联系平台管理员处理 |
 | `DETECTION_INTERNAL_ERROR` | 系统检测异常 | 无 | 若问题持续，请联系平台管理员处理 |
 
-`HEALTH_SNAPSHOT_MISSING` 不代表云商错误或账号不可用，也不新增独立后端或前端健康状态。接口继续返回 `healthStatus=ACTION_REQUIRED`、`detectionActivity=IDLE` 和 `actionType=REFRESH_CONNECTIVITY_STATUS`；状态标签仍显示“需处理”。前端只针对该原因码将原因行显示为 warning 黄色并使用刷新图标，其他 `ACTION_REQUIRED` 的原因行仍使用 error 红色。
+`HEALTH_SNAPSHOT_MISSING` 不代表云商错误或账号不可用，也不新增独立后端或前端健康状态。接口继续返回 `healthStatus=ACTION_REQUIRED`、`detectionActivity=IDLE` 和 `actionType=REFRESH_CONNECTIVITY_STATUS`；状态标签仍显示“需处理”。前端只针对该原因码将原因行显示为 warning 黄色，其他 `ACTION_REQUIRED` 的原因行仍使用 error 红色；所有需处理原因行均不展示图标。
 
-> “同步状态”是页面级命令；`HEALTH_SNAPSHOT_MISSING` 可返回现有 `REFRESH_CONNECTIVITY_STATUS` 动作以支持卡片内入口，不代表新增后端状态。其他原因是否提供专属动作仍按原因码契约处理。
+> `HEALTH_SNAPSHOT_MISSING` 返回现有 `REFRESH_CONNECTIVITY_STATUS` 动作，后端本地化标签为“刷新连通状态”，用于支持卡片内入口，不代表新增后端状态。其他原因是否提供动作仍按原因码契约处理。
 
 ## 9. 自动重试与手动同步关系
 
