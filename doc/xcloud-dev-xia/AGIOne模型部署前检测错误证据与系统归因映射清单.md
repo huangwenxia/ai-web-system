@@ -39,13 +39,13 @@
 | `RUNNING` | 该项仍在检测 |
 | `PASSED` | 已取得通过证据 |
 | `BLOCKED` | 已取得明确问题证据，大概率导致部署失败，但预检不阻止用户继续创建 |
-| `UNVERIFIED` | 能力未实现或云商技术请求失败，未取得确定结论 |
-| `ERROR` | 检测过程异常；由 `reasonCode` 区分云商未归因异常与 AGIOne 平台异常 |
+| `UNVERIFIED` | 平台尚未实现对应云商或能力的检测探针，本次无法执行检测 |
+| `ERROR` | 单项检测不再使用；任务级 `FAILED` 仍表示异步任务本身失败 |
 | `SKIPPED` | 因前置检测项问题，本项没有执行 |
 
 任务状态固定为 `CHECKING / COMPLETED / FAILED`：`CHECKING` 继续轮询；任务正常跑完统一为 `COMPLETED`，具体结论只看四项结果；异步任务调度或执行中断为 `FAILED`。不再返回总体 `PASSED / BLOCKED / UNVERIFIED`，也不再使用 `acceptUnverifiedRisk` 控制创建。
 
-异步任务调度或执行异常时，任务状态为 `FAILED`。后端会把仍为 `RUNNING` 的检测项统一转为 `ERROR`，并写入 `DETECTION_INTERNAL_ERROR`、原因说明“部署环境检测任务执行异常”和操作说明；前端 Mock 必须使用同一后端原因文案，继续在对应检测项展示归因，不额外显示一条没有归属检测项的“检测任务失败”提示。
+异步任务调度或执行异常时，任务状态为 `FAILED`。后端会把仍为 `RUNNING` 的检测项统一转为 `BLOCKED`，并写入 `DETECTION_INTERNAL_ERROR`、原因说明“部署环境检测任务执行异常”和操作说明；前端 Mock 必须使用同一后端原因文案，继续在对应检测项展示归因，不额外显示一条没有归属检测项的“检测任务失败”提示。
 
 浏览器断网、网关无响应或请求未取得后端响应不属于部署预检结果，也不是后端 `reasonCode`。这类链路异常沿用平台通用请求错误和重新检测操作，不进入四项归因目录，也不计入部署预检归因案例。
 
@@ -78,11 +78,11 @@
 | --- | --- | --- | --- |
 | 当前租户找不到目标账号 | `DEPLOYMENT_CLOUD_ACCOUNT_NOT_FOUND` | `BLOCKED` | `modifyConfiguration` |
 | 所选账号云类型不匹配 | `DEPLOYMENT_CLOUD_ACCOUNT_TYPE_MISMATCH` | `BLOCKED` | `modifyConfiguration` |
-| 账号就绪性服务失败 | `ACCOUNT_READINESS_SERVICE_UNAVAILABLE` | `ERROR` | `retry` |
+| 账号就绪性服务失败 | `ACCOUNT_READINESS_SERVICE_UNAVAILABLE` | `BLOCKED` | `retry` |
 | XCloud 明确返回凭证或身份认证失败 | 保留 XCloud 的账号域原因码（如 `CREDENTIAL_AUTH_FAILED`） | 通常 `BLOCKED` | `accountManagement` |
-| XCloud 返回可重试的账号技术异常 | 保留 XCloud 账号域原因码 | `UNVERIFIED` | `accountManagement` 或后端登记的重试动作 |
-| XCloud 已确认来自云商但无法进一步归因 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` / `PROVIDER_ERROR_UNCLASSIFIED` | `ERROR` | `reasonMessage` 统一为“系统未归因”；详情展示安全过滤后的云商原始错误；不返回操作说明 |
-| XCloud 检测配置、内部程序或平台代理异常 | `DETECTION_CONFIGURATION_MISSING` / `DETECTION_INTERNAL_ERROR` / `PROXY_UNAVAILABLE` | `ERROR` | 按后端操作说明处理 |
+| XCloud 返回可重试的账号技术异常 | 保留 XCloud 账号域原因码 | `BLOCKED` | `accountManagement` 或后端登记的重试动作 |
+| XCloud 已确认来自云商但无法进一步归因 | `CLOUD_IDENTITY_ERROR_UNCLASSIFIED` / `PROVIDER_ERROR_UNCLASSIFIED` | `BLOCKED` | `reasonMessage` 统一为“系统未归因”；详情展示安全过滤后的云商原始错误；不返回操作说明 |
+| XCloud 检测配置、内部程序或平台代理异常 | `DETECTION_CONFIGURATION_MISSING` / `DETECTION_INTERNAL_ERROR` / `PROXY_UNAVAILABLE` | `BLOCKED` | 按后端操作说明处理 |
 
 Hashrate 只做租户归属、云类型和部署页动作转换，不复制 XCloud 分类器，不从异常文本重新推断凭证错误。账号不存在或云类型不匹配属于部署配置问题，不能机械跳到接入管理。
 
@@ -91,10 +91,10 @@ Hashrate 只做租户归属、云类型和部署页动作转换，不复制 XClo
 | 证据 | `reasonCode` | 状态 | 操作 |
 | --- | --- | --- | --- |
 | AI Infra License 明确拒绝新增实例 | `LICENSE_CAPACITY_EXCEEDED` | `BLOCKED` | `restoreLicense` |
-| License 服务异常 | `LICENSE_SERVICE_UNAVAILABLE` | `ERROR` | `retry` |
+| License 服务异常 | `LICENSE_SERVICE_UNAVAILABLE` | `BLOCKED` | `retry` |
 | 云商明确拒绝产品访问（包括产品未授权） | `CLOUD_PRODUCT_ACCESS_DENIED` | `BLOCKED` | `cloudProductAccess` |
-| 云商返回未分类产品错误 | `CLOUD_PRODUCT_ERROR_UNCLASSIFIED` | `ERROR` | `reasonMessage` 统一为“系统未归因”；详情展示安全过滤后的云商原始错误；不返回操作说明 |
-| 产品探针为空、抛异常或技术请求失败 | `PROVIDER_REQUEST_FAILED` | `UNVERIFIED` | `retry` |
+| 云商返回未分类产品错误 | `CLOUD_PRODUCT_ERROR_UNCLASSIFIED` | `BLOCKED` | `reasonMessage` 统一为“系统未归因”；详情展示安全过滤后的云商原始错误；不返回操作说明 |
+| 产品探针为空、抛异常或技术请求失败 | `PROVIDER_REQUEST_FAILED` | `BLOCKED` | `retry` |
 
 产品授权和云账号凭证是两个检测项。产品已授权后，后续资源检查与云账号凭证没有直接关系；如果资源检查因产品请求失败而未执行，必须使用资源项派生码，不得把产品码复制到资源项。
 
@@ -111,7 +111,7 @@ Hashrate 只做租户归属、云类型和部署页动作转换，不复制 XClo
 | 缺少目标规格配置 | `MODEL_SPECIFICATION_CONFIG_MISSING` | `BLOCKED` | `modifyConfiguration` |
 | 缺少模型来源 | `MODEL_SOURCE_MISSING` | `BLOCKED` | `contactAdmin` |
 | 公共模型缺少云端模型标识 | `PUBLIC_MODEL_ID_MISSING` | `BLOCKED` | `contactAdmin` |
-| 查询模型依赖发生异常 | `MODEL_DEPENDENCY_CHECK_ERROR` | `ERROR` | `contactAdmin` |
+| 查询模型依赖发生异常 | `MODEL_DEPENDENCY_CHECK_ERROR` | `BLOCKED` | `contactAdmin` |
 
 模型项只反映模型和依赖证据，不因账号、授权或配额项失败而改写。
 
@@ -123,15 +123,15 @@ Hashrate 只做租户归属、云类型和部署页动作转换，不复制 XClo
 | --- | --- | --- | --- |
 | 目标规格不存在 | `SPECIFICATION_NOT_FOUND` | `BLOCKED` | `modifyConfiguration` |
 | 规格存在但当前无库存 | `SPECIFICATION_SOLD_OUT` | `BLOCKED` | `modifyConfiguration` |
-| 规格探针请求失败 | `PROVIDER_REQUEST_FAILED` | `UNVERIFIED` | `retry` |
+| 规格探针请求失败 | `PROVIDER_REQUEST_FAILED` | `BLOCKED` | `retry` |
 
 ### 8.2 账户资源配额
 
 | 证据 | `reasonCode` | 状态 | 操作 |
 | --- | --- | --- | --- |
 | 云商没有真实配额接口或当前适配器未支持 | `RESOURCE_QUOTA_CHECK_NOT_SUPPORTED` | `UNVERIFIED` | 无；不阻止继续创建 |
-| 配额接口请求失败或响应无法确认 | `RESOURCE_QUOTA_REQUEST_FAILED` | `UNVERIFIED` | `retry` |
-| 当前规格无法映射到云商配额项 | `RESOURCE_QUOTA_MAPPING_MISSING` | `UNVERIFIED` | `contactAdmin` |
+| 配额接口请求失败或响应无法确认 | `RESOURCE_QUOTA_REQUEST_FAILED` | `BLOCKED` | `retry` |
+| 当前规格无法映射到云商配额项 | `RESOURCE_QUOTA_MAPPING_MISSING` | `BLOCKED` | `contactAdmin` |
 | 云商明确返回配额不足 | `RESOURCE_QUOTA_INSUFFICIENT` | `BLOCKED` | `requestProviderQuota` |
 | 云商明确返回配额充足 | 无失败原因，资源项 `PASSED` | `PASSED` | 无 |
 
@@ -183,18 +183,18 @@ Hashrate 只做租户归属、云类型和部署页动作转换，不复制 XClo
 | --- | --- |
 | `CHECKING` | 展示四项检测进度，继续轮询 |
 | `COMPLETED` | 停止轮询，按四个检测项展示结果；预检不控制前端是否发送创建请求 |
-| `FAILED` | 停止轮询；未完成检测项以 `ERROR / DETECTION_INTERNAL_ERROR` 展示 |
+| `FAILED` | 停止轮询；未完成检测项以 `BLOCKED / DETECTION_INTERNAL_ERROR` 展示 |
 
 前端不得因为 `checkCode=RESOURCE_QUOTA` 就显示“去接入管理”，不得因为 `checkCode=PRODUCT_AUTHORIZATION` 就显示“修改云账号凭证”。
 
 底部提示文案固定，后续不得改写，只能调整显示条件：
 
 - `COMPLETED` 且四项全部 `PASSED` 时，显示：“部署前检查只能证明当前已验证范围内满足准入条件，不能证明云端一定创建成功。”
-- `COMPLETED` 且存在 `BLOCKED`、`UNVERIFIED`、非平台前置 `SKIPPED` 或云商未归因 `ERROR`，同时不存在 AGIOne 平台异常时，显示：“为提升部署成功率，建议排查并解决问题，再重新检测。当前仍可创建部署任务，若部署失败，可前往「我的部署」详情查看原因并处理。”
+- `COMPLETED` 且存在 `BLOCKED`、`UNVERIFIED` 或非平台前置 `SKIPPED`，同时不存在 AGIOne 平台异常时，显示：“为提升部署成功率，建议排查并解决问题，再重新检测。当前仍可创建部署任务，若部署失败，可前往「我的部署」详情查看原因并处理。”
 - `FAILED`、前端本地请求失败，或存在 `ACCOUNT_READINESS_SERVICE_UNAVAILABLE`、`DETECTION_CONFIGURATION_MISSING`、`DETECTION_INTERNAL_ERROR`、`LICENSE_SERVICE_UNAVAILABLE`、`MODEL_DEPENDENCY_CHECK_ERROR`、`PROXY_UNAVAILABLE` 等 AGIOne 平台异常时，不显示底部提示。
-- 云商未归因异常显示红色 `ERROR`，`reasonMessage` 统一为“系统未归因”；安全过滤后的云商原始错误通过 `reasonParams.providerErrorCode / providerErrorMessage / providerRequestId` 作为详情展示，`actionHint` 必须为空。它仍属于可显示第二条固定提示的场景。
+- 云商未归因异常显示红色 `BLOCKED`，`reasonMessage` 统一为“系统未归因”；安全过滤后的云商原始错误通过 `reasonParams.providerErrorCode / providerErrorMessage / providerRequestId` 拼接到最终文案，`actionHint` 必须为空。它仍属于可显示第二条固定提示的场景。
 
-前端静态 Mock 只覆盖当前后端真实归因契约：47 个可达归因码由 43 个根归因码和 4 个派生归因码组成；下拉提供 43 个根归因案例，以及 `FAILED_TASK`、`MIXED`、`PASSED`、`PROVIDER_REQUEST_FAILED_PROVIDER` 4 个组合场景，共 47 个案例。三个云商未归因码均展示红色 `ERROR`、统一原因“系统未归因”、云商原始错误详情和第二条固定底部提示，且不展示操作说明；六个 AGIOne 平台异常码展示红色 `ERROR` 且不显示底部提示；四个派生归因码展示 `SKIPPED`，底部提示跟随根因。不得人为构造 `BACKEND_NEW_REASON_CODE` 或“返回未知问题”作为业务归因案例。XCloud 返回未登记原因时，Hashrate 统一收敛为 `ACCOUNT_READINESS_SERVICE_UNAVAILABLE`；后端新增正式归因码时，必须同步提供 `reasonMessage`，需要用户操作时再提供 `actionHint`，并更新前端契约后再进入 Mock。URL 中保存的 Mock 场景必须按当前契约校验；已删除或未登记的旧值统一回落为 `FAILED_TASK` 并替换 URL，禁止继续在下拉框显示废弃值。
+前端静态 Mock 只覆盖当前后端真实归因契约：47 个可达归因码由 43 个根归因码和 4 个派生归因码组成；下拉提供 43 个根归因案例，以及 `FAILED_TASK`、`MIXED`、`PASSED`、`PROVIDER_REQUEST_FAILED_PROVIDER` 4 个组合场景，共 47 个案例。已实现探针但未通过的场景统一展示红色 `BLOCKED`；仅明确未实现探针的场景展示 `UNVERIFIED`；四个派生归因码展示 `SKIPPED`，底部提示跟随根因。不得人为构造 `BACKEND_NEW_REASON_CODE` 或“返回未知问题”作为业务归因案例。XCloud 返回未登记原因时，Hashrate 统一收敛为 `ACCOUNT_READINESS_SERVICE_UNAVAILABLE`；后端新增正式归因码时，必须同步提供 `reasonMessage`，需要用户操作时再提供 `actionHint`，并更新前端契约后再进入 Mock。URL 中保存的 Mock 场景必须按当前契约校验；已删除或未登记的旧值统一回落为 `FAILED_TASK` 并替换 URL，禁止继续在下拉框显示废弃值。
 
 ## 12. 当前实现与待接入能力
 
