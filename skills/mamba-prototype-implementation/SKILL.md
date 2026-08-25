@@ -87,6 +87,7 @@ Visible UI implementation defaults to the current target user's first visit. Sim
    - Business containers own data loading, mutations, refresh, and local interactions.
    - Pure display components receive typed props and emit user intent.
    - Component-private hooks/types/constants stay in the same-named capsule.
+   - Add concise Chinese comments to newly added or materially changed frontend logic. Cover business rules, state transitions, API orchestration, data transformations, permission and boundary decisions, async races, side effects, and non-obvious fallbacks; explain intent and constraints instead of restating syntax. Self-explanatory imports, types, constants, direct assignments, templates, and styles do not require comments.
 7. Match the prototype first, then adapt through project tokens and shared components. Preserve observable layout, density, labels, grouping, icon intent, and interaction behavior unless a project rule forces a specific substitution.
    - When adaptation requires a parent layer to influence child, third-party, or overlay styles, trace the CSS chain with `../frontend-implementer-skill/docs/style-override-discipline.md` before writing overrides.
 8. After implementation, move page-local pure utility helpers such as empty-value display, text normalization, formatting, parsing, and fallback display into the current directory's `utils/index.ts`; move needed local types into `types/index.ts`; use explicit imports such as `./utils/index` and `./types/index`.
@@ -105,6 +106,7 @@ Compare the implementation with the prototype:
 - Visuals: spacing, alignment, typography scale, radius, border strength, color semantics, icon mapping, density, responsive behavior, and dark-mode parity.
 - Data: API mapping, payloads, response adaptation, formatters, dictionary/status fallback, route query persistence, and refresh behavior.
 - Reuse: every custom table/form/detail/card/filter/status/icon pattern has a reuse scan result and a reason if a local implementation remains necessary.
+- Logic comments: Chinese comments cover newly added or materially changed non-obvious frontend logic, match the implemented behavior, and avoid line-by-line noise; untouched legacy code does not require bulk comment-only edits.
 
 If a mismatch is intentional because project standards override the prototype, record the exact rule and the practical impact.
 

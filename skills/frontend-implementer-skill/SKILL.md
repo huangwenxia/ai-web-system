@@ -90,6 +90,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 目录落点：复杂组件进 `components/Foo/index.vue` 胶囊；私有 hook / type / constants / utils 跟随组件；页面纯工具函数进当前目录 `utils/index.ts`，必要类型进 `types/index.ts`。
 - 样式边界：Tailwind utility 优先、`<style scoped>` 只放复杂样式、禁止 `:global` 污染、布局默认 flex 且禁止新增 CSS Grid。
 - 边界态：loading、empty、error、permission、disabled、focus 至少有处理结论。
+- 注释策略：本次新增或实质修改的业务规则、状态流转、接口编排、数据转换、权限与边界判断、异步竞态、副作用和不直观兜底必须有中文注释，说明处理原因、触发条件、关键约束或结果；简单自解释代码可不注释，禁止逐行复述语法。
 
 阻断条件：页面根将承载过多私有状态、数据归属不清、组件边界不清、目录落点不清、样式需要全局污染、目标用户 5 秒自检无法通过。
 
@@ -104,6 +105,7 @@ For visible UI work, read `../page-review-skill/docs/ui-craft-gates.md` before f
 - 未主动运行 build，除非用户本次明确要求。
 - 后台 / 控制台 / 管理系统页面必须复查当前浏览器视口下的主内容画布利用率；lint / validator 通过不代表视觉通过。若右侧大面积空白没有业务用途，必须调整布局或说明明确页面类型原因。
 - 输出目标用户 5 秒自检、内部证据清理结果、风险和最小验证建议。
+- 审视本次 diff 中的前端逻辑注释：应使用中文、与实际行为一致，并覆盖新增或实质修改的关键逻辑；未触及的历史代码无需为本次任务批量补注释。
 
 阻断条件：自动检查失败且未整改、UTF-8 / 乱码风险未确认、可见 UI 未完成 5 秒自检、最终 diff 包含无关修改、build 被误当默认验证。
 
@@ -275,6 +277,7 @@ For visible UI work, read `../page-review-skill/docs/ui-craft-gates.md` before f
 - 数据是否跟着业务组件走；页面根是否只保留共享状态和流程编排；纯视觉组件是否只吃 props；是否避免 `usePage` / `useXxx` 大 hook 替所有子组件取数。
 - 新增 `.vue` 是否控制在 250 行以内；超过时优先拆组件或 `useXxx.ts`，而不是压缩可读性。
 - 函数尽量控制在 70 行以内，100 行为上限；超过 100 行必须拆分。复杂且接近上限的函数顶部写一句功能说明，不写废话注释。
+- 前端逻辑注释必须使用中文并解释“为什么”或业务约束，而不是把函数名、条件表达式或赋值语句换成中文复述。业务规则、状态流转、接口编排、数据转换、权限与边界判断、异步竞态、副作用及不直观兜底必须有注释；简单导入、类型、常量、直接赋值、模板结构和样式声明可不注释。
 - 组件只做一件事；复杂逻辑抽为 `useXxx.ts`，让数据处理、交互副作用和视图表达分离。
 - 组件私有 hook / types / constants / utils 是否与对应 `index.vue` 放在组件同名目录；不要为了瘦身把局部文件散到上层目录。
 - 组件抽离、目录落点和 API 契约是否符合 `docs/component-extraction-policy.md`；厚组件是否使用 `components/Foo/index.vue` 胶囊目录，薄组件是否只在没有同功能前缀集群和私有 hook / type / constants 时保持平铺。
