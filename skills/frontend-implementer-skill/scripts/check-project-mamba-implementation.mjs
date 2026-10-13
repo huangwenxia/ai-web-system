@@ -1073,7 +1073,7 @@ function findRawElementPlusOverlayFormErrors(source, lineOffset = 0) {
 
     const line = lineNumberAt(source, match.index, lineOffset);
     errors.push(
-      `${match[1]} form overlay at line ${line} uses raw Element Plus form markup; form overlays must use FormDialog.show. If this is not a form workflow, document why the FormDialog.show rule does not apply. If the project does not provide FormDialog.show, stop and report the missing wrapper instead of hand-writing an Element Plus form overlay`,
+      `${match[1]} form overlay at line ${line} requires project reuse evidence: prefer an available wrapper such as FormDialog.show; otherwise use an established project solution appropriate to the task. Missing named wrappers or raw markup alone do not prove a violation. Check complexity, explicit project constraints, validation, submission feedback, duplicate-submit protection, error handling, cancellation, i18n and style isolation`,
     );
   }
 
@@ -1589,7 +1589,8 @@ function checkVueFile(content, normalized, statusCode, options, result) {
 
   for (const block of getVueTemplateBlocks(content)) {
     warnings.push(...findVForReuseWarnings(block.code, block.startLine));
-    errors.push(...findRawElementPlusOverlayFormErrors(block.code, block.startLine));
+    // 单文件标记无法证明项目缺少封装或违反复用规则，仅提示核查项目上下文，不机械阻断。
+    warnings.push(...findRawElementPlusOverlayFormErrors(block.code, block.startLine));
     warnings.push(...findRawTableReuseWarnings(block.code, block.startLine));
   }
 

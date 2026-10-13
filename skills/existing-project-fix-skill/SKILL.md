@@ -105,7 +105,7 @@ description: "面向既有项目中 bug 修复、代码优化和局部体验修�
 #### 组件新增判定条件
 - 新组件必须落在当前项目合适层级：页面私有放页面局部 `components/`，模块复用放模块级组件目录，app 级复用放当前 app 的 `src/components/`。
 - 组件、模板、样式与 Element Plus / Tailwind / `defineModel` 等代码层铁律，统一以下沉到 `frontend-implementer-skill` 为准。
-- 修复或优化涉及表单类弹出层时，严格沿用项目封装的 `FormDialog.show`；不得为局部修复新增手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form` 组合。若历史实现暂不整改，必须说明保留原因和后续收敛建议。
+- 表单类弹出层优先复用当前项目已有封装（如 `FormDialog.show`）；项目没有指定封装时，先检索同类功能并沿用适合当前任务的既有组件与交互模式，例如简单单字段输入使用项目已有的 `ElMessageBox.prompt`。缺少指定封装不构成默认阻塞，不得仅因此停止实现、反复要求用户批准或擅自新增同名封装。复杂表单不得塞入简单输入弹框；既有方案仍须满足项目明确约束、校验、提交反馈、重复提交防护、错误处理、取消关闭、国际化和样式隔离要求。只有现有能力无法满足需求或存在明确稳定的多处复用需求时，才提出新增封装。非表单展示或纯确认说明不适用；记录检索候选、采用理由及冲突。
 - 修复或优化嵌套组件样式时，必须先按 `skills/frontend-implementer-skill/docs/style-override-discipline.md` 定位样式作用链；禁止把未命中、被覆盖或挂载点错误的问题继续用更高 specificity、`!important` 或全局覆盖硬压。
 - 修复或优化样式时严禁新增 `:global(...)` / `:global (...)` 逃逸 scoped 边界；发现历史 `:global` 覆盖 Element Plus 内部类、浮层壳层或页面外层容器时，按全局污染风险处理，当前范围能收敛则改为局部类、props / wrapper class、`popper-class` 或经批准的共享样式入口，暂不整改时必须说明原因和后续收敛建议。
 

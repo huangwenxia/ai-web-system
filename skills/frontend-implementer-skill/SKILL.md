@@ -33,6 +33,15 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 
 如果当前是新功能开发且还没有已确认原型，应先转回 `existing-project-feature-skill` 或 `agione-ui`，不能直接落代码。
 
+## 项目既有组件与封装优先原则
+
+既有项目的 UI 实现优先复用项目已有组件、封装和成熟交互模式；Skill 中的封装名称是优先选型，不是所有项目必须具备的前置条件。
+
+- 有对应封装时优先使用其接口、样式和行为约定，不另起一套实现。
+- 没有对应封装时，检索同类流程并采用适配当前任务的既有方案；不得仅因名称缺失而阻塞、反复求批或新增同名抽象。
+- 复用须匹配任务复杂度，并满足项目明确约束；已有代码不是合规豁免。
+- 只有能力不足或稳定多处复用需求成立时才提出新封装，记录候选、选择依据、边界和具体冲突。
+
 ## 接收参数说明
 
 - `target`：目标页面、组件、模块、目录或文件。
@@ -79,7 +88,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - hooks、utils、constants、types、API 层、i18n / locale 路径。
 - 每个自定义 UI、每个 `v-for`、每个表单浮层、每个表格和每个新增图标都要有“检索范围 / 关键词 / 命中候选 / 采用或未复用原因”。
 
-阻断条件：未检索就新增组件、表单工作流绕开 `FormDialog.show`、手写表格但未查现有表格能力、明确原型图标被静默替换、可复用公共能力未给出不复用原因。
+阻断条件：未检索就新增组件、无合理理由绕过项目已有且适配任务的表单封装（缺少 `FormDialog.show` 本身不阻断）、手写表格但未查现有表格能力、明确原型图标被静默替换、可复用公共能力未给出不复用原因。
 
 ### Gate 4: IMPLEMENTATION-GATE
 
@@ -232,7 +241,7 @@ For visible UI work, read `../page-review-skill/docs/ui-craft-gates.md` before f
 - 先复用现有布局、容器、表单、列表、状态组件，再决定是否新增实现。
 - 页面层负责容器和整体编排，子组件负责内容区，不把页面壳写进子组件。
 - 新增组件或 `useXxx.ts` 前必须先检查 `easybill-ui`、`apps/common`、当前项目 `commons`、当前项目 `views/components`、`@repo/hooks`、当前项目 `utils`；确实没有合适能力时，才允许新增，并在最终输出列出检索范围、命中候选和未复用原因。
-- 表单类弹出层（新建、编辑、配置、提交等带表单的 dialog / drawer / popover）严格使用项目封装的 `FormDialog.show`；不得手写 `el-dialog` / `el-drawer` / `el-popover` + `el-form`。实现前先检索 `FormDialog.show`、项目已有弹窗表单、Schema 表单、`InstanceForm` / `InstanceStepPage`、当前模块 modal/form 封装和 `easybill-ui`；确属非表单展示或纯确认时说明不适用；如果项目不存在 `FormDialog.show`，先阻断并说明需要补封装或请用户确认，不允许改成手写 Element Plus 表单弹层。
+- 表单类弹出层优先复用当前项目已有封装（如 `FormDialog.show`）；项目没有指定封装时，先检索同类功能并沿用适合当前任务的既有组件与交互模式，例如简单单字段输入使用项目已有的 `ElMessageBox.prompt`。缺少指定封装不构成默认阻塞，不得仅因此停止实现、反复要求用户批准或擅自新增同名封装。复杂表单不得塞入简单输入弹框；既有方案仍须满足项目明确约束、校验、提交反馈、重复提交防护、错误处理、取消关闭、国际化和样式隔离要求。只有现有能力无法满足需求或存在明确稳定的多处复用需求时，才提出新增封装。非表单展示或纯确认说明不适用；记录检索候选、采用理由及冲突。
 - 表格不得默认手写 `el-table` 或原生 `<table>`；先查项目已有 `CurdTable` / `DataTable` / 表格 wrapper、`packages/utils/src/CurdTable` 的 `ColumnFactory`、`useCurdTable`、当前模块表格配置和当前 app / `apps/common` 组件层。表格主能力不在 `apps/common/src/utils`；只有涉及导入导出时，才检查 `apps/common/src/utils/genericExportImport.ts` 等 common utils。确实无法复用时，才能基于 Element Plus 表格实现，并在最终输出列出命中候选和未复用原因。
 - 任何 `v-for` 都必须先做复用检查：优先查项目已有组件、列表项组件、tag/badge 集合组件、option 渲染组件、字段 fragments、`OverflowTag` / `ListCardBox` / `ListCardItem` 等同语义能力；确实没有合适封装时，才允许手写循环，并在最终输出说明检索范围、命中候选、未复用原因。原生标签上的 `v-for` 尤其要警惕，不允许因为写起来快就绕过已有组件。
 - 图标必须纳入严格复查：先识别原型使用的图标体系和具体语义名称（如 Lucide 的 rocket / route / memory-stick），再核对当前 app 已安装图标库、项目共享 UI 是否已有图标封装、当前实现是否只是用了近似图标。原型明确指定图标体系且项目未依赖时，优先判断是否应在当前 app 显式补依赖；不能静默用 Element Plus 近似图标替代。最终输出列出原型图标、实现图标、依赖来源、采用或偏离原因。
