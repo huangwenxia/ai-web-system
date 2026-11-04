@@ -133,6 +133,15 @@ Use this document before delivering UI prototypes, visual reviews, and visible f
 - 多层边界重复表达同一个关系。
 - 看起来“规范”，但不高级。
 
+**默认不做装饰性标签化**
+
+- 普通字段、分类、数量、辅助指标和状态，默认先用文字、排版、对齐及必要语义色表达，不自动增加 Chip、Tag、Badge、胶囊、底色、描边或圆角外壳。
+- 新增外壳前必须说明它承担的具体交互或识别用途，以及文字排版为何不足；筛选、选择、移除等交互可以构成理由，但“它是状态/数量/短文字”本身不构成理由。
+- 检查是否只为“更丰富”“更精致”而标签化；若去掉背景、描边、圆角后，信息识别与操作仍然清楚，应优先去掉外壳，而不是再换一种胶囊样式。
+- 组件库存在某个组件或 token，只证明有该能力；截图中局部出现标签、代码命名含 chip/pill、此前 AI 已生成同类样式，均不能证明整套系统属于“微胶囊/Chip 风格”。区分正式规范、已确认设计与未确认的外观推断。
+- 用户指出标签外壳难看时，优先评估去外壳的减法方案；移除视觉外壳不得丢失状态文字、交互提示、焦点反馈或必要的状态区别，不能只靠颜色表达状态。
+- 这不是禁用标签组件的通用命令。尊重用户明确要求和已确认原型，不因本检查批量删除已有组件或擅自重做页面；仅在获准的当前设计、优化或审查范围内判断。
+
 ### 7. State Craft · 状态表达精致度
 
 状态必须清楚、克制、精细。
@@ -146,7 +155,7 @@ Use this document before delivering UI prototypes, visual reviews, and visible f
 
 失败表现：
 
-- 状态只是普通文字。
+- 需要识别的状态与普通字段缺少必要区分，导致用户无法判断当前情况；能清楚表达状态的普通文字不因此判失败。
 - 状态变成粗糙色块。
 - 状态抢过主信息。
 - 状态和主体内容没有形成整体。
@@ -216,6 +225,8 @@ If the role is clear, choose visual strength based on that role.
 
 Do not decide only “show / hide” or “tag / no tag”.
 Choose the smallest visual strength that still communicates the role.
+
+Start from text-only or necessary semantic color. This ladder lists alternatives, not a progression toward chips: do not promote an element to a tag merely because it is a state, count, or short label. Apply the “默认不做装饰性标签化” check above before adding a visual carrier.
 
 Use this ladder:
 
