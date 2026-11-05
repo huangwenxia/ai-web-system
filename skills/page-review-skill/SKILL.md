@@ -8,6 +8,7 @@ description: "面向已有实现项目的 AGIOne 严格视觉审查协议。Use 
 ## AGIOne Visual Review Protocol
 
 - Before any visual review or UI quality judgment, read `docs/ui-craft-gates.md` and apply both `Universal Craft Invariant Gate` and `Universal UI Micro-Craft Gate`; use them to generalize local roughness into page-wide checks. Do not replace `docs/agione-visual-review-protocol.md`; apply the craft gates together with it.
+- 两个 craft gate 均按 `docs/ui-craft-gates.md` 的适用范围、证据与交付判定执行：区分必须修正、可优化、风格偏好及视觉待确认；主路径问题不能降级，主观“高级感”也不能单独构成交付阻断。
 - 当用户询问“视觉效果怎么样”“帮我看下页面”“页面好不好看”“哪里不舒服”“看下这个原型/截图/页面”“UI 审查”“视觉审查”或类似表达时，必须先完整读取 `docs/agione-visual-review-protocol.md`，并按该协议输出审查结论。
 - 视觉效果确认默认是 review-only：只审查、不改代码、不改 HTML、不新增或删除结构。只有用户明确说“按建议改”“开始改 HTML”“执行精修”“直接修代码”时，才进入实现或修改流程。
 - 不要用本文件中的摘要替代协议正文；`docs/agione-visual-review-protocol.md` 是通用页面视觉审查的唯一源头。
@@ -103,6 +104,7 @@ rg -n "Api\\.general\\.|result\\.total|has[A-Z][A-Za-z0-9_]*|currentStep|AI-NOTE
 
 ### 字体与层级
 
+- 按现象判断是否触发字体深入检查，具体条件与图文协调要求见 `docs/ui-craft-gates.md`；不因普通局部审查重做字体审计，不以固定字体栈、描边数值或渲染属性代替诊断。
 - 优先使用项目已有 typography / type utility。若 common 已有 `.type-*` 或等价类，建议迁移；若没有且只服务当前 app，建议 app-local soft override。
 - 普通正文、表格内容、caption、数据/ID/时间应有稳定层级；不要散落 `text-[13px]`、`font-size: 12px`、`font-weight: bold`。
 - 图标尺寸、Markdown 渲染、第三方编辑器、极特殊数据大字可以作为例外，但要说明原因。
@@ -164,6 +166,7 @@ rg -n "Api\\.general\\.|result\\.total|has[A-Z][A-Za-z0-9_]*|currentStep|AI-NOTE
 
 **问题清单**
 1. [P1/P2/P3] 问题标题
+   判定：必须修正 / 可优化 / 风格偏好；证据不足时列为待确认，不冒充已证实缺陷
    证据：文件/截图位置/扫描结果
    影响：...
    AGIOne / 语义 / Attention 要求：...
@@ -195,6 +198,7 @@ rg -n "Api\\.general\\.|result\\.total|has[A-Z][A-Za-z0-9_]*|currentStep|AI-NOTE
 - 不因 AGIOne 规范否定目标项目已有成熟 common 实现；先找现有标准，再判断缺口。
 - 不输出没有证据的视觉结论；至少引用截图区域、文件路径、扫描命中或组件代码。
 - 不把截图观察当成代码事实；截图只能证明视觉现象，代码归因必须读实现。
+- 定位到共享字体、token 或组件时，先说明受影响范围；审查建议不等于修改授权，不能由单页问题擅自升级为共享层改造。
 - 不为了追求全量完美而扩大范围；普通任务只审目标范围和直接依赖。
 - 外部受控 Chrome 只用于只读诊断，不替用户执行保存、提交、删除、审批、发布、导入、导出、上传、下载或任何会改变业务数据的操作。
 

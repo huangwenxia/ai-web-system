@@ -77,6 +77,7 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 - 当前仓库、当前 app、route ownership、页面壳、入口文件、相邻页面和调用链。
 - 命中 `project-mamba` 或同构仓库时，已读取对应 profile，并核对 `vite.config.ts`、`src/main.ts`、router / generated routes 入口。
 - 涉及公共组件、公共 util、共享样式、i18n、接口层或菜单路由时，已查调用方和影响范围。
+- 涉及排版基础变更或字体/图文异常时，编辑前读取 `../page-review-skill/docs/ui-craft-gates.md` 的条件检查要求，核对相关 token、资源与回退；普通局部修改沿用已确认体系。共享字体或图标问题的定位不扩大修改授权，超出 `scope` 时只提出共享层建议。
 - PowerShell / 终端输出疑似乱码时，已按磁盘字节而不是控制台渲染判断。
 
 阻断条件：不知道改哪个 app、route ownership 不清且会影响落点、公共层影响范围没查清、把运行时 skill 副本误当 source-of-truth。
@@ -106,6 +107,10 @@ description: "执行前端实现、bug 修复、组件重构和组件文档补�
 ### Gate 5: VALIDATION-GATE
 
 For visible UI work, read `../page-review-skill/docs/ui-craft-gates.md` before final delivery and apply both `Universal Craft Invariant Gate` and `Universal UI Micro-Craft Gate`; automated checks, token compliance, and DOM correctness do not replace this visible-result craft pass.
+
+按该文档区分必须修正、可优化和风格偏好：主路径、可读性、可访问性及明确验收约束的问题不得降级；不以主观精致度或固定像素偏移自动阻断交付。字体相关检查只在条件触发时深入执行，不另建一套 gate。
+
+下文的页面刷新与视觉复查均以用户工具授权为前提，不授权自动化、截图、DOM 抓取或像素对比；未获相应授权或没有渲染证据时，记录静态检查结果与“视觉待确认”，不得把它写成视觉验收通过，也不得为补证擅自启动浏览器。
 
 交付前必须确认：
 - 运行了适用的轻量检查：typecheck / lint / skill 脚本 / 组件结构 / 编码检查 / `git diff --check`；未运行必须逐项说明原因。

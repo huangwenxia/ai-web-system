@@ -18,12 +18,15 @@
 - `PRE-FLIGHT-GATE` 是否明确 `task_type`、`target`、`source`、`scope`、`prototype-confirmed`、`target-user`、`page-task` 和真正阻断问题
 - 新功能页面没有已确认原型时，是否停止代码实施并转 `existing-project-feature-skill` 或 `agione-ui`
 - `CONTEXT-GATE` 是否确认当前仓库、当前 app、route ownership、页面壳、入口文件、相邻页面、调用链和影响范围
+- 涉及排版基础或字体/图文异常时，是否按 `../../page-review-skill/docs/ui-craft-gates.md` 的条件要求完成相关检查；未触发时是否沿用既有体系而非全量字体审计；共享层改动是否属于本次授权范围
 - 命中 `project-mamba` 或同构仓库时，是否读取 profile 并核对 `vite.config.ts`、`src/main.ts`、router / generated routes 入口
 - 涉及公共组件、公共 util、共享样式、i18n、接口层或菜单路由时，是否先查调用方和影响范围
 - `REUSE-GATE` 是否覆盖页面壳、表格、表单、弹窗、筛选、状态、tag / badge、图标、空态、加载态、错误态、hooks、utils、constants、types、API 层和 locale 路径
 - 每个自定义 UI、每个 `v-for`、每个表单浮层、每个表格和每个新增图标是否都有“检索范围 / 关键词 / 命中候选 / 采用或未复用原因”
 - `IMPLEMENTATION-GATE` 是否先定页面根、业务容器、纯视觉组件、数据归属、胶囊目录、样式边界和边界态，再编辑文件
 - `VALIDATION-GATE` 是否在交付前记录适用检查命令、结果、未运行原因、checked files、浏览器刷新结果、build 未运行说明和目标用户 5 秒自检
+- craft 发现是否区分必须修正、可优化、风格偏好及证据不足的待确认项；是否既未放过主路径/可读性/明确验收约束问题，也未仅凭主观精致度或固定像素偏移阻断
+- 视觉结论是否与实际证据范围一致；无渲染证据时是否注明“视觉待确认”，且未为满足刷新或补证要求擅自运行浏览器自动化、截图、DOM 抓取或像素对比
 - 当实现报告 / handoff 报告落成 markdown 文件时，是否运行 `scripts/validate-frontend-gate-report.mjs <report.md>`；若报告是阻断交接，是否显式使用 `--allow-blocked`
 - 任一 gate 为 `blocked` 时，是否停止实现并补上下文、转 handoff 或请用户补充；是否没有用“先写再补检查”绕过
 
